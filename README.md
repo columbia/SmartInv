@@ -6,7 +6,7 @@ Projected Release Schedule:
 
 All datasets for finetuning and evaluation - March. 9th 
 
-Tool docker = April. 15th 
+Tool docker - April. 15th 
 
 Automated experiment reproducing scripts for evaluation results - May 10th
 
