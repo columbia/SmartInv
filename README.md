@@ -1,7 +1,11 @@
 # SmartInv
 
+**Update: SmartInv is in the process of obtaining Columbia license agreement and will release all infomration once we obtain all agreements**
+
 To be released before conference presentation in May - stay tuned. 
 
+
+**The project release date applies to Columbia internal access only**
 Projected Release Schedule:
 
 All datasets for finetuning and evaluation - March. 9th 
