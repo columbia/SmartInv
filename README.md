@@ -5,7 +5,7 @@
 To be released before conference presentation in May - stay tuned. 
 
 
-**The project release date applies to Columbia internal access only**
+**The projected release date applies to Columbia internal access only**
 
 Projected Release Schedule:
 
