@@ -185,11 +185,15 @@ We pushed the confirmed and unexploitable zero-day bugs discovered by SmartInv [
 ![model_loss_update (1)](https://github.com/columbia/SmartInv/assets/60257613/7121c305-a4fc-4fea-90bc-046445b653f1)
 
 **First Way**
+
 Please refer to our [fine-tuning README](https://github.com/columbia/SmartInv/tree/main/finetune) for specific instructions.
+
 
 1. Hardware: to finetune alpca-llama, we recommend 4 x A6000 GPUs; to finetune OPT2-350M, we recommend 2 x A100 GPUs. To finetune GPT2, T5, and PEFT-LLaMA, a single single NVIDIA V100 or A100 Tensor Core GPU is sufficient. 
 
 2. torch and transformers version matter for successful finetuning. Take alpaca-llama as an example, it requires torch==1.13.1. All llama-based models require transformers >= 4.27.0.dev0. 
+
+**Second Way**
 
 First, please git clone this repo and install all requirements. Then please follow the following steps: 
 
