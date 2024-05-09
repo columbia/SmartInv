@@ -29,6 +29,7 @@ We sometimes need to instrument contracts with line numebrs for model inference,
 ```
 python addline.py
 ```
+We have already prepared the [line number instrumented contracts](github.com/columbia/SmartInv/tree/main/tests/instrumented_contracts) for model inference in the large scale experiments
 
 To clean up some non-sense files, you can run:
 ```
