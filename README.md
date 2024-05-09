@@ -264,6 +264,43 @@ As you can tell in our smartinv.py, we tried multiple model outputs and reported
 ### User Interface
 
 [PEFT-LLaMA Finetuner](https://huggingface.co/spaces/sallywww/peft_llama_finetuner/blob/main/app.py): we deploy our finetuned PEFT-LLaMA in this application, It can also be easily adapted for other downstream tasks. 
+## Getting Started
+
+### Prerequisites
+
+- Linux or WSL
+- Modern NVIDIA GPU with >16 GB of VRAM (but it might be possible to run with less for smaller sample lengths)
+
+### Usage
+
+I recommend using a virtual environment to install the required packages. Conda preferred
+
+```
+conda install -y cuda -c nvidia/label/cuda-11.7.0
+conda install -y pytorch=1.13.1 pytorch-cuda=11.7 -c pytorch
+```
+
+Clone the repository and install the required packages.
+
+```
+git clone https://github.com/lxe/simple-llama-finetuner.git
+cd simple-llama-finetuner
+pip install -r requirements.txt
+```
+
+Launch it
+
+```
+python main.py
+```
+
+Open http://127.0.0.1:7860/ in your browser. Prepare your training data by separating each sample with 2 blank lines. Paste the whole training dataset into the textbox. Specify the model name in the "LoRA Model Name" textbox, then click train. You might need to adjust the max sequence length and batch size to fit your GPU memory. The model will be saved in the `lora-{your model name}` directory.
+
+After training is done, navigate to "Inference" tab, click "Reload Models", select your model, and play with it.
+
+Have fun!
+
+## Screenshots
 
 [Automated Inference-to-Verification Pipeline](https://automatedcontractnvariantverificationpipeline.anvil.app): we verify inferred invariants by pipelining our inferred invariants to a bounded model checker in this app. In case you'd like to adapt our verifier tool for other tasks, please refer to our [deployed verifier backend here](https://deepnote.com/workspace/columbia-220d-6d06653a-9da8-4600-abe5-788764e7a1dd/project/innvariantpipeline-d0de821e-6b37-422f-9bbc-a2df12491510/notebook/Fine_tuned_T5_VeriSol_Pipeline-61aba64c09654268b351c336e9450a71).
 
