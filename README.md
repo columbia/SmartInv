@@ -328,7 +328,7 @@ python smartinv.py --heavy True --file [folder/subfolder/myCoolConntract.sol] --
 
 This is [sampled raw model outputs](https://github.com/columbia/SmartInv/tree/main/all_results/sampled_results) from the heavy mode
 
-## Limitations (a.k.a. How You Can Significantly Beat SmartInv in Your Next Paper Easily)
+## Limitations (a.k.a. Ways to Significantly Beat SmartInv in Your Next Paper Easily)
 
 In addition to the limitations we've acknowledge in paper, there are quite a few other significant limitations that can help other ressearchers who are in this space and try to improve the State-of-the-art: 
 
