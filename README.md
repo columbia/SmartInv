@@ -283,8 +283,8 @@ conda install -y pytorch=1.13.1 pytorch-cuda=11.7 -c pytorch
 Clone the repository and install the required packages.
 
 ```
-git clone https://github.com/lxe/simple-llama-finetuner.git
-cd simple-llama-finetuner
+git clone https://github.com/Columbia/SmartInv.git
+cd SmartInv
 pip install -r requirements.txt
 ```
 
