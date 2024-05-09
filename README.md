@@ -202,7 +202,50 @@ This is [sampled raw model outputs](https://github.com/columbia/SmartInv/tree/ma
 ## Reproducing Methodology (Model Fine-tuning and Results)
 ![model_loss_update (1)](https://github.com/columbia/SmartInv/assets/60257613/7121c305-a4fc-4fea-90bc-046445b653f1)
 
+**First Way**
 Please refer to our [fine-tuning README](https://github.com/columbia/SmartInv/tree/main/finetune) for specific instructions.
+
+1. Hardware: to finetune alpca-llama, we recommend 4 x A6000 GPUs; to finetune OPT2-350M, we recommend 2 x A100 GPUs. To finetune GPT2, T5, and PEFT-LLaMA, a single single NVIDIA V100 or A100 Tensor Core GPU is sufficient. 
+
+2. torch and transformers version matter for successful finetuning. Take alpaca-llama as an example, it requires torch==1.13.1. All llama-based models require transformers >= 4.27.0.dev0. 
+
+First, please git clone this repo and install all requirements. Then please follow the following steps: 
+
+```
+cd models_train
+```
+
+```
+pip install -r requirements.txt
+```
+
+Assuming you already have all the datasets as mentioned in the dataset generation section above, to finetune alpca-llama based model, you can run:
+
+```
+sh train_llama.sh
+``` 
+
+To CoT finetune regular LLaMA, you can run the following command in the same directory (Note: we assume that you have already run the proper commands in dataset_gen directory and you already generated the training dataset named "cot_train_data.json". Since this command is to finetune regular LLaMA, it's imperative that your hardware supports distributed training and has at least 4 GPUs (in our case, we use 4 x A6000): 
+
+```
+cd models_train
+sh train_cot.sh
+``` 
+
+To finetune facebook's opt-family model, you can run:
+
+```
+sh train_opt.sh
+```
+
+To finetune T5 and GPT2, you can run the .ipynb files directly on coLab.
+
+To finetune PEFT-LLaMA, please cd back to the root of the this git directory by running the following:
+
+```
+cd ../../SmartInv
+python train.py
+```
 
 ## Applications 
 
