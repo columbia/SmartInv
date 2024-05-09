@@ -1,6 +1,7 @@
 
 
 # Fine-tuning Usage Guide 
+Note: we also utilize this codebase for fuzzing tasks. So you might see slight different documentation here. 
 
 | Ssupported Models  | Fine-tuning Methods |Train Time by Methods (hours)|Total Train Time (days)|Quantization|LoRA|
 | ------------- | ------------- | ------------- | ------------- |------------- |------------- |
