@@ -264,14 +264,14 @@ As you can tell in our smartinv.py, we tried multiple model outputs and reported
 ### User Interface
 
 [PEFT-LLaMA Finetuner](https://huggingface.co/spaces/sallywww/peft_llama_finetuner/blob/main/app.py): we deploy our finetuned PEFT-LLaMA in this application, It can also be easily adapted for other downstream tasks. 
-## Getting Started
+#### Getting Started
 
-### Prerequisites
+**Prerequisites**
 
 - Linux or WSL
 - Modern NVIDIA GPU with >16 GB of VRAM (but it might be possible to run with less for smaller sample lengths)
 
-### Usage
+**Usage**
 
 I recommend using a virtual environment to install the required packages. Conda preferred
 
@@ -300,7 +300,10 @@ After training is done, navigate to "Inference" tab, click "Reload Models", sele
 
 Have fun!
 
-## Screenshots
+#### Screenshots
+|![Image1](https://user-images.githubusercontent.com/1486609/226793136-84531388-4081-49bb-b982-3f47e6ec25cd.png) | ![Image2](https://user-images.githubusercontent.com/1486609/226809466-b1eb6f3f-4049-4a41-a2e3-52b06a6e1230.png) |
+|:---:|:---:|
+
 
 [Automated Inference-to-Verification Pipeline](https://automatedcontractnvariantverificationpipeline.anvil.app): we verify inferred invariants by pipelining our inferred invariants to a bounded model checker in this app. In case you'd like to adapt our verifier tool for other tasks, please refer to our [deployed verifier backend here](https://deepnote.com/workspace/columbia-220d-6d06653a-9da8-4600-abe5-788764e7a1dd/project/innvariantpipeline-d0de821e-6b37-422f-9bbc-a2df12491510/notebook/Fine_tuned_T5_VeriSol_Pipeline-61aba64c09654268b351c336e9450a71).
 
