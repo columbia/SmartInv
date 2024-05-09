@@ -297,7 +297,8 @@ In addition to the limitations we've acknowledge in paper, there are quite a few
 
 2. **the lack of a uniform benchmark on functional bugs**: current benchmarks largely rely on human auditing. Different papers on similar topicss use drastically different benchmarks. If we have a uniform benchmark, that can be a step forward. 
    
-3. **heavy manual work and lack of automation**: first of all, the lack of dataset in smart contract invariants means that we have to resort to manual work before doing anything interesting. SmartInv somtimes still require human intervention after inference to fix compilation errors. 
+3. **heavy manual work and lack of automation**: first of all, the lack of dataset in smart contract invariants means that we have to resort to manual work before doing anything interesting. SmartInv somtimes still require human intervention after inference to fix compilation errors.
+In case anyone is interested, some [personal reflections](https://docs.google.com/document/d/1TR6gjE4oyD4Gk2fsBm6zDuWDLA_m0SAdwY4dxlfY3Dg/edit?usp=sharing) from author on this line of work.  
 
 ## Acknowledgements
 In addition to the long citation list in the paper, our work is indebted to many other forebearers in this space. This repo is only possible, because of the wonderful work performed by other researchers coming before us. We are very grateful for the industrial tools, vanilla models, and prompting approaches used in our experiments. Their extraordinary efforts and tool-building made this work and the insights possible. We would like extend our appreciation to [SunWeb3Sec](https://github.com/ZhangZhuoSJTU/Web3Bugs?tab=readme-ov-file#valuable-resources-for-web3-security), [Web3Bugs](https://github.com/ZhangZhuoSJTU/Web3Bugs?tab=readme-ov-file#valuable-resources-for-web3-security), and [SmartWild Dataset](https://github.com/smartbugs/smartbugs-wild). These prior benchmarks made SmartInv author's life so much easier. 
