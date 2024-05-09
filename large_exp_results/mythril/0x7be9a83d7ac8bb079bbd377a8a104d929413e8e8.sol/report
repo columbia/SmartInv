@@ -1,0 +1,310 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 362
+Estimated Gas Usage: 7779 - 78996
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:120
+
+function drop(address[] beneficiaries, uint256[] values)
+        external
+        onlyOwner
+        returns (bool)
+    {
+        require(beneficiaries.length == values.length, "Array lengths of parameters unequal");
+
+        for (uint i = 0; i < beneficiaries.length; i++) {
+            require(beneficiaries[i] != address(0), "Zero address received");
+            require(getBalance() >= values[i], "Insufficient token balance");
+
+            token.transfer(beneficiaries[i], values[i]);
+
+            emit Airdropped(beneficiaries[i], values[i]);
+        }
+
+        return true;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000008, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d3ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc80, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 386
+Estimated Gas Usage: 14131 - 155859
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:120
+
+function drop(address[] beneficiaries, uint256[] values)
+        external
+        onlyOwner
+        returns (bool)
+    {
+        require(beneficiaries.length == values.length, "Array lengths of parameters unequal");
+
+        for (uint i = 0; i < beneficiaries.length; i++) {
+            require(beneficiaries[i] != address(0), "Zero address received");
+            require(getBalance() >= values[i], "Insufficient token balance");
+
+            token.transfer(beneficiaries[i], values[i]);
+
+            emit Airdropped(beneficiaries[i], values[i]);
+        }
+
+        return true;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000002, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d3ffffffffffffffffffffffffffe0000fffffffffffffffffffffffffffffff20ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 591
+Estimated Gas Usage: 14131 - 155859
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:143
+
+token
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d38000080230a102c87080002366f5a7de75e0d223eb6fd26f7680040000000045af, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: Airdrop
+Function name: getBalance()
+PC address: 777
+Estimated Gas Usage: 2691 - 37959
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:143
+
+token.balanceOf(address(this))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getBalance(), txdata: 0x12065fe0, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 777
+Estimated Gas Usage: 14131 - 155859
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:143
+
+token.balanceOf(address(this))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d38000080230a102c87080002366f5a7de75e0d223eb6fd26f7680040000000045af, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 1825
+Estimated Gas Usage: 14131 - 155859
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:128
+
+beneficiaries[i]
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000002, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d3ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbc80, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 2008
+Estimated Gas Usage: 14131 - 155859
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:129
+
+values[i]
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000080, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d38004000001500000000000000000000000000000000000000100000000000140ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbf, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 2141
+Estimated Gas Usage: 14131 - 155859
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:131
+
+token
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d38000080230a102c87080002366f5a7de75e0d223eb6fd26f7680040000000045af, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 2397
+Estimated Gas Usage: 14131 - 155859
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:131
+
+token.transfer(beneficiaries[i], values[i])
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d3ffde6f41ef49cc844efb2e6bb02d80201000000000020800000000000000000081, value: 0x0
+
+==== Multiple Calls in a Single Transaction ====
+SWC ID: 113
+Severity: Low
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 2397
+Estimated Gas Usage: 7779 - 78996
+Multiple calls are executed in the same transaction.
+This call is executed following another call within the same transaction. It is possible that the call never gets executed if a prior call fails permanently. This might be caused intentionally by a malicious callee. If possible, refactor the code such that each transaction only executes one external call or make sure that all callees can be trusted (i.e. they’re part of your own codebase).
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:131
+
+token.transfer(beneficiaries[i], values[i])
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d38402000000000000000000000088000000000000000000000000000000000000ff, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: Airdrop
+Function name: drop(address[],uint256[])
+PC address: 2397
+Estimated Gas Usage: 14131 - 155859
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x7be9a83d7ac8bb079bbd377a8a104d929413e8e8.sol:131
+
+token.transfer(beneficiaries[i], values[i])
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: drop(address[],uint256[]), txdata: 0xc01ae5d38000080230a102c87080002366f5a7de75e0d223eb6fd26f7680040000000045af, value: 0x0
+
+

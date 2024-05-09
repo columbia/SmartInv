@@ -1,0 +1,276 @@
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: Crowdsale
+Function name: constructor
+PC address: 91
+Estimated Gas Usage: 238 - 3197
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:105
+
+require(_startTime >= now)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: Crowdsale
+Function name: fallback
+PC address: 655
+Estimated Gas Usage: 1030 - 1125
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:132
+
+require(validPurchase())
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00200102084001000408000810081004000100020002000108100000000141020040010008200100010420081000040000000000000000000002000000010080010101010102028004040202022004011001011001012004011001040220400100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BasicToken
+Function name: transfer(address,uint256)
+PC address: 885
+Estimated Gas Usage: 1263 - 1548
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:249
+
+balances[msg.sender].sub(_value)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: transfer(address,uint256), txdata: 0xa9059cbb010101010101010101010101010101010102022020208008081001010101020202, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: Crowdsale
+Function name: fallback
+PC address: 1219
+Estimated Gas Usage: 945 - 1040
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:156
+
+now >= startTime && now <= endTime
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 04000102000000010240010408001001000401040840010401000100000101020400018000000001011001020800100100000100000000000000000000010000040101040201010202010104010101010101010201104001010280024001010100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: Crowdsale
+Function name: fallback
+PC address: 1243
+Estimated Gas Usage: 989 - 1084
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:158
+
+withinPeriod && nonZeroPurchase
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 08000240002100200404100208041001000104100200010080010000000000054000020000044020000401020800080000000000000000000001000000000001402001021000012010010420010204100101200101010202201004080201400800000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BurnableToken
+Function name: burn(uint256)
+PC address: 4257
+Estimated Gas Usage: 1245 - 1530
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:359
+
+balances[burner].sub(_value)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: burn(uint256), txdata: 0x42966c6801, decoded_data: (452312848583266388373324160190187140051835877600158453279131187530910662656,), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BurnableToken
+Function name: transfer(address,uint256)
+PC address: 4257
+Estimated Gas Usage: 1351 - 1636
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:249
+
+balances[msg.sender].sub(_value)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000000000800180000080000008010000401020200101, decoded_data: ('0x0000008001800000800000080100004010202001', 452312848583266388373324160190187140051835877600158453279131187530910662656), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BurnableToken
+Function name: transferFrom(address,address,uint256)
+PC address: 4257
+Estimated Gas Usage: 2287 - 2952
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:285
+
+balances[_from].sub(_value)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transferFrom(address,address,uint256), txdata: 0x23b872dd0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200040201000002000800180000000000801800101, decoded_data: ('0x0000000000000000000000000000000000000000', '0x2000402010000020008001800000000008018001', 452312848583266388373324160190187140051835877600158453279131187530910662656), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BurnableToken
+Function name: increaseApproval(address,uint256)
+PC address: 4288
+Estimated Gas Usage: 1436 - 1911
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:328
+
+allowed[msg.sender][_spender].add(_addedValue)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: increaseApproval(address,uint256), txdata: 0xd73dd623000000000000000000000000000000000000000000000000000000000000000041, decoded_data: ('0x0000000000000000000000000000000000000000', 29400335157912315244266070412362164103369332044010299463143527189509193072640), value: 0x0
+Caller: [SOMEGUY], function: increaseApproval(address,uint256), txdata: 0xd73dd6230000000000000000000000000000000000000000000000000000000000000000d0, decoded_data: ('0x0000000000000000000000000000000000000000', 94081072505319408781651425319558925130781862540832958282059287006429417832448), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: MintableToken
+Function name: transfer(address,uint256)
+PC address: 5253
+Estimated Gas Usage: 1417 - 1702
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:249
+
+balances[msg.sender].sub(_value)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x4, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000000000000000000000000000000000000000008001, decoded_data: ('0x0000000000000000000000000000000000000080', 452312848583266388373324160190187140051835877600158453279131187530910662656), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: MintableToken
+Function name: transferFrom(address,address,uint256)
+PC address: 5253
+Estimated Gas Usage: 2309 - 2974
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x73aa2af0f36a5d8af34149545016923f153960f6.sol:285
+
+balances[_from].sub(_value)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: transferFrom(address,address,uint256), txdata: 0x23b872dd0000000000000000000000000000000000000000000000000000000000000005000000000000000000000000000000000000000000000000000000000100000001, decoded_data: ('0x0000000000000000000000000000000000000005', '0x0000000000000000000000000000000001000000', 452312848583266388373324160190187140051835877600158453279131187530910662656), value: 0x0
+
+
