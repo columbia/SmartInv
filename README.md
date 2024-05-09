@@ -200,8 +200,9 @@ python smartinv.py --heavy True --file [folder/subfolder/myCoolConntract.sol] --
 This is [sampled raw model outputs](https://github.com/columbia/SmartInv/tree/main/all_results/sampled_results) from the heavy mode
 
 ## Reproducing Methodology (Model Fine-tuning and Results)
-
 ![model_loss_update (1)](https://github.com/columbia/SmartInv/assets/60257613/7121c305-a4fc-4fea-90bc-046445b653f1)
+
+Please refer to our [fine-tuning README](https://github.com/columbia/SmartInv/tree/main/finetune) for specific instructions.
 
 ## Applications 
 
