@@ -257,7 +257,8 @@ In addition to the long citation list in the paper, our work is indebted to many
 ## Soon To Be Updated Items in the Coming Days
 
 1. ablation scripts and light mode scripts
-2. more zero-day to be uploaded
-3. more results from large-scale and refined experiments to be pushed 
+2. more sampled raw model outputs to be pushed
+3. more zero-day to be uploaded
+4. more results from large-scale and refined experiments to be pushed 
 
 
