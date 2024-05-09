@@ -180,24 +180,6 @@ The output will be print out to terminal.  More code related to this experiment 
 
 We pushed the confirmed and unexploitable zero-day bugs discovered by SmartInv [here](https://github.com/columbia/SmartInv/tree/main/all_results/zero_days). We will provide more information in future after developers' confirmation and fixes. 
 
-## Standalone Tool Usage
-
-SmartInv has two modes:  ``--heavy`` and ``--light``. They refer to the intensity of GPU resources requirement. We observe that finetuned PEFT model (heavy mode) is far more resources intensive than GPT-4 (light mode). So we provide two usages of SmartInv, backed by different models. We recommend heavy mode only if you have abundant GPU resources. Otherwise, you might run into CUDA OOM. 
-**light mode**:
-
-```
-cd ~/SmartInv
-python smartinv.py --light True --file [folder/subfolder/myCoolConntract.sol] --contract [myCoolContract.sol] 
-```
-
-**heavy mode**:
-
-```
-cd ~/SmartInv
-python smartinv.py --heavy True --file [folder/subfolder/myCoolConntract.sol] --contract [myCoolContract.sol] 
-```
-
-This is [sampled raw model outputs](https://github.com/columbia/SmartInv/tree/main/all_results/sampled_results) from the heavy mode
 
 ## Reproducing Methodology (Model Fine-tuning and Results)
 ![model_loss_update (1)](https://github.com/columbia/SmartInv/assets/60257613/7121c305-a4fc-4fea-90bc-046445b653f1)
@@ -282,6 +264,25 @@ As you can tell in our smartinv.py, we tried multiple model outputs and reported
 [Automated Inference-to-Verification Pipeline](https://automatedcontractnvariantverificationpipeline.anvil.app): we verify inferred invariants by pipelining our inferred invariants to a bounded model checker in this app. In case you'd like to adapt our verifier tool for other tasks, please refer to our [deployed verifier backend here](https://deepnote.com/workspace/columbia-220d-6d06653a-9da8-4600-abe5-788764e7a1dd/project/innvariantpipeline-d0de821e-6b37-422f-9bbc-a2df12491510/notebook/Fine_tuned_T5_VeriSol_Pipeline-61aba64c09654268b351c336e9450a71).
 
 [Proof of Bugs](https://github.com/sallywang147/attackDB/tree/webpage): as presented in our paper, in the event that the solidity compiler of a contract is not compatible with our verifier, we also provide proof of bugs by reproducing the hack on forked mainnet environment in the linked database. 
+
+## Standalone Tool Usage
+
+SmartInv has two modes:  ``--heavy`` and ``--light``. They refer to the intensity of GPU resources requirement. We observe that finetuned PEFT model (heavy mode) is far more resources intensive than GPT-4 (light mode). So we provide two usages of SmartInv, backed by different models. We recommend heavy mode only if you have abundant GPU resources. Otherwise, you might run into CUDA OOM. 
+**light mode**:
+
+```
+cd ~/SmartInv
+python smartinv.py --light True --file [folder/subfolder/myCoolConntract.sol] --contract [myCoolContract.sol] 
+```
+
+**heavy mode**:
+
+```
+cd ~/SmartInv
+python smartinv.py --heavy True --file [folder/subfolder/myCoolConntract.sol] --contract [myCoolContract.sol] 
+```
+
+This is [sampled raw model outputs](https://github.com/columbia/SmartInv/tree/main/all_results/sampled_results) from the heavy mode
 
 ## Limitations (a.k.a. How You Can Significantly Beat SmartInv in Your Next Paper Easily)
 
