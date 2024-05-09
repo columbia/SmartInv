@@ -1,5 +1,5 @@
 # SmartInv Overview
-This Repo contains the tool chain, documented results, and corresponding toolchain of our S&P'24 [paper](https://www.computer.org/csdl/proceedings-article/sp/2024/313000a126/1Ub23GNTAeQ) and [corrected copy]() that fixes presentation errors. We provide artifacts and reproducing scripts for main contributions and results reported in the paper. 
+This Repo contains the tool chain, documented results, and reproducing scripts of our S&P'24 [paper](https://www.computer.org/csdl/proceedings-article/sp/2024/313000a126/1Ub23GNTAeQ) and [corrected copy]() that fixes presentation errors. We provide artifacts and reproducing scripts for main contributions and results reported in the paper. 
 
 ## Annotated Fine-tuning Datasets 
 All datasets used for training are available in dataset_gen and the linked google files. 
