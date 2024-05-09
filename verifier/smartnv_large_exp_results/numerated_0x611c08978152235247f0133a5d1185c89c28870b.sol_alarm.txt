@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The function `startExecute` updates the `proposal` struct without checking if there is already an ongoing proposal. This could lead to inconsistent state updates.
+2) Atomicity violation: The function `execute` transfers tokens from `proposal.addr` to the contract before updating the `proposal.votedAmount`. If the token transfer fails after the tokens are withdrawn from `proposal.addr`, it could result in atomicity violation.
+3) Incorrect visibility/ownership: The contract is implementing the `IERC20` interface but it does not provide any implementation for the required functions specified in the interface. This could be an incorrect visibility issue.
+
+Therefore, the identified potential vulnerabilities in the contract are: 
+1) Inconsistent state update
+2) Atomicity violation
+3) Incorrect visibility/ownership

@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The state variable `lockedFunds` is being updated in the `endExecute` function based on the balance of `votingToken` in the contract, which can lead to inconsistent state if the `votingToken` balance changes after the check but before updating `lockedFunds`.
+
+2) Privilege escalation: The `startExecute` function allows any caller to start a new proposal, potentially leading to unauthorized privilege escalation.
+
+3) Insufficient gas: If the gas limit is low when calling functions such as `execute`, there is a risk that the transaction may run out of gas before completion, leading to incomplete execution of the function.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, privilege escalation, and insufficient gas.

@@ -1,0 +1,44 @@
+<\contract\> 
+contract VotingSystem {
+     struct Voter {
+         bool voted;
+         uint vote;
+         address delegate;
+     }
+     
+     mapping(address => Voter) public voters;
+     uint[] public proposals;
+     address public owner;
+     
+     constructor() {
+         owner = msg.sender;
+     }
+     
+     function vote(uint proposalIndex) public {
+         Voter storage sender = voters[msg.sender];
+         require(!sender.voted, "Already voted.");
+         sender.voted = true;
+         sender.vote = proposalIndex;
+         proposals[proposalIndex]++;
+     }
+     
+     function delegate(address to) public {
+         require(!voters[msg.sender].voted, "You already voted.");
+         require(to != msg.sender, "Self-delegation is not allowed.");
+         
+         while (voters[to].delegate != address(0)) {
+             to = voters[to].delegate;
+             require(to != msg.sender, "Found loop in delegation.");
+         }
+         
+         voters[msg.sender].voted = true;
+         voters[msg.sender].delegate = to;
+         
+         if (voters[to].voted) {
+             proposals[voters[to].vote]++;
+         }
+     }
+ }
+<\contract\> 
+1) inconsistent state update
+2) incorrect visibility/ownership

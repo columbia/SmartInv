@@ -1,0 +1,38 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public value;
+    bool public releasedByBuyer;
+    bool public releasedBySeller;
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+    }
+
+    function deposit() public payable {
+        value = msg.value;
+    }
+
+    function releaseToSeller() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "only buyer or arbiter can call this function");
+        releasedByBuyer = true;
+        if (releasedBySeller) {
+            address payable sellerPayable = payable(seller);
+            sellerPayable.transfer(value);
+        }
+    }
+
+    function releaseToBuyer() public {
+        require(msg.sender == seller || msg.sender == arbiter, "only seller or arbiter can call this function");
+        releasedBySeller = true;
+        if (releasedByBuyer) {
+            address payable buyerPayable = payable(buyer);
+            buyerPayable.transfer(value);
+        }
+    }
+}
+<\contract_to_analyze\>

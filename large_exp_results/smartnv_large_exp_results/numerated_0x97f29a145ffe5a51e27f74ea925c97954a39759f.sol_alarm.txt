@@ -1,0 +1,21 @@
+The contract presented for analysis is:
+
+contract CheckToken {
+    IERC20 public token;
+    mapping(address => uint) public balances;
+
+    function deposit(uint amount) public {
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        token.transfer(msg.sender, amount);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) insufficient gas
+2) ID uniqueness violation

@@ -1,0 +1,20 @@
+Contract to be analyzed:
+
+contract TokenSwap {
+    mapping(address => uint) public balances;
+
+    function swapTokens(address token1, address token2, uint amount1, uint amount2) external {
+        require(balances[token1] >= amount1, "Insufficient balance for token1");
+        require(balances[token2] >= amount2, "Insufficient balance for token2");
+
+        balances[token1] -= amount1;
+        balances[token2] += amount1;
+
+        balances[token2] -= amount2;
+        balances[token1] += amount2;
+    }
+}
+
+Output: 
+- Inconsistent state update
+- Arithmetic flaw

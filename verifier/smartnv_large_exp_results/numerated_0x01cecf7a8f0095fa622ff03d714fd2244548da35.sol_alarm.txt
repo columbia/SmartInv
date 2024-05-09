@@ -1,0 +1,27 @@
+The contract in question is:
+
+contract PaymentChannel {
+     address public payer;
+     address public payee;
+     uint public expiration;
+     uint public value;
+
+     constructor(address _payer, address _payee, uint _expiration) public payable {
+          payer = _payer;
+          payee = _payee;
+          expiration = _expiration;
+          value = msg.value;
+     }
+
+     function closeChannel(uint256 amount, bytes memory signature) public {
+         require(msg.sender == payee, "only payee can close the channel");
+         require(amount <= value, "amount exceeds channel value");
+         require(now < expiration, "channel has expired");
+
+         payee.transfer(amount);
+         selfdestruct(payer);
+     }
+}
+
+Output: 
+- incorrect visibility/ownership

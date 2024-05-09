@@ -1,0 +1,28 @@
+Contract being analyzed:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    function init(address _buyer, address _seller, uint _amount) external {
+        require(msg.sender == address(this), "Only the contract can initialize");
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+    }
+
+    function releaseAmount() external {
+        require(msg.sender == seller, "Only the seller can release the amount");
+        payable(buyer).transfer(amount);
+    }
+
+    function refundAmount() external {
+        require(msg.sender == buyer, "Only the buyer can request a refund");
+        payable(seller).transfer(amount);
+    }
+}
+
+Output: 
+1) privilege escalation
+2) Inconsistent state update

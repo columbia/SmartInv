@@ -1,0 +1,8 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function `endExecute` updates the `lockedFunds` variable based on the balance of the contract, which may lead to incorrect calculations due to potential updates to the balance during the function execution.
+
+2) Atomicity violation: The function `execute` updates the `proposal.votedAmount` without using any locking mechanism, which may result in race conditions and inconsistent data updates.
+
+3) Insufficient gas: The function `endExecute` checks the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` which may consume a significant amount of gas and potentially run out of gas during execution.
+
+4) Incorrect visibility/ownership: The contract implements the interface `IERC20` but does not define the necessary functions such as `transferFrom`, which may lead to incorrect behavior or compilation errors. Additionally, the ownership of the contract is managed internally with the `owner` variable but does not provide any functions to transfer ownership or manage access control.

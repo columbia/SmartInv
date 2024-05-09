@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    bool public ended;
+
+    function bid() public payable {
+        require(!ended, "Auction has ended");
+        require(msg.value > highestBid, "Bid not high enough");
+        
+        if (highestBidder != address(0)) {
+            highestBidder.transfer(highestBid); 
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "Only owner can end the auction");
+        ended = true;
+    }
+}
+<\contract_to_analyze\>

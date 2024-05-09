@@ -1,0 +1,46 @@
+The contract provided is:
+
+contract BusinessContract {
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+     mapping(address => uint256) startingBalanceList;
+     Proposal proposal;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The 'proposal' struct is being modified in multiple functions without ensuring that the updates are done consistently across different function calls.
+2) Reentrancy: There is a potential reentrancy vulnerability in the execute function where the transfer of tokens to the contract address could allow an attacker to call back into the contract and execute additional unexpected functions before the completion of the current execution.
+3) Incorrect visibility/ownership: The 'lockedFunds' variable is referenced but not defined in the contract, which could lead to visibility or ownership issues.
+4) Integer overflow/underflow: There is a possibility of integer overflow in the 'votedAmount' field of the proposal struct if the value exceeds the maximum uint256 value.
+5) Business logic flaw: The logic for checking if the execution has ended or the proposal has not ended might be flawed, leading to unexpected behavior in the contract execution.
+
+Therefore, the identified potential vulnerabilities in the contract are inconsistency state update, reentrancy, incorrect visibility/ownership, integer overflow/underflow, and business logic flaw.

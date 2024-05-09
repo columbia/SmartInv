@@ -1,0 +1,21 @@
+The contract being analyzed is:
+
+```solidity
+contract SimpleContract {
+    address public owner;
+
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only the owner can change the owner");
+        owner = _newOwner;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only the owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) privilege escalation
+2) incorrect visibility/ownership

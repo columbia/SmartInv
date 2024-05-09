@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The ownership of the contract is not specified, which can lead to potential security risks.
+2) Inconsistent state update: The execution of the `endExecute()` function updates the `lockedFunds` variable based on the balance of the contract, but it does not include the funds that may have been withdrawn by users, leading to an inconsistent state update.
+3) Integer overflow/underflow: There is a calculation in the `liquidate()` function that involves multiplication and division without proper overflow/underflow checks, which can result in unexpected behavior.
+4) Price manipulation: The `calculatePrice()` function retrieves the balances of USDC and WETH from the Uniswap pair to calculate the price, but this price calculation can be manipulated if an attacker controls the balances of USDC and WETH in the pair.

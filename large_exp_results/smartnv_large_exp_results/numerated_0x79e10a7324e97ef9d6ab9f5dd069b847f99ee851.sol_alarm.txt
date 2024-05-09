@@ -1,0 +1,38 @@
+<\contract_to_be_analyzed\>
+contract EscrowContract {
+         address public seller;
+         address public buyer;
+         address public arbiter;
+         uint public amount;
+         bool public sellerApproval;
+         bool public buyerApproval;
+         bool public arbiterApproval;
+
+         function deposit() public payable {
+             require(msg.sender == buyer || msg.sender == seller, "You are not authorized to deposit");
+             amount += msg.value;
+         }
+
+         function setSellerApproval(bool _approval) public {
+             require(msg.sender == seller, "You are not authorized to set seller approval");
+             sellerApproval = _approval;
+         }
+
+         function setBuyerApproval(bool _approval) public {
+             require(msg.sender == buyer, "You are not authorized to set buyer approval");
+             buyerApproval = _approval;
+         }
+
+         function setArbiterApproval(bool _approval) public {
+             require(msg.sender == arbiter, "You are not authorized to set arbiter approval");
+             arbiterApproval = _approval;
+         }
+
+         function releaseAmount() public {
+             require(sellerApproval && buyerApproval && arbiterApproval, "Not all parties approved the release");
+             address _this = address(this);
+             payable(seller).transfer(amount);
+         }
+
+}
+<\contract_to_be_analyzed\>

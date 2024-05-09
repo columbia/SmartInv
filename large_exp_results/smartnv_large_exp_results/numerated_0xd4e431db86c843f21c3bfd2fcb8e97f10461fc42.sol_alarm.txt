@@ -1,0 +1,32 @@
+<\contract\> 
+contract VotingSystem {
+    address public admin;
+    mapping(address => uint) public voteCount;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(address candidate) public {
+        require(voteCount[msg.sender] == 0, "Already voted");
+        voteCount[msg.sender] += 1;
+        candidate.transfer(1 ether);
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+
+    function withdraw() public {
+        uint amount = voteCount[msg.sender] * 0.1 ether;
+        require(address(this).balance >= amount, "Insufficient balance");
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+4) inconsistent state update
+8) reentrancy
+9) integer overflow/underflow
+12) ether leakage

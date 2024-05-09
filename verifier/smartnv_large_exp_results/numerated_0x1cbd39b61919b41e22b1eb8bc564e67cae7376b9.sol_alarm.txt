@@ -1,0 +1,22 @@
+Contract to be analyzed:
+contract PaymentGateway {
+     uint public totalPayments;
+     mapping (address => uint) public balances;
+
+     function makePayment() public payable {
+           balances[msg.sender] += msg.value;
+           totalPayments += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+           require(balances[msg.sender] >= amount, "Insufficient balance");
+           balances[msg.sender] -= amount;
+           totalPayments -= amount;
+           (bool success, ) = msg.sender.call{value: amount}("");
+           require(success, "Transfer failed");
+     }
+} 
+
+Potential vulnerabilities in the contract:
+1) Reentrancy
+2) Insufficient gas

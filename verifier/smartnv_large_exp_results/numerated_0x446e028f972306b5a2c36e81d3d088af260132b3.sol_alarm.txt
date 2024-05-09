@@ -1,0 +1,20 @@
+<\contract\> 
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    
+    function swapTokens(uint amountA, uint amountB) external {
+        require(amountA > 0 && amountB > 0, "Invalid swap amounts");
+        
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+        
+        tokenA.transfer(msg.sender, amountB);
+        tokenB.transfer(msg.sender, amountA);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the TokenSwap contract could be:
+1) Inconsistent state update: The state of tokenA and tokenB balances might not be accurately updated after the swap due to the interleaving transfer calls.
+2) Incorrect visibility/ownership: The ownership and access control over the tokenA and tokenB contracts are not properly defined, which could lead to unauthorized access to these tokens.

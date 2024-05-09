@@ -1,0 +1,33 @@
+Contract to analyze:
+
+contract Lottery {
+    address public manager;
+    address[] public players;
+
+    constructor() public {
+        manager = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Minimum entry fee not met");
+        players.push(msg.sender);
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, now, players)));
+    }
+
+    function pickWinner() public {
+        require(msg.sender == manager, "Only manager can pick a winner");
+        uint index = random() % players.length;
+        address winner = players[index];
+        address(manager).transfer(address(this).balance);
+    }
+
+    function getPlayers() public view returns (address[] memory) {
+        return players;
+    }
+}
+
+Output:
+1) incorrect visibility/ownership

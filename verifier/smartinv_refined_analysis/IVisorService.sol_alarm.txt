@@ -1,0 +1,17 @@
+The contract provided for analysis:
+
+```solidity
+contract ExchangeTokens {
+    IERC20 public WETH;
+    IERC20 public USDC;
+    
+    function calculatePrice() public payable returns (uint) {
+        return (USDC.balanceOf(address(pair)) / WETH.balanceOf(address(pair)));
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Cross bridge inconsistency: The contract references an undefined variable `pair` in the `calculatePrice` function, which could lead to inconsistencies in the data being used for calculations. This could potentially open up vulnerabilities related to inaccurate pricing calculations.
+
+Overall assessment: The contract contains the potential vulnerability of cross bridge inconsistency.

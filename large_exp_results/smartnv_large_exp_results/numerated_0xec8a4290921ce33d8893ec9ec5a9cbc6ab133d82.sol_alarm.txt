@@ -1,0 +1,40 @@
+The contract is: 
+
+contract Escrow {
+     address payable public buyer;
+     address payable public seller;
+     address public arbiter;
+     uint public productId;
+     uint public escrowAmount;
+     enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+     State public currentState;
+     modifier onlyBuyer() {
+         require(msg.sender == buyer);
+         _;
+     }
+     modifier inState(State expectedState) {
+         require(currentState == expectedState);
+         _;
+     }
+     constructor(address payable _buyer, address payable _seller,
+         address _arbiter, uint _productId, uint _escrowAmount) public {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         productId = _productId;
+         escrowAmount = _escrowAmount;
+         currentState = State.AWAITING_PAYMENT;
+     }
+     function confirmPayment() public payable onlyBuyer inState(State.AWAITING_PAYMENT) {
+         require(msg.value == escrowAmount);
+         currentState = State.AWAITING_DELIVERY;
+     }
+     function confirmDelivery() public onlyBuyer inState(State.AWAITING_DELIVERY) {
+         seller.transfer(escrowAmount);
+         currentState = State.COMPLETE;
+     }
+     function refundBuyer() public onlyBuyer inState(State.AWAITING_DELIVERY) {
+         buyer.transfer(escrowAmount);
+         currentState = State.REFUNDED;
+     }
+}

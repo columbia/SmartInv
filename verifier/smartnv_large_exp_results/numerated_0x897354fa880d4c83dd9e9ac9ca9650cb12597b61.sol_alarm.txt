@@ -1,0 +1,31 @@
+The contract to analyze for potential vulnerabilities:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public totalSold;
+
+    constructor() {
+        owner = msg.sender;
+        totalSold = 0;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        uint price = amount * 100; // 100 wei per token
+        require(msg.value == price, "Incorrect amount sent");
+        
+        balances[msg.sender] += amount;
+        totalSold += amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(totalSold * 100); // withdraw all funds
+        totalSold = 0;
+    }
+}
+
+Output:
+- privilege escalation
+- inconsistet state update

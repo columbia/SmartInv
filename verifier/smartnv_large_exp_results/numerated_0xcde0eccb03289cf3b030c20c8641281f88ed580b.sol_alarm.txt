@@ -1,0 +1,37 @@
+The contract to analyze:
+
+```solidity
+contract LoanContract {
+    
+    address public lender;
+    address public borrower;
+    
+    uint public loanAmount;
+    uint public interestRate;
+    uint public remainingBalance;
+    
+    function loan(uint _amount, address _borrower) public {
+        require(msg.sender != _borrower, "Lender cannot borrow from themselves");
+        loanAmount = _amount;
+        lender = msg.sender;
+        borrower = _borrower;
+        remainingBalance = loanAmount;
+    }
+    
+    function payback(uint _amount) public {
+        require(msg.sender == borrower, "Only borrower can pay back the loan");
+        require(_amount <= remainingBalance, "Cannot pay more than the remaining balance");
+        remainingBalance -= _amount;
+    }
+    
+    function chargeInterest(uint _rate) public {
+        require(msg.sender == lender, "Only lender can charge interest");
+        interestRate = _rate;
+        remainingBalance += (remainingBalance * interestRate) / 100;
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Integer overflow/underflow: In the `chargeInterest` function, there is a risk of integer overflow when calculating `remainingBalance += (remainingBalance * interestRate) / 100;`.
+2) Incorrect visibility/ownership: The functions `payback` and `chargeInterest` should have stricter access control modifiers to ensure that only the intended parties can call them.

@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+     address public owner;
+     uint public tokenPrice;
+     uint public tokensSold;
+     IERC20 public token;
+
+     constructor(uint _tokenPrice, IERC20 _token) public {
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+         token = _token;
+     }
+
+     function buyTokens(uint _numTokens) public {
+         require(msg.value == _numTokens * tokenPrice, "Invalid amount sent");
+         token.transfer(msg.sender, _numTokens);
+         tokensSold += _numTokens;
+     }
+
+     function endSale() public {
+         require(msg.sender == owner, "You are not the owner");
+         token.transfer(owner, token.balanceOf(address(this)));
+         selfdestruct(msg.sender);
+     }
+}
+<\contract_to_analyze\> 
+incorrect visibility/ownership

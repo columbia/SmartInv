@@ -1,0 +1,19 @@
+The contract provided is:
+
+contract PaymentSystem {
+    mapping(address => uint) public balances;
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the PaymentSystem contract:
+- Integer overflow/underflow in the balances mapping when adding or subtracting values.
+- Insufficient gas for the withdrawal function, which may lead to funds being stuck in the contract.

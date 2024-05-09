@@ -1,0 +1,53 @@
+The contract provided for analysis:
+
+contract MultiSigWallet {
+     address[] public owners;
+     mapping(address => bool) public isOwner;
+     uint public numConfirmationsRequired;
+     struct Transaction {
+          address to; 
+          uint value; 
+          bytes data; 
+          bool executed; 
+          uint numConfirmations; 
+          uint timestamp; 
+          }
+     mapping(uint => Transaction) public transactions;
+
+     function submitTransaction(address _to, uint _value, bytes memory _data) public {
+         uint transactionId = transactions.length;
+         transactions[transactionId] = Transaction({
+             to: _to,
+             value: _value,
+             data: _data,
+             executed: false,
+             numConfirmations: 0,
+             timestamp: block.timestamp
+         });
+         numConfirmationsRequired = owners.length / 2 + 1;
+         confirmTransaction(transactionId);
+     }
+
+     function confirmTransaction(uint _txId) public {
+         require(isOwner[msg.sender], "not an owner");
+         Transaction storage transaction = transactions[_txId];
+         require(transaction.to != address(0), "invalid transaction");
+         require(!transaction.executed, "transaction already executed");
+         require(!transaction.isConfirmed[msg.sender], "transaction already confirmed by owner");
+         transaction.isConfirmed[msg.sender] = true;
+         transaction.numConfirmations++;
+         if (transaction.numConfirmations >= numConfirmationsRequired) {
+             executeTransaction(_txId);
+         }
+     }
+
+     function executeTransaction(uint _txId) public {
+         Transaction storage transaction = transactions[_txId];
+         require(transaction.to != address(0), "transaction does not exist");
+         require(!transaction.executed, "transaction already executed");
+         require(transaction.numConfirmations >= numConfirmationsRequired, "not enough confirmations");
+         transaction.executed = true;
+         (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+         require(success, "transaction execution failed");
+     }
+}

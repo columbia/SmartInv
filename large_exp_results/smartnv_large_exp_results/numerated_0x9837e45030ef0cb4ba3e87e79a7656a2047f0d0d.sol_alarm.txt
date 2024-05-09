@@ -1,0 +1,33 @@
+The contract mentioned for analysis is:
+
+```solidity
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+    uint public maxVotes = 100;
+
+    function vote(uint amount) public {
+        require(amount > 0, "Invalid vote amount");
+        require(totalVotes + amount <= maxVotes, "Exceeds maximum votes limit");
+        
+        votes[msg.sender] += amount;
+        totalVotes += amount;
+    }
+
+    function redeem() public {
+        uint voteAmount = votes[msg.sender];
+        require(voteAmount > 0, "No votes to redeem");
+        
+        // Redeem logic
+        votes[msg.sender] = 0;
+        totalVotes -= voteAmount;
+        
+        msg.sender.transfer(voteAmount);
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+
+1) insufficient gas
+2) inconsistent state update

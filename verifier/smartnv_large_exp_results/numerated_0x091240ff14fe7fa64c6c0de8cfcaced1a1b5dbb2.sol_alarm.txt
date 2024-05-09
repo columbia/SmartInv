@@ -1,0 +1,29 @@
+The contract:
+
+contract Marketplace {
+    struct Product {
+        string name;
+        uint256 price;
+        address owner;
+    }
+    mapping(uint256 => Product) public products;
+    uint256 public productCounter;
+
+    function addProduct(string memory _name, uint256 _price) public {
+        products[productCounter] = Product(_name, _price, msg.sender);
+        productCounter++;
+    }
+
+    function purchaseProduct(uint256 _id) public payable {
+        require(products[_id].owner != address(0), "Product does not exist");
+        require(msg.value == products[_id].price, "Incorrect payment amount");
+        
+        address payable owner = address(uint160(products[_id].owner));
+        owner.transfer(msg.value);
+        products[_id].owner = msg.sender;
+    }
+}
+
+Output:
+- atomicity violation
+- ether leakage

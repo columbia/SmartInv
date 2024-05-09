@@ -1,0 +1,18 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+    }
+    
+    mapping(address => Voter) public voters;
+    
+    function vote(address delegate) public {
+        require(!voters[msg.sender].voted, "You have already voted");
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = delegate;
+    }
+}
+<\contract\>
+Output:
+- privilege escalation

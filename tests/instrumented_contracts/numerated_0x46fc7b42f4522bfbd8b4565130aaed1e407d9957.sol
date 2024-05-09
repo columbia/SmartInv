@@ -1,0 +1,1405 @@
+1 pragma solidity 0.4.24;
+2 
+3 // File: contracts/lib/openzeppelin-solidity/contracts/introspection/IERC165.sol
+4 
+5 /**
+6  * @title IERC165
+7  * @dev https://github.com/ethereum/EIPs/blob/master/EIPS/eip-165.md
+8  */
+9 interface IERC165 {
+10 
+11   /**
+12    * @notice Query if a contract implements an interface
+13    * @param interfaceId The interface identifier, as specified in ERC-165
+14    * @dev Interface identification is specified in ERC-165. This function
+15    * uses less than 30,000 gas.
+16    */
+17   function supportsInterface(bytes4 interfaceId)
+18     external
+19     view
+20     returns (bool);
+21 }
+22 
+23 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/IERC721.sol
+24 
+25 /**
+26  * @title ERC721 Non-Fungible Token Standard basic interface
+27  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+28  */
+29 contract IERC721 is IERC165 {
+30 
+31   event Transfer(
+32     address indexed from,
+33     address indexed to,
+34     uint256 indexed tokenId
+35   );
+36   event Approval(
+37     address indexed owner,
+38     address indexed approved,
+39     uint256 indexed tokenId
+40   );
+41   event ApprovalForAll(
+42     address indexed owner,
+43     address indexed operator,
+44     bool approved
+45   );
+46 
+47   function balanceOf(address owner) public view returns (uint256 balance);
+48   function ownerOf(uint256 tokenId) public view returns (address owner);
+49 
+50   function approve(address to, uint256 tokenId) public;
+51   function getApproved(uint256 tokenId)
+52     public view returns (address operator);
+53 
+54   function setApprovalForAll(address operator, bool _approved) public;
+55   function isApprovedForAll(address owner, address operator)
+56     public view returns (bool);
+57 
+58   function transferFrom(address from, address to, uint256 tokenId) public;
+59   function safeTransferFrom(address from, address to, uint256 tokenId)
+60     public;
+61 
+62   function safeTransferFrom(
+63     address from,
+64     address to,
+65     uint256 tokenId,
+66     bytes data
+67   )
+68     public;
+69 }
+70 
+71 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol
+72 
+73 /**
+74  * @title ERC721 token receiver interface
+75  * @dev Interface for any contract that wants to support safeTransfers
+76  * from ERC721 asset contracts.
+77  */
+78 contract IERC721Receiver {
+79   /**
+80    * @notice Handle the receipt of an NFT
+81    * @dev The ERC721 smart contract calls this function on the recipient
+82    * after a `safeTransfer`. This function MUST return the function selector,
+83    * otherwise the caller will revert the transaction. The selector to be
+84    * returned can be obtained as `this.onERC721Received.selector`. This
+85    * function MAY throw to revert and reject the transfer.
+86    * Note: the ERC721 contract address is always the message sender.
+87    * @param operator The address which called `safeTransferFrom` function
+88    * @param from The address which previously owned the token
+89    * @param tokenId The NFT identifier which is being transferred
+90    * @param data Additional data with no specified format
+91    * @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+92    */
+93   function onERC721Received(
+94     address operator,
+95     address from,
+96     uint256 tokenId,
+97     bytes data
+98   )
+99     public
+100     returns(bytes4);
+101 }
+102 
+103 // File: contracts/lib/openzeppelin-solidity/contracts/math/SafeMath.sol
+104 
+105 /**
+106  * @title SafeMath
+107  * @dev Math operations with safety checks that revert on error
+108  */
+109 library SafeMath {
+110 
+111   /**
+112   * @dev Multiplies two numbers, reverts on overflow.
+113   */
+114   function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+115     // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+116     // benefit is lost if 'b' is also tested.
+117     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+118     if (a == 0) {
+119       return 0;
+120     }
+121 
+122     uint256 c = a * b;
+123     require(c / a == b);
+124 
+125     return c;
+126   }
+127 
+128   /**
+129   * @dev Integer division of two numbers truncating the quotient, reverts on division by zero.
+130   */
+131   function div(uint256 a, uint256 b) internal pure returns (uint256) {
+132     require(b > 0); // Solidity only automatically asserts when dividing by 0
+133     uint256 c = a / b;
+134     // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+135 
+136     return c;
+137   }
+138 
+139   /**
+140   * @dev Subtracts two numbers, reverts on overflow (i.e. if subtrahend is greater than minuend).
+141   */
+142   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+143     require(b <= a);
+144     uint256 c = a - b;
+145 
+146     return c;
+147   }
+148 
+149   /**
+150   * @dev Adds two numbers, reverts on overflow.
+151   */
+152   function add(uint256 a, uint256 b) internal pure returns (uint256) {
+153     uint256 c = a + b;
+154     require(c >= a);
+155 
+156     return c;
+157   }
+158 
+159   /**
+160   * @dev Divides two numbers and returns the remainder (unsigned integer modulo),
+161   * reverts when dividing by zero.
+162   */
+163   function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+164     require(b != 0);
+165     return a % b;
+166   }
+167 }
+168 
+169 // File: contracts/lib/openzeppelin-solidity/contracts/utils/Address.sol
+170 
+171 /**
+172  * Utility library of inline functions on addresses
+173  */
+174 library Address {
+175 
+176   /**
+177    * Returns whether the target address is a contract
+178    * @dev This function will return false if invoked during the constructor of a contract,
+179    * as the code is not actually created until after the constructor finishes.
+180    * @param account address of the account to check
+181    * @return whether the target address is a contract
+182    */
+183   function isContract(address account) internal view returns (bool) {
+184     uint256 size;
+185     // XXX Currently there is no better way to check if there is a contract in an address
+186     // than to check the size of the code at that address.
+187     // See https://ethereum.stackexchange.com/a/14016/36603
+188     // for more details about how this works.
+189     // TODO Check this again before the Serenity release, because all addresses will be
+190     // contracts then.
+191     // solium-disable-next-line security/no-inline-assembly
+192     assembly { size := extcodesize(account) }
+193     return size > 0;
+194   }
+195 
+196 }
+197 
+198 // File: contracts/lib/openzeppelin-solidity/contracts/introspection/ERC165.sol
+199 
+200 /**
+201  * @title ERC165
+202  * @author Matt Condon (@shrugs)
+203  * @dev Implements ERC165 using a lookup table.
+204  */
+205 contract ERC165 is IERC165 {
+206 
+207   bytes4 private constant _InterfaceId_ERC165 = 0x01ffc9a7;
+208   /**
+209    * 0x01ffc9a7 ===
+210    *   bytes4(keccak256('supportsInterface(bytes4)'))
+211    */
+212 
+213   /**
+214    * @dev a mapping of interface id to whether or not it's supported
+215    */
+216   mapping(bytes4 => bool) internal _supportedInterfaces;
+217 
+218   /**
+219    * @dev A contract implementing SupportsInterfaceWithLookup
+220    * implement ERC165 itself
+221    */
+222   constructor()
+223     public
+224   {
+225     _registerInterface(_InterfaceId_ERC165);
+226   }
+227 
+228   /**
+229    * @dev implement supportsInterface(bytes4) using a lookup table
+230    */
+231   function supportsInterface(bytes4 interfaceId)
+232     external
+233     view
+234     returns (bool)
+235   {
+236     return _supportedInterfaces[interfaceId];
+237   }
+238 
+239   /**
+240    * @dev private method for registering an interface
+241    */
+242   function _registerInterface(bytes4 interfaceId)
+243     internal
+244   {
+245     require(interfaceId != 0xffffffff);
+246     _supportedInterfaces[interfaceId] = true;
+247   }
+248 }
+249 
+250 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/ERC721.sol
+251 
+252 /**
+253  * @title ERC721 Non-Fungible Token Standard basic implementation
+254  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+255  */
+256 contract ERC721 is ERC165, IERC721 {
+257 
+258   using SafeMath for uint256;
+259   using Address for address;
+260 
+261   // Equals to `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+262   // which can be also obtained as `IERC721Receiver(0).onERC721Received.selector`
+263   bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
+264 
+265   // Mapping from token ID to owner
+266   mapping (uint256 => address) private _tokenOwner;
+267 
+268   // Mapping from token ID to approved address
+269   mapping (uint256 => address) private _tokenApprovals;
+270 
+271   // Mapping from owner to number of owned token
+272   mapping (address => uint256) private _ownedTokensCount;
+273 
+274   // Mapping from owner to operator approvals
+275   mapping (address => mapping (address => bool)) private _operatorApprovals;
+276 
+277   bytes4 private constant _InterfaceId_ERC721 = 0x80ac58cd;
+278   /*
+279    * 0x80ac58cd ===
+280    *   bytes4(keccak256('balanceOf(address)')) ^
+281    *   bytes4(keccak256('ownerOf(uint256)')) ^
+282    *   bytes4(keccak256('approve(address,uint256)')) ^
+283    *   bytes4(keccak256('getApproved(uint256)')) ^
+284    *   bytes4(keccak256('setApprovalForAll(address,bool)')) ^
+285    *   bytes4(keccak256('isApprovedForAll(address,address)')) ^
+286    *   bytes4(keccak256('transferFrom(address,address,uint256)')) ^
+287    *   bytes4(keccak256('safeTransferFrom(address,address,uint256)')) ^
+288    *   bytes4(keccak256('safeTransferFrom(address,address,uint256,bytes)'))
+289    */
+290 
+291   constructor()
+292     public
+293   {
+294     // register the supported interfaces to conform to ERC721 via ERC165
+295     _registerInterface(_InterfaceId_ERC721);
+296   }
+297 
+298   /**
+299    * @dev Gets the balance of the specified address
+300    * @param owner address to query the balance of
+301    * @return uint256 representing the amount owned by the passed address
+302    */
+303   function balanceOf(address owner) public view returns (uint256) {
+304     require(owner != address(0));
+305     return _ownedTokensCount[owner];
+306   }
+307 
+308   /**
+309    * @dev Gets the owner of the specified token ID
+310    * @param tokenId uint256 ID of the token to query the owner of
+311    * @return owner address currently marked as the owner of the given token ID
+312    */
+313   function ownerOf(uint256 tokenId) public view returns (address) {
+314     address owner = _tokenOwner[tokenId];
+315     require(owner != address(0));
+316     return owner;
+317   }
+318 
+319   /**
+320    * @dev Approves another address to transfer the given token ID
+321    * The zero address indicates there is no approved address.
+322    * There can only be one approved address per token at a given time.
+323    * Can only be called by the token owner or an approved operator.
+324    * @param to address to be approved for the given token ID
+325    * @param tokenId uint256 ID of the token to be approved
+326    */
+327   function approve(address to, uint256 tokenId) public {
+328     address owner = ownerOf(tokenId);
+329     require(to != owner);
+330     require(msg.sender == owner || isApprovedForAll(owner, msg.sender));
+331 
+332     _tokenApprovals[tokenId] = to;
+333     emit Approval(owner, to, tokenId);
+334   }
+335 
+336   /**
+337    * @dev Gets the approved address for a token ID, or zero if no address set
+338    * Reverts if the token ID does not exist.
+339    * @param tokenId uint256 ID of the token to query the approval of
+340    * @return address currently approved for the given token ID
+341    */
+342   function getApproved(uint256 tokenId) public view returns (address) {
+343     require(_exists(tokenId));
+344     return _tokenApprovals[tokenId];
+345   }
+346 
+347   /**
+348    * @dev Sets or unsets the approval of a given operator
+349    * An operator is allowed to transfer all tokens of the sender on their behalf
+350    * @param to operator address to set the approval
+351    * @param approved representing the status of the approval to be set
+352    */
+353   function setApprovalForAll(address to, bool approved) public {
+354     require(to != msg.sender);
+355     _operatorApprovals[msg.sender][to] = approved;
+356     emit ApprovalForAll(msg.sender, to, approved);
+357   }
+358 
+359   /**
+360    * @dev Tells whether an operator is approved by a given owner
+361    * @param owner owner address which you want to query the approval of
+362    * @param operator operator address which you want to query the approval of
+363    * @return bool whether the given operator is approved by the given owner
+364    */
+365   function isApprovedForAll(
+366     address owner,
+367     address operator
+368   )
+369     public
+370     view
+371     returns (bool)
+372   {
+373     return _operatorApprovals[owner][operator];
+374   }
+375 
+376   /**
+377    * @dev Transfers the ownership of a given token ID to another address
+378    * Usage of this method is discouraged, use `safeTransferFrom` whenever possible
+379    * Requires the msg sender to be the owner, approved, or operator
+380    * @param from current owner of the token
+381    * @param to address to receive the ownership of the given token ID
+382    * @param tokenId uint256 ID of the token to be transferred
+383   */
+384   function transferFrom(
+385     address from,
+386     address to,
+387     uint256 tokenId
+388   )
+389     public
+390   {
+391     require(_isApprovedOrOwner(msg.sender, tokenId));
+392     require(to != address(0));
+393 
+394     _clearApproval(from, tokenId);
+395     _removeTokenFrom(from, tokenId);
+396     _addTokenTo(to, tokenId);
+397 
+398     emit Transfer(from, to, tokenId);
+399   }
+400 
+401   /**
+402    * @dev Safely transfers the ownership of a given token ID to another address
+403    * If the target address is a contract, it must implement `onERC721Received`,
+404    * which is called upon a safe transfer, and return the magic value
+405    * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
+406    * the transfer is reverted.
+407    *
+408    * Requires the msg sender to be the owner, approved, or operator
+409    * @param from current owner of the token
+410    * @param to address to receive the ownership of the given token ID
+411    * @param tokenId uint256 ID of the token to be transferred
+412   */
+413   function safeTransferFrom(
+414     address from,
+415     address to,
+416     uint256 tokenId
+417   )
+418     public
+419   {
+420     // solium-disable-next-line arg-overflow
+421     safeTransferFrom(from, to, tokenId, "");
+422   }
+423 
+424   /**
+425    * @dev Safely transfers the ownership of a given token ID to another address
+426    * If the target address is a contract, it must implement `onERC721Received`,
+427    * which is called upon a safe transfer, and return the magic value
+428    * `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`; otherwise,
+429    * the transfer is reverted.
+430    * Requires the msg sender to be the owner, approved, or operator
+431    * @param from current owner of the token
+432    * @param to address to receive the ownership of the given token ID
+433    * @param tokenId uint256 ID of the token to be transferred
+434    * @param _data bytes data to send along with a safe transfer check
+435    */
+436   function safeTransferFrom(
+437     address from,
+438     address to,
+439     uint256 tokenId,
+440     bytes _data
+441   )
+442     public
+443   {
+444     transferFrom(from, to, tokenId);
+445     // solium-disable-next-line arg-overflow
+446     require(_checkAndCallSafeTransfer(from, to, tokenId, _data));
+447   }
+448 
+449   /**
+450    * @dev Returns whether the specified token exists
+451    * @param tokenId uint256 ID of the token to query the existence of
+452    * @return whether the token exists
+453    */
+454   function _exists(uint256 tokenId) internal view returns (bool) {
+455     address owner = _tokenOwner[tokenId];
+456     return owner != address(0);
+457   }
+458 
+459   /**
+460    * @dev Returns whether the given spender can transfer a given token ID
+461    * @param spender address of the spender to query
+462    * @param tokenId uint256 ID of the token to be transferred
+463    * @return bool whether the msg.sender is approved for the given token ID,
+464    *  is an operator of the owner, or is the owner of the token
+465    */
+466   function _isApprovedOrOwner(
+467     address spender,
+468     uint256 tokenId
+469   )
+470     internal
+471     view
+472     returns (bool)
+473   {
+474     address owner = ownerOf(tokenId);
+475     // Disable solium check because of
+476     // https://github.com/duaraghav8/Solium/issues/175
+477     // solium-disable-next-line operator-whitespace
+478     return (
+479       spender == owner ||
+480       getApproved(tokenId) == spender ||
+481       isApprovedForAll(owner, spender)
+482     );
+483   }
+484 
+485   /**
+486    * @dev Internal function to mint a new token
+487    * Reverts if the given token ID already exists
+488    * @param to The address that will own the minted token
+489    * @param tokenId uint256 ID of the token to be minted by the msg.sender
+490    */
+491   function _mint(address to, uint256 tokenId) internal {
+492     require(to != address(0));
+493     _addTokenTo(to, tokenId);
+494     emit Transfer(address(0), to, tokenId);
+495   }
+496 
+497   /**
+498    * @dev Internal function to burn a specific token
+499    * Reverts if the token does not exist
+500    * @param tokenId uint256 ID of the token being burned by the msg.sender
+501    */
+502   function _burn(address owner, uint256 tokenId) internal {
+503     _clearApproval(owner, tokenId);
+504     _removeTokenFrom(owner, tokenId);
+505     emit Transfer(owner, address(0), tokenId);
+506   }
+507 
+508   /**
+509    * @dev Internal function to clear current approval of a given token ID
+510    * Reverts if the given address is not indeed the owner of the token
+511    * @param owner owner of the token
+512    * @param tokenId uint256 ID of the token to be transferred
+513    */
+514   function _clearApproval(address owner, uint256 tokenId) internal {
+515     require(ownerOf(tokenId) == owner);
+516     if (_tokenApprovals[tokenId] != address(0)) {
+517       _tokenApprovals[tokenId] = address(0);
+518     }
+519   }
+520 
+521   /**
+522    * @dev Internal function to add a token ID to the list of a given address
+523    * @param to address representing the new owner of the given token ID
+524    * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
+525    */
+526   function _addTokenTo(address to, uint256 tokenId) internal {
+527     require(_tokenOwner[tokenId] == address(0));
+528     _tokenOwner[tokenId] = to;
+529     _ownedTokensCount[to] = _ownedTokensCount[to].add(1);
+530   }
+531 
+532   /**
+533    * @dev Internal function to remove a token ID from the list of a given address
+534    * @param from address representing the previous owner of the given token ID
+535    * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
+536    */
+537   function _removeTokenFrom(address from, uint256 tokenId) internal {
+538     require(ownerOf(tokenId) == from);
+539     _ownedTokensCount[from] = _ownedTokensCount[from].sub(1);
+540     _tokenOwner[tokenId] = address(0);
+541   }
+542 
+543   /**
+544    * @dev Internal function to invoke `onERC721Received` on a target address
+545    * The call is not executed if the target address is not a contract
+546    * @param from address representing the previous owner of the given token ID
+547    * @param to target address that will receive the tokens
+548    * @param tokenId uint256 ID of the token to be transferred
+549    * @param _data bytes optional data to send along with the call
+550    * @return whether the call correctly returned the expected magic value
+551    */
+552   function _checkAndCallSafeTransfer(
+553     address from,
+554     address to,
+555     uint256 tokenId,
+556     bytes _data
+557   )
+558     internal
+559     returns (bool)
+560   {
+561     if (!to.isContract()) {
+562       return true;
+563     }
+564     bytes4 retval = IERC721Receiver(to).onERC721Received(
+565       msg.sender, from, tokenId, _data);
+566     return (retval == _ERC721_RECEIVED);
+567   }
+568 }
+569 
+570 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/IERC721Enumerable.sol
+571 
+572 /**
+573  * @title ERC-721 Non-Fungible Token Standard, optional enumeration extension
+574  * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+575  */
+576 contract IERC721Enumerable is IERC721 {
+577   function totalSupply() public view returns (uint256);
+578   function tokenOfOwnerByIndex(
+579     address owner,
+580     uint256 index
+581   )
+582     public
+583     view
+584     returns (uint256 tokenId);
+585 
+586   function tokenByIndex(uint256 index) public view returns (uint256);
+587 }
+588 
+589 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/ERC721Enumerable.sol
+590 
+591 contract ERC721Enumerable is ERC165, ERC721, IERC721Enumerable {
+592   // Mapping from owner to list of owned token IDs
+593   mapping(address => uint256[]) private _ownedTokens;
+594 
+595   // Mapping from token ID to index of the owner tokens list
+596   mapping(uint256 => uint256) private _ownedTokensIndex;
+597 
+598   // Array with all token ids, used for enumeration
+599   uint256[] private _allTokens;
+600 
+601   // Mapping from token id to position in the allTokens array
+602   mapping(uint256 => uint256) private _allTokensIndex;
+603 
+604   bytes4 private constant _InterfaceId_ERC721Enumerable = 0x780e9d63;
+605   /**
+606    * 0x780e9d63 ===
+607    *   bytes4(keccak256('totalSupply()')) ^
+608    *   bytes4(keccak256('tokenOfOwnerByIndex(address,uint256)')) ^
+609    *   bytes4(keccak256('tokenByIndex(uint256)'))
+610    */
+611 
+612   /**
+613    * @dev Constructor function
+614    */
+615   constructor() public {
+616     // register the supported interface to conform to ERC721 via ERC165
+617     _registerInterface(_InterfaceId_ERC721Enumerable);
+618   }
+619 
+620   /**
+621    * @dev Gets the token ID at a given index of the tokens list of the requested owner
+622    * @param owner address owning the tokens list to be accessed
+623    * @param index uint256 representing the index to be accessed of the requested tokens list
+624    * @return uint256 token ID at the given index of the tokens list owned by the requested address
+625    */
+626   function tokenOfOwnerByIndex(
+627     address owner,
+628     uint256 index
+629   )
+630     public
+631     view
+632     returns (uint256)
+633   {
+634     require(index < balanceOf(owner));
+635     return _ownedTokens[owner][index];
+636   }
+637 
+638   /**
+639    * @dev Gets the total amount of tokens stored by the contract
+640    * @return uint256 representing the total amount of tokens
+641    */
+642   function totalSupply() public view returns (uint256) {
+643     return _allTokens.length;
+644   }
+645 
+646   /**
+647    * @dev Gets the token ID at a given index of all the tokens in this contract
+648    * Reverts if the index is greater or equal to the total number of tokens
+649    * @param index uint256 representing the index to be accessed of the tokens list
+650    * @return uint256 token ID at the given index of the tokens list
+651    */
+652   function tokenByIndex(uint256 index) public view returns (uint256) {
+653     require(index < totalSupply());
+654     return _allTokens[index];
+655   }
+656 
+657   /**
+658    * @dev Internal function to add a token ID to the list of a given address
+659    * @param to address representing the new owner of the given token ID
+660    * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
+661    */
+662   function _addTokenTo(address to, uint256 tokenId) internal {
+663     super._addTokenTo(to, tokenId);
+664     uint256 length = _ownedTokens[to].length;
+665     _ownedTokens[to].push(tokenId);
+666     _ownedTokensIndex[tokenId] = length;
+667   }
+668 
+669   /**
+670    * @dev Internal function to remove a token ID from the list of a given address
+671    * @param from address representing the previous owner of the given token ID
+672    * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
+673    */
+674   function _removeTokenFrom(address from, uint256 tokenId) internal {
+675     super._removeTokenFrom(from, tokenId);
+676 
+677     // To prevent a gap in the array, we store the last token in the index of the token to delete, and
+678     // then delete the last slot.
+679     uint256 tokenIndex = _ownedTokensIndex[tokenId];
+680     uint256 lastTokenIndex = _ownedTokens[from].length.sub(1);
+681     uint256 lastToken = _ownedTokens[from][lastTokenIndex];
+682 
+683     _ownedTokens[from][tokenIndex] = lastToken;
+684     // This also deletes the contents at the last position of the array
+685     _ownedTokens[from].length--;
+686 
+687     // Note that this will handle single-element arrays. In that case, both tokenIndex and lastTokenIndex are going to
+688     // be zero. Then we can make sure that we will remove tokenId from the ownedTokens list since we are first swapping
+689     // the lastToken to the first position, and then dropping the element placed in the last position of the list
+690 
+691     _ownedTokensIndex[tokenId] = 0;
+692     _ownedTokensIndex[lastToken] = tokenIndex;
+693   }
+694 
+695   /**
+696    * @dev Internal function to mint a new token
+697    * Reverts if the given token ID already exists
+698    * @param to address the beneficiary that will own the minted token
+699    * @param tokenId uint256 ID of the token to be minted by the msg.sender
+700    */
+701   function _mint(address to, uint256 tokenId) internal {
+702     super._mint(to, tokenId);
+703 
+704     _allTokensIndex[tokenId] = _allTokens.length;
+705     _allTokens.push(tokenId);
+706   }
+707 
+708   /**
+709    * @dev Internal function to burn a specific token
+710    * Reverts if the token does not exist
+711    * @param owner owner of the token to burn
+712    * @param tokenId uint256 ID of the token being burned by the msg.sender
+713    */
+714   function _burn(address owner, uint256 tokenId) internal {
+715     super._burn(owner, tokenId);
+716 
+717     // Reorg all tokens array
+718     uint256 tokenIndex = _allTokensIndex[tokenId];
+719     uint256 lastTokenIndex = _allTokens.length.sub(1);
+720     uint256 lastToken = _allTokens[lastTokenIndex];
+721 
+722     _allTokens[tokenIndex] = lastToken;
+723     _allTokens[lastTokenIndex] = 0;
+724 
+725     _allTokens.length--;
+726     _allTokensIndex[tokenId] = 0;
+727     _allTokensIndex[lastToken] = tokenIndex;
+728   }
+729 }
+730 
+731 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/IERC721Metadata.sol
+732 
+733 /**
+734  * @title ERC-721 Non-Fungible Token Standard, optional metadata extension
+735  * @dev See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+736  */
+737 contract IERC721Metadata is IERC721 {
+738   function name() external view returns (string);
+739   function symbol() external view returns (string);
+740   function tokenURI(uint256 tokenId) public view returns (string);
+741 }
+742 
+743 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/ERC721Metadata.sol
+744 
+745 contract ERC721Metadata is ERC165, ERC721, IERC721Metadata {
+746   // Token name
+747   string internal _name;
+748 
+749   // Token symbol
+750   string internal _symbol;
+751 
+752   // Optional mapping for token URIs
+753   mapping(uint256 => string) private _tokenURIs;
+754 
+755   bytes4 private constant InterfaceId_ERC721Metadata = 0x5b5e139f;
+756   /**
+757    * 0x5b5e139f ===
+758    *   bytes4(keccak256('name()')) ^
+759    *   bytes4(keccak256('symbol()')) ^
+760    *   bytes4(keccak256('tokenURI(uint256)'))
+761    */
+762 
+763   /**
+764    * @dev Constructor function
+765    */
+766   constructor(string name, string symbol) public {
+767     _name = name;
+768     _symbol = symbol;
+769 
+770     // register the supported interfaces to conform to ERC721 via ERC165
+771     _registerInterface(InterfaceId_ERC721Metadata);
+772   }
+773 
+774   /**
+775    * @dev Gets the token name
+776    * @return string representing the token name
+777    */
+778   function name() external view returns (string) {
+779     return _name;
+780   }
+781 
+782   /**
+783    * @dev Gets the token symbol
+784    * @return string representing the token symbol
+785    */
+786   function symbol() external view returns (string) {
+787     return _symbol;
+788   }
+789 
+790   /**
+791    * @dev Returns an URI for a given token ID
+792    * Throws if the token ID does not exist. May return an empty string.
+793    * @param tokenId uint256 ID of the token to query
+794    */
+795   function tokenURI(uint256 tokenId) public view returns (string) {
+796     require(_exists(tokenId));
+797     return _tokenURIs[tokenId];
+798   }
+799 
+800   /**
+801    * @dev Internal function to set the token URI for a given token
+802    * Reverts if the token ID does not exist
+803    * @param tokenId uint256 ID of the token to set its URI
+804    * @param uri string URI to assign
+805    */
+806   function _setTokenURI(uint256 tokenId, string uri) internal {
+807     require(_exists(tokenId));
+808     _tokenURIs[tokenId] = uri;
+809   }
+810 
+811   /**
+812    * @dev Internal function to burn a specific token
+813    * Reverts if the token does not exist
+814    * @param owner owner of the token to burn
+815    * @param tokenId uint256 ID of the token being burned by the msg.sender
+816    */
+817   function _burn(address owner, uint256 tokenId) internal {
+818     super._burn(owner, tokenId);
+819 
+820     // Clear metadata (if any)
+821     if (bytes(_tokenURIs[tokenId]).length != 0) {
+822       delete _tokenURIs[tokenId];
+823     }
+824   }
+825 }
+826 
+827 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/ERC721Full.sol
+828 
+829 /**
+830  * @title Full ERC721 Token
+831  * This implementation includes all the required and some optional functionality of the ERC721 standard
+832  * Moreover, it includes approve all functionality using operator terminology
+833  * @dev see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md
+834  */
+835 contract ERC721Full is ERC721, ERC721Enumerable, ERC721Metadata {
+836   constructor(string name, string symbol) ERC721Metadata(name, symbol)
+837     public
+838   {
+839   }
+840 }
+841 
+842 // File: contracts/lib/openzeppelin-solidity/contracts/access/Roles.sol
+843 
+844 /**
+845  * @title Roles
+846  * @dev Library for managing addresses assigned to a Role.
+847  */
+848 library Roles {
+849   struct Role {
+850     mapping (address => bool) bearer;
+851   }
+852 
+853   /**
+854    * @dev give an account access to this role
+855    */
+856   function add(Role storage role, address account) internal {
+857     require(account != address(0));
+858     role.bearer[account] = true;
+859   }
+860 
+861   /**
+862    * @dev remove an account's access to this role
+863    */
+864   function remove(Role storage role, address account) internal {
+865     require(account != address(0));
+866     role.bearer[account] = false;
+867   }
+868 
+869   /**
+870    * @dev check if an account has this role
+871    * @return bool
+872    */
+873   function has(Role storage role, address account)
+874     internal
+875     view
+876     returns (bool)
+877   {
+878     require(account != address(0));
+879     return role.bearer[account];
+880   }
+881 }
+882 
+883 // File: contracts/lib/openzeppelin-solidity/contracts/access/roles/MinterRole.sol
+884 
+885 contract MinterRole {
+886   using Roles for Roles.Role;
+887 
+888   event MinterAdded(address indexed account);
+889   event MinterRemoved(address indexed account);
+890 
+891   Roles.Role private minters;
+892 
+893   constructor() public {
+894     minters.add(msg.sender);
+895   }
+896 
+897   modifier onlyMinter() {
+898     require(isMinter(msg.sender));
+899     _;
+900   }
+901 
+902   function isMinter(address account) public view returns (bool) {
+903     return minters.has(account);
+904   }
+905 
+906   function addMinter(address account) public onlyMinter {
+907     minters.add(account);
+908     emit MinterAdded(account);
+909   }
+910 
+911   function renounceMinter() public {
+912     minters.remove(msg.sender);
+913   }
+914 
+915   function _removeMinter(address account) internal {
+916     minters.remove(account);
+917     emit MinterRemoved(account);
+918   }
+919 }
+920 
+921 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/ERC721Mintable.sol
+922 
+923 /**
+924  * @title ERC721Mintable
+925  * @dev ERC721 minting logic
+926  */
+927 contract ERC721Mintable is ERC721Full, MinterRole {
+928   event MintingFinished();
+929 
+930   bool private _mintingFinished = false;
+931 
+932   modifier onlyBeforeMintingFinished() {
+933     require(!_mintingFinished);
+934     _;
+935   }
+936 
+937   /**
+938    * @return true if the minting is finished.
+939    */
+940   function mintingFinished() public view returns(bool) {
+941     return _mintingFinished;
+942   }
+943 
+944   /**
+945    * @dev Function to mint tokens
+946    * @param to The address that will receive the minted tokens.
+947    * @param tokenId The token id to mint.
+948    * @return A boolean that indicates if the operation was successful.
+949    */
+950   function mint(
+951     address to,
+952     uint256 tokenId
+953   )
+954     public
+955     onlyMinter
+956     onlyBeforeMintingFinished
+957     returns (bool)
+958   {
+959     _mint(to, tokenId);
+960     return true;
+961   }
+962 
+963   function mintWithTokenURI(
+964     address to,
+965     uint256 tokenId,
+966     string tokenURI
+967   )
+968     public
+969     onlyMinter
+970     onlyBeforeMintingFinished
+971     returns (bool)
+972   {
+973     mint(to, tokenId);
+974     _setTokenURI(tokenId, tokenURI);
+975     return true;
+976   }
+977 
+978   /**
+979    * @dev Function to stop minting new tokens.
+980    * @return True if the operation was successful.
+981    */
+982   function finishMinting()
+983     public
+984     onlyMinter
+985     onlyBeforeMintingFinished
+986     returns (bool)
+987   {
+988     _mintingFinished = true;
+989     emit MintingFinished();
+990     return true;
+991   }
+992 }
+993 
+994 // File: contracts/lib/openzeppelin-solidity/contracts/access/roles/PauserRole.sol
+995 
+996 contract PauserRole {
+997   using Roles for Roles.Role;
+998 
+999   event PauserAdded(address indexed account);
+1000   event PauserRemoved(address indexed account);
+1001 
+1002   Roles.Role private pausers;
+1003 
+1004   constructor() public {
+1005     pausers.add(msg.sender);
+1006   }
+1007 
+1008   modifier onlyPauser() {
+1009     require(isPauser(msg.sender));
+1010     _;
+1011   }
+1012 
+1013   function isPauser(address account) public view returns (bool) {
+1014     return pausers.has(account);
+1015   }
+1016 
+1017   function addPauser(address account) public onlyPauser {
+1018     pausers.add(account);
+1019     emit PauserAdded(account);
+1020   }
+1021 
+1022   function renouncePauser() public {
+1023     pausers.remove(msg.sender);
+1024   }
+1025 
+1026   function _removePauser(address account) internal {
+1027     pausers.remove(account);
+1028     emit PauserRemoved(account);
+1029   }
+1030 }
+1031 
+1032 // File: contracts/lib/openzeppelin-solidity/contracts/lifecycle/Pausable.sol
+1033 
+1034 /**
+1035  * @title Pausable
+1036  * @dev Base contract which allows children to implement an emergency stop mechanism.
+1037  */
+1038 contract Pausable is PauserRole {
+1039   event Paused();
+1040   event Unpaused();
+1041 
+1042   bool private _paused = false;
+1043 
+1044 
+1045   /**
+1046    * @return true if the contract is paused, false otherwise.
+1047    */
+1048   function paused() public view returns(bool) {
+1049     return _paused;
+1050   }
+1051 
+1052   /**
+1053    * @dev Modifier to make a function callable only when the contract is not paused.
+1054    */
+1055   modifier whenNotPaused() {
+1056     require(!_paused);
+1057     _;
+1058   }
+1059 
+1060   /**
+1061    * @dev Modifier to make a function callable only when the contract is paused.
+1062    */
+1063   modifier whenPaused() {
+1064     require(_paused);
+1065     _;
+1066   }
+1067 
+1068   /**
+1069    * @dev called by the owner to pause, triggers stopped state
+1070    */
+1071   function pause() public onlyPauser whenNotPaused {
+1072     _paused = true;
+1073     emit Paused();
+1074   }
+1075 
+1076   /**
+1077    * @dev called by the owner to unpause, returns to normal state
+1078    */
+1079   function unpause() public onlyPauser whenPaused {
+1080     _paused = false;
+1081     emit Unpaused();
+1082   }
+1083 }
+1084 
+1085 // File: contracts/lib/openzeppelin-solidity/contracts/token/ERC721/ERC721Pausable.sol
+1086 
+1087 /**
+1088  * @title ERC721 Non-Fungible Pausable token
+1089  * @dev ERC721 modified with pausable transfers.
+1090  **/
+1091 contract ERC721Pausable is ERC721, Pausable {
+1092   function approve(
+1093     address to,
+1094     uint256 tokenId
+1095   )
+1096     public
+1097     whenNotPaused
+1098   {
+1099     super.approve(to, tokenId);
+1100   }
+1101 
+1102   function setApprovalForAll(
+1103     address to,
+1104     bool approved
+1105   )
+1106     public
+1107     whenNotPaused
+1108   {
+1109     super.setApprovalForAll(to, approved);
+1110   }
+1111 
+1112   function transferFrom(
+1113     address from,
+1114     address to,
+1115     uint256 tokenId
+1116   )
+1117     public
+1118     whenNotPaused
+1119   {
+1120     super.transferFrom(from, to, tokenId);
+1121   }
+1122 }
+1123 
+1124 // File: contracts/extension/ExtensionAsset.sol
+1125 
+1126 contract ExtensionAsset is ERC721Mintable, ERC721Pausable {
+1127 
+1128     uint16 public constant EXTENSION_TYPE_OFFSET = 10000;
+1129 
+1130     string public tokenURIPrefix = "https://www.mycryptoheroes.net/metadata/extension/";
+1131     mapping(uint16 => uint16) private extensionTypeToSupplyLimit;
+1132 
+1133     constructor() public ERC721Full("MyCryptoHeroes:Extension", "MCHE") {
+1134     }
+1135 
+1136     function isAlreadyMinted(uint256 _tokenId) public view returns (bool) {
+1137         return _exists(_tokenId);
+1138     }
+1139 
+1140     function setSupplyLimit(uint16 _extensionType, uint16 _supplyLimit) external onlyMinter {
+1141         require(_supplyLimit != 0);
+1142         require(extensionTypeToSupplyLimit[_extensionType] == 0 || _supplyLimit < extensionTypeToSupplyLimit[_extensionType],
+1143             "_supplyLimit is bigger");
+1144         extensionTypeToSupplyLimit[_extensionType] = _supplyLimit;
+1145     }
+1146 
+1147     function setTokenURIPrefix(string _tokenURIPrefix) external onlyMinter {
+1148         tokenURIPrefix = _tokenURIPrefix;
+1149     }
+1150 
+1151     function getSupplyLimit(uint16 _extensionType) public view returns (uint16) {
+1152         return extensionTypeToSupplyLimit[_extensionType];
+1153     }
+1154 
+1155     function mintExtensionAsset(address _owner, uint256 _tokenId) public onlyMinter {
+1156         uint16 _extensionType = uint16(_tokenId / EXTENSION_TYPE_OFFSET);
+1157         uint16 _extensionTypeIndex = uint16(_tokenId % EXTENSION_TYPE_OFFSET) - 1;
+1158         require(_extensionTypeIndex < extensionTypeToSupplyLimit[_extensionType], "supply over");
+1159         _mint(_owner, _tokenId);
+1160     }
+1161 
+1162     function tokenURI(uint256 tokenId) public view returns (string) {
+1163         bytes32 tokenIdBytes;
+1164         if (tokenId == 0) {
+1165             tokenIdBytes = "0";
+1166         } else {
+1167             uint256 value = tokenId;
+1168             while (value > 0) {
+1169                 tokenIdBytes = bytes32(uint256(tokenIdBytes) / (2 ** 8));
+1170                 tokenIdBytes |= bytes32(((value % 10) + 48) * 2 ** (8 * 31));
+1171                 value /= 10;
+1172             }
+1173         }
+1174 
+1175         bytes memory prefixBytes = bytes(tokenURIPrefix);
+1176         bytes memory tokenURIBytes = new bytes(prefixBytes.length + tokenIdBytes.length);
+1177 
+1178         uint8 i;
+1179         uint8 index = 0;
+1180         
+1181         for (i = 0; i < prefixBytes.length; i++) {
+1182             tokenURIBytes[index] = prefixBytes[i];
+1183             index++;
+1184         }
+1185         
+1186         for (i = 0; i < tokenIdBytes.length; i++) {
+1187             tokenURIBytes[index] = tokenIdBytes[i];
+1188             index++;
+1189         }
+1190         
+1191         return string(tokenURIBytes);
+1192     }
+1193 
+1194 }
+1195 
+1196 // File: contracts/lib/openzeppelin-solidity/contracts/ownership/Ownable.sol
+1197 
+1198 /**
+1199  * @title Ownable
+1200  * @dev The Ownable contract has an owner address, and provides basic authorization control
+1201  * functions, this simplifies the implementation of "user permissions".
+1202  */
+1203 contract Ownable {
+1204   address private _owner;
+1205 
+1206 
+1207   event OwnershipRenounced(address indexed previousOwner);
+1208   event OwnershipTransferred(
+1209     address indexed previousOwner,
+1210     address indexed newOwner
+1211   );
+1212 
+1213 
+1214   /**
+1215    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+1216    * account.
+1217    */
+1218   constructor() public {
+1219     _owner = msg.sender;
+1220   }
+1221 
+1222   /**
+1223    * @return the address of the owner.
+1224    */
+1225   function owner() public view returns(address) {
+1226     return _owner;
+1227   }
+1228 
+1229   /**
+1230    * @dev Throws if called by any account other than the owner.
+1231    */
+1232   modifier onlyOwner() {
+1233     require(isOwner());
+1234     _;
+1235   }
+1236 
+1237   /**
+1238    * @return true if `msg.sender` is the owner of the contract.
+1239    */
+1240   function isOwner() public view returns(bool) {
+1241     return msg.sender == _owner;
+1242   }
+1243 
+1244   /**
+1245    * @dev Allows the current owner to relinquish control of the contract.
+1246    * @notice Renouncing to ownership will leave the contract without an owner.
+1247    * It will not be possible to call the functions with the `onlyOwner`
+1248    * modifier anymore.
+1249    */
+1250   function renounceOwnership() public onlyOwner {
+1251     emit OwnershipRenounced(_owner);
+1252     _owner = address(0);
+1253   }
+1254 
+1255   /**
+1256    * @dev Allows the current owner to transfer control of the contract to a newOwner.
+1257    * @param newOwner The address to transfer ownership to.
+1258    */
+1259   function transferOwnership(address newOwner) public onlyOwner {
+1260     _transferOwnership(newOwner);
+1261   }
+1262 
+1263   /**
+1264    * @dev Transfers control of the contract to a newOwner.
+1265    * @param newOwner The address to transfer ownership to.
+1266    */
+1267   function _transferOwnership(address newOwner) internal {
+1268     require(newOwner != address(0));
+1269     emit OwnershipTransferred(_owner, newOwner);
+1270     _owner = newOwner;
+1271   }
+1272 }
+1273 
+1274 // File: contracts/access/roles/OperatorRole.sol
+1275 
+1276 contract OperatorRole is Ownable {
+1277     using Roles for Roles.Role;
+1278 
+1279     event OperatorAdded(address indexed account);
+1280     event OperatorRemoved(address indexed account);
+1281 
+1282     Roles.Role private operators;
+1283 
+1284     constructor() public {
+1285         operators.add(msg.sender);
+1286     }
+1287 
+1288     modifier onlyOperator() {
+1289         require(isOperator(msg.sender));
+1290         _;
+1291     }
+1292     
+1293     function isOperator(address account) public view returns (bool) {
+1294         return operators.has(account);
+1295     }
+1296 
+1297     function addOperator(address account) public onlyOwner() {
+1298         operators.add(account);
+1299         emit OperatorAdded(account);
+1300     }
+1301 
+1302     function removeOperator(address account) public onlyOwner() {
+1303         operators.remove(account);
+1304         emit OperatorRemoved(account);
+1305     }
+1306 
+1307 }
+1308 
+1309 // File: contracts/lock/ExtensionGateway.sol
+1310 
+1311 contract ExtensionGateway is OperatorRole, Pausable {
+1312 
+1313     ExtensionAsset public extensionAsset;
+1314 
+1315     event DepositEvent(
+1316         address indexed locker,
+1317         uint256 tokenId,
+1318         uint256 at
+1319     );
+1320 
+1321     event OutgoingEvent(
+1322         address indexed assetOwner,
+1323         uint256 tokenId,
+1324         uint256 at,
+1325         bytes32 indexed eventHash,
+1326         uint8 eventType
+1327     );
+1328 
+1329     uint public constant LIMIT = 10;
+1330 
+1331     mapping (uint256 => address) public transientAssetOwner;
+1332 
+1333     function setExtensionAssetAddress(address _extensionAssetAddress) external onlyOwner {
+1334         extensionAsset = ExtensionAsset(_extensionAssetAddress);
+1335     }
+1336 
+1337     function withdrawExtensionWithMint(address _assetOwner, uint256 _tokenId, bytes32 _eventHash) external onlyOperator {
+1338         if (extensionAsset.isAlreadyMinted(_tokenId)) {
+1339             withdrawExtension(_assetOwner, _tokenId, _eventHash);
+1340         } else {
+1341             _mintExtension(_assetOwner, _tokenId, _eventHash);
+1342         }
+1343     }
+1344 
+1345     function depositExtensions(uint256[LIMIT] _tokenIds) external whenNotPaused() {
+1346         for (uint256 i=0; i < LIMIT; i++) {
+1347             if (_tokenIds[i] != 0) {
+1348                 depositExtension(_tokenIds[i]);
+1349             }
+1350         }
+1351     }
+1352 
+1353     function depositAllExtensions() external whenNotPaused() {
+1354         uint256 balance = extensionAsset.balanceOf(msg.sender);
+1355         for (uint256 i=balance; i > 0; i--) {
+1356             uint256 tokenId = extensionAsset.tokenOfOwnerByIndex(msg.sender, i-1);
+1357             depositExtension(tokenId);
+1358         }
+1359     }
+1360 
+1361     function setTransientAssetOwner(address _transientAssetOwner, uint256 _tokenId) public onlyOperator {
+1362         transientAssetOwner[_tokenId] = _transientAssetOwner;
+1363     }
+1364 
+1365     function withdrawExtension(address _assetOwner, uint256 _tokenId, bytes32 _eventHash) public onlyOperator {
+1366         _transferExtensionAsset(address(this), _assetOwner, _tokenId);
+1367         transientAssetOwner[_tokenId] = address(0x0);
+1368         emit OutgoingEvent(_assetOwner, _tokenId, block.timestamp, _eventHash, 1);
+1369     }
+1370 
+1371     function depositExtension(uint256 _tokenId) public whenNotPaused() {
+1372         _transferExtensionAsset(msg.sender, address(this), _tokenId);
+1373         transientAssetOwner[_tokenId] = msg.sender;
+1374         emit DepositEvent(msg.sender, _tokenId, block.timestamp);
+1375     }
+1376 
+1377     function mintExtension(address _transientAssetOwner, uint256 _tokenId, bytes32 _eventHash) public onlyOperator {
+1378         _mintExtension(address(this), _tokenId, _eventHash);
+1379         setTransientAssetOwner(_transientAssetOwner, _tokenId);
+1380     }
+1381 
+1382     function onERC721Received(
+1383         address operator,
+1384         address from,
+1385         uint256 tokenId,
+1386         bytes data
+1387     )
+1388     public
+1389     returns(bytes4) { 
+1390         return 0x150b7a02;
+1391     }
+1392     
+1393     function _transferExtensionAsset(address _from, address _to, uint256 _tokenId) private {
+1394         extensionAsset.safeTransferFrom(
+1395             _from,
+1396             _to,
+1397             _tokenId
+1398         );
+1399     }
+1400 
+1401     function _mintExtension(address _assetOwner, uint256 _tokenId, bytes32 _eventHash) private {
+1402         extensionAsset.mintExtensionAsset(_assetOwner, _tokenId);
+1403         emit OutgoingEvent(_assetOwner, _tokenId, block.timestamp, _eventHash, 0);
+1404     }
+1405 }

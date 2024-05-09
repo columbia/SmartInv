@@ -1,0 +1,51 @@
+<\contract\>
+contract SimpleAuction {
+    address public beneficiary;
+    uint public auctionEndTime;
+
+    address public highestBidder;
+    uint public highestBid;
+
+    mapping(address => uint) public pendingReturns;
+
+    bool ended = false;
+
+    constructor(uint _biddingTime, address _beneficiary) public {
+        beneficiary = _beneficiary;
+        auctionEndTime = now + _biddingTime;
+    }
+
+    function bid() public payable {
+        require(now < auctionEndTime, "Auction already ended");
+        require(msg.value > highestBid, "There is already a higher bid");
+
+        if (highestBid != 0) {
+            pendingReturns[highestBidder] += highestBid;
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public returns (bool) {
+        uint amount = pendingReturns[msg.sender];
+        if (amount > 0) {
+            pendingReturns[msg.sender] = 0;
+
+            if (!msg.sender.send(amount)) {
+                pendingReturns[msg.sender] = amount;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function auctionEnd() public {
+        require(now >= auctionEndTime, "Auction not yet ended");
+        require(!ended, "auctionEnd has already been called");
+
+        ended = true;
+        beneficiary.transfer(highestBid);
+    }
+}
+<\contract\>

@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The "proposal.votedAmount" is updated directly without proper synchronization or checking, which may lead to inconsistencies in the contract state.
+
+2) Incorrect visibility/ownership: The visibility of the state variables "votingToken" and "proposal" is internal, which may not provide the intended level of access control or visibility.
+
+3) Insufficient gas: The contract may run out of gas during the execution of functions like "endExecute" if the gas limit is not set appropriately, potentially causing the transaction to fail.
+
+4) ID uniqueness violation: The contract does not enforce any uniqueness constraint on proposals, which may lead to conflicts or unexpected behavior if multiple proposals are created simultaneously.
+
+5) Business logic flaw: The condition "require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")" in the "endExecute" function may have unintended consequences and may not accurately reflect the desired business logic.

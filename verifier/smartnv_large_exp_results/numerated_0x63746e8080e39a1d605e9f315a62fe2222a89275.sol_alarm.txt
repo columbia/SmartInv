@@ -1,0 +1,34 @@
+The contract provided is:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public funds;
+    
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        
+        if (highestBidder != address(0)) {
+            funds[highestBidder] += highestBid;
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+    
+    function withdraw() public {
+        uint amount = funds[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        
+        funds[msg.sender] = 0;
+        
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Withdrawal failed");
+    }
+}
+
+The potential vulnerabilities in the Auction contract are:
+
+1) Reentrancy
+2) Inconsistent state update 
+3) Ether leakage

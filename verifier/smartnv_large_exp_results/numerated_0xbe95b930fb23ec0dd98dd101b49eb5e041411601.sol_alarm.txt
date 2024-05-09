@@ -1,0 +1,27 @@
+The contract to analyze:
+
+contract VotingSystem {
+         address public admin;
+         uint public totalVotes;
+         mapping(address => uint) public userVotes;
+         
+         constructor() {
+             admin = msg.sender;
+             totalVotes = 0;
+         }
+         
+         function vote() public {
+             totalVotes++;
+             userVotes[msg.sender]++;
+         }
+         
+         function changeAdmin(address newAdmin) public {
+             require(msg.sender == admin, "Only admin can change admin");
+             admin = newAdmin;
+         }
+}
+
+Potential vulnerabilities in the contract:
+- 2) Privilege escalation: The changeAdmin function allows any address to become the new admin if they call the function with the correct parameters, which could lead to privilege escalation.
+- 7) ID uniqueness violation: The userVotes mapping uses the address of the voters as keys, which may lead to duplication or lack of uniqueness, causing potential issues with vote counting.
+- Healthy

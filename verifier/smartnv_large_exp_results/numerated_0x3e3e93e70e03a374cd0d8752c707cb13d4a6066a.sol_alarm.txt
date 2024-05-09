@@ -1,0 +1,35 @@
+<\contract\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokens;
+    uint public tokensSold;
+    bool public saleActive = true;
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+        admin = msg.sender;
+        token = IERC20(_tokenAddress);
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(saleActive, "Sale is not active");
+        require(_numTokens * tokenPrice == msg.value, "Incorrect amount sent");
+        require(tokensSold + _numTokens <= totalTokens, "Not enough tokens left");
+
+        token.transfer(msg.sender, _numTokens);
+        tokensSold += _numTokens;
+    }
+
+    function endSale() public onlyAdmin {
+        saleActive = false;
+    }
+}
+<\contract\>  

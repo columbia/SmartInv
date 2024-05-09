@@ -1,0 +1,34 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address  internal admin;
+     IERC20 votingToken;
+
+     function createProposal() external {
+              Proposal memory newProposal;
+              newProposal.startTime = block.timestamp;
+              newProposal.proposer = msg.sender;   
+              // Additional logic for creating a proposal
+
+        }
+    
+     function vote(uint256 proposalIndex, uint256 amount) external {
+              // Logic for voting on a proposal
+              votingToken.transferFrom(msg.sender, address(this), amount);
+              // Additional logic for updating voted amount
+
+        }
+    
+     function endVoting(uint256 proposalIndex) external {
+              // Logic for ending the voting process and executing the proposal
+              // Additional checks before executing the proposal
+
+        }
+}
+Output:
+- ID uniqueness violation: The contract does not have a mechanism to ensure unique proposal IDs, which could lead to conflicts or inconsistencies in identifying proposals.
+- Incorrect visibility/ownership: The `admin` variable is marked as internal, potentially allowing unauthorized access or modification of the contract state.

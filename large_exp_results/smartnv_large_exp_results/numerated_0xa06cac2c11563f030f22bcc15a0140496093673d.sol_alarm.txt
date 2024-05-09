@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+```solidity
+contract MyContract {
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+
+    function deposit(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        balances[msg.sender] += amount;
+        totalSupply += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalSupply -= amount;
+    }
+}
+```
+
+The potential vulnerabilities identified in the contract are:
+- Integer overflow/underflow: The totalSupply and balances are susceptible to integer overflow/underflow if large values are used for depositing or withdrawing amounts.
+- Inconsistent state update: The totalSupply may become inconsistent with the sum of balances due to manual manipulation of balances without updating the totalSupply accordingly. 
+
+Therefore, the vulnerabilities in the contract are integer overflow/underflow and inconsistent state update.

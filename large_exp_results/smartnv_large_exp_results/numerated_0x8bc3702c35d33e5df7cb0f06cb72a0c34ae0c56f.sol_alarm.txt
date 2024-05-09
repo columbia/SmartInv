@@ -1,0 +1,23 @@
+Contract to analyze: 
+
+contract Auction {
+    mapping(address => uint) public bids;
+    uint public highestBid;
+
+    function placeBid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        bids[msg.sender] = msg.value;
+        highestBid = msg.value;
+    }
+
+    function withdrawBid() public {
+        require(bids[msg.sender] > 0, "No bid to withdraw");
+        uint amount = bids[msg.sender];
+        bids[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output: 
+- atomicity violation
+- integer overflow/underflow

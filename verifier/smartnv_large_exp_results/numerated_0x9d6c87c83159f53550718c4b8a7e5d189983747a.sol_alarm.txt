@@ -1,0 +1,43 @@
+Contract:
+
+contract Lottery {
+    address public owner;
+    mapping(address => bool) public players;
+    uint public totalPlayers;
+    uint public jackpot;
+
+    constructor() {
+        owner = msg.sender;
+        totalPlayers = 0;
+        jackpot = 0;
+    }
+
+    function buyTicket() external payable {
+        require(msg.value > 0, "Value must be greater than 0");
+        players[msg.sender] = true;
+        totalPlayers++;
+        jackpot += msg.value;
+    }
+
+    function selectWinner() external {
+        require(msg.sender == owner, "Only owner can select winner");
+        require(totalPlayers > 0, "No players participated");
+
+        address winner = getAddressFromHash(blockhash(block.number - 1));
+        payable(winner).transfer(jackpot);
+
+        totalPlayers = 0;
+        jackpot = 0;
+    }
+
+    function getAddressFromHash(bytes32 hash) internal pure returns (address) {
+        return address(uint160(uint256(hash)));
+    }
+}
+
+Output: 
+
+potential vulnerabilities:
+- The jackpot is transferred to the winner address without any additional checks, which may lead to potential reentrancy attacks.
+- The totalPlayers count is reset to 0 before transferring the jackpot, which may lead to inconsistent state update where the winner does not receive the correct amount.
+- There is a lack of check for integer overflow when adding to the jackpot, which could be exploited for an integer overflow attack.

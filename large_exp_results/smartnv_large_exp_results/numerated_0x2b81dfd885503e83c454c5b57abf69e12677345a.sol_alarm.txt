@@ -1,0 +1,34 @@
+The contract below contains potential vulnerabilities:
+
+<\analyzed_contract\>
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        uint quantity;
+        address supplier;
+    }
+    mapping(uint => Product) public products;
+    address public owner;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function addProduct(uint _productId, uint _quantity) public {
+        require(msg.sender == owner, "Not authorized");
+        products[_productId] = Product(_productId, _quantity, msg.sender);
+    }
+
+    function updateProductQuantity(uint _productId, uint _updatedQuantity) public {
+        products[_productId].quantity = _updatedQuantity;
+    }
+
+    function purchaseProduct(uint _productId, uint _quantity) public payable {
+        require(products[_productId].quantity >= _quantity, "Insufficient quantity available");
+        uint totalCost = _quantity * 10; // Price per unit is 10
+        require(msg.value >= totalCost, "Insufficient funds sent");
+        products[_productId].quantity -= _quantity;
+        products[_productId].supplier.transfer(totalCost);
+    }
+}
+<\analyzed_contract\>

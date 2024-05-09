@@ -1,0 +1,30 @@
+<\Contract_to_Analyze\>
+contract Marketplace {
+    address public owner;
+    uint public totalSales;
+    mapping(uint => address) public itemSellers;
+    mapping(address => uint) public itemPrices;
+
+    constructor() {
+        owner = msg.sender;
+        totalSales = 0;
+    }
+
+    function addItem(uint itemId, uint price) public {
+        require(itemPrices[itemId] == 0, "Item already added");
+        itemSellers[itemId] = msg.sender;
+        itemPrices[itemId] = price;
+    }
+
+    function buyItem(uint itemId) payable public {
+        require(itemPrices[itemId] > 0, "Item not available");
+        require(msg.value >= itemPrices[itemId], "Insufficient funds");
+        address seller = itemSellers[itemId];
+        uint price = itemPrices[itemId];
+        (bool success,) = seller.call{value: price}("");
+        require(success, "Transaction failed");
+        totalSales++;
+        itemPrices[itemId] = 0;
+    }
+}
+<\Contract_to_Analyze\>

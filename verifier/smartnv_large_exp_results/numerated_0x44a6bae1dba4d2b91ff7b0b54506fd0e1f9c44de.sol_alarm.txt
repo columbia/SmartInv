@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    IERC20 public token;
+    address public admin;
+    address public beneficiary;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice, address _beneficiary) {
+        token = _token;
+        tokenPrice = _tokenPrice;
+        admin = msg.sender;
+        beneficiary = _beneficiary;
+        tokensSold = 0;
+    }
+
+    function buyTokens(uint _numberOfTokens) public payable {
+        require(msg.value == _numberOfTokens * tokenPrice, "Incorrect payment amount");
+        require(token.balanceOf(address(this)) >= _numberOfTokens, "Not enough tokens left for sale");
+
+        token.transfer(msg.sender, _numberOfTokens);
+        tokensSold += _numberOfTokens;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == admin, "Only admin can withdraw funds");
+        address _this = address(this);
+        payable(beneficiary).transfer(address(this).balance);
+    }
+} 
+
+<\contract_to_analyze\>

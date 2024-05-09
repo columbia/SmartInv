@@ -1,0 +1,25 @@
+The contract to analyze:
+contract TokenSale {
+    uint public price;
+    address public seller;
+    IERC20 public token;
+    
+    constructor(uint _price, address _seller, address _token) public {
+        price = _price;
+        seller = _seller;
+        token = IERC20(_token);
+    }
+    
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        uint totalCost = _amount * price;
+        require(token.allowance(msg.sender, address(this)) >= totalCost, "Allowance not set");
+        
+        token.transferFrom(msg.sender, seller, totalCost);
+        token.transfer(msg.sender, _amount);
+    }
+} 
+
+Output: 
+1) price manipulation
+2) inconsistent state update

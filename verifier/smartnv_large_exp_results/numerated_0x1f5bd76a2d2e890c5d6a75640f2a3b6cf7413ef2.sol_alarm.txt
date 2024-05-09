@@ -1,0 +1,23 @@
+<\contract\>
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid() public payable {
+             require(msg.value > highestBid, "Bid amount is lower than the highest bid");
+             if (highestBidder != address(0)) {
+                 // Refund the previous highest bidder
+                 payable(highestBidder).transfer(highestBid);
+             }
+             highestBidder = msg.sender;
+             highestBid = msg.value;
+         }
+
+         function finalizeAuction() public {
+             require(msg.sender == auctioneer, "Only the auctioneer can finalize the auction");
+             address _this = address(this);
+             payable(auctioneer).transfer(highestBid);
+             highestBidder.transfer(address(this).balance);
+         }
+}
+<\contract\>

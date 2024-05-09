@@ -1,0 +1,21 @@
+<\your_contract\>
+contract Marketplace {
+         IERC20 public token;
+         address public seller;
+         address public buyer;
+         uint public price;
+
+         function buy() public {
+             require(msg.sender != seller, "You cannot buy your own item");
+             require(msg.sender != buyer, "You have already bought this item");
+             require(token.balanceOf(msg.sender) >= price, "Insufficient balance to purchase");
+             token.transferFrom(msg.sender, seller, price);
+             buyer = msg.sender;
+         }
+
+         function setPrice(uint _price) public {
+             require(msg.sender == seller, "Only the seller can set the price");
+             price = _price;
+         }
+}
+<\your_contract\>

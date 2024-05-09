@@ -1,0 +1,64 @@
+<The Contract to Analyze>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public voteCount;
+
+    address public owner;
+    uint256 public totalVotes;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function giveRightToVote(address _voter) public {
+        require(msg.sender == owner, "Only owner can give voting right");
+        require(!voters[_voter].voted, "Voter already voted");
+        voters[_voter].weight = 1;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted");
+        require(to != msg.sender, "Self-delegation is not allowed");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            voteCount[delegateTo.vote] += sender.weight;
+            totalVotes += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "You have no right to vote");
+        require(!sender.voted, "Already voted");
+
+        sender.voted = true;
+        sender.vote = option;
+
+        voteCount[option] += sender.weight;
+        totalVotes += sender.weight;
+    }
+}
+Potential Vulnerabilities:
+1) owner privilege escalation: Only the owner has the right to give voting rights, but if the owner's account is compromised, an attacker could gain control over the voting system.
+2) inconsistent state update: When a voter delegates their vote, the total votes and vote count may not be updated correctly, leading to inaccurate voting results.
+3) atomicity violation: There is a potential risk of race conditions or inconsistent states when multiple transactions attempt to update the same data concurrently.
+4) insufficient gas: If the contract logic requires a large number of computations, there might be a risk of running out of gas during the execution of transactions.
+5) incorrect visibility/ownership: The visibility and ownership of functions and variables should be carefully reviewed to ensure that only authorized entities can access and modify the contract state.

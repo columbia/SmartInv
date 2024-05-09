@@ -1,0 +1,56 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public confirmationsRequired;
+    mapping(bytes32 => Transaction) public transactions;
+    mapping(bytes32 => mapping(address => bool)) public confirmations;
+    
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+    
+    modifier onlyOwner() {
+        require(isOwner[msg.sender], "only wallet owners can execute this function");
+        _;
+    }
+    
+    function submitTransaction(address to, uint value, bytes memory data) public onlyOwner {
+        bytes32 txHash = keccak256(abi.encodePacked(to, value, data));
+        transactions[txHash] = Transaction(to, value, data, false);
+        confirmations[txHash][msg.sender] = true;
+    }
+
+    function confirmTransaction(bytes32 txHash) public onlyOwner {
+        require(transactions[txHash].to != address(0), "transaction does not exist");
+        require(confirmations[txHash][msg.sender] == false, "transaction already confirmed by this owner");
+        confirmations[txHash][msg.sender] = true;
+    }
+
+    function executeTransaction(bytes32 txHash) public onlyOwner {
+        require(transactions[txHash].to != address(0), "transaction does not exist");
+        require(transactions[txHash].executed == false, "transaction already executed");
+        
+        uint count = 0;
+        for (uint  i = 0; i < owners.length; i++) {
+            if (confirmations[txHash][owners[i]]) {
+                count += 1;
+            }
+        }
+        
+        require(count >= confirmationsRequired, "not enough confirmations");
+        
+        address to = transactions[txHash].to;
+        uint value = transactions[txHash].value;
+        bytes memory data = transactions[txHash].data;
+        
+        (bool success, ) = to.call{value: value}(data);
+        require(success, "transaction execution failed");
+        
+        transactions[txHash].executed = true;
+    }
+}
+<\contract_to_analyze\>

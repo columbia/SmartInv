@@ -1,0 +1,17 @@
+<\contract\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) external {
+        require(amount > highestBid, "Bid amount too low");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Reentrancy
+2) Inconsistent state update

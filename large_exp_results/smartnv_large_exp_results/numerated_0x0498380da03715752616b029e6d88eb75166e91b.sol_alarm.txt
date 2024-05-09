@@ -1,0 +1,31 @@
+<\analyzed_contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     address public beneficiary;
+     uint public price;
+     uint public availableTokens;
+
+     constructor(address _token, address _beneficiary, uint _price, uint _availableTokens) {
+         token = IERC20(_token);
+         owner = msg.sender;
+         beneficiary = _beneficiary;
+         price = _price;
+         availableTokens = _availableTokens;
+     }
+
+     function buyTokens(uint tokensToBuy) public payable {
+         require(msg.value == tokensToBuy * price, "Incorrect payment amount");
+         require(tokensToBuy <= availableTokens, "Not enough tokens available");
+
+         token.transfer(msg.sender, tokensToBuy);
+         availableTokens -= tokensToBuy;
+     }
+
+     function endSale() public {
+         require(msg.sender == owner, "Only the owner can end the sale");
+         token.transfer(beneficiary, token.balanceOf(address(this)));
+         selfdestruct(payable(owner));
+     }
+}
+<\analyzed_contract\>

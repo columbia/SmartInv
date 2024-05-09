@@ -1,0 +1,20 @@
+Contract to analyze:
+
+contract CrossBridgeToken {
+    mapping(address => uint256) balances;
+    
+    function transfer(address to, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+    
+    function getBalance(address account) public view returns (uint256) {
+        return balances[account];
+    }
+}
+
+Potential vulnerabilities:
+6) Cross bridge inconsistency 
+7) ID uniqueness violation

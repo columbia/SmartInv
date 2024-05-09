@@ -1,0 +1,39 @@
+<\Your_contract\>
+contract Marketplace {
+     uint public totalItems;
+     mapping(uint => Item) public items;
+     address public owner;
+
+     struct Item {
+         uint itemId;
+         string itemName;
+         uint price;
+         address seller;
+     }
+
+     constructor() {
+         owner = msg.sender;
+         totalItems = 0;
+     }
+
+     function addItem(string memory _itemName, uint _price) public {
+         totalItems++;
+         items[totalItems] = Item(totalItems, _itemName, _price, msg.sender);
+     }
+
+     function buyItem(uint _itemId) public payable {
+         require(items[_itemId].itemId != 0, "Item does not exist");
+         require(msg.value == items[_itemId].price, "Incorrect payment amount");
+         address payable seller = payable(items[_itemId].seller);
+         seller.transfer(msg.value);
+         items[_itemId].seller = msg.sender;
+     }
+
+     function withdraw() public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         payable(msg.sender).transfer(address(this).balance);
+     }
+}
+Your_output: 
+1) incorrect visibility/ownership
+2) inconsistent state update

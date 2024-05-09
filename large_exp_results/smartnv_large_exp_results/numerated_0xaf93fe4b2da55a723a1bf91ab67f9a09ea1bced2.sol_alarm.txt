@@ -1,0 +1,43 @@
+The contract under analysis for potential vulnerabilities is:
+
+```
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+        uint256 startingBlance;
+        require(proposal.sTime == 0,"on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBlance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBlance; 
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount; 
+        votedProposal(proposal); 
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The contract updates the state of the proposal in `execute()` function but does not check for reentrancy.
+2) Incorrect visibility/ownership: The `owner` variable is internal, which might not be the intended visibility.
+3) Business logic flaw: The logic around value checking and updates in the functions may need to be thoroughly reviewed for any potential business logic vulnerabilities.
+
+Therefore, the potential vulnerabilities in the contract include inconsistent state update, incorrect visibility/ownership, and business logic flaw.

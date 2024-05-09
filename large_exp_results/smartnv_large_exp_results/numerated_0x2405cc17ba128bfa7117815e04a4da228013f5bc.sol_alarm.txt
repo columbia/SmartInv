@@ -1,0 +1,36 @@
+The contract provided for analysis is:
+
+contract SupplyChain {  
+    struct Order {
+          uint256 orderID; 
+          address supplier; 
+          uint256 quantity; 
+          bool delivered; 
+          }
+     address owner;
+     mapping(uint256 => Order) public orders;
+     uint256 public totalOrders;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    function createOrder(uint256 _orderID, address _supplier, uint256 _quantity) public onlyOwner {
+          orders[_orderID] = Order(_orderID, _supplier, _quantity, false);
+          totalOrders++;
+    }
+
+    function markAsDelivered(uint256 _orderID) public onlyOwner {
+          require(orders[_orderID].supplied == true, "Order not yet delivered");
+          orders[_orderID].delivered = true;
+    }
+
+    function updateOrderQuantity(uint256 _orderID, uint256 _newQuantity) public onlyOwner {
+          orders[_orderID].quantity = _newQuantity;
+    }
+}
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

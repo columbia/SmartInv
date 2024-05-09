@@ -1,0 +1,23 @@
+<\contract\>
+contract SimpleContract {
+    address public owner;
+    uint public value;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function updateValue(uint _newValue) public {
+        require(msg.sender == owner, "Only owner can update value");
+        value = _newValue;
+    }
+
+    function transferOwnership(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = _newOwner;
+    }
+}
+<\contract\>
+
+<\output\>
+incorrect visibility/ownership

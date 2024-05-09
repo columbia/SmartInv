@@ -1,0 +1,7 @@
+<\TimelockController\>
+1) Inconsistent state update: The function `execute()` updates the `proposal.votedAmount` without using a mutex or lock mechanism, which can lead to inconsistent state if multiple transactions attempt to update `proposal` simultaneously.
+2) Incorrect visibility/ownership: The contract implements the `IERC20` interface but does not define any of the required ERC20 functions such as `transfer`, `allowance`, etc., which can cause issues with interoperability with other ERC20 contracts.
+
+<\ExchangeTokens\>
+1) Price manipulation: The `liquidate()` function uses the `getPrice()` function to calculate the price for liquidation, but the `calculatePrice()` function is defined separately and not used in the `liquidate()` function. This can lead to potential price manipulation by an attacker.
+2) Incorrect visibility/ownership: The `debt` and `collateral` mapping variables are publicly accessible, which can expose sensitive information to external parties. It's recommended to restrict access to these variables using appropriate visibility modifiers.

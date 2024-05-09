@@ -1,0 +1,28 @@
+<\your_contract\>
+contract Auction {
+         IERC20 public token;
+         address public highestBidder;
+         uint public highestBid;
+         uint public endTimestamp;
+
+         constructor(address _token) public {
+             token = IERC20(_token);
+             endTimestamp = block.timestamp + 86400; 
+         }
+
+         function placeBid(uint amount) public {
+             require(block.timestamp < endTimestamp, "Auction has ended");
+             require(amount > highestBid, "Bid must be higher than current highest bid");
+             token.transferFrom(msg.sender, address(this), amount);
+             token.transfer(highestBidder, highestBid);
+             highestBidder = msg.sender;
+             highestBid = amount;
+         }
+
+         function endAuction() public {
+             require(block.timestamp >= endTimestamp, "Auction has not ended yet");
+             token.transfer(highestBidder, highestBid);
+         }
+}
+
+<\your_contract\>

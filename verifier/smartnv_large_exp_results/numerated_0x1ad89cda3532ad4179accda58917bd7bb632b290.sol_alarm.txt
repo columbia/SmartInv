@@ -1,0 +1,36 @@
+The potential vulnerabilities in the contract below are:
+
+1) ID uniqueness violation
+2) Incorrect visibility/ownership
+
+Overall assessment: Vulnerable
+
+contract AssetRegistry {
+     struct Asset {
+          uint256 id;
+          string name;
+          address owner;
+          bool isVerified;
+     }
+     mapping(uint256 => Asset) public assets;
+     uint256 public assetCounter;
+
+     function createAsset(string memory _name) public {
+          uint256 newId = assetCounter++;
+          assets[newId] = Asset(newId, _name, msg.sender, false);
+     }
+
+     function verifyAsset(uint256 _id) public {
+          require(assets[_id].owner == msg.sender, "Not the owner");
+          assets[_id].isVerified = true;
+     }
+
+     function transferAsset(uint256 _id, address _newOwner) public {
+          require(assets[_id].owner == msg.sender, "Not the owner");
+          assets[_id].owner = _newOwner;
+     }
+} 
+
+Output: 
+ID uniqueness violation
+Incorrect visibility/ownership

@@ -1,0 +1,36 @@
+<\Analyzing Contract\>
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public tokenPrice;
+         uint public totalTokens;
+         uint public tokensSold;
+    
+         constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) public {
+             token = _token;
+             owner = msg.sender;
+             tokenPrice = _tokenPrice;
+             totalTokens = _totalTokens;
+         }
+    
+         function buyTokens(uint _numTokens) public payable {
+             require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+             require(tokensSold + _numTokens <= totalTokens, "Not enough tokens left");
+             token.transfer(msg.sender, _numTokens);
+             tokensSold += _numTokens;
+         }
+    
+         function endSale() public {
+             require(msg.sender == owner, "Only the owner can end sale");
+             require(tokensSold == totalTokens, "Not all tokens have been sold");
+             uint balance = address(this).balance;
+             msg.sender.transfer(balance);
+             token.transfer(owner, token.balanceOf(address(this)));
+         }
+
+         function updateTokenPrice(uint _newPrice) public {
+             require(msg.sender == owner, "Only the owner can update token price");
+             tokenPrice = _newPrice;
+         }
+}
+<\Analyzing Contract\>

@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public owner;
+    uint public balance;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "You are not the owner");
+        require(amount <= balance, "Insufficient balance");
+        msg.sender.transfer(amount);
+        balance -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "You are not the owner");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,74 @@
+<\contract\>
+contract Escrow {
+
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    bool public sellerApproval;
+    bool public buyerApproval;
+
+    enum State {
+        Created,
+        Locked,
+        Release,
+        Completed,
+        Cancelled
+    }
+
+    State public state;
+
+    constructor(address _seller, address _buyer, address _arbiter, uint _price){
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+        state = State.Created;
+    }
+
+    function confirmPayment() public payable {
+        require(msg.sender == buyer && msg.value == price, "Invalid payment");
+        state = State.Locked;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer && state == State.Locked, "Invalid state");
+        buyerApproval = true;
+        if (arbiter != address(0)){
+            state = State.Release;
+        }
+        else {
+            state = State.Completed;
+        }
+    }
+
+    function confirmGoods() public {
+        require(msg.sender == seller && state == State.Locked, "Invalid state");
+        sellerApproval = true;
+        if (arbiter != address(0)){
+            state = State.Release;
+        }
+        else {
+            state = State.Completed;
+        }
+    }
+
+    function refundBuyer() public {
+        require(state == State.Locked && !buyerApproval, "Invalid state");
+        payable(buyer).transfer(price);
+        state = State.Cancelled;
+    }
+
+    function releaseFunds() public {
+        require((msg.sender == seller || msg.sender == arbiter) && state == State.Release, "Invalid state");
+        if (sellerApproval && buyerApproval){
+            payable(seller).transfer(price);
+            state = State.Completed;
+        }
+        else {
+            refundBuyer();
+        }
+    }
+
+}
+<\contract\>

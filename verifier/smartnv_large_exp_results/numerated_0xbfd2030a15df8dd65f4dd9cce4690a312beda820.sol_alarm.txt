@@ -1,0 +1,33 @@
+<\contract\>
+contract Crowdsale is Ownable {
+    IERC20 public token;
+    address public wallet;
+    uint public rate;
+    uint public weiRaised;
+    
+    event TokensPurchased(address indexed purchaser, address indexed beneficiary, uint value, uint amount);
+    
+    constructor(uint _rate, address _wallet, IERC20 _token) public {
+        require(_rate > 0, "Rate must be greater than zero");
+        require(_wallet != address(0), "Wallet address cannot be zero");
+        require(address(_token) != address(0), "Token address cannot be zero");
+        
+        rate = _rate;
+        wallet = _wallet;
+        token = _token;
+    }
+    
+    function buyTokens(address beneficiary) public payable {
+        uint weiAmount = msg.value;
+        uint tokenAmount = weiAmount * rate;
+        
+        require(beneficiary != address(0), "Beneficiary address cannot be zero");
+        require(tokenAmount > 0, "Token amount must be greater than zero");
+        
+        token.transfer(beneficiary, tokenAmount);
+        emit TokensPurchased(msg.sender, beneficiary, weiAmount, tokenAmount);
+        
+        weiRaised = weiRaised + weiAmount;
+    }
+}
+<\contract\>

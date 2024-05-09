@@ -1,0 +1,27 @@
+contract PaymentProcessor {
+     address public owner;
+     uint public totalBalance;
+     
+     modifier onlyOwner {
+         require(msg.sender == owner, "Only owner can call this function");
+         _;
+     }
+     
+     constructor() {
+         owner = msg.sender;
+     }
+     
+     function deposit() public payable {
+         totalBalance += msg.value;
+     }
+     
+     function withdraw(uint amount) public onlyOwner {
+         require(amount <= totalBalance, "Insufficient balance");
+         totalBalance -= amount;
+         msg.sender.transfer(amount);
+     }
+     
+     function changeOwner(address newOwner) public onlyOwner {
+         owner = newOwner;
+     }
+}

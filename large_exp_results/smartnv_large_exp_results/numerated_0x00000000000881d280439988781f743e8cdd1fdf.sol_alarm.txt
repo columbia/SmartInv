@@ -1,0 +1,34 @@
+The contract you provided for analysis is:
+
+```solidity
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokensSold;
+    
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        
+        token.transfer(msg.sender, _amount);
+        tokensSold += _amount;
+    }
+    
+    function endSale() public {
+        require(msg.sender == owner, "Only the owner can end the sale");
+        
+        // Some logic to distribute remaining tokens, not shown for brevity
+        
+        selfdestruct(owner);
+    }
+}
+```
+
+Output:
+- Incorrect visibility/ownership

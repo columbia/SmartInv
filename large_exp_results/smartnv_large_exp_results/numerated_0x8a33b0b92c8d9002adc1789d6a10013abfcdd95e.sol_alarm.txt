@@ -1,0 +1,15 @@
+<\analyzed_contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint => uint) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function processPayment(uint _id, uint _amount) public {
+        require(msg.sender == owner, "Only owner can process payments");
+        payments[_id] += _amount;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,7 @@
+<\example_1\> 
+1) inconsistent state update: The `proposal` struct is updated in the `startExecute` function, but there is no mechanism to prevent reentrant calls which may lead to inconsistent state updates.
+2) atomicity violation: The `proposal.votedAmount` is updated in the `execute` function without using any mechanism to ensure atomicity, potentially leading to incorrect calculations.
+3) reentrancy: The `execute` function uses `votingToken.transferFrom` which could potentially trigger an external call that leads to reentrancy vulnerabilities.
+
+<\example_2\>
+1) price manipulation: The `liquidate` function in `ExchangeTokens` contract is vulnerable to price manipulation as it directly relies on the `getPrice` function without validating the price source or considering potential price manipulation attacks.

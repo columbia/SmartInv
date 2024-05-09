@@ -1,0 +1,35 @@
+The contract provided is:
+
+```solidity
+contract SecureToken {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transfer(address to, uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) No atomicity violation protection in the transfer function.
+2) No restriction on who can call the deposit function, which may lead to ether leakage.
+3) No check for integer overflow/underflow in the withdraw function.
+
+Therefore, the potential vulnerabilities in the contract are atomicity violation, ether leakage, and integer overflow/underflow.

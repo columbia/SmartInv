@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     address public owner;
+     address public tokenAddress;
+     mapping(address => uint) public tokenBalance;
+
+     constructor(address _tokenAddress) {
+          owner = msg.sender;
+          tokenAddress = _tokenAddress;
+     }
+
+     function buyTokens(uint _amount) external {
+           require(tokenBalance[msg.sender] >= _amount, "Insufficient balance");
+           require(ERC20(tokenAddress).transfer(msg.sender, _amount), "Token transfer failed");
+           tokenBalance[msg.sender] -= _amount;
+     }
+
+     function withdrawTokens(uint _amount) external {
+           require(msg.sender == owner, "Only owner can withdraw tokens");
+           require(ERC20(tokenAddress).transfer(owner, _amount), "Token transfer failed");
+     }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,19 @@
+Contract to be analyzed:
+contract Marketplace {
+     IERC20 public token;
+     mapping(uint => address) idToOwner;
+     mapping(uint => uint) idToPrice;
+
+     function buy(uint tokenId) public payable {
+         require(msg.value == idToPrice[tokenId]);
+         address seller = idToOwner[tokenId];
+         idToOwner[tokenId] = msg.sender;
+         idToPrice[tokenId] = msg.value;
+         token.transferFrom(msg.sender, seller, idToPrice[tokenId]);
+     }
+
+     function addToken(uint id, uint price) public {
+         idToOwner[id] = msg.sender;
+         idToPrice[id] = price;
+     }
+}

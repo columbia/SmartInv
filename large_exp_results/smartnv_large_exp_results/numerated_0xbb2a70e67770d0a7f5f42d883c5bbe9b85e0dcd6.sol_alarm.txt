@@ -1,0 +1,17 @@
+<\contract_to_analyze\>
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    
+    function placeBid(uint bidAmount) public {
+        require(bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+        
+        if (highestBid > 0) {
+            highestBidder.transfer(highestBid);
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = bidAmount;
+    }
+}
+<\contract_to_analyze\>

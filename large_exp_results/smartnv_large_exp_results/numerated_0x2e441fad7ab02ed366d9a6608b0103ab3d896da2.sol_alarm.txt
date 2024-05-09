@@ -1,0 +1,20 @@
+<\contract\>
+contract PaymentGateway {
+     address public owner;
+     mapping(uint => bool) public payments;
+     
+     constructor() {
+         owner = msg.sender;
+     }
+     
+     function makePayment(uint paymentId) public {
+         require(msg.sender == owner, "Only owner can make a payment");
+         payments[paymentId] = true;
+     }
+     
+     function processPayment(uint paymentId) public {
+         require(payments[paymentId] == true, "Payment has not been made yet");
+         // Process payment logic
+     }
+}
+<\contract\>

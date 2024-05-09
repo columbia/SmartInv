@@ -1,0 +1,16 @@
+<\contract\>
+contract AirdropContract {
+    uint public totalAirdropped;
+    mapping(address => bool) public hasClaimed;
+
+    function airdropTokens(address[] calldata recipients, uint amount) external {
+        require(recipients.length <= 100, "exceeds maximum recipients allowed");
+
+        for (uint i = 0; i < recipients.length; i++) {
+            require(!hasClaimed[recipients[i]], "recipient has already claimed");
+            totalAirdropped += amount;
+            hasClaimed[recipients[i]] = true;
+        }
+    }
+}
+<\contract\>

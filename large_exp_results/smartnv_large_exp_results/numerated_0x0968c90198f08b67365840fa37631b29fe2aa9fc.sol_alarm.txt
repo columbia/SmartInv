@@ -1,0 +1,29 @@
+The contract you are going to analyze is:
+
+contract Escrow {
+    address public payer;
+    address public recipient;
+    uint public amount;
+
+    constructor(address _payer, address _recipient, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        amount = _amount;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only the payer can deposit");
+        require(msg.value == amount, "Incorrect amount deposited");
+    }
+
+    function release() public {
+        require(msg.sender == payer, "Only the payer can release funds");
+        payable(recipient).transfer(amount);
+    }
+}
+
+
+Output: 
+potential vulnerabilities: 
+- inconsistent state update
+- incorrect visibility/ownership

@@ -1,0 +1,26 @@
+<\contract\> 
+contract VotingSystem {
+     struct Voter {
+          uint256 voteCount;
+          bool hasVoted;
+          }
+     address public admin;
+     mapping(address => Voter) public voters;
+     uint256 public totalVotes;
+
+     function vote() public {
+          require(voters[msg.sender].hasVoted == false, "Already voted");
+          voters[msg.sender].voteCount++;
+          voters[msg.sender].hasVoted = true;
+          totalVotes++;
+          }
+     
+     function resetVotes() public {
+          require(msg.sender == admin, "Only admin can reset votes");
+          totalVotes = 0;
+          for (uint i=0; i < voters.length; i++) {
+               voters[voters[i]].voteCount = 0;
+               voters[voters[i]].hasVoted = false;
+          }
+     }
+}

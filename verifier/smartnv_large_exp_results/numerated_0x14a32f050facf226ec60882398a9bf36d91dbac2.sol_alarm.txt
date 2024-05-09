@@ -1,0 +1,17 @@
+<\contract\> 
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         uint public exchangeRate;
+
+         function swap(uint amount) public {
+             uint amountToReceive = amount * exchangeRate;
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             tokenB.transfer(msg.sender, amountToReceive);
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) arithmetic flaw: The exchangeRate is multiplied by the amount without any checks on potential arithmetic overflow/underflow issues.
+2) incorrect visibility/ownership: The exchangeRate variable is declared as public, which may expose sensitive information.

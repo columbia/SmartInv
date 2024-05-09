@@ -1,0 +1,24 @@
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public pricePerToken;
+    
+    constructor(address _tokenAddress, uint _pricePerToken) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        pricePerToken = _pricePerToken;
+    }
+    
+    function buyTokens(uint _amount) external {
+        require(msg.value == _amount * pricePerToken, "Incorrect amount sent");
+        require(IERC20(tokenAddress).balanceOf(address(this)) >= _amount, "Not enough tokens available");
+        
+        payable(owner).transfer(msg.value);
+        IERC20(tokenAddress).transfer(msg.sender, _amount);
+    }
+    
+    function changePrice(uint _newPrice) external {
+        require(msg.sender == owner, "You are not the owner");
+        pricePerToken = _newPrice;
+    }
+}

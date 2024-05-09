@@ -1,0 +1,28 @@
+Contract being analyzed: 
+
+contract Crowdsale {
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balance;
+
+    constructor(uint _tokenPrice) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens() public payable {
+        uint tokenAmount = msg.value / tokenPrice;
+        require(tokenAmount > 0, "Insufficient ether sent");
+        balance[msg.sender] += tokenAmount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        uint totalBalance = address(this).balance;
+        payable(owner).transfer(totalBalance);
+    }
+}
+
+Output: 
+1) Incorrect visibility/ownership vulnerability in the withdrawFunds function: The withdrawFunds function only checks if the caller is the owner, but it does not verify that the owner address is the one who deployed the contract. This could lead to a vulnerability if the contract owner address is changed after deployment.
+2) Integer overflow/underflow vulnerability in the buyTokens function: The calculation for tokenAmount in the buyTokens function relies on dividing msg.value by tokenPrice, which could potentially lead to integer overflow if the values are very large. Adding a check for overflow or using SafeMath library would mitigate this vulnerability.

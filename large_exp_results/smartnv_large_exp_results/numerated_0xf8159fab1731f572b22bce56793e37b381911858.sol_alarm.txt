@@ -1,0 +1,29 @@
+Contract:
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    mapping(address => uint) public balance;
+
+    constructor(address _admin, address _token) public {
+        admin = _admin;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) public {
+        require(balance[msg.sender] + _amount >= balance[msg.sender], "integer overflow");
+        require(token.balanceOf(address(this)) >= _amount, "insufficient balance");
+        
+        balance[msg.sender] += _amount;
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdraw() public {
+        uint amount = balance[msg.sender];
+        require(amount > 0, "insufficient balance");
+
+        balance[msg.sender] = 0;
+        token.transferFrom(address(this), msg.sender, amount);
+    }
+}
+Output: 
+integer overflow/underflow

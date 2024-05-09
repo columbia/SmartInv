@@ -1,0 +1,44 @@
+The contract:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+
+1) Privilege escalation: The contract lacks proper access control mechanisms to prevent unauthorized users from calling certain functions or accessing sensitive data.
+2) Inconsistent state update: There might be inconsistencies in the state of the contract due to improper handling of state changes in different functions.
+3) Incorrect visibility/ownership: The visibility and ownership of functions and variables within the contract might not be properly defined, leading to potential security risks.
+4) Business logic flaw: There might be flaws in the logic of the contract that could be exploited by malicious actors to manipulate the behavior of the contract.
+
+Therefore, the potential vulnerabilities in the contract include privilege escalation, inconsistent state update, incorrect visibility/ownership, and business logic flaw.

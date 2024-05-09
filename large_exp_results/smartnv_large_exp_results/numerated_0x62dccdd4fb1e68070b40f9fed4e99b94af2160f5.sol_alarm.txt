@@ -1,0 +1,40 @@
+Contract to analyze:
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public value;
+     enum State {Created, Locked, Inactive}
+     State public state;
+
+     modifier onlyBuyer() {
+         require(msg.sender == buyer, "Only buyer can call this");
+         _;
+     }
+
+     modifier inState(State _state) {
+         require(state == _state, "Invalid state");
+         _;
+     }
+
+     constructor(address _arbiter, address _seller) {
+         arbiter = _arbiter;
+         seller = _seller;
+         state = State.Created;
+     }
+
+     function confirmPurchase() onlyBuyer inState(State.Created) payable {
+         require(msg.value == value, "Incorrect value");
+         state = State.Locked;
+     }
+
+     function confirmReceived() onlyBuyer inState(State.Locked) {
+         buyer.transfer(value);
+         seller.transfer(address(this).balance);
+         state = State.Inactive;
+     }
+} 
+
+Output: 
+1) atomicity violation
+2) incorrect visibility/ownership

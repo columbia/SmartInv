@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Business logic flaw: The endExecute function checks if the execution has ended based on a time window, but it does not consider the possibility of the proposal being executed prematurely or after the 24-hour window. This could lead to inconsistent state updates or unintended behavior.
+
+2) Inconsistent state update: The execute function updates the votedAmount of the proposal without proper synchronization or atomicity control, which could lead to inconsistent state updates if multiple parties try to execute the proposal simultaneously.
+
+3) ID uniqueness violation: The startExecute function does not have a mechanism to ensure that each proposal has a unique identifier, which could lead to confusion or conflicts if multiple proposals are started at the same time.
+
+4) Cross-bridge inconsistency: The contract interacts with external tokens (votingToken) without verifying the consistency or integrity of the bridge connecting the contract to the external system. This could result in unexpected behavior or manipulation of the contract state through the external token.
+
+5) Privilege escalation: The contract does not have a proper mechanism to control the access and permissions of different users or roles, which could lead to unauthorized privilege escalation and manipulation of important functions or data within the contract.

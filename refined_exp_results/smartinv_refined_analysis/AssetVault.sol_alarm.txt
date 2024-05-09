@@ -1,0 +1,4 @@
+Potential vulnerabilities in the provided contract:
+- Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without properly handling potential reentrancy issues, which could lead to inconsistent state updates.
+- Atomicity violation: The `execute` function does not wrap multiple state updates in a single atomic operation, making it vulnerable to atomicity violations if an error occurs midway through the function execution.
+- Cross bridge inconsistency: The `endExecute` function compares the locked funds to a condition involving the total supply of the token, which could lead to inconsistencies due to potential discrepancies between the actual locked funds and the total token supply.

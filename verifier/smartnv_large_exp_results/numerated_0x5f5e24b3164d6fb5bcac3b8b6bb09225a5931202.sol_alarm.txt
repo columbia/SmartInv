@@ -1,0 +1,29 @@
+Contract:
+```
+contract PaymentContract {
+    mapping(address => uint) public payments;
+    uint public totalPayments;
+    
+    function makePayment(address recipient, uint amount) public {
+        require(amount > 0, "Invalid payment amount");
+        payments[recipient] += amount;
+        totalPayments += amount;
+    }
+    
+    function withdrawPayment(address recipient) public {
+        require(payments[recipient] > 0, "No funds to withdraw");
+        uint amount = payments[recipient];
+        totalPayments -= amount;
+        payments[recipient] = 0;
+        (bool success, ) = recipient.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+    
+    function getTotalPayments() public view returns (uint) {
+        return totalPayments;
+    }
+}
+```
+
+Output:
+The contract does not contain any potential vulnerabilities. It is healthy.

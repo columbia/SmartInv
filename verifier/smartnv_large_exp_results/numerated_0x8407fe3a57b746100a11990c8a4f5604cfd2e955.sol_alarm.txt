@@ -1,0 +1,25 @@
+The contract below contains potential vulnerabilities:
+
+contract Escrow {
+         IERC20 public token;
+         address public buyer;
+         address public seller;
+
+         function deposit(uint amount) external {
+             require(msg.sender == buyer || msg.sender == seller, "unauthorized");
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function release() external {
+             require(msg.sender == buyer, "only buyer can release funds");
+             token.transfer(seller, token.balanceOf(address(this)));
+         }
+
+         function refund() external {
+             require(msg.sender == seller, "only seller can refund funds");
+             token.transfer(buyer, token.balanceOf(address(this)));
+         }
+}
+
+The potential vulnerabilities in the Escrow contract are:
+- incorrect visibility/ownership in the release() and refund() functions.

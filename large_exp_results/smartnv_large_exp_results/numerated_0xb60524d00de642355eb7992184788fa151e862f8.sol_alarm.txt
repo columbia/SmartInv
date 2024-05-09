@@ -1,0 +1,23 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+
+    constructor() {
+        owner = msg.sender;
+        tokenPrice = 0.01 ether;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect payment amount");
+        _transferTokens(amount);
+    }
+
+    function _transferTokens(uint amount) internal {
+        // Transfer tokens to buyer
+    }
+}
+<>
+The potential vulnerabilities in the contract are:
+- Inconsistent state update
+- Incorrect visibility/ownership

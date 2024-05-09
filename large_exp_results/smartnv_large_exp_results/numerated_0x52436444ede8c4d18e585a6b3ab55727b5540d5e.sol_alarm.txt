@@ -1,0 +1,21 @@
+The contract provided for analysis:
+
+contract Vault {
+    mapping(address => uint) public balances;
+    uint public totalBalance;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+
+Output: 
+healthy

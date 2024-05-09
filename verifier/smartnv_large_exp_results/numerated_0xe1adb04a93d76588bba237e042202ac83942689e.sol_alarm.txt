@@ -1,0 +1,28 @@
+<\your_contract\>
+contract TokenSale {
+    address public tokenAddress;
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+
+        balances[msg.sender] -= _amount;
+        // Transfer tokens to the sender
+        ERC20(tokenAddress).transfer(msg.sender, _amount);
+    }
+}
+<\your_contract\>

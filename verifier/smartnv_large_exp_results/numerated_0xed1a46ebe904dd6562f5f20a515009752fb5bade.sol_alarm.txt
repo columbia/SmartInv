@@ -1,0 +1,23 @@
+<\contract\> 
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid() public payable {
+             require(msg.value > highestBid, "Bid not high enough");
+             require(msg.sender != highestBidder, "You are already the highest bidder");
+             highestBid = msg.value;
+             highestBidder = msg.sender;
+         }
+
+         function finalize() public {
+             require(msg.sender == owner, "Only owner can finalize");
+             // transfer funds to owner and token to highest bidder
+             // end auction
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership in the `finalize` function as `owner` variable is not defined in the contract.
+2) Reentrancy vulnerability in the `bid` function as it allows for multiple bids from the same address.

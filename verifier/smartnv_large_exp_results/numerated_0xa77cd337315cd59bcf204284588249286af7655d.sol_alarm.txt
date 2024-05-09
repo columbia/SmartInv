@@ -1,0 +1,42 @@
+Contract:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public releasedToSeller;
+    bool public releasedToBuyer;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        releasedToSeller = false;
+        releasedToBuyer = false;
+    }
+
+    function releaseToSeller() public {
+        require(msg.sender == arbiter);
+        require(releasedToSeller == false);
+        releasedToSeller = true;
+        seller.transfer(amount);
+    }
+
+    function releaseToBuyer() public {
+        require(msg.sender == arbiter);
+        require(releasedToBuyer == false);
+        releasedToBuyer = true;
+        buyer.transfer(amount);
+    }
+
+    function returnToBuyer() public {
+        require(msg.sender == arbiter);
+        require(releasedToSeller == true && releasedToBuyer == false);
+        buyer.transfer(amount);
+    }
+}
+
+Output:
+healthy

@@ -1,0 +1,24 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    uint public price;
+    IERC20 public token;
+    
+    constructor(address _token, uint _price) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        price = _price;
+    }
+    
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * price;
+        token.transferFrom(msg.sender, address(this), _amount);
+        token.transfer(owner, cost);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the TokenSale contract are: 
+1) price manipulation: The price for buying tokens is set externally by the owner, which can be manipulated.
+2) integer overflow/underflow: Multiplying the amount of tokens with the price may result in integer overflow.
+3) inconsistent state update: The transfer of tokens and ether is not atomic, which can lead to inconsistent state updates if one of the transfers fails mid-execution.

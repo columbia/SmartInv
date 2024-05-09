@@ -1,0 +1,29 @@
+The contract provided for analysis is:
+
+```solidity
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount * tokenPrice, "Insufficient balance");
+        require(token.balanceOf(address(this)) >= _amount, "Not enough tokens available");
+        
+        token.transferFrom(msg.sender, owner, _amount * tokenPrice);
+        token.transfer(msg.sender, _amount);
+        
+        totalTokensSold += _amount;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership

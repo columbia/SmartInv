@@ -1,0 +1,24 @@
+Contract to be analyzed:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function resetVotes() public {
+        totalVotes = 0;
+        for (uint i = 0; i < totalVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+    }
+}
+
+Potential vulnerabilities:
+1) inconsistent state update
+2) incorrect visibility/ownership
+3) sucidal contracts

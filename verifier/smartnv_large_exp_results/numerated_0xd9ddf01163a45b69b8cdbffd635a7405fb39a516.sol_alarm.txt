@@ -1,0 +1,30 @@
+<\contract\> 
+contract P2PTrading {
+    mapping(address => uint) public balances;
+    address public admin;
+    uint public totalTokens;
+
+    constructor() {
+        admin = msg.sender;
+        totalTokens = 1000;
+    }
+
+    function deposit(uint amount) public {
+        balances[msg.sender] += amount;
+        totalTokens += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalTokens -= amount;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\> 
+Output: healthy

@@ -1,0 +1,33 @@
+The contract provided is:
+
+```solidity
+contract ExampleContract {
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function getBalance(address account) public view returns (uint256) {
+        return balances[account];
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow: The `balances` mapping may be susceptible to integer overflow/underflow when adding or subtracting values.
+2) Ether leakage: The `withdraw` function may result in ether leakage if the `transfer` function fails.
+3) Insufficient gas: The `withdraw` function may run out of gas if the balance of the `msg.sender` is too large.
+4) Incorrect visibility/ownership: The `balances` mapping is public, exposing the balances of all accounts to anyone. 
+
+Therefore, the identified vulnerabilities in the contract are: 
+- Integer overflow/underflow
+- Ether leakage
+- Insufficient gas
+- Incorrect visibility/ownership

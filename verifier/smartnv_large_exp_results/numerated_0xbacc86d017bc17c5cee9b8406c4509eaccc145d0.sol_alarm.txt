@@ -1,0 +1,24 @@
+<\contract\>
+contract SimpleToken {
+    mapping(address => uint) public balances;
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+
+    function deposit(uint amount) public {
+        balances[msg.sender] += amount;
+    }
+}
+<\contract\>
+
+Potential vulnerabilities:
+- integer overflow/underflow: The transfer function does not check for potential integer underflows in the balances.
+- inconsistent state update: There is a potential for inconsistent state updates if the balances are not updated atomically.
+- incorrect visibility/ownership: The balances mapping is currently public, allowing anyone to view the balances of all addresses, which may not be intended.
+- insufficient gas: If the contract runs out of gas during a transfer or deposit operation, it may result in unexpected behavior.
+- sucidal contracts: There is no protection against someone potentially setting the contract to self-destruct.
+- atomicity violation: The deposit and transfer functions do not ensure atomicity, which may lead to unexpected behavior if multiple transactions are processed concurrently.
+- ether leakage: The contract does not handle Ether transactions, which can potentially result in Ether leakage if sent to the contract.

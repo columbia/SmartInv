@@ -1,0 +1,22 @@
+<\analyzed_contract\>
+contract TokenSwap {
+         IERC20 public token1;
+         IERC20 public token2;
+         address public owner;
+
+         function initSwap(address _token1, address _token2) external {
+             require(msg.sender == owner, "only owner can initialize swap");
+             token1 = IERC20(_token1);
+             token2 = IERC20(_token2);
+         }
+
+         function swap(uint amount, address recipient) external {
+             token1.transferFrom(msg.sender, address(this), amount);
+             token2.transfer(recipient, amount);
+         }
+
+         function setOwner(address _owner) external {
+             owner = _owner;
+         }
+}
+<\analyzed_contract\>

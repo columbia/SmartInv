@@ -1,0 +1,29 @@
+Contract you are going to analyze:
+
+contract Market {
+        address public owner;
+        uint public price;
+        
+        constructor() {
+            owner = msg.sender;
+            price = 100;
+        }
+        
+        function updatePrice(uint _newPrice) public {
+            require(msg.sender == owner, "Only owner can update price");
+            price = _newPrice;
+        }
+        
+        function buy() public payable {
+            require(msg.value >= price, "Insufficient funds to buy");
+            // Functionality to complete the purchase
+        }
+        
+        function withdraw() public {
+            require(msg.sender == owner, "Only owner can withdraw funds");
+            // Functionality to withdraw funds
+        }
+}
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership

@@ -1,0 +1,4 @@
+The contract contains the following potential vulnerabilities:
+1) inconsistent state update: The function `endExecute` updates `lockedFunds` based on the balance of the contract at a specific point in time. This can lead to inconsistent state if the balance changes before the function completes.
+2) incorrect visibility/ownership: The contract is missing the visibility specifier for the `proposal` and `startingBalanceList` variables, which can lead to unexpected results and potential vulnerabilities.
+3) insufficient gas: The function `endExecute` could potentially fail due to running out of gas if the contract's balance is too high, as it checks if `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`.

@@ -1,0 +1,22 @@
+The contract is prone to potential vulnerabilities:
+
+1) Inconsistent state update: 
+- The function `startExecute` updates the `proposal` struct without checking if it's already initialized, which can lead to inconsistent state updates.
+
+2) Incorrect visibility/ownership: 
+- The `proposal` struct is declared as a public variable, which may expose sensitive information outside the contract boundaries.
+
+3) Insufficient gas:
+- The `execute` function may require more gas than available in certain scenarios, leading to execution failure.
+
+4) Arithmetic flaw:
+- The calculation in the `liquidate` function might lead to arithmetic flaws due to the division operation and might result in unexpected behavior or errors. 
+
+5) Cross-bridge inconsistency:
+- The contract interacts with multiple external contracts (e.g., `votingToken`, `WETH`, `USDC`), which can lead to cross-bridge inconsistencies if not handled properly.
+
+6) Incorrect visibility/ownership:
+- The `proposal` struct and `lockedFunds` variable are declared without appropriate visibility/ownership modifiers, potentially exposing sensitive data publicly.
+
+7) Atomicity violation:
+- The update of the `proposal.votedAmount` in the `execute` function is not atomic, which may lead to race conditions or unexpected results in concurrent executions.

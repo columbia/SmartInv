@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract Escrow {
+    IERC20 public token;
+    address public seller;
+    address public buyer;
+    uint public amount;
+
+    constructor(address _token, address _seller, address _buyer, uint _amount) {
+        token = IERC20(_token);
+        seller = _seller;
+        buyer = _buyer;
+        amount = _amount;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == seller, "Only seller can release amount");
+        token.transfer(buyer, amount);
+    }
+
+    function refundAmount() public {
+        require(msg.sender == buyer, "Only buyer can refund amount");
+        token.transfer(seller, amount);
+    }
+}
+<\contract_to_analyze\>

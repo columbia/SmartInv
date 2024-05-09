@@ -1,0 +1,26 @@
+<\contract\>
+contract TokenSale {
+    mapping(address => uint) public balances;
+    mapping(address => bool) public claimed;
+    address public owner;
+    uint public tokenPrice;
+    
+    constructor(uint _tokenPrice) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect token price");
+        balances[msg.sender] += amount;
+    }
+
+    function claimTokens() public {
+        require(balances[msg.sender] > 0, "No tokens to claim");
+        require(!claimed[msg.sender], "Tokens already claimed");
+        claimed[msg.sender] = true;
+        
+        // transfer tokens to the user
+    }
+}
+<\contract\>

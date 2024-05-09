@@ -1,0 +1,44 @@
+<\contract\> 
+contract Vesting {
+         address public beneficiary;
+         uint public start;
+         uint public duration;
+         uint public interval;
+         uint public cliff;
+         uint public end;
+         uint public released;
+         IERC20 public token;
+
+         constructor(address _beneficiary, uint _start, uint _duration, uint _interval, uint _cliff, IERC20 _token) {
+             beneficiary = _beneficiary;
+             start = _start;
+             duration = _duration;
+             interval = _interval;
+             cliff = _cliff;
+             end = start + duration;
+             token = _token;
+         }
+
+         function release() public {
+             require(block.timestamp >= cliff, "Cliff has not been reached");
+             uint releasable = getReleasableAmount();
+             require(releasable > 0, "No tokens to release");
+             token.transfer(beneficiary, releasable);
+             released += releasable;
+         }
+
+         function getReleasableAmount() public view returns (uint) {
+             if (block.timestamp < cliff) {
+                 return 0;
+             } else if (block.timestamp >= end) {
+                 return token.balanceOf(address(this)) - released;
+             } else {
+                 uint vested = (token.balanceOf(address(this)) * (block.timestamp - start)) / duration;
+                 return vested - released;
+             }
+         }
+} 
+
+Output:
+- Incorrect visibility/ownership: The constructor should be marked as public or external to prevent any ownership issues.
+- Integer overflow/underflow: There is potential for integer overflow in the calculation of vested amount in the getReleasableAmount function.

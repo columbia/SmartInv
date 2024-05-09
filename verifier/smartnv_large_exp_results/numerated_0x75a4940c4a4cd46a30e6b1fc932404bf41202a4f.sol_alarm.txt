@@ -1,0 +1,25 @@
+<\the_contract_you_are_analyzing\> 
+contract TokenSale {
+         address public token;
+         address public owner;
+         uint public tokenPrice;
+         mapping(address => uint) public balances;
+
+         function buyTokens(uint amount) public {
+             uint totalCost = amount * tokenPrice;
+             require(msg.value >= totalCost, "Insufficient funds provided");
+             balances[msg.sender] += amount;
+             token.transfer(msg.sender, amount);
+             owner.transfer(totalCost);
+         }
+
+         function setTokenPrice(uint price) public {
+             require(msg.sender == owner, "Only the owner can set the token price");
+             tokenPrice = price;
+         }
+
+         function withdrawTokens(address recipient, uint amount) public {
+             require(msg.sender == owner, "Only the owner can withdraw tokens");
+             token.transfer(recipient, amount);
+         }
+     }

@@ -1,0 +1,33 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    uint public amount;
+    bool public payerApproved;
+    bool public recipientApproved;
+    bool public arbiterApproved;
+
+    constructor(address _payer, address _recipient, address _arbiter, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+
+    function approvePayment() public {
+        if (msg.sender == payer) {
+            payerApproved = true;
+        } else if (msg.sender == recipient) {
+            recipientApproved = true;
+        } else if (msg.sender == arbiter) {
+            arbiterApproved = true;
+        }
+        if (payerApproved && recipientApproved) {
+            recipient.transfer(amount);
+        } else if (payerApproved && arbiterApproved) {
+            arbiter.transfer(amount);
+        }
+    }
+}
+<\contract\> 

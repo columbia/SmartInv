@@ -1,0 +1,21 @@
+contract PaymentGateway {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transfer(address recipient, uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+} 
+
+Output: healthy

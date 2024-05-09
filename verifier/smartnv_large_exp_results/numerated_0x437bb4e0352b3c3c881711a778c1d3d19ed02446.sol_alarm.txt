@@ -1,0 +1,19 @@
+<\the_contract\> 
+contract VotingSystem {
+         mapping(address => uint) public voteCount;
+         uint public totalVotes;
+
+         function vote(uint _vote) public {
+             require(_vote == 0 || _vote == 1, "Invalid vote");
+             voteCount[msg.sender] = _vote;
+             totalVotes++;
+         }
+
+         function getTotalVotes() public view returns (uint) {
+             return totalVotes;
+         }
+}
+<\the_contract\> 
+
+The potential vulnerabilities in the contract <\the_contract\> are:
+- healthy

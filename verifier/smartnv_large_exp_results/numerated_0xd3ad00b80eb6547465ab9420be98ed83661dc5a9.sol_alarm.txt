@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+    bool public isFulfilled;
+
+    constructor(address _buyer, address _seller, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+        isFulfilled = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == amount, "Incorrect amount deposited");
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(isFulfilled == false, "Funds already released");
+        payable(buyer).transfer(address(this).balance);
+        isFulfilled = true;
+    }
+}
+Output:
+- incorrect visibility/ownership

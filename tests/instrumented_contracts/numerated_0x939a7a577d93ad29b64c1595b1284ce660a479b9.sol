@@ -1,0 +1,450 @@
+1 // File: node_modules\@openzeppelin\contracts\token\ERC20\IERC20.sol
+2 
+3 
+4 
+5 pragma solidity ^0.8.0;
+6 
+7 /**
+8  * @dev Interface of the ERC20 standard as defined in the EIP.
+9  */
+10 interface IERC20 {
+11     /**
+12      * @dev Returns the amount of tokens in existence.
+13      */
+14     function totalSupply() external view returns (uint256);
+15 
+16     /**
+17      * @dev Returns the amount of tokens owned by `account`.
+18      */
+19     function balanceOf(address account) external view returns (uint256);
+20 
+21     /**
+22      * @dev Moves `amount` tokens from the caller's account to `recipient`.
+23      *
+24      * Returns a boolean value indicating whether the operation succeeded.
+25      *
+26      * Emits a {Transfer} event.
+27      */
+28     function transfer(address recipient, uint256 amount) external returns (bool);
+29 
+30     /**
+31      * @dev Returns the remaining number of tokens that `spender` will be
+32      * allowed to spend on behalf of `owner` through {transferFrom}. This is
+33      * zero by default.
+34      *
+35      * This value changes when {approve} or {transferFrom} are called.
+36      */
+37     function allowance(address owner, address spender) external view returns (uint256);
+38 
+39     /**
+40      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+41      *
+42      * Returns a boolean value indicating whether the operation succeeded.
+43      *
+44      * IMPORTANT: Beware that changing an allowance with this method brings the risk
+45      * that someone may use both the old and the new allowance by unfortunate
+46      * transaction ordering. One possible solution to mitigate this race
+47      * condition is to first reduce the spender's allowance to 0 and set the
+48      * desired value afterwards:
+49      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+50      *
+51      * Emits an {Approval} event.
+52      */
+53     function approve(address spender, uint256 amount) external returns (bool);
+54 
+55     /**
+56      * @dev Moves `amount` tokens from `sender` to `recipient` using the
+57      * allowance mechanism. `amount` is then deducted from the caller's
+58      * allowance.
+59      *
+60      * Returns a boolean value indicating whether the operation succeeded.
+61      *
+62      * Emits a {Transfer} event.
+63      */
+64     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+65 
+66     /**
+67      * @dev Emitted when `value` tokens are moved from one account (`from`) to
+68      * another (`to`).
+69      *
+70      * Note that `value` may be zero.
+71      */
+72     event Transfer(address indexed from, address indexed to, uint256 value);
+73 
+74     /**
+75      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+76      * a call to {approve}. `value` is the new allowance.
+77      */
+78     event Approval(address indexed owner, address indexed spender, uint256 value);
+79 }
+80 
+81 // File: node_modules\@openzeppelin\contracts\token\ERC20\extensions\IERC20Metadata.sol
+82 
+83 
+84 
+85 pragma solidity ^0.8.0;
+86 
+87 
+88 /**
+89  * @dev Interface for the optional metadata functions from the ERC20 standard.
+90  *
+91  * _Available since v4.1._
+92  */
+93 interface IERC20Metadata is IERC20 {
+94     /**
+95      * @dev Returns the name of the token.
+96      */
+97     function name() external view returns (string memory);
+98 
+99     /**
+100      * @dev Returns the symbol of the token.
+101      */
+102     function symbol() external view returns (string memory);
+103 
+104     /**
+105      * @dev Returns the decimals places of the token.
+106      */
+107     function decimals() external view returns (uint8);
+108 }
+109 
+110 // File: node_modules\@openzeppelin\contracts\utils\Context.sol
+111 
+112 
+113 
+114 pragma solidity ^0.8.0;
+115 
+116 /*
+117  * @dev Provides information about the current execution context, including the
+118  * sender of the transaction and its data. While these are generally available
+119  * via msg.sender and msg.data, they should not be accessed in such a direct
+120  * manner, since when dealing with meta-transactions the account sending and
+121  * paying for execution may not be the actual sender (as far as an application
+122  * is concerned).
+123  *
+124  * This contract is only required for intermediate, library-like contracts.
+125  */
+126 abstract contract Context {
+127     function _msgSender() internal view virtual returns (address) {
+128         return msg.sender;
+129     }
+130 
+131     function _msgData() internal view virtual returns (bytes calldata) {
+132         this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
+133         return msg.data;
+134     }
+135 }
+136 
+137 // File: @openzeppelin\contracts\token\ERC20\ERC20.sol
+138 
+139 pragma solidity ^0.8.0;
+140 
+141 
+142 
+143 
+144 /**
+145  * @dev Implementation of the {IERC20} interface.
+146  *
+147  * This implementation is agnostic to the way tokens are created. This means
+148  * that a supply mechanism has to be added in a derived contract using {_mint}.
+149  * For a generic mechanism see {ERC20PresetMinterPauser}.
+150  *
+151  * TIP: For a detailed writeup see our guide
+152  * https://forum.zeppelin.solutions/t/how-to-implement-erc20-supply-mechanisms/226[How
+153  * to implement supply mechanisms].
+154  *
+155  * We have followed general OpenZeppelin guidelines: functions revert instead
+156  * of returning `false` on failure. This behavior is nonetheless conventional
+157  * and does not conflict with the expectations of ERC20 applications.
+158  *
+159  * Additionally, an {Approval} event is emitted on calls to {transferFrom}.
+160  * This allows applications to reconstruct the allowance for all accounts just
+161  * by listening to said events. Other implementations of the EIP may not emit
+162  * these events, as it isn't required by the specification.
+163  *
+164  * Finally, the non-standard {decreaseAllowance} and {increaseAllowance}
+165  * functions have been added to mitigate the well-known issues around setting
+166  * allowances. See {IERC20-approve}.
+167  */
+168 contract ERC20 is Context, IERC20, IERC20Metadata {
+169     mapping (address => uint256) private _balances;
+170 
+171     mapping (address => mapping (address => uint256)) private _allowances;
+172 
+173     uint256 private _totalSupply;
+174 
+175     string private _name;
+176     string private _symbol;
+177 
+178     /**
+179      * @dev Sets the values for {name} and {symbol}.
+180      *
+181      * The defaut value of {decimals} is 18. To select a different value for
+182      * {decimals} you should overload it.
+183      *
+184      * All two of these values are immutable: they can only be set once during
+185      * construction.
+186      */
+187     constructor (string memory name_, string memory symbol_) {
+188         _name = name_;
+189         _symbol = symbol_;
+190     }
+191 
+192     /**
+193      * @dev Returns the name of the token.
+194      */
+195     function name() public view virtual override returns (string memory) {
+196         return _name;
+197     }
+198 
+199     /**
+200      * @dev Returns the symbol of the token, usually a shorter version of the
+201      * name.
+202      */
+203     function symbol() public view virtual override returns (string memory) {
+204         return _symbol;
+205     }
+206 
+207     /**
+208      * @dev Returns the number of decimals used to get its user representation.
+209      * For example, if `decimals` equals `2`, a balance of `505` tokens should
+210      * be displayed to a user as `5,05` (`505 / 10 ** 2`).
+211      *
+212      * Tokens usually opt for a value of 18, imitating the relationship between
+213      * Ether and Wei. This is the value {ERC20} uses, unless this function is
+214      * overridden;
+215      *
+216      * NOTE: This information is only used for _display_ purposes: it in
+217      * no way affects any of the arithmetic of the contract, including
+218      * {IERC20-balanceOf} and {IERC20-transfer}.
+219      */
+220     function decimals() public view virtual override returns (uint8) {
+221         return 18;
+222     }
+223 
+224     /**
+225      * @dev See {IERC20-totalSupply}.
+226      */
+227     function totalSupply() public view virtual override returns (uint256) {
+228         return _totalSupply;
+229     }
+230 
+231     /**
+232      * @dev See {IERC20-balanceOf}.
+233      */
+234     function balanceOf(address account) public view virtual override returns (uint256) {
+235         return _balances[account];
+236     }
+237 
+238     /**
+239      * @dev See {IERC20-transfer}.
+240      *
+241      * Requirements:
+242      *
+243      * - `recipient` cannot be the zero address.
+244      * - the caller must have a balance of at least `amount`.
+245      */
+246     function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+247         _transfer(_msgSender(), recipient, amount);
+248         return true;
+249     }
+250 
+251     /**
+252      * @dev See {IERC20-allowance}.
+253      */
+254     function allowance(address owner, address spender) public view virtual override returns (uint256) {
+255         return _allowances[owner][spender];
+256     }
+257 
+258     /**
+259      * @dev See {IERC20-approve}.
+260      *
+261      * Requirements:
+262      *
+263      * - `spender` cannot be the zero address.
+264      */
+265     function approve(address spender, uint256 amount) public virtual override returns (bool) {
+266         _approve(_msgSender(), spender, amount);
+267         return true;
+268     }
+269 
+270     /**
+271      * @dev See {IERC20-transferFrom}.
+272      *
+273      * Emits an {Approval} event indicating the updated allowance. This is not
+274      * required by the EIP. See the note at the beginning of {ERC20}.
+275      *
+276      * Requirements:
+277      *
+278      * - `sender` and `recipient` cannot be the zero address.
+279      * - `sender` must have a balance of at least `amount`.
+280      * - the caller must have allowance for ``sender``'s tokens of at least
+281      * `amount`.
+282      */
+283     function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+284         _transfer(sender, recipient, amount);
+285 
+286         uint256 currentAllowance = _allowances[sender][_msgSender()];
+287         require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
+288         _approve(sender, _msgSender(), currentAllowance - amount);
+289 
+290         return true;
+291     }
+292 
+293     /**
+294      * @dev Atomically increases the allowance granted to `spender` by the caller.
+295      *
+296      * This is an alternative to {approve} that can be used as a mitigation for
+297      * problems described in {IERC20-approve}.
+298      *
+299      * Emits an {Approval} event indicating the updated allowance.
+300      *
+301      * Requirements:
+302      *
+303      * - `spender` cannot be the zero address.
+304      */
+305     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+306         _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
+307         return true;
+308     }
+309 
+310     /**
+311      * @dev Atomically decreases the allowance granted to `spender` by the caller.
+312      *
+313      * This is an alternative to {approve} that can be used as a mitigation for
+314      * problems described in {IERC20-approve}.
+315      *
+316      * Emits an {Approval} event indicating the updated allowance.
+317      *
+318      * Requirements:
+319      *
+320      * - `spender` cannot be the zero address.
+321      * - `spender` must have allowance for the caller of at least
+322      * `subtractedValue`.
+323      */
+324     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+325         uint256 currentAllowance = _allowances[_msgSender()][spender];
+326         require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+327         _approve(_msgSender(), spender, currentAllowance - subtractedValue);
+328 
+329         return true;
+330     }
+331 
+332     /**
+333      * @dev Moves tokens `amount` from `sender` to `recipient`.
+334      *
+335      * This is internal function is equivalent to {transfer}, and can be used to
+336      * e.g. implement automatic token fees, slashing mechanisms, etc.
+337      *
+338      * Emits a {Transfer} event.
+339      *
+340      * Requirements:
+341      *
+342      * - `sender` cannot be the zero address.
+343      * - `recipient` cannot be the zero address.
+344      * - `sender` must have a balance of at least `amount`.
+345      */
+346     function _transfer(address sender, address recipient, uint256 amount) internal virtual {
+347         require(sender != address(0), "ERC20: transfer from the zero address");
+348         require(recipient != address(0), "ERC20: transfer to the zero address");
+349 
+350         _beforeTokenTransfer(sender, recipient, amount);
+351 
+352         uint256 senderBalance = _balances[sender];
+353         require(senderBalance >= amount, "ERC20: transfer amount exceeds balance");
+354         _balances[sender] = senderBalance - amount;
+355         _balances[recipient] += amount;
+356 
+357         emit Transfer(sender, recipient, amount);
+358     }
+359 
+360     /** @dev Creates `amount` tokens and assigns them to `account`, increasing
+361      * the total supply.
+362      *
+363      * Emits a {Transfer} event with `from` set to the zero address.
+364      *
+365      * Requirements:
+366      *
+367      * - `to` cannot be the zero address.
+368      */
+369     function _mint(address account, uint256 amount) internal virtual {
+370         require(account != address(0), "ERC20: mint to the zero address");
+371 
+372         _beforeTokenTransfer(address(0), account, amount);
+373 
+374         _totalSupply += amount;
+375         _balances[account] += amount;
+376         emit Transfer(address(0), account, amount);
+377     }
+378 
+379     /**
+380      * @dev Destroys `amount` tokens from `account`, reducing the
+381      * total supply.
+382      *
+383      * Emits a {Transfer} event with `to` set to the zero address.
+384      *
+385      * Requirements:
+386      *
+387      * - `account` cannot be the zero address.
+388      * - `account` must have at least `amount` tokens.
+389      */
+390     function _burn(address account, uint256 amount) internal virtual {
+391         require(account != address(0), "ERC20: burn from the zero address");
+392 
+393         _beforeTokenTransfer(account, address(0), amount);
+394 
+395         uint256 accountBalance = _balances[account];
+396         require(accountBalance >= amount, "ERC20: burn amount exceeds balance");
+397         _balances[account] = accountBalance - amount;
+398         _totalSupply -= amount;
+399 
+400         emit Transfer(account, address(0), amount);
+401     }
+402 
+403     /**
+404      * @dev Sets `amount` as the allowance of `spender` over the `owner` s tokens.
+405      *
+406      * This internal function is equivalent to `approve`, and can be used to
+407      * e.g. set automatic allowances for certain subsystems, etc.
+408      *
+409      * Emits an {Approval} event.
+410      *
+411      * Requirements:
+412      *
+413      * - `owner` cannot be the zero address.
+414      * - `spender` cannot be the zero address.
+415      */
+416     function _approve(address owner, address spender, uint256 amount) internal virtual {
+417         require(owner != address(0), "ERC20: approve from the zero address");
+418         require(spender != address(0), "ERC20: approve to the zero address");
+419 
+420         _allowances[owner][spender] = amount;
+421         emit Approval(owner, spender, amount);
+422     }
+423 
+424     /**
+425      * @dev Hook that is called before any transfer of tokens. This includes
+426      * minting and burning.
+427      *
+428      * Calling conditions:
+429      *
+430      * - when `from` and `to` are both non-zero, `amount` of ``from``'s tokens
+431      * will be to transferred to `to`.
+432      * - when `from` is zero, `amount` tokens will be minted for `to`.
+433      * - when `to` is zero, `amount` of ``from``'s tokens will be burned.
+434      * - `from` and `to` are never both zero.
+435      *
+436      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
+437      */
+438     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
+439 }
+440 
+441 
+442 
+443 pragma solidity ^0.8.0;
+444 
+445 
+446 contract JEJUDOGE is ERC20 {
+447     constructor () ERC20("Jejudoge", "JEJUDOGE") {
+448         _mint(msg.sender, 1000000000000000 * (10 ** uint256(decimals())));
+449     }
+450 }

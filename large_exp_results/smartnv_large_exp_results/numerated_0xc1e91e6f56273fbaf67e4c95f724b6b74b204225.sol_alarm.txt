@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    mapping(uint256 => bool) public tokensSold;
+    uint256 public tokenPrice = 1 ether;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyToken(uint256 _tokenId) public payable {
+        require(msg.value == tokenPrice, "Incorrect token price");
+        require(tokensSold[_tokenId] == false, "Token already sold");
+
+        tokensSold[_tokenId] = true;
+    }
+
+    function setTokenPrice(uint256 _newPrice) public {
+        require(msg.sender == owner, "Only owner can set token price");
+
+        tokenPrice = _newPrice;
+    }
+}
+
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

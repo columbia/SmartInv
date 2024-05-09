@@ -1,0 +1,28 @@
+<\contract\>
+contract Insurance {
+    struct Policy {
+        uint256 ID;
+        address insuredAddress;
+        uint256 premiumAmount;
+        bool isPaidOut;
+    }
+    
+    mapping(uint256 => Policy) public policies;
+    uint256 public totalPolicies;
+    
+    function issuePolicy(address _insuredAddress, uint256 _premiumAmount) public {
+        Policy memory newPolicy = Policy(totalPolicies, _insuredAddress, _premiumAmount, false);
+        policies[totalPolicies] = newPolicy;
+        totalPolicies++;
+    }
+    
+    function claimInsurance(uint256 _policyID) public {
+        require(!policies[_policyID].isPaidOut, "Insurance already claimed");
+        address insured = policies[_policyID].insuredAddress;
+        uint256 amount = policies[_policyID].premiumAmount * 2;
+        payable(insured).transfer(amount);
+        policies[_policyID].isPaidOut = true;
+    }
+
+}
+<\contract\>

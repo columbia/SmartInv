@@ -1,0 +1,29 @@
+<\contract\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public fundsByBidder;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        require(msg.sender != highestBidder, "You are already the highest bidder");
+
+        fundsByBidder[highestBidder] += highestBid;
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "You cannot withdraw while being the highest bidder");
+
+        uint amount = fundsByBidder[msg.sender];
+        fundsByBidder[msg.sender] = 0;
+        
+        require(msg.sender.send(amount), "Withdraw failed");
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities identified in the contract are:
+1) Reentrancy
+2) Inconsistent state update

@@ -1,0 +1,25 @@
+<\contract\>
+contract Escrow {
+         IERC20 public token;
+         address public seller;
+         address public buyer;
+         uint public amount;
+
+         function initialize(address _token, address _seller, address _buyer, uint _amount) external {
+             token = IERC20(_token);
+             seller = _seller;
+             buyer = _buyer;
+             amount = _amount;
+         }
+
+         function release() external {
+             require(msg.sender == seller, "Only seller can release funds");
+             token.transfer(buyer, amount);
+         }
+
+         function refund() external {
+             require(msg.sender == buyer, "Only buyer can request refund");
+             token.transfer(seller, amount);
+         }
+}
+<\contract\>

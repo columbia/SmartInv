@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) privilege escalation: The contract does not restrict who can call the `liquidate` function, potentially allowing unauthorized users to execute liquidations.
+2) price manipulation: The `calculatePrice` function does not handle potential price manipulation or oracle manipulation, which could lead to inaccurate price calculations and result in incorrect liquidation decisions.
+3) arithmetic flaw: In the `liquidate` function, the calculation `getPrice() * cAmount * 80 / 100` could potentially lead to arithmetic flaws if not handled carefully, especially with regards to integer division.
+4) incorrect visibility/ownership: The visibility of the `debt` and `collateral` mappings being public may expose sensitive user information, and the lack of access control or ownership restrictions on these mappings could lead to unauthorized access or manipulation.

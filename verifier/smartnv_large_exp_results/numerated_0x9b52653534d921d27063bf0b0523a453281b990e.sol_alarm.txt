@@ -1,0 +1,25 @@
+Contract:
+
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(address _token, uint _tokenPrice) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) external {
+        uint totalPrice = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= totalPrice, "Not enough token balance to buy");
+        token.transferFrom(msg.sender, owner, _amount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Price manipulation: The token price is set by the owner upon contract deployment, creating potential for price manipulation.
+2) Incorrect visibility/ownership: The owner variable is public, potentially exposing sensitive information about the contract owner.
+3) Insufficient gas: The buyTokens function does not specify gas requirements, which could lead to transactions failing due to insufficient gas.
+4) Inconsistent state update: The contract does not have proper checks to ensure consistent state updates during token transfers.

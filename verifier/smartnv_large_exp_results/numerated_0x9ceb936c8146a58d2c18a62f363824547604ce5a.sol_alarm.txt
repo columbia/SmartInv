@@ -1,0 +1,33 @@
+<\contract\> 
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    bool public sellerApproved;
+    bool public buyerApproved;
+    
+    constructor(address _seller, address _buyer, address _arbiter, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+        sellerApproved = false;
+        buyerApproved = false;
+    }
+    
+    function approvePayment() public {
+        require(msg.sender == seller || msg.sender == buyer, "Only seller or buyer can approve payment");
+        if (msg.sender == seller) {
+            sellerApproved = true;
+        } else {
+            buyerApproved = true;
+        }
+        if (sellerApproved && buyerApproved) {
+            address(this).transfer(price);
+        }
+    }
+} 
+
+Output:
+- Incorrect visibility/ownership

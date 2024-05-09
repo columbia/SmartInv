@@ -1,0 +1,38 @@
+The contract to be analyzed:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+    State public currentState;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier inState(State expectedState) {
+        require(currentState == expectedState, "Invalid state");
+        _;
+    }
+
+    function makePayment() public payable onlyBuyer inState(State.AWAITING_PAYMENT) {
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public onlyBuyer inState(State.AWAITING_DELIVERY) {
+        currentState = State.COMPLETE;
+        seller.transfer(address(this).balance);
+    }
+
+    function refundPayment() public onlyBuyer inState(State.AWAITING_DELIVERY) {
+        currentState = State.REFUNDED;
+        buyer.transfer(address(this).balance);
+    }
+}
+
+Output: 
+- incorrect visibility/ownership
+- inconsistent state update

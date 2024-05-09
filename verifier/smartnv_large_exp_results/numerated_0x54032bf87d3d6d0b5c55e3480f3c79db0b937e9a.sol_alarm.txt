@@ -1,0 +1,46 @@
+The contract provided for analysis:
+
+```solidity
+contract VotingSystem is IERC20 {
+    struct Proposal {
+        uint256 startTime; 
+        uint256 votedAmount; 
+        address proposer; 
+    }
+    
+    address public owner;
+    IERC20 public votingToken;
+    mapping(address => uint256) startingBalanceList;
+    Proposal public proposal;
+
+    function startVoting() external {
+        require(proposal.startTime == 0, "voting already in progress");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        uint256 startingBalance = getStartingBalance(proposal.proposer);
+        startingBalanceList[proposal.proposer] = startingBalance; 
+    }
+
+    function vote(uint256 amount) external {
+        require(proposal.startTime + 24 > block.timestamp, "voting period ended");
+        require(proposal.votedAmount == 0, "voting already done"); 
+        votingToken.transferFrom(msg.sender, address(this), amount);
+        proposal.votedAmount += amount; 
+    }
+
+    function endVoting() external {
+        require(proposal.startTime != 0, "no active proposal");
+        require(proposal.startTime + 24 < block.timestamp, "voting period ongoing");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "voting failed");
+    }
+
+    function getStartingBalance(address proposer) internal view returns (uint256) {
+        // Some implementation to determine starting balance
+        return 100;
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+
+1) business logic flaw
+2) insufficient gas

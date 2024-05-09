@@ -1,0 +1,36 @@
+The contract being analyzed:
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public amount;
+    bool public isPaid = false;
+
+    constructor(address _seller, address _buyer, uint _amount) {
+        seller = _seller;
+        buyer = _buyer;
+        amount = _amount;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only the buyer can deposit funds");
+        require(msg.value == amount, "Incorrect amount deposited");
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only the seller can release funds");
+        require(isPaid == false, "Funds have already been released");
+        payable(seller).transfer(amount);
+        isPaid = true;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only the buyer can request a refund");
+        require(isPaid == false, "Funds have already been released");
+        payable(buyer).transfer(amount);
+        isPaid = true;
+    }
+}
+
+Output:
+- healthy

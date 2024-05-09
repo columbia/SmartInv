@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+<\contract_to_analyze\>
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => uint) public userVotes;
+
+    function vote(uint _amount) external {
+        require(_amount > 0, "Invalid vote amount");
+        totalVotes += _amount;
+        userVotes[msg.sender] += _amount;
+    }
+
+    function revokeVote(uint _amount) external {
+        require(userVotes[msg.sender] >= _amount, "Insufficient votes to revoke");
+        totalVotes -= _amount;
+        userVotes[msg.sender] -= _amount;
+    }
+}
+<\contract_to_analyze\>
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow: There is a potential for integer overflow/underflow in the totalVotes variable and userVotes mapping if the vote or revokeVote functions are called with a large or negative value.
+2) Inconsistent state update: The totalVotes and userVotes variables are updated independently in the vote and revokeVote functions, which could lead to inconsistencies in the data.
+3) Insufficient gas: If the contract runs out of gas during the execution of the vote or revokeVote functions, the state changes may not be completed successfully.
+4) Incorrect visibility/ownership: The totalVotes and userVotes variables are public, which allows anyone to view the total votes and individual user votes, potentially compromising privacy.

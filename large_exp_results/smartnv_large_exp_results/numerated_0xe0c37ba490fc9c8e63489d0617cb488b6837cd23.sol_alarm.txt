@@ -1,0 +1,36 @@
+The contract below may have the following potential vulnerabilities:
+
+1) incorrect visibility/ownership
+2) inconsistent state update
+3) insufficient gas
+
+<\contract_to_analyze\>
+contract TokenSale {
+    uint public tokenPrice;
+    uint public totalTokens;
+    address public owner;
+    address public tokenContract;
+
+    constructor(address _tokenContract, uint _tokenPrice, uint _totalTokens) public {
+        tokenContract = _tokenContract;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent");
+
+        (bool success, ) = tokenContract.call(abi.encodeWithSignature("transfer(address,uint256)", msg.sender, _numTokens));
+        require(success, "Token transfer failed");
+
+        totalTokens -= _numTokens;
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can change the token price");
+
+        tokenPrice = _newPrice;
+    }
+}
+<\contract_to_analyze\>

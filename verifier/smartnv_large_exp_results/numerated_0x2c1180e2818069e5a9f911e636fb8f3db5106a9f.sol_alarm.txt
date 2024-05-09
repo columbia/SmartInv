@@ -1,0 +1,29 @@
+<\contract\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) public {
+        token = IERC20(_token);
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalPrice = _amount * price;
+        token.transferFrom(msg.sender, address(this), totalPrice);
+        token.transfer(msg.sender, _amount);
+    }
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "only owner can set the price");
+        price = _price;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership - The setPrice function only checks if the caller is the owner but does not restrict access to the owner. This can lead to privilege escalation if another address gains control of the owner's private key.
+2) Integer overflow/underflow - There is a potential for integer overflow in the calculation of totalPrice in the buyTokens function if the _amount and price are large values, leading to unexpected behavior.
+3) Insufficient gas - If the total gas required for the buyTokens function exceeds the gas limit, the transaction may fail or be reverted, causing potential issues with token transfers.

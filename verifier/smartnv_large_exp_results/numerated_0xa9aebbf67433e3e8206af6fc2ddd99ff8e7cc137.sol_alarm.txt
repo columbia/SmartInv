@@ -1,0 +1,19 @@
+contract VestingWallet {
+    address public beneficiary;
+    uint public unlockTime;
+    uint public unlockAmount;
+
+    constructor(address _beneficiary, uint _unlockTime, uint _unlockAmount) {
+        beneficiary = _beneficiary;
+        unlockTime = _unlockTime;
+        unlockAmount = _unlockAmount;
+    }
+
+    function release() public {
+        require(block.timestamp >= unlockTime, "Vesting period has not ended yet");
+        require(address(this).balance >= unlockAmount, "Insufficient balance in the contract");
+
+        payable(beneficiary).transfer(unlockAmount);
+        unlockAmount = 0;
+    }
+}

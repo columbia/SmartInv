@@ -1,0 +1,29 @@
+The contract provided for analysis is as follows:
+
+```solidity
+contract VotingContract {
+    address public admin;
+    mapping(address => uint) public votes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint _value) public {
+        votes[msg.sender] = _value;
+    }
+
+    function updateAdmin(address _newAdmin) public {
+        require(msg.sender == admin, "Only admin can update admin");
+        admin = _newAdmin;
+    }
+
+    function getVotes(address _voter) public view returns (uint) {
+        return votes[_voter];
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Privilege escalation: The `updateAdmin` function does not restrict who can become the new admin, allowing potential privilege escalation if an attacker is able to call this function and set themselves as the new admin.
+2) Incorrect visibility/ownership: The `admin` variable is declared as `public`, which exposes the contract's admin address to the public. It would be better to use `private` or `internal` visibility for sensitive variables like the admin address.

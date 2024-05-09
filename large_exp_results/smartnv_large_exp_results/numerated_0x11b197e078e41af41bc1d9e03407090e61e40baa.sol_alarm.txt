@@ -1,0 +1,20 @@
+<\analyzed_contract\>
+contract PaymentContract {
+     address public owner;
+     mapping(uint => bool) paymentStatus;
+
+     constructor() {
+          owner = msg.sender;
+     }
+
+     function makePayment(uint paymentId) public {
+          require(msg.sender == owner, "You are not authorized to make payments");
+          require(!paymentStatus[paymentId], "Payment has already been made for this ID");
+          paymentStatus[paymentId] = true;
+     }
+
+     function checkPaymentStatus(uint paymentId) public view returns (bool) {
+          return paymentStatus[paymentId];
+     }
+}
+<\analyzed_contract\>

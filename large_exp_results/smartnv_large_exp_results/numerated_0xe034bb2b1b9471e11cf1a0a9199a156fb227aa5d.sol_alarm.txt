@@ -1,0 +1,28 @@
+Contract: 
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+     uint public totalTokens;
+
+     constructor(IERC20 _token, uint _price, uint _totalTokens) {
+          token = _token;
+          owner = msg.sender;
+          price = _price;
+          totalTokens = _totalTokens;
+     }
+
+     function buyTokens(uint amount) external payable {
+          require(msg.value == amount * price, "Incorrect payment amount");
+          require(token.balanceOf(address(this)) >= amount, "Not enough tokens in sale");
+          token.transfer(msg.sender, amount);
+     }
+
+     function withdrawFunds() external {
+          require(msg.sender == owner, "Unauthorized");
+          msg.sender.transfer(address(this).balance);
+     }
+}
+Output: 
+- Insufficient gas
+- Incorrect visibility/ownership

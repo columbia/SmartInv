@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        
+        highestBidder.transfer(highestBid);
+        highestBid = msg.value;
+        highestBidder = msg.sender;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw funds");
+
+        uint amount = highestBid;
+        highestBid = 0;
+        highestBidder = address(0);
+        msg.sender.transfer(amount);
+    }
+}
+
+Output:
+- atomicity violation 
+- integer overflow/underflow

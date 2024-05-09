@@ -1,0 +1,27 @@
+The contract you are going to analyze:
+
+contract Marketplace {
+     address public admin;
+     mapping (uint => address) public products;
+     mapping (address => uint) public productOwnership;
+
+     modifier onlyAdmin() {
+         require(msg.sender == admin, "Only admin can call this function");
+         _;
+     }
+
+     function addProduct(address product, uint id) public onlyAdmin {
+         products[id] = product;
+         productOwnership[product] = id;
+     }
+
+     function buyProduct(uint id) public payable {
+         address product = products[id];
+         require(msg.value >= 1 ether, "Insufficient payment");
+         product.transfer(msg.value);
+         productOwnership[msg.sender] = id;
+     }
+}
+Correct output: 
+
+ID uniqueness violation

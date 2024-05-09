@@ -1,0 +1,32 @@
+The contract for analysis:
+
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public tickets;
+    uint public totalTickets;
+    
+    constructor() public {
+        owner = msg.sender;
+    }
+    
+    function buyTicket() public payable {
+        require(msg.value > 0, "Amount must be greater than 0");
+        tickets[msg.sender] += 1;
+        totalTickets++;
+    }
+    
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, totalTickets))) % totalTickets;
+        address winner = getAddressByIndex(winnerIndex);
+        uint payout = address(this).balance;
+        payable(winner).transfer(payout);
+        totalTickets = 0;
+    }
+    
+    function getAddressByIndex(uint index) private view returns (address) {
+        address winnerAddress;
+        // logic to retrieve address by index
+        return winnerAddress;
+    }
+}

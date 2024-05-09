@@ -1,0 +1,43 @@
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        address delegate;
+        uint vote;
+    }
+    
+    mapping(address => uint) public balances;
+    mapping(address => Voter) public voters;
+    
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function delegate(address delegateTo) public {
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        require(delegateTo != msg.sender, "Cannot delegate to yourself");
+        voters[msg.sender].delegate = delegateTo;
+    }
+
+    function vote(uint option) public {
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        voters[msg.sender].vote = option;
+        voters[msg.sender].hasVoted = true;
+    }
+
+    function tallyVotes() public view returns(uint option1, uint option2) {
+        uint countOption1 = 0;
+        uint countOption2 = 0;
+        for (uint i = 0; i < voters.length; i++) {
+            if (voters[i].hasVoted) {
+                if (voters[i].vote == 1) {
+                    countOption1 += balances[i];
+                } else if (voters[i].vote == 2) {
+                    countOption2 += balances[i];
+                }
+            }
+        }
+        return (countOption1, countOption2);
+    }
+}

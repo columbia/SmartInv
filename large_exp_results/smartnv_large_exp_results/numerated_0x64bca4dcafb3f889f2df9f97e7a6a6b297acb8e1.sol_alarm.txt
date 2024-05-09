@@ -1,0 +1,31 @@
+<\contract_to_be_analyzed\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public pendingReturns;
+    bool public ended;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        if (highestBid != 0) {
+            pendingReturns[highestBidder] += highestBid;
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        uint amount = pendingReturns[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        pendingReturns[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "Caller is not the owner");
+        require(!ended, "Auction already ended");
+        ended = true;
+        highestBidder.transfer(highestBid);
+    }
+}
+<\contract_to_be_analyzed\>

@@ -1,0 +1,36 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+     struct Vote {
+          address voter;
+          uint256 amount;
+          bool hasVoted;
+          }
+     mapping(uint256 => Vote) public votes;
+     mapping(address => bool) public hasVoted;
+     uint256 public totalVotes;
+     address public admin;
+
+     function vote(uint256 proposalId, uint256 amount) external {
+          require(!hasVoted[msg.sender], "You have already voted");
+          require(amount > 0, "Invalid amount");
+          votes[proposalId] = Vote(msg.sender, amount, true);
+          totalVotes += amount;
+          hasVoted[msg.sender] = true;
+     }
+
+     function updateAdmin(address newAdmin) external {
+          require(msg.sender == admin, "Only admin can update");
+          admin = newAdmin;
+     }
+
+     function getTotalVotes() external view returns(uint256) {
+          return totalVotes;
+     }
+}
+<\analyzed_contract\> 
+
+<\output\> 
+Potential Vulnerabilities:
+1) privilege escalation: The admin can be changed by any address rather than just the current admin.
+2) inconsistent state update: The hasVoted mapping is not updated when a vote is cast, allowing for potential double voting.
+3) incorrect visibility/ownership: The admin variable can be publicly changed by calling the updateAdmin function.

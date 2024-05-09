@@ -1,0 +1,29 @@
+Contract:
+```solidity
+contract Marketplace {
+    address public owner;
+    mapping(uint => address) public itemsForSale;
+    mapping(address => uint) public itemPrices;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItemForSale(uint itemId, uint price) public {
+        require(msg.sender == owner, "Only owner can add items for sale");
+        itemsForSale[itemId] = msg.sender;
+        itemPrices[msg.sender] = price;
+    }
+
+    function buyItem(uint itemId) public payable {
+        require(itemsForSale[itemId] != address(0), "Item not found");
+        require(msg.value == itemPrices[itemsForSale[itemId]], "Incorrect item price");
+        payable(itemsForSale[itemId]).transfer(msg.value);
+        itemsForSale[itemId] == address(0); // Mark item as sold
+    }
+}
+```
+
+Output:
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership

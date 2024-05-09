@@ -1,0 +1,25 @@
+Contract to be analyzed: 
+
+contract DepositContract {
+    mapping(address => uint256) public deposits;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit() public payable {
+        deposits[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint256 amount) public {
+        require(deposits[msg.sender] >= amount, "Insufficient balance");
+        msg.sender.transfer(amount);
+        deposits[msg.sender] -= amount;
+    }
+}
+
+Potential vulnerabilities in the DepositContract:
+1) Reentrancy vulnerability in the withdraw function.
+2) Incorrect visibility/ownership vulnerability as the owner variable is public.
+3) Integer underflow vulnerability in the withdraw function.

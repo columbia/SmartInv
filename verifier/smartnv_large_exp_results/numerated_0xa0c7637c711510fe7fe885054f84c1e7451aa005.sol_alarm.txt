@@ -1,0 +1,36 @@
+<\your_contract\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address  internal admin;
+     // ERC20 token for voting
+     IERC20 votingToken;
+
+    function createProposal() external {
+              uint256 initialBalance;
+              require(proposal.startTime == 0,"proposal in progress");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              initialBalance = getInitialBalance(proposal.proposer);
+              initialBalanceList[proposal.proposer] = initialBalance; 
+
+        }
+
+    function vote(uint256 amount) external {
+              require(proposal.startTime + 24 > block.timestamp, "voting period ended");
+              require(proposal.votedAmount == 0, "vote has already been cast"); 
+              votingToken.transferFrom(proposal.proposer, address(this), amount);
+              proposal.votedAmount += amount; 
+              castVote(proposal); 
+
+        }
+    function finalizeProposal() external {
+              require(proposal.startTime != 0, "no proposals available");
+              require(proposal.startTime + 24 < block.timestamp, "voting period is still ongoing");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "voting failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+<\your_contract\> 

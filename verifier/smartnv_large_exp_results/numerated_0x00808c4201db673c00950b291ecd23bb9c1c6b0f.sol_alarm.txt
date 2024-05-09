@@ -1,0 +1,28 @@
+The contract provided for analysis: 
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public value;
+    
+    constructor(address _seller, address _buyer, address _arbiter, uint _value) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        value = _value;
+    }
+    
+    function release() public {
+        require(msg.sender == seller || msg.sender == arbiter, "You are not authorized to release funds");
+        payable(seller).transfer(value);
+    }
+    
+    function refund() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "You are not authorized to refund funds");
+        payable(buyer).transfer(value);
+    }
+}
+ 
+Output: 
+- healthy

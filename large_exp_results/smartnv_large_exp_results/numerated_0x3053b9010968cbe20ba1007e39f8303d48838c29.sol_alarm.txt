@@ -1,0 +1,34 @@
+The contract provided is:
+
+contract Escrow {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public amount;
+         bool public buyerOk;
+         bool public sellerOk;
+         bool public arbiterOk;
+
+         function Escrow(address _seller, address _arbiter) public {
+             buyer = msg.sender;
+             seller = _seller;
+             arbiter = _arbiter;
+         }
+
+         function accept() public {
+             if (msg.sender == buyer) {
+                 buyerOk = true;
+             } else if (msg.sender == seller) {
+                 sellerOk = true;
+             } else if (msg.sender == arbiter) {
+                 arbiterOk = true;
+             }
+         }
+     }
+}
+
+The potential vulnerabilities in the Escrow contract are:
+
+1) privilege escalation: The accept function allows the buyer, seller, and arbiter to set the corresponding flags without proper authorization checks, potentially leading to privilege escalation.
+2) inconsistent state update: The accept function updates the flags independently without checking if the previous state allows for the update, which may result in inconsistent contract state.
+3) incorrect visibility/ownership: The state variables buyerOk, sellerOk, and arbiterOk are public, allowing anyone to access and modify them directly, which can lead to unauthorized access or manipulation of the contract state.

@@ -1,0 +1,27 @@
+The contract to analyze:
+
+contract Escrow {
+   uint public balance;
+   address public owner;
+   address public buyer;
+   
+   constructor(address _buyer) {
+      owner = msg.sender;
+      buyer = _buyer;
+   }
+   
+   function deposit() public payable {
+      require(msg.sender == buyer, "Only buyer can deposit funds");
+      balance += msg.value;
+   }
+   
+   function withdraw() public {
+      require(msg.sender == owner, "Only owner can withdraw funds");
+      uint amount = balance;
+      balance = 0;
+      owner.transfer(amount);
+   }
+}
+Potential vulnerabilities in the Escrow contract:
+1) incorrect visibility/ownership
+2) privilege escalation

@@ -1,0 +1,34 @@
+<\contract\>
+contract Escrow {
+    uint public amount;
+    address public seller;
+    address public buyer;
+    bool public isCompleted;
+
+    constructor(address _seller, address _buyer, uint _amount) {
+        seller = _seller;
+        buyer = _buyer;
+        amount = _amount;
+        isCompleted = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == amount, "Incorrect amount deposited");
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(address(this).balance >= amount, "Insufficient funds in escrow");
+        seller.transfer(address(this).balance);
+        isCompleted = true;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can get a refund");
+        require(!isCompleted, "Transaction already completed");
+        buyer.transfer(address(this).balance);
+        isCompleted = true;
+    }
+}
+<\contract\>

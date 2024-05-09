@@ -1,0 +1,34 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    address public admin;
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    
+    constructor() {
+        admin = msg.sender;
+    }
+    
+    function delegate(address delegatee) public {
+        require(msg.sender != delegatee, "Cannot delegate to yourself");
+        require(voters[msg.sender].weight > 0, "Only eligible voters can delegate");
+        
+        voters[msg.sender].delegate = delegatee;
+    }
+    
+    function vote(uint256 option) public {
+        require(voters[msg.sender].weight > 0, "Only eligible voters can vote");
+        require(!voters[msg.sender].voted, "Voter has already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+        totalVotes += voters[msg.sender].weight;
+    }
+}
+<\analyzed_contract\>

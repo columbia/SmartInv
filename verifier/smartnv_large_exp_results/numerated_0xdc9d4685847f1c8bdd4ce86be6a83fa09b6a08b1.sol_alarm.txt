@@ -1,0 +1,32 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint public totalVotes;
+
+    function delegate(address to) external {
+        require(!voters[msg.sender].voted, "You have already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+        
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint option) external {
+        require(!voters[msg.sender].voted, "You have already voted.");
+
+        voters[msg.sender].vote = option;
+        voters[msg.sender].voted = true;
+        totalVotes++;
+    }
+
+    function getWinningOption() external view returns (uint winningOption) {
+        // Logic to determine the winning option based on votes
+        // Not provided for brevity
+    }
+}
+<\analyzed_contract\>

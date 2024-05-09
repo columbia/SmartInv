@@ -1,0 +1,31 @@
+<\contract\> 
+contract TokenSale {
+    mapping(address => uint256) public balances;
+    uint256 public totalTokens;
+    uint256 public tokenPrice;
+
+    constructor(uint256 _totalTokens, uint256 _tokenPrice) {
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint256 numberOfTokens) external payable {
+        require(msg.value == numberOfTokens * tokenPrice, "Incorrect amount sent");
+
+        balances[msg.sender] += numberOfTokens;
+        totalTokens -= numberOfTokens;
+    }
+
+    function withdraw() external {
+        uint256 amount = balances[msg.sender] * tokenPrice;
+        require(amount > 0, "No tokens to withdraw");
+
+        balances[msg.sender] = 0;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\> 
+
+Output:
+1) arithmetic flaw
+2) inconsistent state update

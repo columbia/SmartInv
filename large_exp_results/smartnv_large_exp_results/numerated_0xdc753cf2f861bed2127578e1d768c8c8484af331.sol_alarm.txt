@@ -1,0 +1,28 @@
+The contract we need to analyze for potential vulnerabilities is:
+
+```solidity
+contract VotingSystem {
+    address public owner;
+    mapping(address => uint) public votes;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint _amount) public {
+        require(votes[msg.sender] + _amount >= votes[msg.sender], "Integer overflow");
+        votes[msg.sender] += _amount;
+    }
+    
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = _newOwner;
+    }
+}
+```
+
+The potential vulnerabilities in the `VotingSystem` contract are:
+
+1) `integer overflow/underflow` vulnerability in the `vote` function due to unchecked addition.
+2) `privilege escalation` vulnerability in the `changeOwner` function as any account can potentially call this function and change the owner.
+3) `incorrect visibility` vulnerability where the `votes` mapping is publicly accessible, potentially exposing sensitive information.

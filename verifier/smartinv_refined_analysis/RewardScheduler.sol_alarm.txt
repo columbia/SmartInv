@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The execute function in the TimelockController contract updates the votedAmount of the Proposal struct without ensuring atomicity, which can lead to inconsistent state updates if multiple transactions attempt to update the same proposal simultaneously.
+
+2) Cross bridge inconsistency: The startExecute function in the TimelockController contract updates the startingBalanceList mapping without ensuring the correctness of the data being stored, potentially leading to inconsistencies between the proposal and balance data.
+
+3) ID uniqueness violation: The TimelockController contract does not have a mechanism to ensure the uniqueness of proposal IDs, which could result in conflicts or incorrect data if duplicate proposal IDs are used.
+
+4) Privilege escalation: The TimelockController contract does not have proper access control mechanisms in place, allowing any address to start a new proposal or execute actions, potentially leading to unauthorized privilege escalation. 
+
+5) Business logic flaw: The endExecute function in the TimelockController contract has a business logic flaw where the condition for a successful execution is checking if the lockedFunds are greater than half of the total votingToken supply, which may not accurately reflect the intended execution requirements.
+
+Overall, the contract may need to address these vulnerabilities to ensure the integrity and security of its operations.

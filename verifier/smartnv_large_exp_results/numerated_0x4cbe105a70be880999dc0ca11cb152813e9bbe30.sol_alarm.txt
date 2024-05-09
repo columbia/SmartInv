@@ -1,0 +1,27 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint => address) public itemIdToSeller;
+    mapping(address => uint) public sellerBalance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(uint _itemId) public {
+        require(itemIdToSeller[_itemId] == address(0), "Item already exists");
+        itemIdToSeller[_itemId] = msg.sender;
+    }
+
+    function buyItem(uint _itemId, uint _price) public {
+        address seller = itemIdToSeller[_itemId];
+        require(seller != address(0), "Item does not exist");
+
+        require(msg.value >= _price, "Insufficient funds");
+        uint commission = _price * 5 / 100;
+        sellerBalance[seller] += _price - commission;
+        payable(owner).transfer(commission);
+        payable(seller).transfer(_price - commission);
+    }
+}
+<\contract\>

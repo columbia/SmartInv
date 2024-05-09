@@ -1,0 +1,39 @@
+<\timelock_controller_contract\> 
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBalance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+        }
+
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+<\timelock_controller_contract\> 
+
+Potential vulnerabilities in the TimelockController contract:
+1) Privilege escalation: The contract does not have any access control mechanisms to prevent unauthorized users from starting, executing, or ending proposals, potentially leading to privilege escalation.
+2) Inconsistent state update: In the startExecute function, the variable startingBalanceList is updated without any safeguard to ensure that it is done consistently with other state changes, which may lead to an inconsistent state.
+3) Incorrect visibility/ownership: The owner variable is declared as internal, which may impact the intended visibility or ownership design of the contract and result in unexpected behavior.

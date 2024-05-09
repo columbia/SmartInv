@@ -1,0 +1,25 @@
+<\contract\>
+contract Crowdsale {
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    
+    constructor(uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint amount) public payable {
+        require(amount * tokenPrice <= msg.value, "Not enough ether provided");
+        totalTokens -= amount;
+        // transfer tokens to buyer
+    }
+    
+    function endCrowdsale() public {
+        require(msg.sender == owner, "Only the owner can end the crowdsale");
+        // distribute remaining tokens
+        selfdestruct(msg.sender);
+    }
+}
+<\contract\>

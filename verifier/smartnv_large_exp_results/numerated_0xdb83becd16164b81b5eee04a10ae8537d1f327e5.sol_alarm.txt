@@ -1,0 +1,28 @@
+<\contract_to_analyze\> 
+contract Marketplace {
+    mapping(uint256 => address) public tokenIdToOwner;
+    mapping(address => uint256) public ownerTokenCount;
+
+    function buyToken(uint256 tokenId, uint256 price) external {
+        require(tokenIdToOwner[tokenId] != msg.sender, "cannot buy own token");
+        require(price > 0, "price must be greater than 0");
+        require(price == getTokenPrice(tokenId), "incorrect price");
+
+        // Transfer tokens and update mappings
+        tokenIdToOwner[tokenId] = msg.sender;
+        ownerTokenCount[msg.sender]++;
+        ownerTokenCount[tokenIdToOwner[tokenId]]--;
+
+       msg.sender.transfer(price);
+    }
+
+    function getTokenPrice(uint256 tokenId) public view returns (uint256) {
+        // Calculate and return token price
+        return tokenId * 100;
+    }
+}
+<\contract_to_analyze\> 
+
+Output:
+1) Inconsistent state update
+2) Price manipulation

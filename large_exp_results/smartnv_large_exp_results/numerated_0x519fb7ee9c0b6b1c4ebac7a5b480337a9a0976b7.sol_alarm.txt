@@ -1,0 +1,25 @@
+<\contract_to_analyze\> 
+contract PaymentGateway {
+         address public admin;
+         mapping(address => uint) public balances;
+
+         constructor() {
+             admin = msg.sender;
+         }
+
+         function deposit() public payable {
+             balances[msg.sender] += msg.value;
+         }
+
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             payable(msg.sender).transfer(amount);
+         }
+
+         function changeAdmin(address newAdmin) public {
+             require(msg.sender == admin, "Only admin can change admin");
+             admin = newAdmin;
+         }
+     }
+<\contract_to_analyze\>

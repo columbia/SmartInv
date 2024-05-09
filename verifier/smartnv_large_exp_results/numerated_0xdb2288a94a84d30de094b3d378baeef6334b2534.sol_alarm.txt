@@ -1,0 +1,35 @@
+<\contract\>
+contract Insurance {
+    address public owner;
+    uint public totalBalance;
+    mapping(address => uint) public policyHolders;
+    
+    constructor() public {
+        owner = msg.sender;
+        totalBalance = 0;
+    }
+    
+    function buyPolicy(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(policyHolders[msg.sender] == 0, "Policy already purchased");
+        
+        totalBalance += amount;
+        policyHolders[msg.sender] = amount;
+    }
+    
+    function claimInsurance(uint amount) public {
+        require(policyHolders[msg.sender] >= amount, "Not enough policy amount");
+        
+        totalBalance -= amount;
+        policyHolders[msg.sender] -= amount;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        
+        uint balance = totalBalance;
+        totalBalance = 0;
+        msg.sender.transfer(balance);
+    }
+}
+<\contract\>

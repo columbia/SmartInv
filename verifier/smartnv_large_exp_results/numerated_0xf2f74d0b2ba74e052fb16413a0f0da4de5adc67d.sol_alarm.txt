@@ -1,0 +1,24 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() external {
+        votes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function getVotes(address _voter) external view returns(uint) {
+        return votes[_voter];
+    }
+
+    function getTotalVotes() external view returns(uint) {
+        return totalVotes;
+    }
+}
+
+Potential vulnerabilities in the contract:
+7) ID uniqueness violation - There is no mechanism to ensure the uniqueness of voter addresses, which may lead to mismatches or inaccuracies in the voting data.
+11) Suicidal contracts - There is no implemented functionality to pause or stop the contract, leaving it vulnerable to potential suicide attacks.
+14) Incorrect visibility/ownership - The functions are declared as external, which may allow unauthorized access to critical functionality and data.

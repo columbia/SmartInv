@@ -1,0 +1,25 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    
+    constructor(address _buyer, address _seller, uint _amount, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+        arbiter = _arbiter;
+    }
+    
+    function releaseAmountToSeller() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Caller is not authorized");
+        seller.transfer(amount);
+    }
+    
+    function refundAmountToBuyer() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Caller is not authorized");
+        buyer.transfer(amount);
+    }
+}
+<\contract_to_analyze\>

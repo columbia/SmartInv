@@ -1,0 +1,49 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(address => uint256) public votesReceived;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+        require(voters[to].voted == false, "Delegatee already voted.");
+
+        voters[msg.sender].delegate = to;
+        voters[msg.sender].voted = true;
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+
+        sender.voted = true;
+        sender.vote = proposal;
+
+        votesReceived[proposal] += sender.weight;
+    }
+
+    function winningProposal() public view returns (uint256 winningProposal_) {
+        require(msg.sender == admin, "Only admin can check the winning proposal.");
+
+        uint256 maxVote = 0;
+        for (uint256 i = 0; i < voters[msg.sender].vote; i++) {
+            if (votesReceived[i] > maxVote) {
+                maxVote = votesReceived[i];
+                winningProposal_ = i;
+            }
+        }
+    }
+}
+<\contract_to_analyze\>

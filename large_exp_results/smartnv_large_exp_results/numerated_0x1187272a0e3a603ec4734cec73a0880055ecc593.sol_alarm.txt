@@ -1,0 +1,15 @@
+The potential vulnerabilities in the contract you provided are:
+
+1) Incorrect visibility: The variables `debt` and `collateral` are declared as public, which exposes their values to anyone on the blockchain. Consider using appropriate visibility (e.g., internal or private) to prevent unauthorized access.
+
+2) Inconsistent state update: The `liquidate` function updates the `debt` and `collateral` mappings without considering potential race conditions or checking for proper authorization, which may lead to inconsistent state updates.
+
+3) Business logic flaw: The liquidation condition in the `liquidate` function may allow for price manipulation or front-running attacks, as it relies on a fixed percentage without taking into account potential market fluctuations.
+
+4) Ether leakage: The `calculatePrice` function is marked as payable but does not perform any ether-related operations, which may confuse users and lead to accidental loss of funds due to erroneous transactions.
+
+Therefore, the potential vulnerabilities in the contract are:
+- Incorrect visibility
+- Inconsistent state update
+- Business logic flaw
+- Ether leakage

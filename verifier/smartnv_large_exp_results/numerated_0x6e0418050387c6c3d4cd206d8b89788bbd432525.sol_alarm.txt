@@ -1,0 +1,29 @@
+<\contract\> 
+contract PaymentContract {
+     address public owner;
+     uint public totalPrice;
+
+     modifier onlyOwner {
+         require(msg.sender == owner, "Only owner can call this function");
+         _;
+     }
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function setTotalPrice(uint _totalPrice) public onlyOwner {
+         totalPrice = _totalPrice;
+     }
+
+     function makePayment() public payable {
+         require(msg.value == totalPrice, "Incorrect payment amount");
+         owner.transfer(msg.value);
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the provided contract are:
+1) Integer overflow/underflow: There is no check for potential overflow/underflow when updating or setting the total price.
+2) Incorrect visibility/ownership: The `owner` variable is public, and it should be private to prevent unauthorized access.
+3) Insufficient gas: There is a risk of running out of gas during the `makePayment` function, which could result in the payment not being processed successfully.

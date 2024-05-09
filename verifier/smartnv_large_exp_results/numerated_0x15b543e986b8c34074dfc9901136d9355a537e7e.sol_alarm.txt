@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+
+1) inconsistent state update: The contract TimelockController's execute function updates the votedAmount in the Proposal struct, but there is no check to ensure that the amount being added is accurate. This can lead to inconsistent state updates.
+2) insufficient gas: The endExecute function in the TimelockController contract performs a gas-intensive operation by checking the balanceOf the contract and the totalSupply of votingToken. If the gas limit is not sufficient, this function may fail to execute completely.
+3) reentrancy: The ExchangeTokens contract's liquidate function transfers USDC and WETH without updating the user's debt and collateral balances first. This can potentially lead to reentrancy attacks where an attacker can manipulate their funds while the function is still executing.

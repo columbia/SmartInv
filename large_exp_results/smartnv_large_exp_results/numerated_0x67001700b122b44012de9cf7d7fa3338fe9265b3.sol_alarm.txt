@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+contract Vesting {
+    IERC20 public token;
+    uint public totalAmount;
+    mapping(address => uint) public vestedAmounts;
+    
+    constructor(IERC20 _token, uint _totalAmount) {
+        token = _token;
+        totalAmount = _totalAmount;
+    }
+
+    function vest(uint amount) external {
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), amount);
+        vestedAmounts[msg.sender] += amount;
+    }
+
+    function release() external {
+        require(vestedAmounts[msg.sender] > 0, "No vested amount");
+        token.transfer(msg.sender, vestedAmounts[msg.sender]);
+        vestedAmounts[msg.sender] = 0;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update - The vestedAmounts mapping is updated directly without considering potential reentrancy issues.
+2) Incorrect visibility/ownership - The constructor should be declared as a public function to ensure its proper execution.
+
+Therefore, the vulnerabilities in the contract are Inconsistent state update and Incorrect visibility/ownership.

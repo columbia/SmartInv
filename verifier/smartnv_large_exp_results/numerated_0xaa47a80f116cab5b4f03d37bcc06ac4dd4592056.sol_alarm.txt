@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => Product) public products;
+    uint256 public productCounter;
+
+    struct Product {
+        uint256 id;
+        string name;
+        uint256 price;
+        address seller;
+        bool isSold;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        productCounter = 0;
+    }
+
+    function addProduct(string memory name, uint256 price) external {
+        require(msg.sender == owner, "Only owner can add products");
+        products[productCounter] = Product(productCounter, name, price, msg.sender, false);
+        productCounter++;
+    }
+
+    function buyProduct(uint256 productId) external payable {
+        require(productId < productCounter, "Invalid product ID");
+        Product storage product = products[productId];
+        require(!product.isSold, "Product is already sold");
+        require(msg.value >= product.price, "Insufficient funds");
+        product.seller.transfer(msg.value);
+        product.isSold = true;
+    }
+}
+<\contract_to_analyze\>

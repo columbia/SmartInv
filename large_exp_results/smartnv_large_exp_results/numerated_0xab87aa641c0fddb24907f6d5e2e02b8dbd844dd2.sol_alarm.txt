@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    address public owner;
+    mapping(uint => Item) public items;
+
+    struct Item {
+        address seller;
+        uint price;
+        bool sold;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function listNewItem(uint itemId, uint price) public {
+        require(msg.sender == owner, "Only owner can list new items");
+        items[itemId] = Item(msg.sender, price, false);
+    }
+
+    function buyItem(uint itemId) public payable {
+        require(!items[itemId].sold, "Item is already sold");
+        require(msg.value == items[itemId].price, "Incorrect payment amount");
+
+        items[itemId].seller.transfer(msg.value);
+        items[itemId].sold = true;
+    }
+}
+<\contract_to_analyze\>

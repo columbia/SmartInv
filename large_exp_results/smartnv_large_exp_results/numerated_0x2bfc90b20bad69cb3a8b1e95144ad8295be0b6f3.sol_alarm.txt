@@ -1,0 +1,29 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+     address public token;
+     address public admin;
+     uint public price;
+     mapping(address => uint) public balances;
+
+     modifier onlyAdmin {
+         require(msg.sender == admin, "Only admin can call this function");
+          _;
+     }
+
+     function setPrice(uint _price) public onlyAdmin {
+         price = _price;
+     }
+
+     function buyTokens(uint amount) public payable {
+         require(msg.value == amount * price, "Incorrect amount sent");
+         balances[msg.sender] += amount;
+     }
+
+     function withdrawTokens() public {
+         uint amount = balances[msg.sender];
+         require(amount > 0, "Insufficient balance");
+         balances[msg.sender] = 0;
+         token.transfer(msg.sender, amount);
+     }
+ }
+<\contract_to_be_analyzed\>

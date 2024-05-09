@@ -1,0 +1,30 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    constructor(address _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect amount of ETH sent");
+
+        token.transfer(msg.sender, _amount);
+        totalTokensSold += _amount;
+    }
+
+    function withdrawEther() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        owner.transfer(address(this).balance);
+    }
+
+}
+<\contract\> 
+
+Output:
+- Incorrect visibility/ownership: The function withdrawEther can be called by anyone, not just the owner, potentially leading to unauthorized withdrawals of Ether. The function should have a modifier or additional require statement to ensure only the owner can withdraw funds.

@@ -1,0 +1,17 @@
+<\contract_to_analyze\>
+contract SwapContract {
+    mapping(address => uint) public balances;
+
+    function swapTokens(address token1, uint amount1, address token2, uint amount2) public {
+        require(balances[msg.sender] >= amount1, "Insufficient balance");
+        require(balances[token2] >= amount2, "Insufficient balance");
+
+        balances[msg.sender] -= amount1;
+        balances[token2] -= amount2;
+        balances[token1] += amount1;
+        balances[msg.sender] += amount2;
+    }
+}
+Output: 
+- atomicity violation
+- inconsistent state update

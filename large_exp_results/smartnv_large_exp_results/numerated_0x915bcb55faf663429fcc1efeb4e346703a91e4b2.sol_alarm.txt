@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract Auction {
+    mapping(address => uint) public bids;
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        require(bids[msg.sender] + amount > bids[msg.sender], "Integer overflow detected");
+        
+        if (highestBid != 0) {
+            require(msg.sender != highestBidder, "You are already the highest bidder");
+            bids[highestBidder] += highestBid;
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = amount;
+        bids[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "You cannot withdraw while being the highest bidder");
+        
+        uint amount = bids[msg.sender];
+        bids[msg.sender] = 0;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Withdrawal failed");
+    }
+}
+<\contract_to_analyze\>

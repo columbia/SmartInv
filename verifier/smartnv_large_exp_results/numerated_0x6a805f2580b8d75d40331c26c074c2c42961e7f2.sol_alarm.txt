@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+     address private owner;
+     mapping(uint => uint) public payments;
+
+     function makePayment(uint _id, uint _amount) public {
+         require(msg.sender == owner, "only owner can make payments");
+         payments[_id] += _amount;
+     }
+
+     function withdrawPayment(uint _id) public {
+         uint amount = payments[_id];
+         require(amount > 0, "no payment available for withdrawal");
+         payments[_id] = 0;
+         msg.sender.transfer(amount);
+     }
+}
+<\contract_to_analyze\>

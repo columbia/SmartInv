@@ -1,0 +1,25 @@
+<\contract\>
+contract PaymentProcessor {
+         address payable public owner;
+         mapping(address => uint) public balances;
+         
+         constructor() public {
+             owner = msg.sender;
+         }
+         
+         function deposit() public payable {
+             balances[msg.sender] += msg.value;
+         }
+         
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount,"Insufficient balance");
+             balances[msg.sender] -= amount;
+             msg.sender.transfer(amount);
+         }
+     }
+<\contract\>
+
+The potential vulnerabilities in the contract:
+1) Insufficient gas - The contract does not specify a gas stipend for the transfer function, which could lead to failed transactions if the gas cost exceeds the gas limit.
+2) Incorrect visibility/ownership - The owner variable is set to public, which exposes the owner's address to everyone on the blockchain. This can potentially lead to security risks if the owner's address is publicly known.
+3) Suicidal contracts - There is no functionality in place to prevent the self-destruct function from being called, potentially leading to accidental loss of contract and funds.

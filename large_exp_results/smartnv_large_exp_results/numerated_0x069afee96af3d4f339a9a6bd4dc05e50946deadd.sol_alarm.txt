@@ -1,0 +1,25 @@
+Contract:
+contract PaymentEscrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+    }
+
+    function releasePayment() public {
+        require(msg.sender == payee, "Only payee can release payment");
+        payable(payer).transfer(amount);
+    }
+
+    function cancelPayment() public {
+        require(msg.sender == payer, "Only payer can cancel payment");
+        payable(payee).transfer(amount);
+    }
+}
+
+Output:
+healthy

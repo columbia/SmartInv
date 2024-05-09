@@ -1,0 +1,35 @@
+<\Analyzing Contract\>
+contract Escrow {
+     uint public totalAmount;
+     address public buyer;
+     address public seller;
+     bool public buyerApproved;
+     bool public sellerApproved;
+
+     constructor(address _buyer, address _seller) {
+         buyer = _buyer;
+         seller = _seller;
+     }
+
+     function deposit() public payable {
+         require(msg.sender == buyer, "Only buyer can deposit");
+         totalAmount += msg.value;
+     }
+
+     function withdraw() public {
+         require(msg.sender == buyer, "Only buyer can withdraw");
+         require(buyerApproved, "Buyer has not approved");
+
+         buyer.transfer(totalAmount);
+         totalAmount = 0;
+     }
+
+     function approve() public {
+         if(msg.sender == buyer) {
+             buyerApproved = true;
+         } else if(msg.sender == seller) {
+             sellerApproved = true;
+         }
+     }
+}
+<\Analyzing Contract\>

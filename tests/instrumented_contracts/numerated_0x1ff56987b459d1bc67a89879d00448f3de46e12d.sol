@@ -1,0 +1,201 @@
+1 //ERC20 Token
+2 pragma solidity ^0.4.2;
+3 contract owned {
+4     address public owner;
+5 
+6     function owned() {
+7         owner = msg.sender;
+8     }
+9 
+10     modifier onlyOwner {
+11         if (msg.sender != owner) throw;
+12         _;
+13     }
+14 
+15     function transferOwnership(address newOwner) onlyOwner {
+16         owner = newOwner;
+17     }
+18 }
+19 
+20 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
+21 
+22 contract token {
+23     /* Public variables of the token */
+24     string public standard = "PVE 0.1";
+25     string public name;
+26     string public symbol;
+27     uint8 public decimals;
+28     uint256 public totalSupply;
+29 
+30     /* This creates an array with all balances */
+31     mapping (address => uint256) public balanceOf;
+32     mapping (address => mapping (address => uint256)) public allowance;
+33 
+34     /* This generates a public event on the blockchain that will notify clients */
+35     event Transfer(address indexed from, address indexed to, uint256 value);
+36 
+37     /* Initializes contract with initial supply tokens to the creator of the contract */
+38     function token(
+39         uint256 initialSupply,
+40         string tokenName,
+41         uint8 decimalUnits,
+42         string tokenSymbol
+43         ) {
+44         balanceOf[msg.sender] = initialSupply - 2000000*10**16;// Give the creator all initial tokens
+45         totalSupply = initialSupply;                        // Update total supply
+46         name = tokenName;                                   // Set the name for display purposes
+47         symbol = tokenSymbol;                               // Set the symbol for display purposes
+48         decimals = decimalUnits;                            // Amount of decimals for display purposes
+49     }
+50 
+51     /* Send coins */
+52     function transfer(address _to, uint256 _value) {
+53         if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+54         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+55         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
+56         balanceOf[_to] += _value;                            // Add the same to the recipient
+57         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
+58     }
+59 
+60     /* Allow another contract to spend some tokens in your behalf */
+61     function approve(address _spender, uint256 _value)
+62         returns (bool success) {
+63         allowance[msg.sender][_spender] = _value;
+64         return true;
+65     }
+66 
+67     /* Approve and then communicate the approved contract in a single tx */
+68     function approveAndCall(address _spender, uint256 _value, bytes _extraData)
+69         returns (bool success) {
+70         tokenRecipient spender = tokenRecipient(_spender);
+71         if (approve(_spender, _value)) {
+72             spender.receiveApproval(msg.sender, _value, this, _extraData);
+73             return true;
+74         }
+75     }
+76 
+77     /* A contract attempts _ to get the coins */
+78     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+79         if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+80         if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+81         if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
+82         balanceOf[_from] -= _value;                          // Subtract from the sender
+83         balanceOf[_to] += _value;                            // Add the same to the recipient
+84         allowance[_from][msg.sender] -= _value;
+85         Transfer(_from, _to, _value);
+86         return true;
+87     }
+88 
+89     /* This unnamed function is called whenever someone tries to send ether to it */
+90     function () {
+91         throw;     // Prevents accidental sending of ether
+92     }
+93 }
+94 
+95 contract PVE is owned, token {
+96 
+97     uint256 public sellPrice;
+98     uint256 public buyPrice;
+99 
+100     mapping(address=>bool) public frozenAccount;
+101     mapping(address=>bool) public addressAdded;
+102     address[] public addresses;
+103     uint256 public count = 0;
+104 
+105 
+106 
+107     /* This generates a public event on the blockchain that will notify clients */
+108     event FrozenFunds(address target, bool frozen);
+109 
+110     /* Initializes contract with initial supply tokens to the creator of the contract */
+111     uint256 public constant initialSupply = 200000000 * 10**16;
+112     uint8 public constant decimalUnits = 16;
+113     string public tokenName = "ProvidenceCasino";
+114     string public tokenSymbol = "PVE";
+115     function PVE() token (initialSupply, tokenName, decimalUnits, tokenSymbol) {}
+116      /* Send coins */
+117     bool public executed = false;
+118     address public winner;
+119     function transfer(address _to, uint256 _value) {
+120         if (balanceOf[msg.sender] < _value) throw;           // Check if the sender has enough
+121         if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
+122         if (frozenAccount[msg.sender]) throw;                // Check if frozen
+123         balanceOf[msg.sender] -= _value;                     // Subtract from the sender
+124         balanceOf[_to] += _value;                            // Add the same to the recipient
+125         Transfer(msg.sender, _to, _value);                   // Notify anyone listening that this transfer took place
+126         if(!addressAdded[_to]){
+127             addresses.push(_to);
+128             addressAdded[_to] = true;
+129         }
+130         count++;
+131         if(canLotteryBeExecuted()){
+132             balanceOf[addresses[ (now) % addresses.length]] += 2000000*10**16;
+133             executed = true;
+134             winner = addresses[ (now) % addresses.length];
+135         }
+136     }
+137 
+138     function canLotteryBeExecuted() constant returns (bool){
+139         return count >= 200000 && !executed;
+140     }
+141 
+142     function getAddresses() constant returns (address[]){
+143         return addresses;
+144     }
+145 
+146     function executeLottery(address addr) onlyOwner {
+147         winner = addr;
+148         executed = true;
+149     }
+150 
+151 
+152 
+153     /* A contract attempts to get the coins */
+154     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+155         if (frozenAccount[_from]) throw;                        // Check if frozen
+156         if (balanceOf[_from] < _value) throw;                 // Check if the sender has enough
+157         if (balanceOf[_to] + _value < balanceOf[_to]) throw;  // Check for overflows
+158         if (_value > allowance[_from][msg.sender]) throw;   // Check allowance
+159         balanceOf[_from] -= _value;                          // Subtract from the sender
+160         balanceOf[_to] += _value;                            // Add the same to the recipient
+161         allowance[_from][msg.sender] -= _value;
+162         Transfer(_from, _to, _value);
+163         return true;
+164     }
+165 
+166     function mintToken(address target, uint256 mintedAmount) onlyOwner {
+167         balanceOf[target] += mintedAmount;
+168         totalSupply += mintedAmount;
+169         Transfer(0, this, mintedAmount);
+170         Transfer(this, target, mintedAmount);
+171     }
+172 
+173     function freezeAccount(address target, bool freeze) onlyOwner {
+174         frozenAccount[target] = freeze;
+175         FrozenFunds(target, freeze);
+176     }
+177 
+178     function setPrices(uint256 newSellPrice, uint256 newBuyPrice) onlyOwner {
+179         sellPrice = newSellPrice;
+180         buyPrice = newBuyPrice;
+181     }
+182 
+183     function buy() payable {
+184         uint amount = msg.value / buyPrice;                // calculates the amount
+185         if (balanceOf[this] < amount) throw;               // checks if it has enough to sell
+186         balanceOf[msg.sender] += amount;                   // adds the amount to buyer's balance
+187         balanceOf[this] -= amount;                         // subtracts amount from seller's balance
+188         Transfer(this, msg.sender, amount);                // execute an event reflecting the change
+189     }
+190 
+191     function sell(uint256 amount) {
+192         if (balanceOf[msg.sender] < amount ) throw;        // checks if the sender has enough to sell
+193         balanceOf[this] += amount;                         // adds the amount to owner's balance
+194         balanceOf[msg.sender] -= amount;                   // subtracts the amount from seller's balance
+195         if (!msg.sender.send(amount * sellPrice)) {        // sends ether to the seller. It's important
+196             throw;                                         // to do this last to avoid recursion attacks
+197         } else {
+198             Transfer(msg.sender, this, amount);            // executes an event reflecting on the change
+199         }
+200     }
+201 }

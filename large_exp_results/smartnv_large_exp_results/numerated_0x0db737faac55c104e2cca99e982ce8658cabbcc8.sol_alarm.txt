@@ -1,0 +1,31 @@
+<\contract_to_analyze\>
+contract Marketplace {
+     mapping(address => uint) public balances;
+     uint public totalBalance;
+
+     function deposit(uint amount) public {
+         balances[msg.sender] += amount;
+         totalBalance += amount;
+     }
+
+     function withdraw(uint amount) public {
+         require(amount <= balances[msg.sender], "Insufficient balance");
+         balances[msg.sender] -= amount;
+         totalBalance -= amount;
+     }
+
+     function buy(uint amount) public {
+         require(totalBalance >= amount, "Not enough liquidity");
+         balances[msg.sender] += amount;
+         balances[address(this)] -= amount;
+         totalBalance -= amount;
+     }
+
+     function sell(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         balances[address(this)] += amount;
+         totalBalance += amount;
+     }
+}
+<\contract_to_analyze\>

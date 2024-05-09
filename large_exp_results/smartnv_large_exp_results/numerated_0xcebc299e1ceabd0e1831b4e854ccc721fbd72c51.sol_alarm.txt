@@ -1,0 +1,28 @@
+Contract to be analyzed:
+
+contract SafeDex {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+
+     function swapTokens(uint amountA, uint amountB) public {
+         require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance of token A");
+         require(tokenB.balanceOf(msg.sender) >= amountB, "Insufficient balance of token B");
+
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transferFrom(msg.sender, address(this), amountB);
+
+         // Swap logic here
+     }
+
+     function withdrawTokens() public {
+         uint balanceA = tokenA.balanceOf(address(this));
+         uint balanceB = tokenB.balanceOf(address(this));
+
+         tokenA.transfer(msg.sender, balanceA);
+         tokenB.transfer(msg.sender, balanceB);
+     }
+}
+
+Output:
+1) Incorrect visibility/ownership
+2) Reentrancy

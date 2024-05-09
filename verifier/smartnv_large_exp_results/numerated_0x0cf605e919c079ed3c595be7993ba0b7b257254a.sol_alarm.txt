@@ -1,0 +1,34 @@
+The contract to analyze:
+
+contract PaymentProcessor {
+    uint256 public totalPayments;
+    mapping(address => uint256) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment() public payable {
+        balances[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdrawPayment(uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        totalPayments -= amount;
+        balances[msg.sender] -= amount;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Not authorized");
+        owner = newOwner;
+    }
+}
+
+Output: 
+1) atomicity violation
+2) integer overflow/underflow
+3) reentrancy

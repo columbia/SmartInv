@@ -1,0 +1,18 @@
+Contract:
+contract PaymentContract {
+         address public payer;
+         uint public amount;
+
+         function pay(address _receiver, uint _amount) public {
+             require(msg.sender == payer, "Only payer can initiate payment");
+             _receiver.transfer(_amount);
+         }
+
+         function setPayment(address _payer, uint _amount) public {
+             payer = _payer;
+             amount = _amount;
+         }
+     }
+
+Output:
+- Incorrect visibility/ownership

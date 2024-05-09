@@ -1,0 +1,53 @@
+Contract to Analyze:
+
+contract VestingContract {
+    address public owner;
+    address public beneficiary;
+    uint public totalAmount;
+    uint public startTime;
+    uint public cliffDuration;
+    uint public vestingDuration;
+    mapping(uint => uint) public releasedAmounts;
+    
+    constructor(address _beneficiary, uint _totalAmount, uint _startTime, uint _cliffDuration, uint _vestingDuration) {
+        owner = msg.sender;
+        beneficiary = _beneficiary;
+        totalAmount = _totalAmount;
+        startTime = _startTime;
+        cliffDuration = _cliffDuration;
+        vestingDuration = _vestingDuration;
+    }
+    
+    function release(uint _month) public {
+        require(msg.sender == beneficiary, "Only beneficiary can release funds");
+        require(_month >= 1, "Month must be greater than or equal to 1");
+        require(_month <= vestingDuration, "Month must be within vesting duration");
+
+        uint vestedAmount = calculateVestedAmount(_month);
+        require(vestedAmount > releasedAmounts[_month - 1], "Amount already released");
+        
+        releasedAmounts[_month] = vestedAmount;
+        // Transfer vestedAmount to beneficiary
+        // Pseudo-code: beneficiary.transfer(vestedAmount);
+    }
+    
+    function calculateVestedAmount(uint _month) view public returns (uint) {
+        uint vestedAmount = 0;
+        if (block.timestamp < startTime + cliffDuration + (_month - 1) * 30 days) {
+            return vestedAmount;
+        } else if (block.timestamp >= startTime + vestingDuration) {
+            return totalAmount;
+        } else {
+            vestedAmount = totalAmount * _month / vestingDuration;
+            return vestedAmount;
+        }
+    }
+}
+
+Potential Vulnerabilities:
+1) Integer overflow/underflow in calculateVestedAmount function.
+2) Inconsistent state update in the release function.
+3) Incorrect visibility/ownership in the release function.
+4) Insufficient gas for the transfer of vestedAmount in the release function.
+5) Business logic flaw in calculateVestedAmount function, potentially leading to incorrect calculations.
+6) Potential reentrancy vulnerability if the transfer of funds to the beneficiary is not handled properly.

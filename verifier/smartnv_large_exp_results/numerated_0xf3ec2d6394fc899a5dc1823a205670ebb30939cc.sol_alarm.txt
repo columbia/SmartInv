@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract TokenSale {
+     IERC20 public token;
+     uint public price;
+     address public owner;
+
+     constructor(IERC20 _token, uint _price) {
+         token = _token;
+         price = _price;
+         owner = msg.sender;
+     }
+
+     function buyTokens(uint amount) public {
+         require(token.balanceOf(address(this)) >= amount * price, "Insufficient token balance");
+         token.transfer(msg.sender, amount);
+     }
+
+     function setPrice(uint _price) public {
+         require(msg.sender == owner, "Only owner can set price");
+         price = _price;
+     }
+}
+
+Output: 
+1) Privilege escalation
+2) Incorrect visibility/ownership

@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Privilege escalation: The contract does not properly check for permission levels when executing functions, potentially allowing unauthorized individuals to execute functions they should not have access to.
+
+2) Inconsistent state update: There is a potential inconsistency in updating the proposal struct in the function execute. The proposal struct's votedAmount is incremented outside of the votedProposal function, which may lead to unexpected state changes.
+
+3) Arithmetic flaw: In the function endExecute, the comparison (votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()) could potentially lead to arithmetic overflow if the values are very large, resulting in undesired behavior.
+
+4) Incorrect visibility/ownership: The visibility of the owner variable is not explicitly defined, which can cause issues related to data visibility and access control within the contract.

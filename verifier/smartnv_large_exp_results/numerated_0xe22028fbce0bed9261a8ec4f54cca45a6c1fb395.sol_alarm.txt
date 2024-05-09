@@ -1,0 +1,26 @@
+<\contract\>
+contract TokenSale {
+     address public token;
+     address public admin;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(address _token, uint _tokenPrice) {
+         token = _token;
+         admin = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _numTokens) public {
+         require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+         ERC20(token).transfer(msg.sender, _numTokens);
+         tokensSold += _numTokens;
+     }
+
+     function endSale() public {
+         require(msg.sender == admin, "You are not authorized to end the sale");
+         ERC20(token).transfer(admin, ERC20(token).balanceOf(address(this)));
+         selfdestruct(admin);
+     }
+}
+<\contract\>

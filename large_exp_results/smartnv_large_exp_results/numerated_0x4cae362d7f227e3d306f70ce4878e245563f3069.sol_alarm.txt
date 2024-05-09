@@ -1,0 +1,32 @@
+The contract below may have the following potential vulnerabilities:
+
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     bool public buyerApproval;
+     bool public sellerApproval;
+     uint public amount;
+
+     function initiate(address _seller, uint _amount) public {
+         buyer = msg.sender;
+         seller = _seller;
+         amount = _amount;
+     }
+
+     function approve() public {
+         if (msg.sender == buyer) {
+             buyerApproval = true;
+         } else if (msg.sender == seller) {
+             sellerApproval = true;
+         }
+     }
+
+     function finalize() public {
+         if (buyerApproval && sellerApproval) {
+             address(this).balance; 
+             seller.transfer(amount);
+         }
+     }
+}
+<\contract\>

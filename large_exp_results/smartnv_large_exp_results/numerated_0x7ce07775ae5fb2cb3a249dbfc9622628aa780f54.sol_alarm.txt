@@ -1,0 +1,24 @@
+The contract provided for analysis:
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public tokenBalance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) external {
+        require(tokenBalance[msg.sender] >= amount, "Not enough tokens");
+        tokenBalance[msg.sender] -= amount;
+        // Transfer tokens to buyer
+    }
+
+    function withdrawOwnerTokens() external {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        // Withdraw tokens to owner
+    }
+}
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Privilege Escalation
+2) Incorrect Visibility/Ownership

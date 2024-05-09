@@ -1,0 +1,29 @@
+The contract to be analyzed for potential vulnerabilities is:
+
+```solidity
+contract Insurance {
+    address payable public beneficiary;
+    uint public claimAmount;
+
+    function setBeneficiary(address payable _beneficiary) public {
+        require(msg.sender == beneficiary, "Only beneficiary can change beneficiary");
+        beneficiary = _beneficiary;
+    }
+
+    function fileClaim(uint amount) public {
+        require(msg.value == amount, "Claim amount must match sent ether");
+        beneficiary.transfer(amount);
+        claimAmount = amount;
+    }
+
+    function withdrawClaim() public {
+        require(msg.sender == beneficiary, "Only beneficiary can withdraw claim");
+        msg.sender.transfer(claimAmount);
+        claimAmount = 0;
+    }
+}
+```
+
+The potential vulnerabilities in this contract are:
+1) incorrect visibility/ownership
+2) reentrancy

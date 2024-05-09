@@ -1,0 +1,40 @@
+<\contract\>
+contract VestingContract {
+    struct VestingSchedule {
+        uint256 startTime;
+        uint256 endTime;
+        uint256 totalAmount;
+    }
+
+    mapping(address => VestingSchedule) public vestingSchedules;
+
+    function createVestingSchedule(address beneficiary, uint256 startTime, uint256 endTime, uint256 totalAmount) external {
+        vestingSchedules[beneficiary] = VestingSchedule(startTime, endTime, totalAmount);
+    }
+
+    function releaseVestedAmount(address beneficiary) external {
+        uint256 vestedAmount = calculateVestedAmount(beneficiary);
+        require(vestedAmount > 0, "No vested amount");
+        
+        // Send vested amount to beneficiary
+        payable(beneficiary).transfer(vestedAmount);
+    }
+
+    function calculateVestedAmount(address beneficiary) internal view returns (uint256) {
+        VestingSchedule storage schedule = vestingSchedules[beneficiary];
+        require(block.timestamp >= schedule.startTime, "Vesting period has not started yet");
+        
+        uint256 currentTime = block.timestamp;
+        if (currentTime >= schedule.endTime) {
+            return schedule.totalAmount;
+        } else {
+            uint256 timePassed = currentTime - schedule.startTime;
+            uint256 totalVestingTime = schedule.endTime - schedule.startTime;
+            return (schedule.totalAmount * timePassed) / totalVestingTime;
+        }
+    }
+}
+Potential vulnerabilities:
+1) integer overflow/underflow: Possible issues with integer calculations in calculateVestedAmount function.
+2) inconsistent state update: Possible inconsistency in updating vestingSchedules mapping.
+3) incorrect visibility/ownership: Lack of access control in createVestingSchedule and releaseVestedAmount functions.

@@ -1,0 +1,23 @@
+The contract below contains potential vulnerabilities: 
+
+contract VotingSystem {
+     address public owner;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+
+     function vote() public {
+          require(!hasVoted[msg.sender], "You have already voted");
+          hasVoted[msg.sender] = true;
+          totalVotes++;
+     }
+
+     function changeOwner(address newOwner) public {
+          require(msg.sender == owner, "Only the owner can change the owner");
+          owner = newOwner;
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

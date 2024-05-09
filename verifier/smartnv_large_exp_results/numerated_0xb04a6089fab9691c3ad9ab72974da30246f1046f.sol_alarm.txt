@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    bool public isFundsReleased;
+
+    function initiate(address _buyer, address _seller) external {
+        require(msg.sender == buyer || msg.sender == seller, "only buyer or seller can initiate");
+        buyer = _buyer;
+        seller = _seller;
+    }
+
+    function releaseFunds() external {
+        require(msg.sender == buyer, "only buyer can release funds");
+        require(!isFundsReleased, "funds already released");
+        isFundsReleased = true;
+    }
+
+    function refundFunds() external {
+        require(msg.sender == seller, "only seller can refund funds");
+        require(!isFundsReleased, "funds already released");
+        isFundsReleased = true;
+    }
+}
+<\contract_to_analyze\>

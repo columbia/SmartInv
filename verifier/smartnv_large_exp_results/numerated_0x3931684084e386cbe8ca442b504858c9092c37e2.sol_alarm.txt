@@ -1,0 +1,29 @@
+<\contract\>
+contract TokenSale {
+    address public admin;
+    address public tokenAddress;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+    
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+    
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        admin = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += _amount;
+        // Transfer tokens to buyer
+    }
+    
+    function withdrawFunds() public onlyAdmin {
+        // Withdraw funds to admin's address
+    }
+}
+<\contract\>

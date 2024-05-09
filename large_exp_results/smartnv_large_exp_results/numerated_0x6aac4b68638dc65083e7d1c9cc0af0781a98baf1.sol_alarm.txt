@@ -1,0 +1,24 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    mapping(address => uint) public voteCount;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+        voteCount[msg.sender]++;
+    }
+
+    function revokeVote() public {
+        require(hasVoted[msg.sender], "Has not voted yet");
+        hasVoted[msg.sender] = false;
+        totalVotes--;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- ID uniqueness violation: There is a possibility of multiple votes from the same address.
+- Inconsistent state update: The totalVotes may not be accurately updated when revoking a vote.

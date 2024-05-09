@@ -1,0 +1,46 @@
+The contract provided is:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public value;
+    enum State { Created, Confirmed, Released, Disputed, Resolved }
+    State public state;
+
+    constructor(address _seller, address _arbiter) public payable {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        value = msg.value;
+    }
+
+    function confirmPurchase() public {
+        require(msg.sender == buyer, "Only buyer can confirm purchase");
+        state = State.Confirmed;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can release funds");
+        require(state == State.Confirmed, "Purchase must be confirmed first");
+        seller.transfer(value);
+        state = State.Released;
+    }
+
+    function dispute() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can dispute");
+        require(state == State.Confirmed, "Purchase must be confirmed first");
+        state = State.Disputed;
+    }
+
+    function resolveDispute() public {
+        require(msg.sender == arbiter, "Only arbiter can resolve dispute");
+        require(state == State.Disputed, "Purchase must be disputed");
+        seller.transfer(value);
+        state = State.Resolved;
+    }
+}
+
+Potential vulnerabilities in the provided contract:
+- Insufficient gas
+- Incorrect visibility/ownership

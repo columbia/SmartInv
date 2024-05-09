@@ -1,0 +1,26 @@
+<\the_contract\>
+contract VotingSystem {
+    struct Voter {
+          uint256 voteCount;
+          bool hasVoted;
+          bool isAdmin;
+          }
+     mapping(address => Voter) public voters;
+
+    function vote(uint256 proposalId) external {
+              require(!voters[msg.sender].hasVoted, "already voted");
+              require(voters[msg.sender].isAdmin, "not admin");
+              proposals[proposalId].voteCount++;
+              voters[msg.sender].hasVoted = true;
+        }
+
+    function addAdmin(address _address) external {
+              require(voters[msg.sender].isAdmin, "not admin");
+              voters[_address].isAdmin = true;
+        }
+    function revokeAdmin(address _address) external {
+              require(voters[msg.sender].isAdmin, "not admin");
+              voters[_address].isAdmin = false;
+        }
+}
+<\the_contract\>

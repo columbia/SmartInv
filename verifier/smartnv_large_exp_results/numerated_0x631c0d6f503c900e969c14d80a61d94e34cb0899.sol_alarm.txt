@@ -1,0 +1,16 @@
+The contract provided for analysis:
+
+contract TokenSwap {
+         IERC20 public token1;
+         IERC20 public token2;
+         uint public exchangeRate;
+
+         function swapTokens(uint amount1, uint amount2) public {
+             token1.transferFrom(msg.sender, address(this), amount1);
+             token2.transferFrom(msg.sender, address(this), amount2);
+             exchangeRate = amount2 / amount1;
+         }
+}
+Potential vulnerabilities in the TokenSwap contract:
+- Integer division (arithmetic flaw): The division operation exchangeRate = amount2 / amount1 might result in unintended behavior if amount1 is equal to 0, causing division by zero error or undesired results.
+- Insufficient check for negative values in swapTokens function.

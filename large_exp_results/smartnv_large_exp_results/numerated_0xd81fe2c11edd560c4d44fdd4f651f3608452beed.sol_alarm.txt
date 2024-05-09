@@ -1,0 +1,29 @@
+<\example_3\> 
+contract PaymentContract {
+         address public seller;
+         address public buyer;
+         uint public price;
+
+         function createPayment(address _seller, uint _price) public {
+             seller = _seller;
+             price = _price;
+         }
+
+         function confirmPayment(address _buyer) public {
+             require(msg.sender == buyer, "Only buyer can confirm payment");
+             buyer = _buyer;
+             // transfer funds from buyer to seller
+             seller.transfer(price);
+         }
+
+         function cancelPayment() public {
+             require(msg.sender == buyer, "Only buyer can cancel payment");
+             // refund funds to buyer
+             msg.sender.transfer(price);
+         }
+}
+<\example_3\> 
+
+The potential vulnerabilities in <\example_3\> are:
+- incorrect visibility/ownership: The transfer of funds in the `confirmPayment` and `cancelPayment` functions should be handled carefully to avoid unauthorized transfers of funds or loss of funds. Consider using the `transfer` function with proper checks and balances.
+- atomicity violation: The operations of transferring funds in the `confirmPayment` and `cancelPayment` functions are not handled atomically, which can lead to inconsistent states or race conditions. Consider using the appropriate locking mechanisms to ensure atomicity of fund transfers.

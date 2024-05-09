@@ -1,0 +1,80 @@
+'solc --version' running
+'solc /home/sallyjunsongwang/SmartInv/tests/contracts/0x10e0cb2aafa3b4d92fe6f56b9f619b17ae28ae88.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc' running
+INFO:Detectors:
+PooCoin () has incorrect ERC20 function interface:PooCoin.transfer(address,uint256) ()
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-erc20-interface
+INFO:Detectors:
+Deprecated standard detected THROW ():
+	- Usage of "throw" should be replaced with "revert()"
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#deprecated-standards
+INFO:Detectors:
+Version constraint ^0.4.0 contains known severe issues (https://solidity.readthedocs.io/en/latest/bugs.html)
+	- DirtyBytesArrayToStorage
+	- KeccakCaching
+	- EmptyByteArrayCopy
+	- DynamicArrayCleanup
+	- TupleAssignmentMultiStackSlotComponents
+	- MemoryArrayCreationOverflow
+	- privateCanBeOverridden
+	- IncorrectEventSignatureInLibraries_0.4.x
+	- ExpExponentCleanup
+	- NestedArrayFunctionCallDecoder
+	- ZeroFunctionSelector
+	- DelegateCallReturnValue
+	- ECRecoverMalformedInput
+	- SkipEmptyStringLiteral
+	- ConstantOptimizerSubtraction
+	- IdentityPrecompileReturnIgnored
+	- HighOrderByteCleanStorage
+	- OptimizerStaleKnowledgeAboutSHA3
+	- LibrariesNotCallableFromPayableFunctions.
+ It is used by:
+	- 
+solc-0.4.0 is an outdated solc version. Use a more recent version (at least 0.8.0), if possible.
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+INFO:Detectors:
+Parameter PooCoin.transfer(address,uint256)._to () is not in mixedCase
+Parameter PooCoin.transfer(address,uint256)._value () is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Detectors:
+PooCoin.PooCoin() () uses literals with too many digits:
+	- initialSupply = 77000000000000000000000000 ()
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#too-many-digits
+Traceback (most recent call last):
+  File "/home/sallyjunsongwang/SmartInv/.venv/bin/slither", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 753, in main
+    main_impl(all_detector_classes=detectors, all_printer_classes=printers)
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 859, in main_impl
+    ) = process_all(filename, args, detector_classes, printer_classes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 107, in process_all
+    ) = process_single(compilation, args, detector_classes, printer_classes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 87, in process_single
+    return _process(slither, detector_classes, printer_classes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 137, in _process
+    detector_resultss = slither.run_detectors()
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/slither.py", line 290, in run_detectors
+    results = [d.detect() for d in self._detectors]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/slither.py", line 290, in <listcomp>
+    results = [d.detect() for d in self._detectors]
+               ^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/detectors/abstract_detector.py", line 203, in detect
+    for r in [output.data for output in self._detect()]:
+                                        ^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/detectors/statements/unused_import.py", line 36, in _detect
+    self.slither._compute_offsets_to_ref_impl_decl()
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/core/slither_core.py", line 264, in _compute_offsets_to_ref_impl_decl
+    self._compute_offsets_from_thing(contract)
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/core/slither_core.py", line 205, in _compute_offsets_from_thing
+    definition = get_definition(thing, self.crytic_compile)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/utils/source_mapping.py", line 38, in get_definition
+    txt = file_content[
+          ^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable

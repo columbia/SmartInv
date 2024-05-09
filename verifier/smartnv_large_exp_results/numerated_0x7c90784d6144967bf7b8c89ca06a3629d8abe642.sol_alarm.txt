@@ -1,0 +1,21 @@
+<\contract_to_analyze\> 
+contract PaymentContract {
+         uint public totalAmount;
+         mapping(address => uint) public balances;
+
+         function deposit() public payable {
+             balances[msg.sender] += msg.value;
+             totalAmount += msg.value;
+         }
+         
+         function withdraw(uint amount) public {
+             require(amount <= balances[msg.sender], "Insufficient balance");
+             balances[msg.sender] -= amount;
+             totalAmount -= amount;
+             msg.sender.transfer(amount);
+         }
+        
+         function getBalance(address user) public view returns(uint) {
+             return balances[user];
+         }
+}

@@ -1,0 +1,25 @@
+contract Lotto {
+         address public owner;
+         mapping(address => uint) public players;
+
+         function buyTicket() public payable {
+              require(msg.value == 1 ether, "Incorrect ticket price");
+              players[msg.sender] += 1;
+         }
+
+         function selectWinner() public {
+              require(msg.sender == owner, "Only owner can select winner");
+              address winner;
+              // select winner logic 
+              winner.transfer(address(this).balance);
+         }
+
+         function setOwner(address _owner) public {
+              owner = _owner;
+         }
+}
+Potential vulnerabilities in the Lotto contract:
+- Incorrect ticket price vulnerability
+- Only owner can select winner privilege escalation vulnerability
+- Missing logic for selecting winner, possibly leading to a business logic flaw
+- Lack of integer overflow/underflow checks in buyTicket function

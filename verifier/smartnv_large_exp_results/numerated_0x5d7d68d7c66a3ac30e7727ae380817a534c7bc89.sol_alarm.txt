@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function execute() updates the votedAmount in the proposal struct, which is a global state variable shared among all users. This can lead to inconsistent state updates if multiple users are trying to execute proposals at the same time.
+
+2) Incorrect visibility/ownership: The owner variable is internal, which could potentially lead to ownership vulnerabilities if not properly managed and controlled within the contract.
+
+3) Insufficient gas: The endExecute() function could potentially require a large amount of gas if the votingToken balance is very high, leading to insufficient gas for the function to execute properly.
+
+4) Integer overflow/underflow: There is a potential risk of integer overflow in the calculation done in the liquidate() function, where the result of getPrice() * cAmount * 80 could exceed the maximum value for a uint type variable. 
+
+5) Business logic flaw: The liquidate() function contains a business logic flaw where the condition for liquidating a user's funds may not accurately assess the situation, potentially leading to incorrect actions being taken.

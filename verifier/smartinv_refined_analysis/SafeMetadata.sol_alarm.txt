@@ -1,0 +1,22 @@
+The contract provided below has the potential vulnerability of inconsistent state update.
+
+contract CrossBridge {
+     address public tokenAddress;
+     uint public tokenBalance;
+
+     function depositToken(uint _amount) external {
+          require(_amount > 0, "Invalid amount");
+          tokenAddress.transferFrom(msg.sender, address(this), _amount);
+          tokenBalance += _amount;
+     }
+
+     function withdrawToken(uint _amount) external {
+          require(_amount > 0, "Invalid amount");
+          require(tokenBalance >= _amount, "Not enough balance");
+          tokenAddress.transfer(msg.sender, _amount);
+          tokenBalance -= _amount;
+     }
+}
+
+The potential vulnerabilities in the provided contract are:
+- Inconsistent state update.

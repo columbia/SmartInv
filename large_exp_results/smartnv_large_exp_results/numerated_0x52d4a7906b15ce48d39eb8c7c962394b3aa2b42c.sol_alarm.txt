@@ -1,0 +1,20 @@
+<\contract\>
+contract SafeTokenTransfer {
+    IERC20 public token;
+    address public owner;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function transferToken(address _to, uint _amount) public {
+        require(msg.sender == owner, "Only owner can transfer tokens");
+        token.transfer(_to, _amount);
+    }
+}
+<\contract\> 
+
+<\output\>
+potential vulnerabilities:
+- incorrect visibility/ownership

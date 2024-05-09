@@ -1,0 +1,42 @@
+The contract under analysis is:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBalance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The "proposal" struct is being updated in the "startExecute" and "execute" functions without proper synchronization, potentially leading to inconsistent state updates.
+2) Incorrect visibility/ownership: The ownership of the contract is not clearly defined or enforced, leading to potential security risks related to access control.
+3) Insufficient gas: There may be a risk of running out of gas during contract execution due to complex operations that require excessive gas.
+4) ID uniqueness violation: The uniqueness of proposal addresses is not explicitly enforced, potentially leading to conflicts or overwrites.
+5) Business logic flaw: There may be flaws in the business logic of the contract that could be exploited by malicious actors.

@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function execute() updates the state variable proposal.votedAmount without ensuring atomicity, which could lead to inconsistent state updates if multiple transactions try to update the variable concurrently.
+
+2) Privilege escalation: The contract does not have any role-based access control mechanism in place to restrict certain functions to only authorized users, potentially leading to privilege escalation attacks.
+
+3) Cross bridge inconsistency: There is a lack of validation or checks to ensure that the data being passed between different components or contracts is consistent and valid, which could lead to inconsistencies or unexpected behavior in the system.
+
+4) ID uniqueness violation: The contract appears to use addresses as identifiers in certain functions (e.g., startingBalanceList[proposal.addr]), which may not guarantee uniqueness and could lead to conflicts or errors when handling data related to different addresses.

@@ -1,0 +1,19 @@
+The contract below contains potential vulnerabilities: 
+
+contract TokenExchange {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         uint public exchangeRate;
+
+         function exchange(uint amountA) public {
+             uint amountB = amountA * exchangeRate;
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transfer(msg.sender, amountB);
+         }
+     }
+
+Potential vulnerabilities in the contract:
+- Arithmetic flaw: The exchange function may be vulnerable to arithmetic flaws when calculating the amount of tokenB to transfer based on the exchange rate.
+- Incorrect visibility/ownership: The exchangeRate variable is declared as public, which can expose sensitive information such as the exchange rate to all external entities.
+- Insufficient gas: Depending on the complexity of the token transfer functions, there may not be enough gas allocated for the transfers to be successfully executed.
+- Ether leakage: Since the contract is dealing with ERC20 tokens, there is no direct handling of Ether. However, if the contract interacts with other contracts that involve Ether, there may be potential for Ether leakage.

@@ -1,0 +1,37 @@
+The contract provided for analysis is:
+
+contract VotingSystem {
+    address public admin;
+    mapping(address => uint) public votes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint _amount) public {
+        votes[msg.sender] += _amount;
+    }
+
+    function changeAdmin(address _newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = _newAdmin;
+    }
+
+    function getTotalVotes() public view returns(uint) {
+        uint total = 0;
+        for (uint i = 0; i < votes.length; i++) {
+            total += votes[i];
+        }
+        return total;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function changeAdmin allows the admin address to be changed, but there is no check to ensure that the new admin address is a valid or secure address.
+
+2) Incorrect visibility/ownership: The admin variable is public, making it accessible to anyone to see who the admin is, which may not be desirable for security reasons.
+
+3) ID uniqueness violation: The mapping votes uses the address type as keys, which might not ensure unique identification and could lead to potential conflicts or unexpected behavior.
+
+Overall, this contract contains vulnerabilities that could be exploited if not addressed properly.

@@ -1,0 +1,38 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Voter {
+          uint256 weight;
+          bool voted;
+          address delegate;
+          uint256 vote;
+          }
+     address public admin;
+     mapping(address => Voter) public voters;
+    
+    function delegate(address to) public {
+          require(voters[msg.sender].weight > 0, "You cannot delegate your vote");
+          voters[msg.sender].delegate = to;
+        }
+
+    function vote(uint256 candidate) public {
+          Voter storage sender = voters[msg.sender];
+          require(sender.weight > 0, "You have no right to vote");
+          require(!sender.voted, "You have already voted");
+          sender.voted = true;
+          sender.vote = candidate;
+        }
+
+    function executeVote() public {
+          uint256 winningCandidate;
+          uint256 maxVotes = 0;
+          for (uint256 i = 0; i < voters[msg.sender].weight; i++) {
+                uint256 candidate = voters[msg.sender].vote;
+                if (candidate > maxVotes) {
+                     maxVotes = candidate;
+                     winningCandidate = candidate;
+                }
+            }
+          // Execute logic based on winningCandidate
+        }
+}
+<\contract_to_analyze\>

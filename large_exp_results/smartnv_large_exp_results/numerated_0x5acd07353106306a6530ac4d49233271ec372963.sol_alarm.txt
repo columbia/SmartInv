@@ -1,0 +1,34 @@
+<\contract\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    mapping(address => uint256) public released;
+    uint256 public totalShares;
+    uint256 public totalReleased;
+
+    constructor(address[] memory _payees, uint256[] memory _shares) payable {
+        require(_payees.length == _shares.length && _payees.length > 0, "Payees and shares must have the same length and be non-empty");
+        
+        for (uint256 i = 0; i < _payees.length; i++) {
+            payees.push(_payees[i]);
+            shares.push(_shares[i]);
+            totalShares += _shares[i];
+        }
+    }
+
+    function release(address payable _account) public {
+        require(msg.sender == _account, "Only the account owner can release funds");
+        
+        uint256 totalReceived = address(this).balance + totalReleased;
+        uint256 payment = totalReceived * shares[_account] / totalShares - released[_account];
+        require(payment != 0, "No funds to release");
+
+        released[_account] = released[_account] + payment;
+        totalReleased = totalReleased + payment;
+
+        _account.transfer(payment);
+    }
+
+    function() external payable {}
+}
+<\contract\>

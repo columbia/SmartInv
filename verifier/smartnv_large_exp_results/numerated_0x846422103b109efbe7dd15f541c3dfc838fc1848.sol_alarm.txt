@@ -1,0 +1,32 @@
+<\contract\> 
+
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public bids;
+    
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        
+        if(highestBidder != address(0)){
+            bids[highestBidder] += highestBid; 
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+    
+    function withdrawBid() public {
+        require(msg.sender != highestBidder, "Cannot withdraw highest bid");
+        
+        uint amount = bids[msg.sender];
+        require(amount > 0, "You have no funds to withdraw");
+        
+        msg.sender.transfer(amount);
+        bids[msg.sender] = 0;
+    }
+}
+
+The potential vulnerabilities identified in the contract are:
+1) inconsistent state update
+2) integer overflow/underflow

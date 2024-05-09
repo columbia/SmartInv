@@ -1,0 +1,36 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        address delegate;
+        uint vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint public totalVotes;
+    
+    function delegate(address to) public {
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        
+        // Check for circular delegation
+        address current = to;
+        while (voters[current].delegate != address(0)) {
+            require(current != msg.sender, "Circular delegation detected");
+            current = voters[current].delegate;
+        }
+        
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].delegate = to;
+    }
+    
+    function vote(uint option) public {
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        totalVotes++;
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].vote = option;
+    }
+}
+<\analyzed_contract\> 
+
+Potential vulnerabilities:
+- No vulnerabilities found. This contract appears to be secure and free of vulnerabilities.

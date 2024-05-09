@@ -1,0 +1,24 @@
+<\example_3\> 
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+     mapping(address => uint) public bids;
+     
+     function placeBid(uint amount) public {
+          require(amount > highestBid, "Bid amount must be higher than current highest bid");
+          require(bids[msg.sender] + amount > bids[msg.sender], "Bid amount overflows");
+          bids[msg.sender] += amount;
+          if (bids[msg.sender] > highestBid) {
+               highestBidder = msg.sender;
+               highestBid = bids[msg.sender];
+          }
+     }
+
+     function claimWinningBid() public {
+          require(msg.sender == highestBidder, "Only the highest bidder can claim the winning bid");
+          // Transfer the bid amount to the highest bidder
+     }
+}
+
+Output:
+1) integer overflow/underflow.

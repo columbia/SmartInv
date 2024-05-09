@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) business logic flaw: The `calculatePrice()` function in the `ExchangeTokens` contract may have a business logic flaw as it calculates the price based on the balances of USDC and WETH in the Uniswap pair contract. This calculation may not accurately reflect the actual market price and could be manipulated to exploit the system.
+
+2) inconsistent state update: The `liquidate()` function in the `ExchangeTokens` contract updates the debt and collateral mappings without ensuring consistent updates in both mappings. This could lead to inconsistencies in the data stored in the contract.
+
+3) arithmetic flaw: The calculation in the `liquidate()` function of whether a user's funds can be liquidated may have an arithmetic flaw as it involves multiplying the price, collateral amount, and a percentage. This could result in unintended outcomes or vulnerabilities related to the calculation.
+
+4) incorrect visibility/ownership: The visibility of the `calculatePrice()` function in the `ExchangeTokens` contract is set to public, which may expose sensitive information about the contract's state and operations to external parties. Additionally, the ownership of the contract is not clearly defined, which could lead to potential issues related to control and authorization.

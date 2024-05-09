@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The contract does not specify the visibility of the functions, making them public by default which can lead to security vulnerabilities.
+2) Inconsistent state update: The `proposal.votedAmount` is updated directly without proper checks, potentially leading to inconsistent state updates.
+3) Integer overflow/underflow: There are operations like `proposal.votedAmount += amount` which could result in integer overflow if the amount is large enough.
+4) Insufficient gas: The `endExecute` function checks if the funds locked in the contract are twice the total supply of the token, which may require significant gas cost to execute and could also run out of gas in certain scenarios.

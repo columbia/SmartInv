@@ -1,0 +1,39 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public amount;
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+    State public currentState;
+
+    constructor(address _payer, address _payee, address _arbiter, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+        amount = _amount;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function makePayment() public payable {
+        require(msg.sender == payer && currentState == State.AWAITING_PAYMENT);
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == payee && currentState == State.AWAITING_DELIVERY);
+        payee.transfer(amount);
+        currentState = State.COMPLETE;
+    }
+
+    function refundPayment() public {
+        require(msg.sender == arbiter && currentState == State.AWAITING_DELIVERY);
+        payer.transfer(amount);
+        currentState = State.REFUNDED;
+    }
+}
+<\contract\> 
+
+Output:
+Atomicity Violation
+Incorrect Visibility/Ownership

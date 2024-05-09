@@ -1,0 +1,21 @@
+<\contract_to_analyze\>
+contract VestingContract {
+    address public beneficiary;
+    uint public unlockTime;
+    uint public amount;
+
+    constructor(address _beneficiary, uint _unlockTime, uint _amount) {
+        beneficiary = _beneficiary;
+        unlockTime = _unlockTime;
+        amount = _amount;
+    }
+
+    function unlockTokens() public {
+        require(block.timestamp >= unlockTime, "Tokens cannot be unlocked yet");
+        payable(beneficiary).transfer(amount);
+    }
+}
+<\contract_to_analyze\>
+Output:
+- Insufficient gas (potential gas limit issues).
+- Incorrect visibility/ownership (constructor should be declared as `public`).

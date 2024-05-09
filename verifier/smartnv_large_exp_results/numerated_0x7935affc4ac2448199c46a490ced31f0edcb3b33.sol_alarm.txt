@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract SupplyChain {
+    address public owner;
+    mapping(uint256 => string) public products;
+    mapping(address => uint256) public productOwners;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addProduct(uint256 id, string memory name) public {
+        require(msg.sender == owner, "Only the owner can add products");
+        products[id] = name;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can transfer ownership");
+        owner = newOwner;
+    }
+
+    function assignProduct(uint256 id, address newOwner) public {
+        require(msg.sender == owner, "Only the owner can assign products");
+        productOwners[newOwner] = id;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,29 @@
+The contract in analysis:
+contract DeFiVault {
+     address public owner;
+     uint public totalDeposits;
+     mapping(address => uint) public userDeposits;
+
+     function deposit() external payable {
+         require(msg.value > 0, "Deposit amount must be greater than 0");
+         userDeposits[msg.sender] += msg.value;
+         totalDeposits += msg.value;
+     }
+
+     function withdraw(uint amount) external {
+         require(userDeposits[msg.sender] >= amount, "Insufficient balance");
+         msg.sender.transfer(amount);
+         userDeposits[msg.sender] -= amount;
+         totalDeposits -= amount;
+     }
+
+     function changeOwner(address newOwner) external {
+         require(msg.sender == owner, "Only owner can change owner");
+         owner = newOwner;
+     }
+}
+
+Potential vulnerabilities in the contract:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

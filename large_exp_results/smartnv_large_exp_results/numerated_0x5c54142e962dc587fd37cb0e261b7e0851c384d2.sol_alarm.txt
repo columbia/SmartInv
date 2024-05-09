@@ -1,0 +1,11 @@
+<\analyzed_contract\>
+contract SwapContract {
+    mapping(address => uint) public balances;
+
+    function swapTokens(address token1, address token2, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[token1] -= amount;
+        balances[token2] += amount;
+    }
+}
+<\analyzed_contract\>

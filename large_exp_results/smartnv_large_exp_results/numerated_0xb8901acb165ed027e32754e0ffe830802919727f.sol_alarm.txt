@@ -1,0 +1,57 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+    address public chairperson;
+    uint256 public winningProposalId;
+
+    struct Proposal {
+        string name;
+        uint256 voteCount;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found circular reference in delegation");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            proposals[delegateTo.vote].voteCount += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 proposalId) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        sender.voted = true;
+        sender.vote = proposalId;
+
+        proposals[proposalId].voteCount += sender.weight;
+
+        if (proposals[proposalId].voteCount > proposals[winningProposalId].voteCount) {
+            winningProposalId = proposalId;
+        }
+    }
+
+    function winningProposal() public view returns (string memory) {
+        return proposals[winningProposalId].name;
+    }
+}
+<\contract\>

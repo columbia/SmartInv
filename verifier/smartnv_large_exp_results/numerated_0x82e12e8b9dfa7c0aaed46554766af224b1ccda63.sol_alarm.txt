@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+```solidity
+contract TokenSale {
+     uint public totalSupply;
+     mapping(address => uint) public balanceOf;
+
+     function buyTokens(uint amount) public {
+         require(totalSupply >= amount, "Not enough tokens to buy");
+         balanceOf[msg.sender] += amount;
+         totalSupply -= amount;
+     }
+
+     function sellTokens(uint amount) public {
+         require(balanceOf[msg.sender] >= amount, "Not enough tokens to sell");
+         balanceOf[msg.sender] -= amount;
+         totalSupply += amount;
+     }
+}
+```
+
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The totalSupply is modified without considering the balance updates, leading to a mismatch in the total token supply and the actual token balances.
+
+2) Integer underflow: If a user tries to sell more tokens than they have, the balanceOf[msg.sender] -= amount can cause an underflow issue.
+
+3) Insufficient gas: If the totalSupply becomes very large, adding tokens back to it in sellTokens function could require excessive gas to execute the operation.
+
+So, the potential vulnerabilities identified in the TokenSale contract are inconsistent state update, integer underflow, and insufficient gas.

@@ -1,0 +1,34 @@
+<\contract_to_be_analyzed\>
+contract TokenFarm {
+     IERC20 public token;
+     address public owner;
+     uint public totalStaked;
+     mapping(address => uint) public stakedBalance;
+
+     constructor(address _token) {
+         token = IERC20(_token);
+         owner = msg.sender;
+     }
+
+     function stake(uint amount) external {
+         require(amount > 0, "Cannot stake 0 tokens");
+         token.transferFrom(msg.sender, address(this), amount);
+         totalStaked += amount;
+         stakedBalance[msg.sender] += amount;
+     }
+
+     function withdraw(uint amount) external {
+         require(stakedBalance[msg.sender] >= amount, "Insufficient staked balance");
+         token.transfer(msg.sender, amount);
+         totalStaked -= amount;
+         stakedBalance[msg.sender] -= amount;
+     }
+
+     function emergencyWithdraw() external {
+         require(msg.sender == owner, "Only owner can withdraw");
+         uint toWithdraw = totalStaked;
+         totalStaked = 0;
+         token.transfer(owner, toWithdraw);
+     }
+}
+<\contract_to_be_analyzed\>

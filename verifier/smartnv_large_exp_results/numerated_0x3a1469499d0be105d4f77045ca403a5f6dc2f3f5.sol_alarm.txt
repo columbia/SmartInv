@@ -1,0 +1,17 @@
+<\contract_being_analyzed\> 
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swap(uint amount) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+<\contract_being_analyzed\>
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The contract does not update the balance of the sender after transferring tokenA, potentially leading to an inconsistent state.
+2) Incorrect visibility/ownership: The functions in the contract are external, which may not be the intended visibility.

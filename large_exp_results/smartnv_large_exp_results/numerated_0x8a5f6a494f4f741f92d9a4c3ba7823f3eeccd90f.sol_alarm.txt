@@ -1,0 +1,37 @@
+The contract to analyze for potential vulnerabilities:
+
+contract SupplyChain {
+    uint public itemCount;
+    address public owner;
+
+    struct Item {
+        uint itemId;
+        string itemName;
+        uint quantity;
+        address owner;
+    }
+
+    mapping(uint => Item) public items;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(string memory _name, uint _quantity) public {
+        itemCount++;
+        items[itemCount] = Item(itemCount, _name, _quantity, msg.sender);
+    }
+
+    function updateItemQuantity(uint _itemId, uint _newQuantity) public {
+        require(items[_itemId].owner == msg.sender, "You are not the owner of this item");
+        items[_itemId].quantity = _newQuantity;
+    }
+
+    function transferItemOwnership(uint _itemId, address _newOwner) public {
+        require(items[_itemId].owner == msg.sender, "You are not the owner of this item");
+        items[_itemId].owner = _newOwner;
+    }
+}
+
+Output:
+- potential vulnerabilities: privilege escalation, inconsistent state update

@@ -1,0 +1,34 @@
+The contract provided below might have the following potential vulnerabilities:
+
+1) insufficient gas
+2) incorrect visibility/ownership. 
+
+Please note that the analysis is based on the contract provided and may not cover all possible vulnerabilities or the actual execution environment.
+
+Contract to be analyzed:
+contract TokenSale {
+          address public admin;
+          IERC20 public token;
+          address public recipient;
+          uint public tokenPrice;
+          uint public totalTokens;
+
+          constructor(address _token, address _recipient, uint _tokenPrice, uint _totalTokens) {
+              admin = msg.sender;
+              token = IERC20(_token);
+              recipient = _recipient;
+              tokenPrice = _tokenPrice;
+              totalTokens = _totalTokens;
+          }
+
+          function buyTokens(uint _tokens) public {
+              require(msg.value == _tokens * tokenPrice, "Insufficient payment");
+              require(token.balanceOf(address(this)) >= _tokens, "Not enough tokens in the contract");
+              token.transfer(msg.sender, _tokens);
+          }
+
+          function endSale() public {
+              require(msg.sender == admin, "Unauthorized access");
+              token.transfer(recipient, token.balanceOf(address(this)));
+          }
+}

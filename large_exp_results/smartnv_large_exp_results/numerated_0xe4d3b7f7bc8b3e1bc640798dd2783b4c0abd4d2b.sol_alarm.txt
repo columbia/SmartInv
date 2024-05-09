@@ -1,0 +1,19 @@
+<\contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint256 => bool) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function processPayment(uint256 paymentId) public {
+        require(msg.sender == owner, "Only owner can process payments");
+        require(!payments[paymentId], "Payment has already been processed");
+        
+        // Process payment logic here
+
+        payments[paymentId] = true;
+    }
+}
+<\contract\>

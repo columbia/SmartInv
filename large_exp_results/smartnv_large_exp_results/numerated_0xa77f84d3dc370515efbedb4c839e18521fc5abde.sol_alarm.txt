@@ -1,0 +1,31 @@
+<\contract\> 
+contract Auction {
+    struct Bid {
+        address bidder;
+        uint amount;
+    }
+
+    mapping(uint => Bid) public bids;
+    uint public highestBid;
+    address public highestBidder;
+
+    function placeBid(uint _bidAmount) external {
+        require(_bidAmount > highestBid, "Bid must be higher than the current highest bid");
+        if(highestBidder != address(0)) {
+            payable(highestBidder).transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = _bidAmount;
+        bids[block.number] = Bid(msg.sender, _bidAmount);
+    }
+
+    function withdrawBid() external {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw their bid");
+        highestBidder = address(0);
+        highestBid = 0;
+    }
+}
+<\contract\> 
+
+1) inconsistent state update
+2) integer overflow/underflow

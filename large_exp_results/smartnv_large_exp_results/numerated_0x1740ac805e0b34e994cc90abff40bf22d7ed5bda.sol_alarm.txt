@@ -1,0 +1,38 @@
+The contract to analyze:
+<\contract_to_analyze\>
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    uint public amount;
+    bool public isPaid;
+
+    constructor(address _payer, address _recipient, address _arbiter, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        arbiter = _arbiter;
+        amount = _amount;
+        isPaid = false;
+     }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only the payer can deposit");
+        require(!isPaid, "Payment has already been made");
+        require(msg.value == amount, "Incorrect amount deposited");
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        require(isPaid, "Payment has not been made yet");
+        payable(recipient).transfer(amount);
+        isPaid = true;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only the arbiter can refund funds");
+        require(!isPaid, "Payment has already been made");
+        payable(payer).transfer(amount);
+        isPaid = true;
+    }
+}
+<\contract_to_analyze\>

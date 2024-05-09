@@ -1,0 +1,32 @@
+The contract below contains potential vulnerabilities:
+1) Inconsistent state update
+2) Integer overflow/underflow
+
+<\contract\>
+contract PaymentGateway {
+    address public owner;
+    mapping(address => uint256) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Amount should be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+
+    function transfer(address to, uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\>

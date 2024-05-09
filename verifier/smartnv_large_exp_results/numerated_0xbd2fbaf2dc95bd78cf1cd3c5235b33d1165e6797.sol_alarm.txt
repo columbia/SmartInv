@@ -1,0 +1,15 @@
+<\contract_to_analyze\> 
+contract PaymentContract {
+       mapping(address => uint256) public balances;
+
+       function deposit() public payable {
+              balances[msg.sender] += msg.value;
+       }
+
+       function withdraw(uint256 amount) public {
+              require(balances[msg.sender] >= amount, "Insufficient balance");
+              address payable recipient = msg.sender;
+              recipient.transfer(amount);
+              balances[msg.sender] -= amount;
+       }
+}

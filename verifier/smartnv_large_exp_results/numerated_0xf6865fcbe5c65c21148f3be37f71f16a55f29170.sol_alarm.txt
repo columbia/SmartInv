@@ -1,0 +1,32 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public escrowAmount;
+    bool public buyerConfirmed;
+    bool public sellerConfirmed;
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        escrowAmount += msg.value;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer, "Only buyer can confirm the receipt of goods");
+        buyerConfirmed = true;
+    }
+
+    function confirmPayment() public {
+        require(msg.sender == seller, "Only seller can confirm payment");
+        sellerConfirmed = true;
+    }
+
+    function releaseFunds() public {
+        require(buyerConfirmed && sellerConfirmed, "Both parties must confirm before releasing funds");
+        payable(seller).transfer(escrowAmount);
+    }
+}
+<\contract\> 
+
+Output:
+- Inconsistent state update: The state variables `buyerConfirmed` and `sellerConfirmed` are updated independently, which could lead to an inconsistent state where one party confirms their action but the other does not, causing issues with fund release.

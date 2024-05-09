@@ -1,0 +1,36 @@
+<\contract\> 
+contract Escrow {
+     address public payer;
+     address public payee;
+     address public arbiter;
+     bool public payerConfirmed;
+     bool public payeeConfirmed;
+     bool public arbiterConfirmed;
+     bool public payoutComplete;
+     uint public amount;
+
+     constructor(address _payer, address _payee, address _arbiter, uint _amount) public {
+         payer = _payer;
+         payee = _payee;
+         arbiter = _arbiter;
+         amount = _amount;
+     }
+
+     function confirmPayment() public {
+         require(msg.sender == payer || msg.sender == payee || msg.sender == arbiter,
+         "unauthorized to confirm payment");
+         if (msg.sender == payer) {
+             payerConfirmed = true;
+         } else if (msg.sender == payee) {
+             payeeConfirmed = true;
+         } else if (msg.sender == arbiter) {
+             arbiterConfirmed = true;
+         }
+
+         if (payerConfirmed && payeeConfirmed && arbiterConfirmed) {
+             payoutComplete = true;
+             address(this).transfer(amount);
+         }
+     }
+}
+<\contract\>

@@ -1,0 +1,8 @@
+The potential vulnerabilities in the contract are: 
+
+1) Inconsistent state update: The function execute() updates the state variable proposal.votedAmount directly, which can lead to inconsistent state if not handled properly.
+2) Incorrect visibility/ownership: The state variables votingToken and lockedFunds should have appropriate visibility (e.g. private or internal) to prevent external manipulation.
+3) Insufficient gas: The endExecute() function may run out of gas when attempting to calculate votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), potentially leading to execution failure.
+4) Atomicity violation: The execution of multiple operations in endExecute() without proper atomicity checks can lead to unexpected behaviors.
+5) Integer overflow/underflow: There are potential risks of integer overflow/underflow in the calculations involving voting amounts and balances in the startExecute() and execute() functions.
+6) Privilege escalation: The owner variable is not being used in the contract, which may lead to privilege escalation vulnerabilities if not properly handled.

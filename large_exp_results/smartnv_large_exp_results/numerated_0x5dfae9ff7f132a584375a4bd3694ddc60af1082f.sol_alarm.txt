@@ -1,0 +1,43 @@
+Contract:
+```solidity
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbitrator;
+    uint public amount;
+    bool public released;
+    bool public refunded;
+
+    constructor(address _buyer, address _seller, address _arbitrator, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbitrator = _arbitrator;
+        amount = _amount;
+        released = false;
+        refunded = false;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbitrator, "You are not authorized");
+        require(released == false, "Amount already released");
+        
+        released = true;
+        (bool success, ) = payable(buyer).call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+
+    function refundAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbitrator, "You are not authorized");
+        require(refunded == false, "Amount already refunded");
+
+        refunded = true;
+        (bool success, ) =  payable(seller).call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+}
+```
+
+Output:
+The potential vulnerabilities in the contract are:
+1) Reentrancy
+2) Incorrect visibility/ownership

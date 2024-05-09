@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership: The contract does not specify the visibility of the variables `lockedFunds`, `startingBalanceList`, `proposal`, and `owner`. It is important to explicitly define the visibility of variables to ensure proper access control.
+2) inconsistent state update: In the `startExecute()` function, the variable `startingBalance` is assigned a value from the `getStartingBalance()` function, but the `startingBalanceList` is updated after the assignment. This could lead to an inconsistent state if an error occurs during the `getStartingBalance()` call.
+3) insufficient gas: It is possible that certain operations in the contract may require more gas than is available, leading to the execution of certain functions to fail. It is important to consider gas limits for all operations to prevent this vulnerability.

@@ -1,0 +1,33 @@
+This is the contract you are going to analyze:
+
+contract PaymentProcessor {
+    mapping(address => uint256) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transfer(address to, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can change owner");
+        owner = newOwner;
+    }
+}
+
+Now, please analyze the contract and identify potential vulnerabilities.

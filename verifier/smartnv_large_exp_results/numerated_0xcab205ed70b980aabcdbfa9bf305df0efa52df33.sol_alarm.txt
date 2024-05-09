@@ -1,0 +1,23 @@
+<\Given Contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function resetVotes() external {
+        require(msg.sender == owner, "Only owner can reset votes");
+        totalVotes = 0;
+        for (address voter : hasVoted) {
+            hasVoted[voter] = false;
+        }
+    }
+}
+Output:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

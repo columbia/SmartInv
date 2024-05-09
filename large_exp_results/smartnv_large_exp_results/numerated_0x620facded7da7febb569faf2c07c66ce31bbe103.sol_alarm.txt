@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Not owner");
+        owner = _newOwner;
+    }
+}
+<\contract_to_analyze\>

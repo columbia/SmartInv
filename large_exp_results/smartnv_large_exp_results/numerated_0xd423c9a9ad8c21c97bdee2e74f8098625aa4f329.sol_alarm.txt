@@ -1,0 +1,24 @@
+<\example_3\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public tokenPrice;
+    
+    constructor(address _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        uint totalPrice = _amount * tokenPrice;
+        require(msg.value >= totalPrice, "Insufficient payment");
+        
+        ERC20(token).transfer(msg.sender, _amount);
+        owner.transfer(msg.value);
+    }
+}
+Output: 
+1) price manipulation 
+2) inconsistent state update 
+3) insufficient gas

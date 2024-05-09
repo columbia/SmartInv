@@ -1,0 +1,34 @@
+The contract to analyze is:
+
+contract Escrow {
+         mapping(address => uint) public balances;
+         address public owner;
+         uint public totalBalance;
+
+         constructor() {
+             owner = msg.sender;
+         }
+
+         function deposit() public payable {
+             balances[msg.sender] += msg.value;
+             totalBalance += msg.value;
+         }
+
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             totalBalance -= amount;
+             payable(msg.sender).transfer(amount);
+         }
+
+         function transferOwnership(address newOwner) public {
+             require(msg.sender == owner, "Only owner can transfer ownership");
+             owner = newOwner;
+         }
+     }
+
+The potential vulnerabilities in the Escrow contract are:
+
+- privilege escalation
+- arbitrary transferownership
+- ether leakage

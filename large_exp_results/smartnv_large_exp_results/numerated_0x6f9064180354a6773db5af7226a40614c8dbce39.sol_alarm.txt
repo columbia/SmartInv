@@ -1,0 +1,23 @@
+The contract provided for analysis:
+
+contract Insurance {
+    mapping(address => uint) public policyAmounts;
+    mapping(address => bool) public isPolicyActive;
+
+    function buyPolicy(uint amount) public {
+        require(msg.sender.balance >= amount, "Insufficient balance");
+        policyAmounts[msg.sender] = amount;
+        isPolicyActive[msg.sender] = true;
+    }
+
+    function claimInsurance() public {
+        require(isPolicyActive[msg.sender], "Policy not active");
+        uint amount = policyAmounts[msg.sender] * 2;
+        msg.sender.transfer(amount);
+        isPolicyActive[msg.sender] = false;
+    }
+}
+
+Output: 
+1) integer overflow/underflow
+2) inconsistent state update

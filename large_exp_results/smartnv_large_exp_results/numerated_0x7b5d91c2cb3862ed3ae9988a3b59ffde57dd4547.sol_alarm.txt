@@ -1,0 +1,21 @@
+<\contract\> 
+contract PaymentGateway {
+     address public owner;
+     uint public totalAmount;
+
+     function deposit() public payable {
+         totalAmount += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(msg.sender == owner, "only owner can withdraw");
+         require(amount <= totalAmount, "insufficient funds");
+         totalAmount -= amount;
+         payable(owner).transfer(amount);
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The owner variable is public, which exposes the ownership to the public and may lead to privilege escalation.
+2) Inconsistent state update: The totalAmount variable is directly modified without considering potential race conditions, which may lead to inconsistent state updates.

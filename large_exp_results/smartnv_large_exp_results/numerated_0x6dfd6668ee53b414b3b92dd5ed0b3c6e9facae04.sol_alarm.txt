@@ -1,0 +1,51 @@
+The contract that needs analysis: 
+
+contract MultiSigWallet {
+    mapping(address => uint256) public balance;
+    mapping(address => bool) public isOwner;
+    address[] public owners;
+    uint public numConfirmationsRequired;
+
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balance[msg.sender] >= _amount, "Insufficient balance");
+        balance[msg.sender] -= _amount;
+        msg.sender.transfer(_amount);
+    }
+
+    function addOwner(address _owner) public {
+        require(!isOwner[_owner], "Owner already exists");
+        isOwner[_owner] = true;
+        owners.push(_owner);
+    }
+
+    function removeOwner(address _owner) public {
+        require(isOwner[_owner], "Owner does not exist");
+        isOwner[_owner] = false;
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == _owner) {
+                delete owners[i];
+                break;
+            }
+        }
+    }
+
+    function changeNumConfirmationsRequired(uint _numConfirmationsRequired) public {
+        numConfirmationsRequired = _numConfirmationsRequired;
+    }
+
+    function executeTransaction(address _to, uint _amount) public {
+        require(balance[msg.sender] >= _amount, "Insufficient balance");
+        balance[msg.sender] -= _amount;
+        (bool success, ) = _to.call{value: _amount}("");
+        require(success, "Transfer failed");
+    }
+}
+
+Potential vulnerabilities in the MultiSigWallet contract:
+1) inconsistent state update - The removeOwner function may cause inconsistent state as it deletes an owner from the owners array without adjusting the array length.
+2) ID uniqueness violation - The addOwner function does not check for duplicate owners before adding a new owner, which can lead to ID uniqueness violation.
+3) incorrect visibility/ownership - The executeTransaction function allows any owner to execute a transaction without requiring multiple confirmations, potentially leading to unauthorized transfers.

@@ -1,0 +1,37 @@
+<\contract\> 
+contract MultiSigWallet {
+         address[] public owners;
+         uint public transactionCount;
+         mapping(uint => Transaction) public transactions;
+         
+         struct Transaction {
+             address destination;
+             uint value;
+             bytes data;
+             bool executed;
+         }
+
+         function submitTransaction(address destination, uint value, bytes memory data) public {
+             uint transactionId = transactionCount;
+             transactions[transactionId] = Transaction(destination, value, data, false);
+             transactionCount++;
+         }
+
+         function executeTransaction(uint transactionId) public {
+             Transaction storage transaction = transactions[transactionId];
+             require(!transaction.executed, "Transaction already executed");
+             // Execute the transaction
+             (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+             require(success, "Transaction execution failed");
+             transaction.executed = true;
+         }
+
+         function addOwner(address owner) public {
+             owners.push(owner);
+         }
+}
+<\contract\> 
+
+Output: 
+- ID uniqueness violation: The submitTransaction function increments the transactionId without ensuring the uniqueness of the transactionId, which could lead to overwriting existing transactions.
+- Incorrect visibility/ownership: The addOwner function allows any address to be added as an owner without any authorization or verification process.

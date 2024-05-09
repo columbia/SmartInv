@@ -1,0 +1,17 @@
+<\contract\>
+contract Insurance {
+    uint public totalPayouts;
+    mapping(address => uint) public balance;
+
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+    }
+
+    function requestPayout() public {
+        require(balance[msg.sender] > 0, "No balance to payout.");
+        totalPayouts += balance[msg.sender];
+        balance[msg.sender] = 0;
+        msg.sender.transfer(balance[msg.sender]);
+    }
+}
+<\contract\>

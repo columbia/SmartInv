@@ -1,0 +1,17 @@
+<\contract_1\>
+contract PaymentProcessor {
+     address public owner;
+     mapping(address => uint) public payments;
+     
+     function pay() public payable {
+         payments[msg.sender] += msg.value;
+     }
+     
+     function withdraw() public {
+         require(payments[msg.sender] > 0, "No payment to withdraw");
+         uint amount = payments[msg.sender];
+         payments[msg.sender] = 0;
+         payable(msg.sender).transfer(amount);
+     }
+}
+<\contract_1\>

@@ -1,0 +1,29 @@
+<\contract\> 
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "You are not the owner");
+        _;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public onlyOwner {
+        require(amount <= address(this).balance, "Insufficient balance");
+        owner.transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation: There is no check to ensure uniqueness of addresses in the `balances` mapping, which could lead to overriding existing balances.
+- Ether leakage: The `withdraw` function does not properly handle ether transfer and might leave the contract vulnerable to reentrancy attacks.
+- Incorrect visibility/ownership: The `owner` variable is public, which exposes the ownership status of the contract to everyone. It would be better to make it private and provide a getter function if necessary.

@@ -1,0 +1,33 @@
+Contract: 
+
+contract EscrowContract {
+    address public seller;
+    address public buyer;
+    uint public price;
+    bool public isCompleted;
+    bool public isPaid;
+
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+        isCompleted = false;
+        isPaid = false;
+    }
+
+    function releasePayment() public {
+        require(msg.sender == seller, "Only seller can release payment");
+        require(isCompleted == true, "Transaction is not completed");
+        
+        isPaid = true;
+        payable(seller).transfer(price);
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer, "Only buyer can confirm delivery");
+        isCompleted = true;
+    }
+}
+
+Output:
+potential vulnerabilities: inconsistent state update, incorrect visibility/ownership

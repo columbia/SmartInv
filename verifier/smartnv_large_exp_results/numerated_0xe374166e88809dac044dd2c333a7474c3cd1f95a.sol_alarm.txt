@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public balances;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function contribute() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "only owner can withdraw");
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership
+2) privilege escalation

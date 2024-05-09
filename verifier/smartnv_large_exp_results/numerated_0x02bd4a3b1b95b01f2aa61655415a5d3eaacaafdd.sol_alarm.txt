@@ -1,0 +1,21 @@
+Contract to analyze:
+
+contract SafeVault {
+    uint256 public balance;
+
+    function deposit(uint256 amount) public {
+        balance += amount;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balance >= amount, "Insufficient balance");
+        balance -= amount;
+    }
+
+    function getBalance() public view returns (uint256) {
+        return balance;
+    }
+}
+
+Output: 
+healthy

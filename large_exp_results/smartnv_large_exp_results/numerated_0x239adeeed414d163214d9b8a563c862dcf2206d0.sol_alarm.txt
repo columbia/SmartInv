@@ -1,0 +1,28 @@
+Contract XYZ {
+    // Code for contract XYZ
+
+    function transferTokens(address _to, uint _amount) public {
+        require(balance[msg.sender] >= _amount, "Insufficient balance");
+        balance[msg.sender] -= _amount;
+        balance[_to] += _amount;
+    }
+
+    function updateBalance(uint _newBalance) public {
+        balance[msg.sender] = _newBalance;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balance[msg.sender] >= _amount, "Insufficient balance");
+        balance[msg.sender] -= _amount;
+        // Transfer ETH to the caller
+        msg.sender.transfer(_amount);
+    }
+}
+
+The potential vulnerabilities in contract XYZ are:
+
+6) Cross bridge inconsistency: The contract allows for the transfer of tokens without explicitly checking for any potential inconsistencies or ensuring atomicity.
+8) Reentrancy: The withdraw function allows for a potential reentrancy attack where an attacker can repeatedly withdraw funds before the balance is updated.
+14) Incorrect visibility/ownership: The visibility of the balance mapping is not specified, potentially allowing unauthorized access or manipulation.
+13) Insufficient gas: The contract does not consider gas requirements for certain functions, which may lead to out-of-gas errors during execution.
+9) Integer overflow/underflow: The contract does not implement any checks for integer overflow or underflow when handling balances, which could result in unexpected behavior.

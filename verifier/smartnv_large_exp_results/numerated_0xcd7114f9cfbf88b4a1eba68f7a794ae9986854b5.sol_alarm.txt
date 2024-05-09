@@ -1,0 +1,51 @@
+The contract provided for analysis:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    address public constant companyFeeAddress = 0x1234567890123456789012345678901234567890; 
+    uint public price;
+    bool public release; 
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        release = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "You are not the buyer");
+        require(msg.value == price, "Incorrect amount sent");
+    }
+
+    function refund() public {
+        require(msg.sender == seller || msg.sender == arbiter, "You are not the seller or arbiter");
+        require(!release, "Funds already released");
+        payable(buyer).transfer(price);
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller || msg.sender == arbiter, "You are not the seller or arbiter");
+        require(!release, "Funds already released");
+        uint companyFee = price * 5 / 100;
+        payable(companyFeeAddress).transfer(companyFee);
+        payable(seller).transfer(price - companyFee);
+        release = true;
+    }
+}
+
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The "release" variable is set to true after transferring funds in the "releaseFunds" function, which can lead to funds being released multiple times if the function is called multiple times.
+
+2) Arithmetic flaw: There is a potential arithmetic flaw in calculating the company fee in the "releaseFunds" function by using integer division, which may lead to rounding errors.
+
+3) Incorrect visibility/ownership: The "release" variable is public, allowing anyone to see the state of whether funds have been released or not. This information should be kept private to prevent potential exploits.
+
+Therefore, the identified vulnerabilities in the Escrow contract are:
+- Inconsistent state update
+- Arithmetic flaw
+- Incorrect visibility/ownership

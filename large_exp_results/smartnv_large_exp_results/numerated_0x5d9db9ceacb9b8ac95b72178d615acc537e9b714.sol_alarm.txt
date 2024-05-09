@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+
+    function addOwner(address _owner) public {
+        require(!isOwner[_owner], "Owner already exists");
+        owners.push(_owner);
+        isOwner[_owner] = true;
+    }
+
+    function removeOwner(address _owner) public {
+        require(isOwner[_owner], "Owner does not exist");
+        // Logic to remove owner
+        isOwner[_owner] = false;
+    }
+
+    function changeOwner(address _oldOwner, address _newOwner) public {
+        require(isOwner[_oldOwner], "Old owner does not exist");
+        require(!isOwner[_newOwner], "New owner already exists");
+    
+        removeOwner(_oldOwner);
+        addOwner(_newOwner);
+    }
+}
+<\contract_to_analyze\>
+
+The potential vulnerabilities in the contract to analyze are:
+1) ID uniqueness violation: The contract does not check for ID uniqueness when adding or changing owners, which could lead to multiple owners having the same address.
+2) Incorrect visibility/ownership: The visibility of the `isOwner` mapping is public, which may expose sensitive information about ownership to external parties.
+3) Business logic flaw: The logic for removing an owner is missing, which could lead to inconsistent states or unexpected behavior when removing an owner.
+4) Inconsistent state update: There is a possibility of inconsistent state when changing owners as the `removeOwner` and `addOwner` functions are called separately, which may result in unexpected behavior.

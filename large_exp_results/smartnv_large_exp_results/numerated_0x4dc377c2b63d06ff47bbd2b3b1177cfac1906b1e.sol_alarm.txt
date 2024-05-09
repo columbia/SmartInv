@@ -1,0 +1,17 @@
+The contract provided for analysis:
+
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() public payable {
+         require(msg.value > highestBid, "Bid value must be higher than current highest bid");
+         highestBidder.transfer(highestBid);
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+}
+
+Potential vulnerabilities identified in the Auction contract:
+- Integer overflow/underflow for 'highestBid' variable in the bid function.
+- Ether leakage vulnerability due to transferring funds before updating the highestBidder in the bid function.

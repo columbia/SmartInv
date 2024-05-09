@@ -1,0 +1,21 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    
+    function setEscrow(address _buyer, address _seller, uint _price) external {
+        require(msg.sender == owner, "Only owner can set escrow.");
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+    }
+    
+    function releasePayment() external {
+        require(msg.sender == buyer, "Only buyer can release payment.");
+        require(address(this).balance == price, "Insufficient balance for payment.");
+        address payable _seller = payable(seller);
+        _seller.transfer(price);
+    }
+}
+<\contract\>

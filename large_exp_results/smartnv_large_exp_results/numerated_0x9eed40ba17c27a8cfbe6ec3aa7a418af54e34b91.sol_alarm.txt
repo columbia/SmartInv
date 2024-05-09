@@ -1,0 +1,33 @@
+Contract: 
+contract Lottery {
+    mapping (address => uint) public tickets;
+    uint public totalTickets;
+    address public winner;
+    uint public winningTicket;
+
+    function buyTicket(uint _numTickets) public {
+        require(_numTickets > 0, "Number of tickets must be greater than 0");
+        tickets[msg.sender] += _numTickets;
+        totalTickets += _numTickets;
+    }
+
+    function drawWinner() public {
+        require(totalTickets > 0, "No tickets bought");
+        winningTicket = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets + 1;
+        for(uint i = 0; i< winningTicket; i++){
+            if (tickets[msg.sender] >= i + 1) {
+                winner = msg.sender;
+            }
+        }
+    }
+
+    function claimPrize() public {
+        require(msg.sender == winner, "You are not the winner!");
+        // Transfer prize to the winner
+    }
+}
+
+Output:
+- Inconsistent state update: The winner check in the drawWinner function is not reliable as it only checks the last person who bought a ticket, not the actual winner based on the winning ticket. This could lead to incorrect determination of the winner.
+- Insufficient gas: The drawWinner function may consume a significant amount of gas due to the for loop iterating up to the winning ticket number, which could potentially lead to out-of-gas errors.
+- Business logic flaw: The determination of the winner in the drawWinner function is not based on a fair and transparent process, as it relies on the number of tickets bought by the sender rather than the randomly generated winning ticket. This could allow for manipulation of the winning outcome.

@@ -1,0 +1,31 @@
+Contract: 
+
+contract MyContract {
+    address public owner;
+    uint256 public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint256 amount) public {
+        balance += amount;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can call this function");
+        owner = newOwner;
+    }
+}
+
+Output: 
+- privilege escalation
+- inconsistent state update 
+- incorrect visibility/ownership

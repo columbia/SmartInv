@@ -1,0 +1,24 @@
+<\contract\> 
+contract PaymentContract {
+    address payable public payee;
+
+    function setPayee(address payable _payee) public {
+        require(msg.sender == payee, "Only payee can set new payee");
+        payee = _payee;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == payee, "Only payee can withdraw");
+        require(address(this).balance >= amount, "Not enough balance");
+        payee.transfer(amount);
+    }
+
+    function deposit() public payable {
+        
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are: 
+2) privilege escalation
+4) inconsistent state update

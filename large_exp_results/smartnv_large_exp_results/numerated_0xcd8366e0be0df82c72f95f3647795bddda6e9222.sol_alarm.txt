@@ -1,0 +1,30 @@
+Contract in Analysis:
+contract PaymentChannel {
+    address public partyA;
+    address public partyB;
+    uint public amount;
+
+    constructor(address _partyA, address _partyB, uint _amount) {
+        partyA = _partyA;
+        partyB = _partyB;
+        amount = _amount;
+    }
+
+    function deposit(uint _amount) public {
+        require(msg.sender == partyA || msg.sender == partyB, "Only partyA or partyB can deposit funds");
+        amount += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(msg.sender == partyA || msg.sender == partyB, "Only partyA or partyB can withdraw funds");
+        require(amount >= _amount, "Insufficient funds");
+        amount -= _amount;
+    }
+
+    function closeChannel() public {
+        selfdestruct(partyA);
+    }
+}
+
+Output:
+healthy

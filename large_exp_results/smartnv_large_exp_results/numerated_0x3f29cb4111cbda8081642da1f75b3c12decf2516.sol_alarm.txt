@@ -1,0 +1,25 @@
+The contract provided is as follows:
+
+```solidity
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    constructor(address _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(token.balanceOf(msg.sender) >= _amount * tokenPrice, "Insufficient balance");
+        token.transferFrom(owner, msg.sender, _amount);
+        totalTokensSold += _amount;
+    }
+}
+```
+
+A potential vulnerability in the contract is:
+3) business logic flaw

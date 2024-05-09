@@ -1,0 +1,25 @@
+<\contract_to_analyze\> 
+contract PaymentContract {
+         address public owner;
+         mapping(uint256 => bool) paymentComplete;
+         uint256 public totalPayments;
+         
+         constructor() {
+             owner = msg.sender;
+             totalPayments = 0;
+         }
+         
+         function makePayment(uint256 paymentID) external {
+             require(!paymentComplete[paymentID], "Payment already completed");
+             paymentComplete[paymentID] = true;
+             totalPayments++;
+         }
+         
+         function withdrawFunds() external {
+             require(msg.sender == owner, "Only owner can withdraw funds");
+             // Transfer all funds to the owner
+             owner.transfer(address(this).balance);
+         }
+     }
+     
+<\contract_to_analyze\>

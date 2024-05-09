@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) public {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        ERC20(token).transfer(msg.sender, amount);
+        owner.transfer(msg.value);
+    }
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "Only owner can set the price");
+        price = _price;
+    }
+}
+
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

@@ -1,0 +1,37 @@
+<\analyzed_contract\> 
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public released;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        released = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == price, "Incorrect amount deposited");
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(address(this).balance >= price, "Not enough funds to release");
+        seller.transfer(price);
+        released = true;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can request a refund");
+        require(!released, "Funds already released");
+        buyer.transfer(price);
+    }
+}
+
+<\output\>
+1) atomicity violation
+2) inconsistent state update
+3) incorrect visibility/ownership

@@ -1,0 +1,25 @@
+<\contract\>
+contract Crowdsale {
+     address public owner;
+     uint public goal;
+     uint public endTime;
+     mapping(address => uint) public balance;
+
+     constructor(uint _goal, uint _duration) {
+         owner = msg.sender;
+         goal = _goal;
+         endTime = block.timestamp + _duration;
+     }
+     
+     function contribute() public payable {
+         require(block.timestamp < endTime, "Crowdsale ended");
+         balance[msg.sender] += msg.value;
+     }
+
+     function withdrawFunds() public {
+         require(block.timestamp > endTime, "Crowdsale not ended yet");
+         require(address(this).balance >= goal, "Goal not reached");
+         payable(owner).transfer(address(this).balance);
+     }
+}
+<\contract\>

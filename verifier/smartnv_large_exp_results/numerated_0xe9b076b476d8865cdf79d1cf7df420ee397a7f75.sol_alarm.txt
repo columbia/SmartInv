@@ -1,0 +1,19 @@
+<\contract\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint[] public shares;
+    
+    constructor(address[] memory _payees, uint[] memory _shares) {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        
+        payees = _payees;
+        shares = _shares;
+    }
+    
+    function release() public {
+        for (uint i = 0; i < payees.length; i++) {
+            address(uint160(payees[i])).send(shares[i]);
+        }
+    }
+}
+<\contract\>

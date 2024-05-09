@@ -1,0 +1,23 @@
+<\contract\>
+contract Lottery {
+    mapping(address => uint) public ticketCount;
+    address[] public players;
+    
+    function buyTicket() public payable {
+        require(msg.value >= 1 ether, "Minimum ticket price is 1 ether");
+        ticketCount[msg.sender]++;
+        players.push(msg.sender);
+    }
+    
+    function drawWinner() public {
+        require(players.length > 0, "No players in the lottery");
+        
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, players.length))) % players.length;
+        address payable winner = payable(players[winnerIndex]);
+        uint prizeAmount = address(this).balance;
+        
+        winner.transfer(prizeAmount);
+        players = new address[](0);
+    }
+}
+<\contract\>

@@ -1,0 +1,25 @@
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numberOfTokens) external payable {
+        require(msg.value == _numberOfTokens * tokenPrice, "Insufficient payment received");
+        token.transfer(msg.sender, _numberOfTokens);
+        tokensSold += _numberOfTokens;
+    }
+
+    function endSale() external {
+        require(msg.sender == admin, "Only admin can end the sale");
+        uint remainingTokens = token.balanceOf(address(this));
+        require(token.transfer(admin, remainingTokens), "Token transfer failed");
+        selfdestruct(payable(admin));
+    }
+}

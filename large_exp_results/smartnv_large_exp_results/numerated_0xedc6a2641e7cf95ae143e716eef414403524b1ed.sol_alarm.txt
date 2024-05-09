@@ -1,0 +1,24 @@
+<\contract_to_be_analyzed\>
+contract TokenMarket {
+    address public owner;
+    address public token;
+    uint public tokenPrice;
+
+    constructor(address _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function purchaseTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function updateTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can update token price");
+        tokenPrice = _newPrice;
+    }
+}
+<\contract_to_be_analyzed\>

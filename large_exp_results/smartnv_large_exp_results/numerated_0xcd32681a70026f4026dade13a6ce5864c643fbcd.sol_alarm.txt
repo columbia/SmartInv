@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public depositor;
+    address public beneficiary;
+    uint public amount;
+
+    constructor(address _depositor, address _beneficiary, uint _amount) {
+        depositor = _depositor;
+        beneficiary = _beneficiary;
+        amount = _amount;
+    }
+
+    function release() public {
+        require(msg.sender == depositor, "Only depositor can release funds");
+        payable(beneficiary).transfer(amount);
+    }
+
+    function refund() public {
+        require(msg.sender == depositor, "Only depositor can refund funds");
+        payable(depositor).transfer(amount);
+    }
+}
+<\contract_to_analyze\>

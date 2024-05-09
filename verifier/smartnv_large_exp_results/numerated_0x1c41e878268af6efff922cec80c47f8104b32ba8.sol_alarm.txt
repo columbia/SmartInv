@@ -1,0 +1,33 @@
+<\contract\>
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public tokenPrice;
+         uint public totalTokens;
+         uint public soldTokens;
+         mapping(address => uint) public tokenBalance;
+         bool public saleOpen;
+
+         constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+             token = IERC20(_token);
+             owner = msg.sender;
+             tokenPrice = _tokenPrice;
+             totalTokens = _totalTokens;
+             soldTokens = 0;
+             saleOpen = true;
+         }
+
+         function buyTokens(uint _numTokens) public {
+             require(saleOpen, "Sale is not open");
+             require(_numTokens <= totalTokens - soldTokens, "Not enough tokens available");
+             uint cost = _numTokens * tokenPrice;
+             token.transferFrom(msg.sender, address(this), cost);
+             tokenBalance[msg.sender] += _numTokens;
+             soldTokens += _numTokens;
+         }
+
+         function closeSale() public {
+             require(msg.sender == owner, "Only the owner can close the sale");
+             saleOpen = false;
+         }
+}

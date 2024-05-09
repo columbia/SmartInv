@@ -1,0 +1,4 @@
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The `endExecute` function is publicly accessible, which may not be intended and could lead to unauthorized access.
+2) Inconsistent state update: The `proposal.votedAmount += amount;` in the `execute` function directly updates the state variable without proper checks or validations, which could lead to unexpected behavior.
+3) Insufficient gas: The `calculatePrice` function in the contract updates state variables (`USDC.balanceOf(address(pair))` and `WETH.balanceOf(address(pair))`) and returns a value, which may require more gas than available in certain scenarios, leading to an out-of-gas exception.

@@ -1,0 +1,26 @@
+The contract to analyze:
+
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function vote() public {
+        require(hasVoted[msg.sender] == false, "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+    
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+
+Output:
+1) privilege escalation
+2) incorrect visibility/ownership

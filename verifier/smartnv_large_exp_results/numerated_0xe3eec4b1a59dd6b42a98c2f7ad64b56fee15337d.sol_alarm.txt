@@ -1,0 +1,37 @@
+<\contract\> 
+contract EscrowService {
+         IERC20 public token; 
+         address public seller; 
+         address public buyer; 
+         uint public amount; 
+         bool public sellerConfirmed;
+         bool public buyerConfirmed;
+         enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE }
+
+         State public state; 
+
+         constructor(address _token, address _seller, address _buyer, uint _amount) {
+             token = IERC20(_token);
+             seller = _seller;
+             buyer = _buyer;
+             amount = _amount;
+             state = State.AWAITING_PAYMENT;
+         }
+
+         function confirmPayment() public {
+             require(msg.sender == buyer, "Only buyer can confirm payment");
+             require(state == State.AWAITING_PAYMENT, "Payment has already been confirmed");
+             token.transferFrom(buyer, seller, amount);
+             sellerConfirmed = true;
+             state = State.AWAITING_DELIVERY;
+         }
+
+         function confirmDelivery() public {
+             require(msg.sender == seller, "Only seller can confirm delivery");
+             require(state == State.AWAITING_DELIVERY, "Delivery has already been confirmed");
+             token.transferFrom(seller, buyer, amount);
+             buyerConfirmed = true;
+             state = State.COMPLETE;
+         }
+}
+<\contract\>

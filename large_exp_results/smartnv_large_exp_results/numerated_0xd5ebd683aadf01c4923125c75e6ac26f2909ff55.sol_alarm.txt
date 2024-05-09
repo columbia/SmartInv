@@ -1,0 +1,15 @@
+Contract to be analyzed:
+contract Voting {
+     uint256 public totalVotes;
+     mapping(address => bool) public hasVoted;
+
+     function vote() public {
+            require(!hasVoted[msg.sender], "you have already voted");
+            totalVotes += 1;
+            hasVoted[msg.sender] = true;
+      }
+} 
+
+Potential vulnerabilities:
+- ID uniqueness violation
+- Inconsistent state update

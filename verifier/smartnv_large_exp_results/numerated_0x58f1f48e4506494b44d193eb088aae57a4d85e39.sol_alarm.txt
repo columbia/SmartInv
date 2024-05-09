@@ -1,0 +1,20 @@
+<\contract\> 
+contract Escrow {
+         address public seller;
+         address public buyer;
+         uint public price;
+         bool public isPaid;
+
+         function deposit() external payable {
+             require(msg.sender == buyer, "Only buyer can deposit funds");
+             require(msg.value == price, "Incorrect amount deposited");
+         }
+         function releaseFunds() external {
+             require(msg.sender == seller, "Only seller can release funds");
+             require(isPaid == true, "Funds have not been deposited yet");
+             seller.transfer(address(this).balance);
+         }
+} 
+
+1) privilege escalation
+2) inconsistent state update

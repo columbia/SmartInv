@@ -1,0 +1,23 @@
+<\contract\>
+contract TokenSale {
+    uint public tokenPrice;
+    address public tokenAddress;
+    address public owner;
+    mapping(address => uint) public balances;
+
+    function buyTokens(uint amount) external payable {
+        require(msg.value == amount * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawEther() external {
+        require(msg.sender == owner, "Only owner can withdraw Ether");
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function setTokenPrice(uint price) external {
+        require(msg.sender == owner, "Only owner can set token price");
+        tokenPrice = price;
+    }
+}
+<\contract\>

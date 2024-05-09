@@ -1,0 +1,21 @@
+<\contract\>
+contract PaymentProcessor {
+    mapping(address => uint256) public payments;
+
+    function makePayment() external payable {
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdrawPayment() external {
+        uint256 payment = payments[msg.sender];
+        require(payment > 0, "No payment to withdraw");
+        (bool success, ) = msg.sender.call{value: payment}("");
+        require(success, "Transfer failed");
+        payments[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Reentrancy
+2) Ether leakage

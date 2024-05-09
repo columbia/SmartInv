@@ -1,0 +1,70 @@
+<\The_contract\>
+contract VotingSystem {
+      struct Voter {
+          uint weight;
+          bool voted;
+          address delegate;
+          uint vote;
+          }
+
+     struct Proposal {
+          uint voteCount;
+          string name;
+          bool executed;
+          }
+
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+
+     constructor() {
+          chairperson = msg.sender;
+          voters[chairperson].weight = 1;
+          }
+
+     modifier onlyChairperson() {
+          require(msg.sender == chairperson, "Only chairperson can call this function");
+          _;
+          }
+
+    function delegate(address to) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "You have already voted");
+          require(to != msg.sender, "Self-delegation is disallowed");
+
+         while (voters[to].delegate != address(0)) {
+              to = voters[to].delegate;
+         }
+
+          sender.voted = true;
+          sender.delegate = to;
+          Voter storage delegate_ = voters[to];
+
+          if (delegate_.voted) {
+              proposals[delegate_.vote].voteCount += sender.weight;
+          } else {
+              delegate_.weight += sender.weight;
+          }
+      }
+
+      function vote(uint proposalIndex) public {
+          Voter storage sender = voters[msg.sender];
+          require(sender.weight > 0, "You do not have any voting weight");
+          require(!sender.voted, "You have already voted");
+
+          sender.voted = true;
+          sender.vote = proposalIndex;
+          proposals[proposalIndex].voteCount += sender.weight;
+      }
+
+      function executeProposal(uint proposalIndex) public onlyChairperson {
+          Proposal storage proposal = proposals[proposalIndex];
+          require(!proposal.executed, "Proposal has already been executed");
+
+          if (proposal.voteCount > voters[msg.sender].weight / 2) {
+              // execute the proposal
+              proposal.executed = true;
+          }
+      }
+}
+<\The_contract\>

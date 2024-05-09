@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Business logic flaw: The function `endExecute()` may have a logic issue as it checks if the balance of the contract is more than twice the total supply of `votingToken` to determine if the execution is successful. This may not accurately reflect the success of the execution.
+
+2) Inconsistent state update: The `execute()` function updates the `proposal.votedAmount` directly without using safe arithmetic operations, which can lead to inconsistent state updates or integer overflow/underflow.
+
+3) Incorrect visibility/ownership: The `proposal` struct is not specified with any visibility modifier, which may lead to potential issues with visibility and access control.
+
+4) Insufficient gas: The `execute()` function may require a significant amount of gas to execute due to potential token transfers, which may result in out of gas errors.
+
+5) Ether leakage: There are no checks or mechanisms implemented to prevent ether leakage or ensure proper handling of ether within the contract, which could lead to potential vulnerabilities.

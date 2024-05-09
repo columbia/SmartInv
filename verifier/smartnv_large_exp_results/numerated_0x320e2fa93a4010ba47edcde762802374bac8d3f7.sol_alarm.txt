@@ -1,0 +1,38 @@
+<\contract_3\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    
+    bool public buyerApproved;
+    bool public sellerApproved;
+    
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        buyerApproved = false;
+        sellerApproved = false;
+    }
+    
+    function approveByBuyer() public {
+        require(msg.sender == buyer, "Only buyer can approve");
+        buyerApproved = true;
+    }
+    
+    function approveBySeller() public {
+        require(msg.sender == seller, "Only seller can approve");
+        sellerApproved = true;
+    }
+    
+    function releaseFunds() public {
+        require(buyerApproved && sellerApproved, "Both parties need to approve");
+        // Release funds to seller
+    }
+    
+    function refundBuyer() public {
+        require(!buyerApproved && sellerApproved, "Seller must approve before refunding");
+        // Refund buyer
+    }
+}
+<\contract_3\>

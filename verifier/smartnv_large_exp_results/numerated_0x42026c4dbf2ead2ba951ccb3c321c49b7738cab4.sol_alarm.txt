@@ -1,0 +1,28 @@
+The contract to analyze:
+
+contract SimpleTokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public totalSold;
+    uint public tokenPrice;
+
+    constructor(uint _tokenPrice) public {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect amount sent");
+        balances[msg.sender] += amount;
+        totalSold += amount;
+        owner.transfer(msg.value);
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Output: 
+1) healthy

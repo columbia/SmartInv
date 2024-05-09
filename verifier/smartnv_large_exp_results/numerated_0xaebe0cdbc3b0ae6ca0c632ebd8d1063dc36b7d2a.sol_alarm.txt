@@ -1,0 +1,34 @@
+<\Contract\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner; 
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public tokenBalances;
+
+    constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        require(totalTokens >= _amount, "Not enough tokens available");
+        token.transfer(msg.sender, _amount);
+        tokenBalances[msg.sender] += _amount;
+        totalTokens -= _amount;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\Contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The `withdrawTokens` function only checks if the caller is the owner of the contract but does not restrict access to the owner address. This can lead to unauthorized individuals being able to withdraw tokens.
+2) Insufficient gas: The `withdrawTokens` function does not specify the amount of gas required for the transaction, which may result in a failed transaction if the gas limit is reached.
+3) Integer underflow: The subtraction operation `totalTokens -= _amount;` in the `buyTokens` function can potentially lead to an underflow if `_amount` is larger than `totalTokens`, resulting in unexpected behavior.

@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract Insurance {
+    IERC20 public DAI;
+    address public owner;
+
+    constructor(address _owner, address _DAI) {
+        owner = _owner;
+        DAI = IERC20(_DAI);
+    }
+
+    function buyInsurance(uint amount) public {
+        require(DAI.balanceOf(msg.sender) >= amount, "Insufficient DAI balance");
+        DAI.transferFrom(msg.sender, address(this), amount);
+        // logic for buying insurance 
+    }
+
+    function claimInsurance() public {
+        require(msg.sender == owner, "Only owner can claim insurance");
+        // logic for claiming insurance 
+    }
+}
+
+Output:
+1) The contract contains a potential vulnerability: incorrect visibility/ownership.

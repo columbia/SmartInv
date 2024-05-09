@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The "endExecute" function updates the "lockedFunds" variable without any check for reentrancy, which can potentially lead to inconsistent state updates.
+
+2) Integer overflow/underflow: There is a calculation in the "liquidate" function where an integer overflow/underflow could occur if the values for debt, cAmount, and getPrice() are not properly validated.
+
+3) Business logic flaw: The "liquidate" function uses a check based on a calculation of the price, which may not accurately reflect the actual market conditions, leading to potential business logic flaws. 
+
+4) Incorrect visibility/ownership: It is unclear if the visibility of the debt and collateral mapping variables should be public or not, which may lead to potential ownership issues. 
+
+5) Insufficient gas: The "calculatePrice" function, which involves gas costs for transferring tokens, may not provide enough gas for all the operations to be completed, leading to insufficient gas vulnerability.

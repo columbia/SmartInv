@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract TokenSale {
+         uint public price;
+         address public token;
+         address public owner;
+
+         modifier onlyOwner {
+             require(msg.sender == owner, "Only owner can call this function");
+             _;
+         }
+
+         constructor(address _token, uint _price) {
+             token = _token;
+             price = _price;
+             owner = msg.sender;
+         }
+
+         function buyTokens(uint amount) public {
+             uint cost = amount * price;
+             require(token.balanceOf(msg.sender) >= amount, "Not enough tokens");
+             token.transferFrom(msg.sender, owner, amount);
+             msg.sender.transfer(cost);
+         }
+
+         function setPrice(uint _newPrice) public onlyOwner {
+             price = _newPrice;
+         }
+}
+<\contract_to_analyze\>

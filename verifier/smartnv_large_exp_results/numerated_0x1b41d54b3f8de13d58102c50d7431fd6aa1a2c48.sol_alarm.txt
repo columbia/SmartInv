@@ -1,0 +1,29 @@
+The contract you provided is as follows:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public fundsByBidder;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        
+        fundsByBidder[highestBidder] += highestBid;
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "Highest bidder cannot withdraw");
+        
+        uint amount = fundsByBidder[msg.sender];
+        fundsByBidder[msg.sender] = 0;
+        
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed.");
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+1) Reentrancy
+2) Inconsistent state update

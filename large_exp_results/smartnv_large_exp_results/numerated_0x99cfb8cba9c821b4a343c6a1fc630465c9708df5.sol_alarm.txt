@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract TokenSwap {
+   IERC20 public tokenA;
+   IERC20 public tokenB;
+   address public owner;
+
+   constructor(address _tokenA, address _tokenB) {
+       tokenA = IERC20(_tokenA);
+       tokenB = IERC20(_tokenB);
+       owner = msg.sender;
+   }
+
+   function swapTokens(uint amountA, uint amountB) public {
+       require(msg.sender == owner, "Only owner can swap tokens");
+       tokenA.transferFrom(msg.sender, address(this), amountA);
+       tokenB.transferFrom(msg.sender, address(this), amountB);
+       tokenA.transfer(msg.sender, amountB);
+       tokenB.transfer(msg.sender, amountA);
+   }
+}
+
+Based on the contract provided, the potential vulnerabilities are:
+
+1) Incorrect visibility/ownership

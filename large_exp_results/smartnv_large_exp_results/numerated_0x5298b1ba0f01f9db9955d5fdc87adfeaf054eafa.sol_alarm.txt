@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract PaymentChannel {
+    mapping(address => uint256) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function openChannel(address participant) public {
+        require(msg.sender == owner, "Only owner can open channel");
+        balances[participant] = 0;
+    }
+
+    function deposit(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[owner] += amount;
+    }
+
+    function closeChannel(address participant) public {
+        require(msg.sender == owner, "Only owner can close channel");
+        uint256 amount = balances[participant];
+        balances[participant] = 0;
+        balances[owner] -= amount;
+        payable(participant).transfer(amount);
+    }
+}
+<\contract_to_analyze\>

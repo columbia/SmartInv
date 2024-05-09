@@ -1,0 +1,37 @@
+<\contract_to_analyze\> 
+contract MultiSigWallet {
+         address[] public owners;
+         mapping(address => bool) public isOwner;
+         uint public confirmationsRequired;
+         
+         struct Transaction {
+             address to;
+             uint value;
+             bytes data;
+             bool executed;
+         }
+         Transaction[] public transactions;
+          
+         modifier onlyOwner() {
+              require(isOwner[msg.sender], "Not an owner");
+              _;
+          }
+
+         function submitTransaction(address _to, uint _value, bytes memory _data) public onlyOwner {
+               Transaction memory newTransaction = Transaction({
+                     to: _to,
+                     value: _value,
+                     data: _data,
+                     executed: false
+                });
+                transactions.push(newTransaction);
+         }
+
+         function executeTransaction(uint _index) public {
+               Transaction storage transaction = transactions[_index];
+               require(!transaction.executed, "Transaction already executed");
+               // execute transaction
+               //mark as executed
+               transaction.executed = true;
+         }
+}

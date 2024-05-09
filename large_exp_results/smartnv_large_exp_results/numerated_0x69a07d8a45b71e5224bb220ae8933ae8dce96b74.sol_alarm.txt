@@ -1,0 +1,12 @@
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update:
+   - In the function `startExecute()`, the `startingBalanceList` is updated after assigning the `startingBalance` variable, potentially leading to inconsistent state.
+
+2) Incorrect visibility/ownership:
+   - The `lockedFunds` variable is being updated externally in the `endExecute()` function without any access control or visibility modifier.
+
+3) Insufficient gas:
+   - The `endExecute()` function may fail if there is insufficient gas to complete the gas-intensive `votingToken.balanceOf()` operation.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and insufficient gas.

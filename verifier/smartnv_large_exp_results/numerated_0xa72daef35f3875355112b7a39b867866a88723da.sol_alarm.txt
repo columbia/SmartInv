@@ -1,0 +1,23 @@
+contract Crowdsale {
+    address public owner;
+    uint public rate = 1;
+    mapping(address => uint) public balances;
+
+    function buyTokens() public payable {
+        require(msg.value > 0, "Value must be greater than 0");
+        uint tokens = msg.value * rate;
+        balances[msg.sender] += tokens;
+    }
+
+    function withdraw() public {
+        require(balances[msg.sender] > 0, "Insufficient balance");
+        uint amount = balances[msg.sender] * rate;
+        balances[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+
+    function setRate(uint _rate) public {
+        require(msg.sender == owner, "Only the owner can set the rate");
+        rate = _rate;
+    }
+}

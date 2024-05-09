@@ -1,0 +1,40 @@
+The contract provided for analysis is as follows:
+
+contract Lottery {
+    address public manager;
+    address[] public players;
+    
+    constructor(){
+        manager = msg.sender;
+    }
+    
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Minimum entry fee is 0.01 ether");
+        players.push(msg.sender);
+    }
+    
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+    
+    function pickWinner() public restricted {
+        require(msg.sender == manager, "Only the manager can pick a winner");
+        uint index = random() % players.length;
+        address winner = players[index];
+        payable(winner).transfer(address(this).balance);
+        players = new address[](0);
+    }
+    
+    modifier restricted() {
+        require(msg.sender == manager, "Only the manager can call this function");
+        _;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility/ownership: The pickWinner function requires sender to be the manager, however, it does not restrict access to only the manager. This vulnerability can potentially lead to privilege escalation.
+
+2) Insufficient gas: The pickWinner function transfers funds to the winner using transfer(), which could potentially lead to insufficient gas for the transaction to complete successfully.
+
+Therefore, the identified potential vulnerabilities in the contract are incorrect visibility/ownership and insufficient gas.

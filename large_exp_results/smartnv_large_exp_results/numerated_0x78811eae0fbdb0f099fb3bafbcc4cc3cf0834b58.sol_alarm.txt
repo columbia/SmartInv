@@ -1,0 +1,7 @@
+This contract may have the following potential vulnerabilities:
+
+1) Inconsistent state update: The function execute updates the state variable proposal.votedAmount without using the "proposal" keyword to specify which proposal struct should be updated, potentially leading to inconsistent state updates.
+  
+2) Insufficient gas: The function calculatePrice performs a state change by calling USDC.balanceOf and WETH.balanceOf, which may require significant gas. Depending on the contract's gas limit, this could result in insufficient gas for the function to complete successfully.
+  
+3) Incorrect visibility/ownership: The state variables WETH, USDC, and pair are declared as public, which exposes them to all users and contracts. Depending on the functionalities involving these variables, this could lead to incorrect ownership or visibility concerns.

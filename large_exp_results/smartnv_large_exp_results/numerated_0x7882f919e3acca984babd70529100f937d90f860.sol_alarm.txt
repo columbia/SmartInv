@@ -1,0 +1,5 @@
+This contract contains potential vulnerabilities:
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function without proper synchronization or atomicity, which could lead to inconsistent state.
+2) Insufficient gas: The `endExecute` function includes a check `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")` which might consume a large amount of gas, potentially causing an out-of-gas error.
+3) Incorrect visibility/ownership: The `votingToken` variable is declared as `internal`, which may not be the intended visibility level for the variable. This could lead to ownership control issues.
+4) ID uniqueness violation: The `proposal` struct does not have a unique identifier assigned to each proposal, which could lead to confusion or potential conflicts between multiple proposals.

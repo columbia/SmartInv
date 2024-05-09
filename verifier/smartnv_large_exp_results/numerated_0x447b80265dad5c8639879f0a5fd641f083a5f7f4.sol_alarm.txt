@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The contract does not specify visibility for the state variables `owner`, `votingToken`, and `proposal`, which may lead to potential vulnerabilities related to unintended access or manipulation of these variables.
+2) Inconsistent state update: In the `startExecute` function, the `startingBalanceList[proposal.addr]` assignment is made before `proposal` is initialized, which may result in inconsistent state updates.
+3) Insufficient gas: The `endExecute` function checks if the balance is more than half of the total supply, which may consume a significant amount of gas and lead to insufficient gas for the transaction to be executed successfully.
+4) ID uniqueness violation: There is a potential vulnerability related to the uniqueness of proposal IDs, as there is no mechanism in place to ensure that duplicate proposal IDs are not created.
+5) Reentrancy: The contract is susceptible to reentrancy attacks, especially in the `execute` function where external calls are made before updating state variables, which can be exploited by malicious contracts to manipulate the contract's behavior.

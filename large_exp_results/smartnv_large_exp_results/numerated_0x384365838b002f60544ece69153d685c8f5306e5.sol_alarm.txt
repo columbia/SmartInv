@@ -1,0 +1,29 @@
+Contract:
+
+contract CustomerRegistry {
+    struct Customer {
+        uint256 id;
+        string name;
+        string email;
+        uint256 phoneNumber;
+    }
+
+    mapping(uint256 => Customer) customers;
+    uint256 public nextCustomerId = 1;
+    
+    function addCustomer(string memory _name, string memory _email, uint256 _phoneNumber) public {
+        customers[nextCustomerId] = Customer(nextCustomerId, _name, _email, _phoneNumber);
+        nextCustomerId++;
+    }
+
+    function getCustomer(uint256 _customerId) public view returns (string memory, string memory, uint256) {
+        return (customers[_customerId].name, customers[_customerId].email, customers[_customerId].phoneNumber);
+    }
+}
+
+Potential Vulnerabilities:
+7) ID uniqueness violation: There is no check in the `addCustomer` function to ensure that the provided customer ID is unique, which may lead to overwriting existing customer data.
+14) Incorrect visibility/ownership: The `Customer` struct and `customers` mapping are public, potentially exposing sensitive customer data to unauthorized access or modification. 
+
+Output: 
+ID uniqueness violation, Incorrect visibility/ownership

@@ -1,0 +1,28 @@
+The contract provided for analysis is:
+
+contract Wallet {
+    mapping(address => uint) public balances;
+    address public owner;
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Reentrancy vulnerability in the withdraw function - The transfer of funds to the msg.sender is done before updating the balance. This could allow a malicious contract to call back into the withdraw function before the balance is updated, leading to reentrancy attacks.
+2) Ether leakage - The deposit function does not check for overflow when adding the deposited amount to the balance, which could result in ether being lost due to overflow.
+3) Insufficient gas - If the balances mapping grows too large, the withdraw function may require more gas than the block gas limit, preventing users from withdrawing their funds.
+4) Incorrect visibility/ownership - The owner variable is public, which exposes it to the entire blockchain. This could potentially lead to security risks if the owner's address is known to attackers.
+
+Therefore, the potential vulnerabilities in the provided contract are:
+- Reentrancy
+- Ether leakage
+- Insufficient gas
+- Incorrect visibility/ownership

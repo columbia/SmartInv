@@ -1,0 +1,37 @@
+The contract to analyze is:
+
+contract Lottery {
+    mapping(address => uint) public players;
+
+    function enter() public payable {
+        require(msg.value > 0, "Must send some Ether to enter");
+        players[msg.sender] += msg.value;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "Only the owner can pick a winner");
+
+        uint winner = random() % players.length;
+        address winnerAddress;
+        uint winnings;
+
+        for(uint i=0; i<players.length; i++) {
+            if(i == winner) {
+                winnerAddress = players.keys(i);
+                winnings = players[winnerAddress];
+                break;
+            }
+        }
+
+        payable(winnerAddress).transfer(winnings);
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players.length)));
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

@@ -1,0 +1,24 @@
+<\contract\>
+contract SimpleCrowdsale {
+    address public owner;
+    mapping(address => uint256) public balances;
+    uint256 public totalTokens;
+    uint256 public tokenPrice;
+
+    constructor(uint256 _totalTokens, uint256 _tokenPrice) {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint256 numTokens) public payable {
+        require(msg.value == numTokens * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += numTokens;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\>

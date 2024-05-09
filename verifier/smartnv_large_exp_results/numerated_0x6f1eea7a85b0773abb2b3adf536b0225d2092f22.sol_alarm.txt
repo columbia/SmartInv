@@ -1,0 +1,17 @@
+<\contract_to_analyze\>
+contract PaymentContract {
+    mapping(address => uint) public payments;
+
+    function makePayment() public payable {
+        require(msg.value > 0, "Payment amount must be greater than 0");
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdrawPayment(uint amount) public {
+        require(amount <= payments[msg.sender], "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        payments[msg.sender] -= amount;
+    }
+}
+<\contract_to_analyze\>

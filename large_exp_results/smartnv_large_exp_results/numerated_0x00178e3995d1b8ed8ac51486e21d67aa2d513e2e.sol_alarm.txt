@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+```solidity
+contract MultiSigWallet {
+    mapping(bytes32 => bool) transactionExists;
+    uint256 public transactionCount;
+    address[] public owners;
+    
+    function submitTransaction(address to, uint256 value, bytes memory data) public returns (bytes32) {
+        bytes32 transactionId = keccak256(abi.encodePacked(transactionCount, to, value, data));
+        require(!transactionExists[transactionId], "Transaction already exists");
+        
+        transactionExists[transactionId] = true;
+        transactionCount++;
+        return transactionId;
+    }
+    
+    function executeTransaction(bytes32 transactionId) public {
+        require(transactionExists[transactionId], "Transaction does not exist");
+        // Execute transaction logic
+    }
+    
+    function revokeTransaction(bytes32 transactionId) public {
+        require(transactionExists[transactionId], "Transaction does not exist");
+        delete transactionExists[transactionId];
+        transactionCount--;
+    }
+}
+```
+
+Output: 
+- `healthy`

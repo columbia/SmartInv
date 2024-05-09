@@ -1,0 +1,29 @@
+<\contract_under_analysis\>
+contract Lottery {
+     address public owner;
+     uint public prizePool;
+     mapping(address => uint) public tickets;
+     
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function buyTicket(uint amount) public {
+         require(amount > 0, "Amount must be greater than 0");
+         address _buyer = msg.sender;
+         require(amount * 1 ether <= msg.value, "Insufficient funds sent");
+         tickets[_buyer] += amount;
+         prizePool += msg.value;
+     }
+
+     function drawWinner() public {
+         require(msg.sender == owner, "Only owner can draw winner");
+         // Select winner based on tickets bought
+     }
+
+     function endLottery() public {
+         require(msg.sender == owner, "Only owner can end lottery");
+         selfdestruct(msg.sender);
+     }
+}
+<\contract_under_analysis\>

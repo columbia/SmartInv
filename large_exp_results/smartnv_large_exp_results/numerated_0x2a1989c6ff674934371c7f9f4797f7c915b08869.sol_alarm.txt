@@ -1,0 +1,31 @@
+<\Analyzing_contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    address public organizer;
+    mapping(address => Voter) public voters;
+
+    constructor() {
+        organizer = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(voters[msg.sender].weight > 0, "You have no right to delegate");
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "You have no right to vote");
+        require(!sender.voted, "You already voted");
+
+        sender.voted = true;
+        sender.vote = option;
+    }
+}
+<\Analyzing_contract\>

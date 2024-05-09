@@ -1,0 +1,62 @@
+<\contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    address public chairperson;
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+    uint256 public winningProposalVotes;
+
+    constructor() public {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+    }
+
+    function giveRightToVote(address voter) public {
+        require(msg.sender == chairperson, "Only chairperson can give right to vote.");
+        require(!voters[voter].voted, "The voter has already voted.");
+        require(voters[voter].weight == 0, "The voter already has voting rights.");
+
+        voters[voter].weight = 1;
+    }
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted.");
+
+        while (voters[to].delegate != address(0) && voters[to].delegate != msg.sender) {
+            to = voters[to].delegate;
+        }
+
+        require(msg.sender != to, "Self-delegation is disallowed.");
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegateTo = voters[to];
+
+        if (delegateTo.voted) {
+            voters[delegateTo.vote].weight += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+
+        voters[proposal].weight += sender.weight;
+
+        if (voters[proposal].weight > winningProposalVotes) {
+            winningProposalVotes = voters[proposal].weight;
+            winningProposal = proposal;
+        }
+    }
+}

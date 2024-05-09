@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The execute function in TimelockController updates the proposal's voted amount without checking if the proposal has already been executed. This could lead to inconsistent state updates if the execution is attempted multiple times.
+
+2) Atomicity violation: The endExecute function in TimelockController checks the balance of the contract and compares it to the total supply of the voting token in a single check. This could result in a race condition where the balance changes between the check and the actual transfer of funds.
+
+3) Ether leakage: The liquidate function in ExchangeTokens transfers USDC tokens from the sender to the contract without checking if the transfer was successful or reverting the transaction if it fails. This could result in ether leakage if the contract does not handle failed token transfers properly.
+
+4) Incorrect visibility/ownership: The visibility of the debt and collateral mappings in ExchangeTokens is set to public, exposing sensitive user information to anyone who interacts with the contract. Additionally, there is no indication of ownership control over the mappings, potentially allowing unauthorized access or modification of user data.

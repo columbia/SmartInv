@@ -1,0 +1,57 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Voter {
+          uint256 weight;
+          bool voted;
+          address delegate;
+          uint256 vote;
+         }
+    mapping(address => Voter) public voters;
+    address[] public candidateList;
+    mapping(address => uint256) public votesReceived;
+    bool public votingOpen;
+
+    constructor(address[] memory candidates) {
+         candidateList = candidates;
+     }
+     
+    function authorize(address voter) public {
+         require(!votingOpen, "voting is open");
+         require(voters[voter].weight == 0, "voter already authorized");
+         voters[voter].weight = 1;
+     }
+
+    function startVoting() public {
+         require(!votingOpen, "voting already open");
+         votingOpen = true;
+     }
+
+    function vote(address candidate) public {
+         require(votingOpen, "voting not open");
+         require(voters[msg.sender].weight > 0, "only authorized voters can vote");
+         require(!voters[msg.sender].voted, "voter already voted");
+         voters[msg.sender].voted = true;
+         voters[msg.sender].vote = candidate;
+         votesReceived[candidate] += voters[msg.sender].weight;
+     }
+
+     function endVoting() public {
+         require(votingOpen, "voting not open");
+         votingOpen = false;
+     }
+
+     function getWinner() public view returns (address) {
+         require(!votingOpen, "voting still ongoing");
+         require(candidateList.length > 0, "no candidates available");
+         address winner = candidateList[0];
+         uint256 maxVotes = votesReceived[winner];
+         for (uint i = 1; i < candidateList.length; i++) {
+              if (votesReceived[candidateList[i]] > maxVotes) {
+                    maxVotes = votesReceived[candidateList[i]];
+                    winner = candidateList[i];
+               }
+         }
+         return winner;
+     }
+ }
+<\contract_to_analyze\>

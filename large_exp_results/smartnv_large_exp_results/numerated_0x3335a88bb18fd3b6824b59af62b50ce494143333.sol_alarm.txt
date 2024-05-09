@@ -1,0 +1,33 @@
+<\Contract\> 
+contract TokenSwap {
+         IERC20 public token1;
+         IERC20 public token2;
+         address public owner;
+ 
+         constructor(IERC20 _token1, IERC20 _token2) {
+             token1 = _token1;
+             token2 = _token2;
+             owner = msg.sender;
+         }
+ 
+         function swap(uint amount1, uint amount2) public {
+             require(msg.sender == owner, "only owner can swap tokens");
+             token1.transferFrom(msg.sender, address(this), amount1);
+             token2.transfer(msg.sender, amount2);
+         }
+ 
+         function changeOwner(address newOwner) public {
+             owner = newOwner;
+         }
+
+         function getBalance1() public view returns (uint) {
+             return token1.balanceOf(address(this));
+         }
+
+         function getBalance2() public view returns (uint) {
+             return token2.balanceOf(address(this));
+         }
+}
+Potential vulnerabilities:
+- privilege escalation
+- incorrect visibility/ownership

@@ -1,0 +1,37 @@
+<\contract\> 
+contract Voting {
+     struct Voter {
+         bool voted;
+         address delegate;
+         uint vote;
+     }
+     
+     address public admin;
+     mapping(address => Voter) public voters;
+     mapping(address => uint) public voteCount;
+     uint public totalVotes;
+     
+     constructor() {
+         admin = msg.sender;
+     }
+
+     function vote(uint _candidate) public {
+         require(!voters[msg.sender].voted, "Already voted");
+         
+         voters[msg.sender].voted = true;
+         voters[msg.sender].vote = _candidate;
+         voteCount[_candidate]++;
+         totalVotes++;
+     }
+
+     function delegate(address _delegate) public {
+         require(voters[msg.sender].voted == false, "Already voted");
+         require(msg.sender != _delegate, "Cannot delegate to yourself");
+
+         voters[msg.sender].delegate = _delegate;
+     }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

@@ -1,0 +1,25 @@
+<\contract\> 
+contract Lottery {
+         address public owner;
+         mapping(uint => address) public players;
+         uint public numPlayers;
+
+         function enter() public payable {
+             require(msg.value == 1 ether, "Incorrect amount entered");
+             players[numPlayers] = msg.sender;
+             numPlayers++;
+         }
+
+         function pickWinner() public {
+             require(msg.sender == owner, "Only owner can pick winner");
+             uint index = random() % numPlayers;
+             address winner = players[index];
+             payable(winner).transfer(address(this).balance);
+             numPlayers = 0;
+         }
+
+         function random() private view returns (uint) {
+             return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, numPlayers)));
+         }
+     }
+<\contract\>

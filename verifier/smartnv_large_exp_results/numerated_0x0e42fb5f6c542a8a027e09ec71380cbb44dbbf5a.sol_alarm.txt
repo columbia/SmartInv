@@ -1,0 +1,39 @@
+<\contract\> 
+contract Escrow {
+         address public payer;
+         address public payee;
+         address public arbiter;
+
+         enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+         State public currentState;
+
+         constructor(address _payee, address _arbiter) public {
+             payer = msg.sender;
+             payee = _payee;
+             arbiter = _arbiter;
+             currentState = State.AWAITING_PAYMENT;
+         }
+
+         function deposit() public payable {
+             require(msg.sender == payer, "Only payer can deposit funds");
+             require(currentState == State.AWAITING_PAYMENT, "Payment has already been made");
+         }
+
+         function confirmDelivery() public {
+             require(msg.sender == payee || msg.sender == arbiter, "Only payee or arbiter can confirm delivery");
+             require(currentState == State.AWAITING_DELIVERY, "Delivery has already been confirmed");
+         }
+
+         function refund() public {
+             require(msg.sender == payer || msg.sender == arbiter, "Only payer or arbiter can request a refund");
+             require(currentState == State.AWAITING_PAYMENT, "Payment has not been made yet");
+         }
+
+         function releaseFunds() public {
+             require(msg.sender == payee && currentState == State.AWAITING_DELIVERY, "Only payee can release funds");
+         }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

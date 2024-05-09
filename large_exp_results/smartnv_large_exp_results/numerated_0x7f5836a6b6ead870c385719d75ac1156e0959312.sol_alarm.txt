@@ -1,0 +1,27 @@
+<\contract\>
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public ticketHolders;
+
+    function buyTicket() public payable {
+        require(msg.value == 1 ether, "Ticket price must be 1 ether");
+        ticketHolders[msg.sender] += 1;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw the winner");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % ticketHolders.length;
+        address winner = getAddressFromIndex(winnerIndex);
+        payable(winner).transfer(address(this).balance);
+        resetLottery();
+    }
+
+    function getAddressFromIndex(uint index) private view returns (address) {
+        // implementation omitted for brevity
+    }
+
+    function resetLottery() private {
+        // implementation omitted for brevity
+    }
+}
+<\contract\>

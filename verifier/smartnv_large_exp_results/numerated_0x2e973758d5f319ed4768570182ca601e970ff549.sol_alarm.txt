@@ -1,0 +1,24 @@
+Contract to analyze:
+contract TokenSwap {
+         IERC20 public token1;
+         IERC20 public token2;
+         address public owner;
+
+         constructor(address _token1, address _token2) public {
+             token1 = IERC20(_token1);
+             token2 = IERC20(_token2);
+             owner = msg.sender;
+         }
+
+         function swapTokens(uint amount1, uint amount2) public {
+             require(msg.sender == owner, "Only owner can swap tokens");
+             token1.transferFrom(msg.sender, address(this), amount1);
+             token2.transferFrom(msg.sender, address(this), amount2);
+             token1.transfer(msg.sender, amount2);
+             token2.transfer(msg.sender, amount1);
+         }
+     }
+``` 
+
+Output:
+incorrect visibility/ownership, atomicity violation.

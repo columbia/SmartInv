@@ -1,0 +1,27 @@
+<\contract\>
+contract TokenSale {
+    IERC20 public token;
+    address public beneficiary;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    constructor(IERC20 _token, address _beneficiary, uint _tokenPrice) {
+        token = _token;
+        beneficiary = _beneficiary;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        require(token.allowance(msg.sender, address(this)) >= _amount, "Allowance not set");
+        
+        token.transferFrom(msg.sender, beneficiary, totalCost); 
+        tokensSold += _amount;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Price manipulation
+- Integer overflow/underflow

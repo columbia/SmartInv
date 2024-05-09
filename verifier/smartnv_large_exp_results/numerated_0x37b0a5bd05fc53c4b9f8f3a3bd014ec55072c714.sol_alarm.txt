@@ -1,0 +1,12 @@
+Potential vulnerabilities in the following contract:
+1) privilege escalation:
+- The contract uses an internal owner address which may lead to privilege escalation if ownership control is not properly managed.
+
+2) inconsistent state update:
+- The `proposal` state is updated in the `startExecute` and `execute` functions without proper checks, potentially leading to inconsistent state updates.
+
+3) atomicity violation:
+- There are multiple state updates happening in the `execute` function without being wrapped in a single transaction, which could lead to atomicity violation.
+
+4) incorrect visibility/ownership:
+- The visibility of variables and functions such as `votingToken`, `votedProposal`, `lockedFunds` are not specified, potentially leading to incorrect visibility.

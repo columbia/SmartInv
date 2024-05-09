@@ -1,0 +1,23 @@
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swapTokens(uint amountA, uint amountB) external {
+        uint totalAmount = amountA + amountB;
+
+        require(totalAmount > 0, "Total amount must be greater than 0");
+
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+
+        tokenA.transfer(msg.sender, amountB);
+        tokenB.transfer(msg.sender, amountA);
+    }
+} 
+
+Potential Vulnerabilities:
+1) inconsistent state update: The total amount calculation may allow for integer overflow if the input amounts are large enough, potentially leading to inconsistency in state updates.
+2) insufficient gas: If the token transfers consume a significant amount of gas, there might be insufficient gas available to complete all the operations within the swapTokens function successfully.
+3) incorrect visibility/ownership: The visibility of tokenA and tokenB variables is currently set to public, which may expose sensitive information to other contracts or external users. Additionally, the ownership of the contract and the tokens is not explicitly defined, potentially leading to ownership control issues.
+4) atomicity violation: The swapping of tokens is not performed atomically, meaning that if one of the transfers fails, the contract's state will be left inconsistent, allowing potential vulnerabilities.
+5) arithmetic flaw: The arithmetic operation in calculating the total amount does not account for potential overflow or underflow, which can result in unexpected behavior and vulnerabilities in the contract.

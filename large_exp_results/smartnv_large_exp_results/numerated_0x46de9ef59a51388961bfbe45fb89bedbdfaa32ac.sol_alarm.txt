@@ -1,0 +1,36 @@
+Contract to analyze:
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public ticketCount;
+    uint public totalTickets;
+    uint[] public participantList;
+    
+    constructor() {
+        owner = msg.sender;
+        totalTickets = 0;
+    }
+    
+    function buyTicket(uint numTickets) public payable {
+        require(msg.value == numTickets * 0.1 ether, "Incorrect amount sent");
+        ticketCount[msg.sender] += numTickets;
+        totalTickets += numTickets;
+        
+        for (uint i = 0; i < numTickets; i++) {
+            participantList.push(msg.sender);
+        }
+    }
+    
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets;
+        address winner = participantList[winnerIndex];
+        
+        payable(winner).transfer(address(this).balance);
+        
+        totalTickets = 0;
+        delete participantList;
+        for (uint i = 0; i < participantList.length; i++) {
+            delete ticketCount[participantList[i]];
+        }
+    }
+}

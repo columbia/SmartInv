@@ -1,0 +1,24 @@
+<\Contract\>
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    address public owner;
+
+    constructor(address _tokenA, address _tokenB) {
+        tokenA = IERC20(_tokenA);
+        tokenB = IERC20(_tokenB);
+        owner = msg.sender;
+    }
+
+    function swap(uint amount) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+<\Contract\> 
+
+Potential vulnerabilities in the contract:
+- incorrect visibility/ownership (Owner might not have exclusive access to sensitive functions)
+- inconsistent state update (State of balances might not be updated consistently)
+- insufficient gas (If gas costs are not accounted for, transactions might fail unexpectedly)

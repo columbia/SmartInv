@@ -1,0 +1,25 @@
+<\contract\>
+contract PaymentContract {
+    uint public totalBalance;
+    mapping(address => uint) public userBalance;
+
+    function deposit() public payable {
+        totalBalance += msg.value;
+        userBalance[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(userBalance[msg.sender] >= amount, "Insufficient balance");
+        totalBalance -= amount;
+        userBalance[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function getBalance() public view returns(uint) {
+        return userBalance[msg.sender];
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+12) Ether leakage - The contract lacks proper handling of Ether transfers and does not ensure secure fund management, leading to potential Ether leakage.

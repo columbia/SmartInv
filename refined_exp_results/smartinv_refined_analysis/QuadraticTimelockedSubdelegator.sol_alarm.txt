@@ -1,0 +1,8 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The execute function modifies the state of the proposal struct without using proper synchronization mechanisms, potentially leading to inconsistent state updates.
+2) Cross bridge inconsistency: The startExecute function relies on the proposal struct being in a specific state (proposal.sTime == 0) before initializing it, which could introduce inconsistencies if multiple parties try to start an execution simultaneously.
+3) ID uniqueness violation: There is no mechanism in place to ensure that the Proposal struct's address field is unique, which could lead to conflicts or unexpected behavior.
+4) Privilege escalation: The contract does not have proper access control mechanisms in place to restrict certain functions only to authorized parties, potentially allowing unauthorized calls to critical functions like execute.
+
+Overall, the contract may be vulnerable to state inconsistencies, potential conflicts due to lacking ID uniqueness validation, and unauthorized privilege escalation.

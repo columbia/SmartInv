@@ -1,0 +1,29 @@
+<\contract\> 
+contract TokenSale {
+     IERC20 public token;
+     address public admin;
+     address public beneficiary;
+
+     constructor(IERC20 _token, address _beneficiary) {
+         token = _token;
+         admin = msg.sender;
+         beneficiary = _beneficiary;
+     }
+
+     function buyTokens(uint _amount) external {
+         uint tokenAmount = _amount * 1000;
+         require(token.balanceOf(address(this)) >= tokenAmount, "Insufficient tokens in sale");
+         token.transfer(msg.sender, tokenAmount);
+     }
+
+     function withdrawTokens() external {
+         require(msg.sender == admin, "Only admin can withdraw tokens");
+         uint balance = token.balanceOf(address(this));
+         token.transfer(beneficiary, balance);
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The "withdrawTokens()" function should have more strict access control as it currently allows any address to withdraw all tokens from the contract.
+2) Arithmetic flaw: In the "buyTokens()" function, multiplying the input amount by 1000 might lead to integer overflow if the input amount is large, resulting in incorrect token calculation.

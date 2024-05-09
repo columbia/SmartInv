@@ -1,0 +1,34 @@
+<\contract\> 
+contract TokenSale {
+     uint public tokenPrice;
+     uint public totalTokens;
+     address public tokenAddress;
+     address public owner;
+
+     constructor(uint _price, uint _total, address _token) {
+          tokenPrice = _price;
+          totalTokens = _total;
+          tokenAddress = _token;
+          owner = msg.sender;
+     }
+
+     function buyTokens(uint _amount) external payable {
+          require(msg.value == tokenPrice * _amount, "Incorrect payment amount");
+          require(totalTokens >= _amount, "Not enough tokens available");
+          totalTokens -= _amount;
+          ERC20Token(tokenAddress).transfer(msg.sender, _amount);
+          owner.transfer(msg.value);
+     }
+
+     function setTokenPrice(uint _newPrice) external {
+          require(msg.sender == owner, "Only owner can set the token price");
+          tokenPrice = _newPrice;
+     }
+
+     function withdrawTokens(address _to, uint _amount) external {
+          require(msg.sender == owner, "Only owner can withdraw tokens");
+          require(totalTokens >= _amount, "Not enough tokens available");
+          totalTokens -= _amount;
+          ERC20Token(tokenAddress).transfer(_to, _amount);
+     }
+}

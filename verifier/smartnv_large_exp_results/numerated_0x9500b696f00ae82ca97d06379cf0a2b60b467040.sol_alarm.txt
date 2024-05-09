@@ -1,0 +1,52 @@
+Contract:
+
+contract MultiSigWallet {
+     address[] public owners;
+     uint public numConfirmationsRequired;
+     mapping (address => bool) public isOwner;
+     mapping (address => mapping(uint => bool)) public signedTransactions;
+
+     struct Transaction {
+          address to;
+          uint amount;
+          bool executed;
+     }
+     mapping (uint => Transaction) public transactions;
+     uint public transactionCount;
+
+     constructor(address[] memory _owners, uint _numConfirmationsRequired) {
+          owners = _owners;
+          numConfirmationsRequired = _numConfirmationsRequired;
+          for (uint i = 0; i < owners.length; i++) {
+               isOwner[owners[i]] = true;
+          }
+     }
+
+     function submitTransaction(address _to, uint _amount) public {
+          uint transactionId = transactionCount++;
+          transactions[transactionId] = Transaction({
+               to: _to,
+               amount: _amount,
+               executed: false
+          });
+     }
+
+     function confirmTransaction(uint _transactionId) public {
+          require(isOwner[msg.sender], "Not an owner");
+          signedTransactions[msg.sender][_transactionId] = true;
+     }
+
+     function executeTransaction(uint _transactionId) public {
+          Transaction storage transaction = transactions[_transactionId];
+          require(!transaction.executed, "Already executed");
+          require(transaction.to != address(0), "Invalid transaction");
+          require(signedTransactions[msg.sender][_transactionId], "Transaction not signed");
+
+          transaction.executed = true;
+          (bool success, ) = transaction.to.call{value: transaction.amount}("");
+          require(success, "Transaction execution failed");
+     }
+}
+
+Output:
+- Incorrect Visibility/Ownership

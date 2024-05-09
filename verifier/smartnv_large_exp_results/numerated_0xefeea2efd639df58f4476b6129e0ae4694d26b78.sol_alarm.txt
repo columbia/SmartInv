@@ -1,0 +1,26 @@
+The contract provided for analysis is:
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(IERC20 _token, uint _tokenPrice) {
+         token = _token;
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) external {
+         uint cost = _amount * tokenPrice;
+         require(token.balanceOf(msg.sender) >= _amount, "Not enough tokens to purchase");
+         require(token.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance to spend tokens");
+         token.transferFrom(msg.sender, owner, cost);
+         tokensSold += _amount;
+     }
+}
+
+Output: 
+1) business logic flaw
+2) incorrect visibility/ownership

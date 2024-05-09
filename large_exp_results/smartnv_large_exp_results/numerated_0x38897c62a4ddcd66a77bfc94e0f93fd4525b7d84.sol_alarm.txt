@@ -1,0 +1,31 @@
+Contract:  
+contract VotingSystem {
+         struct Vote {
+              address voter;
+              uint256 choice; 
+              bool voted;
+         }
+         mapping (address => bool) public voters;
+         mapping (address => Vote) public votes;
+         uint256 public totalVotes;
+         uint256 public winningChoice;
+
+         function vote(uint256 choice) public {
+              require(voters[msg.sender] == false, "voter has already voted");
+              require(choice == 0 || choice == 1, "invalid choice");
+              voters[msg.sender] = true;
+              votes[msg.sender] = Vote(msg.sender, choice, true);
+              totalVotes++;
+              if (choice == 0) {
+                   winningChoice++;
+              }
+         }
+
+         function endVoting() public {
+              require(totalVotes > 0, "no votes cast");
+              require(winningChoice * 2 > totalVotes, "winning choice not enough votes");
+         }
+}
+
+Output: 
+- Business logic flaw: The endVoting function does not consider all possible outcomes and could potentially lead to incorrect results based on the winningChoice condition.

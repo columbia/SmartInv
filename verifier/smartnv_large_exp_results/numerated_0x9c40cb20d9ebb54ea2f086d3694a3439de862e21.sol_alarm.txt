@@ -1,0 +1,59 @@
+<\contract\> 
+contract MultiSigWallet {
+    mapping(address => uint8) public owners;
+    uint constant public MAX_OWNER_COUNT = 50; 
+    uint public transactionCount; 
+    uint public constant SIGNATURE_COUNT = 2; 
+
+    mapping(uint => Transaction) public transactions; 
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    modifier validOwner() {
+        require(owners[msg.sender] == 1);
+        _;
+    }
+
+    function submitTransaction(address _destination, uint _value, bytes memory _data) public validOwner {
+        uint transactionId = transactionCount;
+        transactions[transactionId] = Transaction({
+            destination: _destination,
+            value: _value,
+            data: _data,
+            executed: false
+        });
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public validOwner {
+        Transaction storage transaction = transactions[transactionId];
+        require(transaction.executed == false, "Transaction has already been executed");
+        transaction.executed = true;
+        (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+    }
+
+    function addOwner(address ownerAddress) public {
+        require(owners[ownerAddress] != 1, "Owner already exists");
+        owners[ownerAddress] = 1;
+    }
+
+    function removeOwner(address ownerAddress) public {
+        require(owners[ownerAddress] == 1, "Owner does not exist");
+        owners[ownerAddress] = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the MultiSigWallet contract are:
+
+1) Atomicity violation: The function executeTransaction doesn't have proper atomicity checks on the execution of the transaction, which could potentially lead to inconsistent state updates.
+2) Insufficient gas: The execution of transactions in the executeTransaction function might require more gas than provided, leading to the failure of the transaction execution.
+3) Incorrect visibility/ownership: The visibility of the executeTransaction and submitTransaction functions could allow unauthorized access to execute transactions or submit unauthorized transactions.
+4) ID uniqueness violation: There is a possibility of transactionId collision, resulting in unexpected behavior when referring to transactions.
+5) Privilege escalation: There are no checks in place to prevent a single owner from submitting and executing transactions, potentially leading to privilege escalation issues.

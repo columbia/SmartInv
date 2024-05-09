@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Integer overflow/underflow: There is a possibility of integer overflow in the calculation in the function `calculatePrice()` if the balances of USDC and WETH become too large.
+
+2) Incorrect visibility/ownership: The visibility of the functions `liquidate` and `calculatePrice` is public, which may expose sensitive functions to external manipulation. 
+
+3) Insufficient gas: The function `calculatePrice()` relies on external calls to `USDC.balanceOf(address(pair))` and `WETH.balanceOf(address(pair))`, which may consume too much gas and lead to out-of-gas errors. 
+
+4) Business logic flaw: The liquidate function may have a business logic flaw as the value `80 / 100` is hardcoded, and might not be appropriate for all scenarios. 
+
+Therefore, the identified vulnerabilities in the contract are integer overflow/underflow, incorrect visibility/ownership, insufficient gas, and potential business logic flaw.

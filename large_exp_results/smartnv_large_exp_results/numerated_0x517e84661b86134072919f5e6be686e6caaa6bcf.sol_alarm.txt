@@ -1,0 +1,26 @@
+SuWee Token Contract:
+contract SuWeeToken is ERC20 {
+     string public name = "SuWee Token";
+     string public symbol = "SWT";
+     uint8 public decimals = 18;
+     uint256 public INITIAL_SUPPLY = 1000000 * (10 ** uint256(decimals));
+
+     constructor() public {
+         _mint(msg.sender, INITIAL_SUPPLY);
+     }
+
+     function transfer(address recipient, uint256 amount) public returns (bool) {
+         _transfer(msg.sender, recipient, amount);
+         return true;
+     }
+}
+Vulnerabilities: 
+- Incorrect visibility/ownership: The transfer function does not enforce any access control mechanisms, allowing unauthorized actors to call it.
+- Insufficient gas: The transfer function does not specify the gas amount needed for the transfer, which can lead to failed transactions if insufficient gas is provided.
+- Atomicity violation: The transfer function does not use the transferFrom function, which is the recommended way to handle token transfers to prevent reentrancy attacks and ensure atomicity.
+- Ether leakage: The contract does not handle Ether transactions, but it should still implement mechanisms to prevent accidental Ether transfers.
+- ID uniqueness violation: There is no uniqueness check on user identities during transfer, potentially leading to ID duplication issues.
+- Business logic flaw: The transfer function does not include any business logic validation, leaving the contract vulnerable to logic flaws and inconsistencies.
+- Inconsistent state update: The transfer function directly updates the state without proper validation or checks, which can lead to inconsistent contract states.
+- Price manipulation: The contract does not directly handle price calculations, but it should ensure that any price-related operations are accurately calculated and validated to prevent manipulation.
+- Arithmetic flaw: The contract's initial supply calculation relies on arithmetic operations, which can be prone to overflow or underflow vulnerabilities if not handled carefully.

@@ -1,0 +1,26 @@
+The contract to analyze and identify potential vulnerabilities:
+
+contract Marketplace {
+    mapping(uint => address) public productIdToOwner;
+    mapping(address => uint) public ownerProductCount;
+
+    function buyProduct(uint _productId) public payable {
+        require(productIdToOwner[_productId] != msg.sender, "You can't buy your own product");
+        uint productPrice = getProductPrice(_productId);
+        require(msg.value >= productPrice, "Insufficient funds to buy the product");
+        address owner = productIdToOwner[_productId];
+        owner.transfer(productPrice);
+        msg.sender.transfer(msg.value - productPrice);
+        productIdToOwner[_productId] = msg.sender;
+        ownerProductCount[owner]--;
+        ownerProductCount[msg.sender]++;
+    }
+
+    function getProductPrice(uint _productId) internal view returns (uint) {
+        // Some logic to calculate product price
+        return _productId + 100;
+    }
+}
+
+Output: 
+1) incorrect visibility/ownership

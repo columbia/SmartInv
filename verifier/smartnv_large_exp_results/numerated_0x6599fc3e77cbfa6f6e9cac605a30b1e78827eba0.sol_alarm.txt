@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+contract Crowdsale {
+   address public owner;
+   uint public endTime;
+   uint public totalTokens;
+
+   constructor(address _owner, uint _endTime, uint _totalTokens) {
+      owner = _owner;
+      endTime = _endTime;
+      totalTokens = _totalTokens;
+   }
+
+   function buyTokens(uint amount) public {
+      require(block.timestamp < endTime, "Crowdsale has ended");
+      // Transfer tokens to buyer
+   }
+
+   function withdrawFunds() public {
+      require(msg.sender == owner, "Only owner can withdraw funds");
+      // Withdraw funds
+   }
+}
+
+Output: 
+1) incorrect visibility/ownership

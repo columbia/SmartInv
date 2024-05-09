@@ -1,0 +1,46 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerPaid;
+    bool public sellerPaid;
+    bool public arbiterPaid;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function deposit(address payee) public payable {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        require(msg.value == price, "Incorrect amount");
+        if (payee == buyer) {
+            buyerPaid = true;
+        } else if (payee == seller) {
+            sellerPaid = true;
+        } else if (payee == arbiter) {
+            arbiterPaid = true;
+        }
+    }
+
+    function releaseFunds(address payee) public {
+        require(msg.sender == arbiter, "Unauthorized");
+        require(buyerPaid && sellerPaid, "Payment not completed");
+        if (payee == buyer || payee == seller) {
+            payable(payee).transfer(price);
+        }
+    }
+
+    function refundFunds(address payee) public {
+        require(msg.sender == arbiter, "Unauthorized");
+        require(!buyerPaid || !sellerPaid, "Payment already completed");
+        if (payee == buyer || payee == seller) {
+            payable(payee).transfer(price);
+        }
+    }
+}
+<\contract_to_analyze\>

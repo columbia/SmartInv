@@ -1,0 +1,50 @@
+The contract to analyze for potential vulnerabilities:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    address public chairperson;
+    mapping(address => Voter) public voters;
+
+    constructor() {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Delegate loop detected.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            voters[delegateTo.vote].weight += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = option;
+        voters[option].weight += sender.weight;
+    }
+}
+
+Output:
+1) privilege escalation
+2) inconsistent state update

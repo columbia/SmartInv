@@ -1,0 +1,30 @@
+<\analyzed_contract\>
+contract MultiSigWallet {
+     address owner;
+     mapping(address => bool) public isOwner;
+     uint public transactionCount;
+     mapping (uint => Transaction) public transactions;
+
+     struct Transaction {
+          address destination;
+          uint value;
+      }
+
+     function submitTransaction(address _destination, uint _value) public {
+          require(isOwner[msg.sender], "only owners can submit transactions");
+          transactions[transactionCount] = Transaction(_destination, _value);
+          transactionCount += 1;
+     }
+
+     function executeTransaction(uint _transactionId) public {
+          Transaction storage txn = transactions[_transactionId];
+          require(txn.destination != address(0), "invalid transaction");
+          txn.destination.transfer(txn.value);
+     }
+
+     function addOwner(address _newOwner) public {
+          require(msg.sender == owner, "only owner can add new owner");
+          isOwner[_newOwner] = true;
+     }
+}
+<\analyzed_contract\>

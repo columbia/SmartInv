@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+    bool public paid;
+
+    constructor(address _payer, address _payee, uint _amount) public {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+        paid = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        require(msg.value == amount, "Incorrect amount sent");
+    }
+
+    function withdraw() public {
+        require(msg.sender == payee, "Only payee can withdraw funds");
+        require(paid == false, "Funds have already been withdrawn");
+        payee.transfer(amount);
+        paid = true;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The deposit and withdraw functions are not restricted to only the involved parties (payer and payee). This could lead to unauthorized access to funds.
+2) Inconsistent state update: The paid variable is simply toggled to true after a payee withdraws the funds. This may lead to unexpected behaviors if multiple withdrawals are attempted.

@@ -1,0 +1,27 @@
+Contrat TimelockControlleur:
+
+1) ID uniqueness violation: The `proposal` struct does not include a unique identifier for each proposal, which could lead to issues with differentiating between multiple proposals if they exist simultaneously.
+
+2) Incorrect visibility/ownership: The access control for functions like `startExecute`, `execute`, and `endExecute` should be carefully reviewed to ensure that only authorized parties can interact with these functions.
+
+3) Inconsistent state update: The state updates within functions like `execute` and `endExecute` should be reviewed to prevent unexpected state changes that could lead to undesirable outcomes.
+
+4) Insufficient gas: Complex operations within functions like `endExecute` may consume a significant amount of gas, potentially leading to out-of-gas errors during execution.
+
+5) Atomicity violation: The updates to the `proposal` state variables within functions like `execute` should be reviewed to ensure atomicity and prevent race conditions.
+
+6) Integer overflow/underflow: Operations involving arithmetic calculations, such as in the `execute` and `endExecute` functions, should be carefully checked to prevent vulnerabilities related to integer overflow or underflow. 
+
+7) Ether leakage: The contract should be reviewed to ensure that Ether transactions are handled securely to prevent loss of funds.
+
+8) Business logic flaw: The overall logic of the contract, especially in functions like `startExecute` and `endExecute`, should be carefully analyzed for potential business logic flaws that could lead to unexpected behavior.
+
+Therefore, the potential vulnerabilities in the TimelockController contract are:
+- ID uniqueness violation
+- Incorrect visibility/ownership
+- Inconsistent state update
+- Insufficient gas
+- Atomicity violation
+- Integer overflow/underflow
+- Ether leakage
+- Business logic flaw

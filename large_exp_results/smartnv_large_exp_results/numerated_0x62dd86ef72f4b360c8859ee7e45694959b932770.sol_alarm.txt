@@ -1,0 +1,34 @@
+Contract to be analyzed:
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+    uint public totalTokens;
+    
+    mapping(address => uint) public tokensBought;
+
+    constructor(address _token, uint _price, uint _totalTokens) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        price = _price;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(_amount * price <= msg.value, "Insufficient payment");
+        require(_amount <= totalTokens, "Not enough tokens left");
+        
+        token.transfer(msg.sender, _amount);
+        tokensBought[msg.sender] += _amount;
+        totalTokens -= _amount;
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+    }
+} 
+
+Output:
+1) price manipulation
+2) inconsistent state update

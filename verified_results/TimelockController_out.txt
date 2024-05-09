@@ -1,0 +1,15 @@
+SpecFilesDir = /home/sallyjunsongwang/SmartInv/verifier
+... running Solc on /home/sallyjunsongwang/SmartInv/verifier/timecontroller_fix_inv.sol
+... running SolToBoogie to translate Solidity to Boogie
+... running /home/sallyjunsongwang/SmartInv/verisol/bin/Debug/boogie -doModSetAnalysis -inline:spec -noinfer -contractInfer -inlineDepth:100 -proc:BoogieEntry_* __SolToBoogieTest_out.bpl
+	*** Did not find a proof (see boogie.txt)
+... running /home/sallyjunsongwang/SmartInv/verisol/bin/Debug/corral /recursionBound:4 /k:1 /main:CorralEntry_TimelockController /tryCTrace /printDataValues:1 __SolToBoogieTest_out.bpl
+	*** Found a counterexample (see corral.txt)
+	-----Transaction Sequence for Defect ------
+/home/sallyjunsongwang/SmartInv/verifier/timecontroller_fix_inv.sol(9,1): : TimelockController::Constructor (this = address!0, msg.sender = address!2, msg.value = 13)
+/home/sallyjunsongwang/SmartInv/verifier/timecontroller_fix_inv.sol(41,1): : TimelockController::startExecute (this = address!0, msg.sender = address!3, msg.value = -715)
+/home/sallyjunsongwang/SmartInv/verifier/timecontroller_fix_inv.sol(56,1): : TimelockController::endExecute (this = address!0, msg.sender = address!4, msg.value = -543)
+/home/sallyjunsongwang/SmartInv/verifier/timecontroller_fix_inv.sol(61,1): : ASSERTION FAILS!
+	---------------
+
+	See full execution trace inside corral.txt

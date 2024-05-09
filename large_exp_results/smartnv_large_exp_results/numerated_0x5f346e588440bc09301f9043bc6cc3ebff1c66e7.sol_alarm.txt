@@ -1,0 +1,33 @@
+<\contract_to_be_analyzed\>
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE }
+    State public currentState;
+
+    constructor(address _seller, address _buyer, address _arbiter, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function releasePayment() public {
+        require(msg.sender == seller || msg.sender == arbiter, "You are not authorized");
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state");
+        // transfer funds to the seller
+        payable(seller).transfer(address(this).balance);
+        currentState = State.COMPLETE;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "You are not authorized");
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state");
+        // change state to complete
+        currentState = State.COMPLETE;
+    }
+}
+<\contract_to_be_analyzed\>

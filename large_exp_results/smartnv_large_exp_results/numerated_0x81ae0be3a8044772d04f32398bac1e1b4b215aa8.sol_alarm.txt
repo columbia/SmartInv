@@ -1,0 +1,26 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+
+    function deposit(address _payee) public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        payee = _payee;
+        amount = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == payee, "Only payee can withdraw funds");
+        address payable _payee = payable(payee);
+        _payee.transfer(amount);
+        amount = 0;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities: 
+1) Privilege escalation: The deposit function allows any address to specify the payee, which can potentially lead to privilege escalation if an unauthorized address is set as the payee.
+2) Inconsistent state update: In the deposit function, the payee and amount are updated without any checks or validations, which can lead to inconsistent state if the conditions are not properly enforced.
+3) Incorrect visibility/ownership: The payer and payee variables are declared as public, which can expose sensitive information about the parties involved in the escrow contract.
+4) Insufficient gas: The withdraw function relies on the transfer function, which has a limited gas stipend and can potentially fail if the payee's fallback function consumes too much gas.

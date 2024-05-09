@@ -1,0 +1,43 @@
+Contract to analyze:
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    
+    function delegate(address to) public {
+        voters[msg.sender].delegate = to;
+    }
+    
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = option;
+        sender.weight = 1; // every voter has the same weight for simplicity
+    }
+    
+    function tallyVotes() public view returns (uint256[] memory) {
+        uint256[] memory votesCount = new uint256[](2);
+        for (uint256 i = 0; i < 2; i++) {
+            votesCount[i] = 0;
+        }
+        
+        for (uint256 i = 0; i < 2; i++) {
+            for (uint256 j = 0; j < 2; j++) {
+                if (voters[j].vote == i) {
+                    votesCount[i] += voters[j].weight;
+                }
+            }
+        }
+        
+        return votesCount;
+    }
+}
+Output:
+- business logic flaw
+- inconsistent state update

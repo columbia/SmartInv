@@ -1,0 +1,41 @@
+The contract provided for analysis:
+
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public funds; 
+     enum State { Created, Locked, Inactive }
+     State public state;
+
+     modifier onlyBuyer() {
+         require(msg.sender == buyer, "Only buyer can call this function");
+         _;
+     }
+     modifier inState(State _state) {
+         require(state == _state, "Invalid state");
+         _;
+     }
+
+     function confirmPayment() onlyBuyer inState(State.Created) public {
+         state = State.Locked;
+         funds = address(this).balance;
+     }
+
+     function refundPayment() onlyBuyer inState(State.Locked) public {
+         state = State.Inactive;
+         buyer.transfer(address(this).balance);
+     }
+
+     function confirmReceived() onlyBuyer inState(State.Locked) public {
+         state = State.Inactive;
+         seller.transfer(address(this).balance);
+     }
+
+     function dispute() public {
+          state = State.Inactive;
+          arbiter.transfer(address(this).balance);
+     }
+}
+
+It is free from vulnerabilities and is healthy.

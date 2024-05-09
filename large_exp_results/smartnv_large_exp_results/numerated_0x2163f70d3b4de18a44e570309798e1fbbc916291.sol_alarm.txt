@@ -1,0 +1,28 @@
+<\analyzed_contract\>
+contract TokenSales {
+         address public token;
+         address public owner;
+         uint public price;
+         uint public totalSold;
+
+         constructor(address _token, uint _price) {
+             token = _token;
+             owner = msg.sender;
+             price = _price;
+         }
+
+         function buyTokens(uint _amount) public {
+             require(msg.value == _amount * price, "Incorrect payment amount");
+             require(ERC20(token).balanceOf(address(this)) >= _amount, "Insufficient tokens available");
+             
+             ERC20(token).transfer(msg.sender, _amount);
+             totalSold += _amount;
+         }
+
+         function withdrawFunds() public {
+             require(msg.sender == owner, "You are not the owner");
+             uint balance = address(this).balance;
+             payable(owner).transfer(balance);
+         }
+     }
+<\analyzed_contract\>

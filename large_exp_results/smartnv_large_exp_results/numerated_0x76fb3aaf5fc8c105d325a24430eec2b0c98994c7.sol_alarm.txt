@@ -1,0 +1,41 @@
+<\contract_3\>
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public releaseTime;
+     uint public amount;
+  
+     constructor(address _seller, address _arbiter, uint _releaseTime) {
+         buyer = msg.sender;
+         seller = _seller;
+         arbiter = _arbiter;
+         releaseTime = _releaseTime;
+     }
+  
+     function deposit() public payable {
+         require(msg.sender == buyer, "Only buyer can deposit");
+         amount += msg.value;
+     }
+  
+     function refund() public {
+         require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can refund");
+         require(block.timestamp < releaseTime, "Release time has passed");
+         if(msg.sender == buyer) {
+             payable(buyer).transfer(amount);
+         } else {
+             payable(seller).transfer(amount);
+         }
+     }
+  
+     function release() public {
+         require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can release funds");
+         require(block.timestamp > releaseTime, "Release time has not arrived yet");
+         if(msg.sender == buyer) {
+             payable(seller).transfer(amount);
+         } else {
+             payable(buyer).transfer(amount);
+         }
+     }
+}
+<\contract_3\>

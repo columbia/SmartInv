@@ -1,0 +1,20 @@
+<\contract\> 
+contract Auction { 
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public bids;
+    
+    function bid() public payable { 
+        require(msg.value > highestBid, "Bid not high enough"); 
+        if (highestBidder != address(0)) { 
+            bids[highestBidder] += highestBid; 
+            highestBidder.transfer(highestBid);
+        } 
+        highestBidder = msg.sender; 
+        highestBid = msg.value;
+    } 
+} 
+
+The potential vulnerabilities in the contract are: 
+1) Reentrancy
+2) Inconsistent state update

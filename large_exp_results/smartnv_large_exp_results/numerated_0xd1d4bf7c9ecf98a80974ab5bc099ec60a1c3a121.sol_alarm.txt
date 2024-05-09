@@ -1,0 +1,30 @@
+The contract to analyze:
+
+contract ERC20Token {
+     mapping(address => uint) balances;
+     uint public totalSupply;
+
+     function transfer(address to, uint amount) public {
+         require(balances[msg.sender] >= amount);
+         balances[msg.sender] -= amount;
+         balances[to] += amount;
+     }
+
+     function mint(address to, uint amount) public {
+         totalSupply += amount;
+         balances[to] += amount;
+     }
+
+     function transferFrom(address from, address to, uint amount) public {
+         require(balances[from] >= amount);
+         require(allowance[from][msg.sender] >= amount);
+         balances[from] -= amount;
+         balances[to] += amount;
+         allowance[from][msg.sender] -= amount;
+     }
+
+     mapping(address => mapping(address => uint)) public allowance;
+}
+Output: 
+1) inconsistent state update
+2) atomicity violation

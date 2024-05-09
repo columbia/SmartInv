@@ -1,0 +1,55 @@
+<\contract_to_analyze\>
+contract PaymentChannel {
+    address public sender;
+    address public recipient;
+    uint public expiration;
+    mapping(bytes32 => uint) public balances;
+    
+    constructor(address _recipient, uint duration) {
+        sender = msg.sender;
+        recipient = _recipient;
+        expiration = block.timestamp + duration;
+    }
+
+    function deposit(bytes32 hash) public payable {
+        require(msg.sender == sender, "only sender can deposit");
+        balances[hash] += msg.value;
+    }
+
+    function withdraw(bytes32 hash, bytes memory signature, uint amount) public {
+        require(msg.sender == recipient, "only recipient can withdraw");
+        require(block.timestamp < expiration, "channel has expired");
+        bytes32 message = keccak256(abi.encodePacked(msg.sender, amount, hash));
+        address signer = recoverSigner(message, signature);
+        require(signer == sender, "invalid signature");
+        
+        recipient.transfer(amount);
+    }
+
+    function recoverSigner(bytes32 message, bytes memory signature) public pure returns (address) {
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        
+        if (signature.length != 65) {
+            return address(0);
+        }
+        
+        assembly {
+            r := mload(add(signature, 32))
+            s := mload(add(signature, 64))
+            v := byte(0, mload(add(signature, 96))
+        }
+        
+        if (v < 27) {
+            v += 27;
+        }
+        
+        if (v != 27 && v != 28) {
+            return address(0);
+        }
+        
+        return ecrecover(message, v, r, s);
+    }
+}
+<\contract_to_analyze\>

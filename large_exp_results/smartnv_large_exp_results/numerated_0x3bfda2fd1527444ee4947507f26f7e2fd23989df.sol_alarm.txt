@@ -1,0 +1,9 @@
+This contract may have the following potential vulnerabilities:
+
+1) Incorrect visibility/ownership: The contract does not explicitly specify the visibility of certain functions (e.g., `votedProposal`, `getStartingBalance`, `getPrice`). It is crucial to define the visibility of functions to ensure proper access control.
+
+2) Privilege escalation: The `endExecute` function may allow an unauthorized party to lock up more funds than intended if they can manipulate the conditions to meet the requirement `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`.
+
+3) Inconsistent state update: In the `startExecute` function, `proposal` is updated without proper synchronization or locking mechanisms, potentially leading to inconsistent state updates if multiple transactions try to execute this function simultaneously.
+
+Therefore, the potential vulnerabilities in the contract are Incorrect visibility/ownership, privilege escalation, and inconsistent state update.

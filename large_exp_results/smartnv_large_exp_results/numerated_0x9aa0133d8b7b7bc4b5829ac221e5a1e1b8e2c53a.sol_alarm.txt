@@ -1,0 +1,43 @@
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+     mapping(address => uint256) startingBalanceList;
+     uint256 public lockedFunds;
+
+    function startExecute() external {
+              Proposal memory proposal;
+              uint256 startingBalance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+        }
+        
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+
+    function getStartingBalance(address _addr) internal view returns(uint256) {
+              // logic to get starting balance
+        }
+}
+Potential vulnerabilities in the TimelockController contract:
+1) Inconsistent state update - The Proposal struct is being used without being initialized in the startExecute function, which may lead to inconsistent state updates.
+2) Business logic flaw - The execute function allows for transfer of tokens without proper verification of the proposal status, potentially leading to unauthorized transfers.
+3) Incorrect visibility/ownership - The owner variable is defined as internal which may expose sensitive information and potentially lead to authorization issues.

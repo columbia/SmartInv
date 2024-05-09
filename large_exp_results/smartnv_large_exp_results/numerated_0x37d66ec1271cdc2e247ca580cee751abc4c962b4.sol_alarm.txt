@@ -1,0 +1,27 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public voteCount;
+    mapping(address => bool) public hasVoted;
+    bool public votingStarted;
+    uint public totalVotes;
+    
+    function startVoting() external {
+        require(!votingStarted, "voting has already started");
+        votingStarted = true;
+    }
+
+    function vote() external {
+        require(votingStarted, "voting has not started yet");
+        require(!hasVoted[msg.sender], "you have already voted");
+        voteCount[msg.sender]++;
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function endVoting() external {
+        require(votingStarted, "voting has not started yet");
+        require(totalVotes > 0, "no votes have been cast");
+        //calculate winner based on vote count
+    }
+}
+<\contract\>

@@ -1,0 +1,26 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public escrowAgent;
+
+    function setEscrowAgent(address _escrowAgent) public {
+        require(msg.sender == payer || msg.sender == payee, "Only payer/payee can set escrow agent");
+        escrowAgent = _escrowAgent;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == escrowAgent, "Only escrow agent can release funds");
+        // code to transfer funds to payee
+    }
+
+    function refund() public {
+        require(msg.sender == escrowAgent, "Only escrow agent can refund");
+        // code to refund funds to payer
+    }
+}
+<\contract\> 
+
+Output:
+- privilege escalation
+- incorrect visibility/ownership

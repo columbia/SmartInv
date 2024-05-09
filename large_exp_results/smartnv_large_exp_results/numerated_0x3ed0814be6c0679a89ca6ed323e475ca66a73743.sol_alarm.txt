@@ -1,0 +1,13 @@
+The contract includes the following potential vulnerabilities: 
+
+1) Inconsistent state update: The function startExecute() updates the state variable proposal without checking if a proposal is already ongoing, potentially leading to inconsistent state updates.
+
+2) Incorrect visibility/ownership: The contract TimelockController is implementing the IERC20 interface but lacks the necessary functions and attributes to fully comply with the interface. This could lead to incorrect visibility or ownership issues.
+
+3) Insufficient gas: The function endExecute() locks the funds based on the comparison of the balance of the contract with the total token supply. This could potentially lead to running out of gas if the operation requires a large amount of gas.
+
+4) ID uniqueness violation: The contract does not check for ID uniqueness before starting a new proposal, which could lead to conflicts or incorrect behavior if multiple proposals are started simultaneously.
+
+5) Business logic flaw: The liquidate function in the ExchangeTokens contract relies on the getPrice() function to determine if a user's funds can be liquidated. If the getPrice() function is inaccurate or manipulated, it could result in incorrect liquidation decisions.
+
+6) Ether leakage: The contract does not handle Ether transactions securely and could potentially leak Ether if not properly managed.

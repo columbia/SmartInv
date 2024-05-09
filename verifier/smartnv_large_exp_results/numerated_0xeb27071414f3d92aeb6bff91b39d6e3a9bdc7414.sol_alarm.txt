@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+    uint public totalSold;
+
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        totalSold += _amount;
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}
+
+Output: 
+1) correctness of contract: healthy

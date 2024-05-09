@@ -1,0 +1,19 @@
+<\contract_to_be_analyzed\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        return totalVotes;
+    }
+}
+<\contract_to_be_analyzed\> 
+
+Potential vulnerabilities:
+7) ID uniqueness violation: Since the `hasVoted` mapping uses addresses as keys, there is a possibility of duplicate addresses voting, leading to ID uniqueness violation.

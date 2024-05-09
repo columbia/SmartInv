@@ -1,0 +1,23 @@
+The following contract potentially contains the vulnerability of insufficient gas. 
+
+Contract:
+```solidity
+contract VotingSystem {
+    mapping(address => uint256) public voteCount;
+
+    function vote() public {
+        require(msg.sender != address(0), "Invalid address");
+        
+        // Perform some complex operations for voting
+        for(uint i=0; i<10000; i++){
+            voteCount[msg.sender]++;
+        }
+    }
+}
+```
+
+Vulnerability: 
+- Insufficient gas
+
+Output:
+Insufficient gas

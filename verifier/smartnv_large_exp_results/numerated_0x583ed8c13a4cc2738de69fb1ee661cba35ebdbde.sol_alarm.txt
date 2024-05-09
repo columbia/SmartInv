@@ -1,0 +1,23 @@
+<\contract\> 
+contract SubscriptionService {
+    mapping(address => uint) public subscriptions;
+
+    function subscribe(address user, uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        subscriptions[user] += amount;
+    }
+
+    function cancelSubscription(address user, uint amount) public {
+        require(amount <= subscriptions[user], "Not enough subscription to cancel");
+        subscriptions[user] -= amount;
+    }
+
+    function getSubscriptionBalance(address user) public view returns (uint) {
+        return subscriptions[user];
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Inconsistent state update: The subscriptions[user] variable is directly updated in the subscribe and cancelSubscription functions without proper validation or checks, potentially leading to inconsistent data states.
+2) Integer underflow: The cancelSubscription function does not check for integer underflow when subtracting the amount from the subscriptions[user] value, which could result in a negative value if the amount to cancel is greater than the existing subscription balance.

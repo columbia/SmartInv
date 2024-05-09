@@ -1,0 +1,40 @@
+The contract provided for analysis is:
+
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 endTime; 
+          address proposer; 
+          uint256 votes; 
+     }
+     mapping(uint256 => Proposal) public proposals; 
+     address public admin; 
+     mapping(address => uint256) public voters; 
+
+     function createProposal(uint256 id, uint256 start, uint256 end) public {
+          require(proposals[id].startTime == 0, "proposal already exists"); 
+          require(msg.sender == admin, "only admin can create proposals"); 
+          proposals[id] = Proposal(start, end, msg.sender, 0); 
+     }
+
+     function vote(uint256 id) public {
+          require(proposals[id].startTime <= block.timestamp, "voting has not started yet");
+          require(proposals[id].endTime >= block.timestamp, "voting has ended");
+          require(voters[msg.sender] == 0, "voter has already voted"); 
+          proposals[id].votes += 1; 
+          voters[msg.sender] = id; 
+     }
+
+     function endVoting(uint256 id) public {
+          require(msg.sender == admin, "only admin can end voting");
+          require(proposals[id].endTime <= block.timestamp, "voting is still ongoing");
+          if (proposals[id].votes > 50) {
+               // execute proposal
+          }
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

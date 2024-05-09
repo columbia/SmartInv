@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+- incorrect visibility/ownership: The functions `calculatePrice` and `liquidate` are both public, which may expose sensitive operations to unauthorized users.
+- atomicity violation: The `liquidate` function involves two separate token transfers that are not wrapped in a single transaction, potentially leading to inconsistent state updates or reentrancy vulnerabilities.
+- arithmetic flaw: The calculation in the `liquidate` function `(getPrice() * cAmount * 80 / 100 < dAmount)` could potentially lead to arithmetic flaws if not carefully handled with large numbers.
+- inconsistent state update: The `calculatePrice` function returns a value based on the balances of `USDC` and `WETH` in the `pair`, but this balance could potentially change between the calculation and any subsequent operations based on the price.
+- insufficient gas: The `liquidate` function may require significant gas to execute if the balances and calculations involve large numbers, potentially leading to out-of-gas errors.

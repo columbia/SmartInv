@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Reentrancy: The contract may be vulnerable to reentrancy attacks, as it allows external calls to transfer tokens in the liquidate function without limiting the number of external calls that can be made.
+
+2) Price manipulation: The calculatePrice function may be vulnerable to price manipulation as it relies on the balance of tokens in the Uniswap pair, which can be influenced by external factors.
+
+3) Inconsistent state update: There is a potential for inconsistent state update in the liquidate function, as the debt and collateral mappings are updated without proper synchronization or checks, which could lead to unexpected behavior.
+
+4) Incorrect visibility/ownership: The visibility of the variables debt and collateral is set to public, which may expose sensitive information to external parties. Additionally, ownership control is not implemented in the contract.
+
+5) Integer overflow/underflow: There is a potential for integer overflow/underflow in the liquidate function, as the calculations involving cAmount and dAmount could result in unexpected behavior if the values exceed the maximum or minimum uint values.

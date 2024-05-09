@@ -1,0 +1,43 @@
+<\analyzing_contract\> 
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public totalOwners;
+    
+    constructor(address[] memory _owners, uint _totalOwners) {
+        require(_totalOwners <= _owners.length, "Total owners exceed array length");
+        for (uint i = 0; i < _owners.length; i++) {
+            owners.push(_owners[i]);
+            isOwner[_owners[i]] = true;
+        }
+        totalOwners = _totalOwners;
+    }
+    
+    function addOwner(address newOwner) public {
+        require(msg.sender == owners[0], "Only initial owner can add more owners");
+        
+        if (!isOwner[newOwner]) {
+            owners.push(newOwner);
+            isOwner[newOwner] = true;
+            totalOwners++;
+        }
+    }
+    
+    function removeOwner(address ownerToRemove) public {
+        require(msg.sender == owners[0], "Only initial owner can remove owners");
+        require(isOwner[ownerToRemove], "Owner to remove does not exist");
+        
+        isOwner[ownerToRemove] = false;
+        totalOwners--;
+        
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == ownerToRemove) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                break;
+            }
+        }
+    }
+} 
+
+<\analyzing_contract\>

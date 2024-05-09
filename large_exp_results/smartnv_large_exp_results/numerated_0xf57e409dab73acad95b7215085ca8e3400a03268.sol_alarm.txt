@@ -1,0 +1,17 @@
+The contract contains the following potential vulnerabilities:
+
+1) Insufficient gas: The contract does not specify gas limits for certain operations, which could potentially result in out-of-gas errors during execution.
+
+2) Incorrect visibility/ownership: The `owner` variable is declared as `internal`, which could lead to issues related to access control and ownership.
+
+3) Inconsistent state update: The state variable `proposal` is being updated in multiple functions without proper synchronization or checks, which could lead to inconsistent state updates.
+
+4) ID uniqueness violation: The contract does not enforce uniqueness of proposal IDs, which could result in conflicts or unexpected behavior.
+
+5) Atomicity violation: Certain operations like updating `proposal.votedAmount` are not performed atomically, which could lead to race conditions or unexpected behavior.
+
+6) Arithmetic flaw: The calculation `getPrice() * cAmount * 80 / 100` in the `liquidate` function could potentially result in arithmetic flaws such as overflow or underflow.
+
+7) Ether leakage: The contract does not handle Ether transactions securely, which could lead to unintended Ether leakage or loss.
+
+8) Privilege escalation: The contract may be susceptible to privilege escalation attacks due to improper access control mechanisms or lack of proper validation checks.

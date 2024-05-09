@@ -1,0 +1,62 @@
+The contract to analyze and identify potential vulnerabilities is:
+
+contract VotingContract {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    
+    function vote(uint256 candidate) public {
+        require(candidate == 1 || candidate == 2, "Invalid candidate");
+        require(!voters[msg.sender].voted, "Already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = candidate;
+        voters[msg.sender].weight = 1; // Every voter has a weight of 1
+        
+        totalVotes++;
+    }
+    
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "Already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = to;
+        Voter storage delegate = voters[to];
+        
+        if (delegate.voted) {
+            voters[delegate.delegate].weight += voters[msg.sender].weight;
+        } else {
+            delegate.weight += voters[msg.sender].weight;
+        }
+        
+        totalVotes++;
+    }
+    
+    function winningCandidate() public view returns (uint256) {
+        uint256 candidate1Votes = 0;
+        uint256 candidate2Votes = 0;
+        
+        for (uint256 i = 0; i < totalVotes; i++) {
+            address voterAddress = address(i);
+            uint256 weight = voters[voterAddress].weight;
+            
+            if (voters[voterAddress].vote == 1) {
+                candidate1Votes += weight;
+            } else {
+                candidate2Votes += weight;
+            }
+        }
+        
+        return candidate1Votes > candidate2Votes ? 1 : 2;
+    }
+}
+
+Output:
+1) incorrect visibility/ownership
+2) inconsistent state update

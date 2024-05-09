@@ -1,0 +1,45 @@
+<\contract\>
+contract Escrow {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public amount;
+         mapping(address => bool) public released;
+         enum State {CREATED, LOCKED, RELEASED, INACTIVE}
+         State public currentState;
+
+         constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+             buyer = _buyer;
+             seller = _seller;
+             arbiter = _arbiter;
+             amount = _amount;
+             currentState = State.CREATED;
+        }
+
+         function lock() public {
+             require(msg.sender == buyer || msg.sender == seller, "only buyer or seller can lock");
+             currentState = State.LOCKED;
+         }
+
+         function releaseToSeller() public {
+             require(msg.sender == arbiter, "only arbiter can release to seller");
+             require(currentState == State.LOCKED, "escrow not locked");
+             released[seller] = true;
+             currentState = State.RELEASED;
+         }
+
+         function releaseToBuyer() public {
+             require(msg.sender == arbiter, "only arbiter can release to buyer");
+             require(currentState == State.LOCKED, "escrow not locked");
+             released[buyer] = true;
+             currentState = State.RELEASED;
+         }
+
+         function refund() public {
+             require(msg.sender == arbiter, "only arbiter can refund");
+             require(currentState == State.LOCKED, "escrow not locked");
+             released[buyer] = true;
+             currentState = State.INACTIVE;
+         }
+}
+<\contract\>

@@ -1,0 +1,24 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    function initiate(address _seller, address _arbiter) public {
+        require(buyer == address(0), "Escrow already initiated");
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        // transfer funds to seller
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Unauthorized");
+        // refund funds to buyer
+    }
+}
+<\contract\>

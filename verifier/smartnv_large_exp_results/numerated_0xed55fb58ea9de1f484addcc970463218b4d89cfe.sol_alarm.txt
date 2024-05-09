@@ -1,0 +1,25 @@
+The contract under analysis:
+
+contract Voting {
+    struct Voter {
+        address voterAddress;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+
+    function vote(uint256 _choice) external {
+        require(_choice == 1 || _choice == 2, "Invalid choice");
+
+        voters[msg.sender].vote = _choice;
+    }
+
+    function getVote(address _voterAddress) external view returns (uint256) {
+        return voters[_voterAddress].vote;
+    }
+}
+
+The potential vulnerabilities in the contract include:
+- ID uniqueness violation: Voters' addresses are used as keys in the mapping, which could potentially lead to collision and overwrite of votes.
+- Incorrect visibility/ownership: The voters mapping is publicly accessible, which may expose sensitive information.
+- Business logic flaw: Lack of restrictions on multiple voting and no validation on the total number of votes.

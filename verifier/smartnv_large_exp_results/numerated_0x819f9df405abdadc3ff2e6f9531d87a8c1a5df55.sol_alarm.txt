@@ -1,0 +1,20 @@
+<\contract\> 
+contract TokenExchange {
+   IERC20 public token1;
+   IERC20 public token2;
+   uint public exchangeRate;
+
+   function setExchangeRate(uint rate) external {
+       require(msg.sender == owner, "only owner can set exchange rate"); 
+       exchangeRate = rate;
+   }
+
+   function trade(uint amount, address recipient) external {
+       require(token1.balanceOf(msg.sender) >= amount, "insufficient balance");
+       uint amountToSend = amount * exchangeRate;
+       token1.transferFrom(msg.sender, address(this), amount);
+       token2.transfer(recipient, amountToSend);
+   }
+
+}
+<\contract\> 

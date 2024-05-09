@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The `execute` function increments `proposal.votedAmount` without utilizing a safe method like SafeMath, which can result in integer overflow vulnerabilities.
+2) Cross bridge inconsistency: The `lockFunds` variable is updated in the `endExecute` function but the contract does not ensure that this update is atomic and consistent with other state changes.
+3) Privilege escalation: The `startExecute` function does not enforce any permission checks to restrict who can propose and start executions, potentially allowing unauthorized users to manipulate the proposal process.
+4) Business logic flaw: The `endExecute` function leverages a precarious metric for determining execution success by comparing the balance of the contract to the total token supply, which may not accurately reflect successful execution in all scenarios.

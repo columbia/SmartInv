@@ -1,0 +1,16 @@
+Contract in Analysis:
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        // Vote counting logic
+        hasVoted[msg.sender] = true;
+    }
+}
+Output: healthy

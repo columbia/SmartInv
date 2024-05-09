@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract Escrow {
+    uint public totalEscrowed;
+    
+    struct EscrowInfo {
+        address payee;
+        uint amount;
+        bool released;
+    }
+    
+    mapping(uint => EscrowInfo) public escrows;
+    
+    function createEscrow(address _payee, uint _amount) external {
+        escrows[totalEscrowed] = EscrowInfo(_payee, _amount, false);
+        totalEscrowed++;
+    }
+    
+    function releaseEscrow(uint _escrowId) external {
+        require(!escrows[_escrowId].released, "Escrow already released");
+        escrows[_escrowId].payee.transfer(escrows[_escrowId].amount);
+        escrows[_escrowId].released = true;
+    }
+}
+<\contract_to_analyze\>

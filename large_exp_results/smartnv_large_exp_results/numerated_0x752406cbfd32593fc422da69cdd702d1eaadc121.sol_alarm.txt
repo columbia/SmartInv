@@ -1,0 +1,24 @@
+<\contract\>
+contract FinancialContract {
+     address public owner;
+     uint public balance;
+     uint public totalDeposits;
+     mapping(address => uint) public deposits;
+
+     function deposit() public payable {
+          deposits[msg.sender] += msg.value;
+          totalDeposits += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+          require(amount <= deposits[msg.sender], "Insufficient funds");
+          deposits[msg.sender] -= amount;
+          totalDeposits -= amount;
+          msg.sender.transfer(amount);
+     }
+
+     function transferOwnership(address newOwner) public {
+          require(msg.sender == owner, "Only owner can transfer ownership");
+          owner = newOwner;
+     }
+}

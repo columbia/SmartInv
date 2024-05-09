@@ -1,0 +1,46 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerPaid;
+    bool public sellerPaid;
+    bool public approvedByArbiter;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        buyerPaid = false;
+        sellerPaid = false;
+        approvedByArbiter = false;
+    }
+
+    function paySeller() public {
+        require(msg.sender == buyer, "Only buyer can execute this function");
+        require(address(this).balance >= amount, "Insufficient funds in escrow");
+
+        seller.transfer(amount);
+        sellerPaid = true;
+    }
+
+    function payBuyer() public {
+        require(msg.sender == seller, "Only seller can execute this function");
+        require(approvedByArbiter, "Arbiter has not approved the transaction");
+
+        buyer.transfer(amount);
+        buyerPaid = true;
+    }
+
+    function approveTransaction() public {
+        require(msg.sender == arbiter, "Only arbiter can execute this function");
+
+        approvedByArbiter = true;
+    }
+}
+<\contract\> 
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

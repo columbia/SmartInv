@@ -1,0 +1,31 @@
+The contract provided for analysis:
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+
+    constructor(address _arbiter, address _seller) {
+        arbiter = _arbiter;
+        seller = _seller;
+    }
+
+    function deposit(address _buyer) public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        require(msg.sender == _buyer, "Sender must be the buyer");
+        buyer = _buyer;
+        amount = msg.value;
+    }
+
+    function releaseAmountToSeller() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        seller.transfer(amount);
+    }
+
+    function refundAmountToBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        buyer.transfer(amount);
+    }  
+}
+<\contract_to_analyze\>

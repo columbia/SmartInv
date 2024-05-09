@@ -1,0 +1,47 @@
+<\exampe_3\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint[] public proposals;
+
+    function vote(uint proposal) public {
+        require(proposal < proposals.length, "Invalid proposal");
+        require(!voters[msg.sender].voted, "Already voted.");
+        
+        voters[msg.sender].vote = proposal;
+        voters[msg.sender].voted = true;
+    
+        // Increment vote count for the proposal
+        proposals[proposal]++;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+            
+        if (delegate_.voted) {
+            proposals[delegate_.vote]++;
+        } else {
+            delegate_.delegate = msg.sender;
+        }
+    }
+}
+<\exampe_3\> 
+Output: 
+- incorrect visibility/ownership (voters mapping is public, exposing voter's data to everyone)
+- inconsistent state update (updating proposals array inside the vote function without proper synchronization)
+- business logic flaw (delegation can lead to infinite loops and unexpected behavior)

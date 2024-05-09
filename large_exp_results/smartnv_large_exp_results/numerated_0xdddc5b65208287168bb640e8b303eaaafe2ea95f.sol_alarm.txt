@@ -1,0 +1,36 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public released;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        released = false;
+    }
+    
+    function release() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(!released, "Funds already released");
+        
+        released = true;
+        seller.transfer(price);
+    }
+    
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(!released, "Funds already released");
+        
+        released = true;
+        buyer.transfer(price);
+    }
+} 
+
+output:
+- privilege escalation
+- inconsistent state update

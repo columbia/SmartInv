@@ -1,0 +1,29 @@
+<\analyzed_contract\> 
+contract PaymentProcessor {
+    address public admin;
+    mapping(address => uint256) public balances;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value; 
+    }
+
+    function withdraw(uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed.");
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Unauthorized");
+        admin = newAdmin;
+    }
+}
+<\analyzed_contract\> 
+
+<\output\> 
+healthy

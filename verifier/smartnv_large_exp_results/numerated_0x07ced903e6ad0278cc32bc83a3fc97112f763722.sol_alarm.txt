@@ -1,0 +1,21 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    IERC20 public token;
+
+    mapping(address => uint256) public balances;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint256 amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        uint256 price = amount * 1 ether;
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+        owner.transfer(price);
+    }
+}
+<\contract_to_analyze\>

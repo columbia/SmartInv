@@ -1,0 +1,22 @@
+<\contract\> 
+contract PaymentContract {
+     address public seller;
+     address public buyer;
+     uint public price;
+
+     constructor(address _seller, address _buyer, uint _price) {
+         seller = _seller;
+         buyer = _buyer;
+         price = _price;
+     }
+
+     function sendPayment() public payable {
+         require(msg.sender == buyer, "Only buyer can send payment");
+         require(msg.value == price, "Incorrect payment amount");
+         seller.transfer(msg.value);
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership

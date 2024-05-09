@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `endExecute()` updates `lockedFunds` based on a condition involving the balance of `votingToken`. However, the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` may lead to inconsistent state update if the balance of the contract is changed after the check is performed. 
+
+2) Arithmetric flaw: The function `liquidate(address user)` in the `ExchangeTokens` contract performs a calculation `getPrice() * cAmount * 80 / 100 < dAmount` which involves multiplying and dividing integers. This can potentially lead to arithmetic flaws such as integer overflow or underflow. 
+
+3) Insufficient gas: The function `calculatePrice()` relies on external calls to `USDC.balanceOf(address(pair))` and `WETH.balanceOf(address(pair))` to calculate the price. If the gas provided for these external calls is insufficient, the function may not execute successfully.

@@ -1,0 +1,35 @@
+<\analyzed_contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public released;
+    bool public refunded;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        released = false;
+        refunded = false;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "You are not authorized to release funds");
+        require(released == false, "Funds have already been released");
+        released = true;
+        // transfer price to seller
+        seller.transfer(price);
+    }
+
+    function refundAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "You are not authorized to refund funds");
+        require(refunded == false, "Funds have already been refunded");
+        refunded = true;
+        // refund price back to buyer
+        buyer.transfer(price);
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,28 @@
+<\analyzed_contract\>
+contract TokenAuction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function placeBid(uint _amount) external {
+        require(_amount > highestBid, "Bid amount must be higher than current highest bid.");
+
+        if (highestBid != 0) {
+            // Refund the previous highest bidder
+            payable(highestBidder).transfer(highestBid);
+        }
+
+        highestBidder = msg.sender;
+        highestBid = _amount;
+    }
+
+    function finalizeAuction() external {
+        require(msg.sender == owner, "Only the owner can finalize the auction.");
+
+        // Transfer the token to the highest bidder
+        token.transfer(highestBidder, token.balanceOf(address(this)));
+
+        // Transfer the payment to the owner
+        payable(owner).transfer(highestBid);
+    }
+}
+<\analyzed_contract\>

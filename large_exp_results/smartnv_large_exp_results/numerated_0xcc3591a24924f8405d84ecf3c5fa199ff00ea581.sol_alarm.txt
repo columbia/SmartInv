@@ -1,0 +1,41 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        buyerApproved = false;
+        sellerApproved = false;
+    }
+
+    function approveRelease() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Only buyer, seller, or arbiter can approve");
+        
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        }
+        if (msg.sender == seller) {
+            sellerApproved = true;
+        }
+        
+        if (buyerApproved && sellerApproved) {
+            releaseAmount();
+        }
+    }
+
+    function releaseAmount() private {
+        require(address(this).balance >= amount, "Insufficient balance in escrow");
+
+        address payable sellerAddress = address(uint160(seller));
+        sellerAddress.transfer(amount);
+    }
+}
+<\contract\>

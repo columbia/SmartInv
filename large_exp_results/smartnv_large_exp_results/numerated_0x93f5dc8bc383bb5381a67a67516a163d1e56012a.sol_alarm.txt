@@ -1,0 +1,24 @@
+<\contract\> 
+contract Crowdsale {
+    address public owner;
+    uint public maxCap;
+    mapping(address => uint) public contributions;
+
+    constructor(uint _maxCap) {
+        owner = msg.sender;
+        maxCap = _maxCap;
+    }
+
+    function contribute(uint amount) public {
+        require(amount > 0, "Contribution must be greater than 0");
+        require(address(this).balance + amount <= maxCap, "Exceeding max cap");
+        contributions[msg.sender] += amount;
+        payable(owner).transfer(amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: There could be inconsistency in updating the state of contributions as it only tracks the amount contributed but does not handle deductions or refunds.
+2) Insufficient gas: If the contribution amount is large, transferring the amount to the owner using payable may encounter "out of gas" issues.
+3) Incorrect visibility/ownership: The owner variable is public, which may expose sensitive information to external parties.

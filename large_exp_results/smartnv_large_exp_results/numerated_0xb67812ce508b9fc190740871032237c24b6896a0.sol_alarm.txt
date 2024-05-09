@@ -1,0 +1,23 @@
+<\analyzed_contract\>
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public bids;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if (highestBid != 0) {
+            require(msg.sender != highestBidder, "You are already the highest bidder");
+            bids[highestBidder] += highestBid;
+            highestBidder.transfer(highestBid);
+        }
+        highestBid = msg.value;
+        highestBidder = msg.sender;
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "Only owner can end the auction");
+        selfdestruct(owner);
+    }
+}
+<\analyzed_contract\>

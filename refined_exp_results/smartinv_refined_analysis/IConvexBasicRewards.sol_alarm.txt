@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function startExecute() updates the startingBalanceList mapping, but it is not clear where this mapping is defined or how it is used elsewhere in the contract. This could lead to inconsistent state updates or unintended behavior.
+
+2) ID uniqueness violation: The proposal struct does not have a unique identifier for each proposal. This could lead to issues with tracking or distinguishing between different proposals, especially in cases where multiple proposals are created close in time.
+
+3) Atomicity violation: The execute() function updates the proposal's votedAmount and calls the votedProposal function, but these actions are not wrapped in a single transaction. This could lead to atomicity violations where the state is left inconsistent if an error occurs during the execution of either action.
+
+4) Cross bridge inconsistency: The contract interacts with external contracts (IERC20 and votingToken), which could introduce potential inconsistencies or vulnerabilities if these external contracts are not secure or their behavior is not properly managed within this contract.

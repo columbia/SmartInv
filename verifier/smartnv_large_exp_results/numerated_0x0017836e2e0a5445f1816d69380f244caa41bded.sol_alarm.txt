@@ -1,0 +1,55 @@
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+    Proposal[] public proposals;
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+        
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+        
+        if (delegate_.voted) {
+            proposals[delegate_.vote].weight += sender.weight;
+        } else {
+            delegate_.weight += sender.weight;
+        }
+    }
+    
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+        
+        proposals[proposal].weight += sender.weight;
+    }
+    
+    function winningProposal() public returns (uint256 _winningProposal) {
+        uint256 winningWeight = 0;
+        
+        for (uint256 i = 0; i < proposals.length; i++) {
+            if (proposals[i].weight > winningWeight) {
+                winningWeight = proposals[i].weight;
+                _winningProposal = i;
+            }
+        }
+        
+        winningProposal = _winningProposal;
+    }
+}

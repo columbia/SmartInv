@@ -1,0 +1,32 @@
+The contract provided is as follows:
+
+```solidity
+contract Auction {
+    
+    address public highestBidder;
+    uint public highestBid;
+    
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+    
+    function withdraw() public {
+        highestBidder.transfer(highestBid);
+        highestBid = 0;
+    }
+    
+}
+```
+
+Potential vulnerabilities in the contract:
+
+1) Reentrancy: The `bid` function and `withdraw` function both perform transfers without updating the state variables before transferring the funds. This allows for potential reentrancy attacks where the recipient contract may call back to the Auction contract before the state is updated, allowing for unexpected behaviors.
+
+2) Inconsistent state update: In the `withdraw` function, the `highestBid` variable is reset to 0 after transferring funds to the `highestBidder`. This may lead to inconsistent state where the funds are transferred but the highest bid amount is not properly updated.
+
+3) Ether leakage: When transferring funds in the `bid` and `withdraw` functions, there is a possibility of ether leakage if the transfer fails due to out of gas or other reasons.
+
+Therefore, potential vulnerabilities in the contract are reentrancy, inconsistent state update, and ether leakage.

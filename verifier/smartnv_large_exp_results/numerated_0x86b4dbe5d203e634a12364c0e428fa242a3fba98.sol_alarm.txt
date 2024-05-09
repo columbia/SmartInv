@@ -1,0 +1,40 @@
+Contract to analyze:
+
+contract TokenSale {
+     ERC20 public token;
+     address payable public owner;
+     address public tokenWallet;
+     uint public tokenPrice;
+     uint public tokenAmount;
+
+     constructor(ERC20 _token, address _tokenWallet, uint _tokenPrice, uint _tokenAmount) {
+         token = _token;
+         owner = msg.sender;
+         tokenWallet = _tokenWallet;
+         tokenPrice = _tokenPrice;
+         tokenAmount = _tokenAmount;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * tokenPrice, "Incorrect ETH amount");
+         require(token.balanceOf(address(this)) >= _amount, "Insufficient tokens available");
+         token.transfer(msg.sender, _amount);
+     }
+
+     function withdrawTokens() public {
+         require(msg.sender == owner, "Only owner can withdraw tokens");
+         token.transfer(tokenWallet, token.balanceOf(address(this)));
+     }
+
+     function withdrawETH() public {
+         require(msg.sender == owner, "Only owner can withdraw ETH");
+         owner.transfer(address(this).balance);
+     }
+}
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The withdrawal functions allow anyone to call them. This can lead to unauthorized withdrawal of tokens and ETH.
+2) Insufficient gas: If the token transfer in the buyTokens function requires more gas than available, the transaction may revert and the buyer may lose the ETH sent.
+3) Atomicity violation: The buyTokens function does not ensure atomicity in token transfers and ETH payments, leaving room for potential race conditions or partial executions.
+4) Inconsistent state update: Lack of state checks before state updates in the buyTokens function can lead to inconsistent contract states.
+5) ID uniqueness violation: There is no check for duplicate token IDs being used in the contract, which could cause confusion or unexpected behavior.

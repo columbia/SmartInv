@@ -1,0 +1,30 @@
+The contract provided for analysis: 
+
+contract Vault {
+    uint public totalBalance;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint amount) public {
+        require(amount > 0, "Deposit amount must be greater than 0");
+        totalBalance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Withdrawal amount must be greater than 0");
+        require(amount <= totalBalance, "Insufficient balance");
+        totalBalance -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+The potential vulnerabilities in the provided contract are: 
+1) inconsistent state update: totalBalance can be manipulated by reentrancy or other malicious actions leading to inconsistent state.
+2) incorrect visibility/ownership: the transferOwnership function does not have a visibility specifier which could lead to potential vulnerabilities related to access control.

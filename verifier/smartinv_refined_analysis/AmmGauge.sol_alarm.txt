@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `endExecute` function updates the `lockedFunds` variable based on the balance of the `votingToken` contract at the time of execution. This could lead to an inconsistent state if the balance changes before the function finishes executing.
+
+2) Atomicity violation: The operations in the `execute` function are not wrapped in a single atomic operation, which could result in unexpected behavior if an external call fails after part of the operation has already been executed.
+
+3) ID uniqueness violation: The `startExecute` function assigns the `proposal` struct without any check for existing proposals, which could result in multiple proposals being created for the same `msg.sender` address.

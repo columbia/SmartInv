@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    mapping(uint => address) public idToSeller;
+    mapping(address => uint) public sellerToId;
+    
+    function createListing(uint id, address seller) public {
+        require(idToSeller[id] == address(0), "Listing already exists");
+        idToSeller[id] = seller;
+        sellerToId[seller] = id;
+    }
+    
+    function buyListing(uint id) public {
+        require(idToSeller[id] != address(0), "Listing does not exist");
+        address seller = idToSeller[id];
+        // Transferring funds to seller
+    }
+}
+<\contract_to_analyze\>

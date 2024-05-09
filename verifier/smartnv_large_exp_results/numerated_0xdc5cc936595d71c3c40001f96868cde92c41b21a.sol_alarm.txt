@@ -1,0 +1,20 @@
+<\analyzed_contract\>
+contract Escrow {
+     uint public totalAmount; 
+     address public payer;
+     address public payee;
+
+     function deposit() external payable {
+          require(msg.sender == payer, "only payer can deposit funds");
+          totalAmount += msg.value;
+     }
+
+     function withdraw() external {
+          require(msg.sender == payee, "only payee can withdraw funds");
+          require(totalAmount > 0, "no funds available");
+          uint amount = totalAmount;
+          totalAmount = 0;
+          payable(payee).transfer(amount);
+     }
+}
+<\analyzed_contract\>

@@ -1,0 +1,24 @@
+<\analyzed_contract\>
+contract TokenMarket {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+
+     constructor(address _token, uint _price) public {
+         token = IERC20(_token);
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyToken(uint _amount) public payable {
+         uint totalCost = _amount * price;
+         require(msg.value >= totalCost, "Insufficient funds");
+         token.transfer(msg.sender, _amount);
+     }
+
+     function updatePrice(uint _newPrice) public {
+         require(msg.sender == owner, "Only the owner can update the price");
+         price = _newPrice;
+     }
+}
+<\analyzed_contract\>

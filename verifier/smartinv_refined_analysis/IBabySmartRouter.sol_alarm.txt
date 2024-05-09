@@ -1,0 +1,47 @@
+The contract provided for analysis is as follows:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address internal owner;
+     IERC20 votingToken;
+     mapping(address => uint256) startingBalanceList;
+     uint256 lockedFunds;
+     Proposal proposal;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+        }
+
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+
+1) Inconsistent State Update: In the startExecute function, the variable name 'startingBalance' is misspelled as 'startingBlance', which may lead to inconsistent state updates if not corrected.
+
+2) ID Uniqueness Violation: The contract does not enforce uniqueness for the proposal ID, which could potentially lead to issues if multiple proposals with the same ID are created.
+
+3) Cross Bridge Inconsistency: The contract includes interactions with an external IERC20 token (votingToken), which introduces the possibility of cross bridge inconsistency if proper precautions are not taken.
+
+Please note that the contract does not seem to contain obvious cases of price manipulation, privilege escalation, business logic flaws, atomicity violation, or ID uniqueness violation based on the provided code snippet.

@@ -1,0 +1,47 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Therefore, potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The startExecute function initializes 'startingBlance' but assigns the value of 'startingBalanceList' to it instead of 'startingBalanceList[proposal.addr]'.
+
+2) Incorrect visibility/ownership: The 'proposal' struct is not defined as a state variable, which could lead to unexpected behavior when accessing it in different functions.
+
+3) Missing input validation: The contract does not validate the input 'amount' in the execute function, which could lead to vulnerabilities related to the transfer of tokens.
+
+4) Insufficient gas: Depending on the gas limit, the execution of functions in this contract may fail due to running out of gas.
+
+Therefore, the potential vulnerabilities in the provided contract are inconsistent state update, incorrect visibility/ownership, missing input validation, and insufficient gas.

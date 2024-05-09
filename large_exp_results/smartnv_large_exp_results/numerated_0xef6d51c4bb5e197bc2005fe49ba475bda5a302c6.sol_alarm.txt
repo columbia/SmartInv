@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract PaymentContract {
+         address public owner; 
+         uint public totalBalance;
+
+         constructor() {
+             owner = msg.sender;
+             totalBalance = 0;
+         }
+
+         function deposit() public payable {
+             totalBalance += msg.value;
+         }
+
+         function withdraw(uint amount) public {
+             require(msg.sender == owner,"Unauthorized");
+             require(totalBalance >= amount,"Insufficient balance");
+             msg.sender.transfer(amount);
+             totalBalance -= amount;
+         }
+
+         function transferOwnership(address newOwner) public {
+             require(msg.sender == owner,"Unauthorized");
+             owner = newOwner;
+         }
+}
+<\contract_to_analyze\>

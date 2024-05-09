@@ -1,0 +1,29 @@
+<\contract\> 
+contract Escrow {
+    uint public depositAmount;
+    address public depositor;
+    address public beneficiary;
+
+    function deposit(address _beneficiary) public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        depositAmount = msg.value;
+        depositor = msg.sender;
+        beneficiary = _beneficiary;
+    }
+
+    function withdraw() public {
+        require(msg.sender == beneficiary, "Only beneficiary can withdraw");
+        payable(beneficiary).transfer(depositAmount);
+        depositAmount = 0;
+    }
+
+    function refund() public {
+        require(msg.sender == depositor, "Only depositor can refund");
+        payable(depositor).transfer(depositAmount);
+        depositAmount = 0;
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership in withdraw and refund functions.

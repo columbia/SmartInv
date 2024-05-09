@@ -1,0 +1,17 @@
+contract VotingSystem {
+     address public admin;
+     mapping(address => uint) public voteTotals;
+     
+     constructor() {
+          admin = msg.sender;
+     }
+     
+     function vote(uint _option) public {
+          require(_option == 1 || _option == 2, "Invalid option");
+          voteTotals[msg.sender] = _option;
+     }
+     
+     function getVoteTotal(address _voter) public view returns(uint) {
+          return voteTotals[_voter];
+     }
+}

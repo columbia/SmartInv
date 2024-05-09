@@ -1,0 +1,29 @@
+The contract provided for analysis is:
+
+contract Marketplace {
+         address public owner;
+         mapping(uint => uint) public products;
+
+         constructor() public {
+            owner = msg.sender;
+         }
+
+         function addProduct(uint id, uint price) public {
+            require(msg.sender == owner, "Only the owner can add products");
+            products[id] = price;
+         }
+
+         function buyProduct(uint id) public payable {
+            require(products[id] != 0, "Product does not exist");
+            require(msg.value >= products[id], "Insufficient funds");
+            address payable _owner = address(uint160(owner));
+            _owner.transfer(products[id]);
+            // Transfer ownership of the product to the buyer
+            owner = msg.sender;
+        }
+}
+
+The potential vulnerabilities in the Marketplace contract are:
+
+4) inconsistent state update
+8) reentrancy

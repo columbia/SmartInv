@@ -1,0 +1,41 @@
+Contract:
+
+contract MultiSigWallet {
+    address private owner;
+    uint private transactionCount;
+    mapping(uint => Transaction) private transactions;
+
+    struct Transaction {
+        address sender;
+        address recipient;
+        uint amount;
+        bool processed;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not owner");
+        _;
+    }
+
+    function submitTransaction(address _recipient, uint _amount) external onlyOwner {
+        Transaction memory newTransaction = Transaction(msg.sender, _recipient, _amount, false);
+        transactions[transactionCount] = newTransaction;
+        transactionCount++;
+    }
+
+    function processTransaction(uint _transactionId) external onlyOwner {
+        require(transactions[_transactionId].processed == false, "Transaction already processed");
+        require(address(this).balance >= transactions[_transactionId].amount, "Insufficient contract balance");
+        transactions[_transactionId].processed = true;
+        payable(transactions[_transactionId].recipient).transfer(transactions[_transactionId].amount);
+    }
+
+    function getTransactionCount() external view returns (uint) {
+        return transactionCount;
+    }
+}
+
+Output:
+- Inconsistent state update: The processed flag of a transaction can be manipulated without proper validation, leading to incorrect transaction status.
+- Insufficient gas: The contract does not handle situations where gas might be insufficient for executing transactions, potentially leaving transactions stranded without completion.
+- Incorrect visibility/ownership: Some functions could benefit from being declared as private to prevent unintended external access and ensure proper encapsulation.

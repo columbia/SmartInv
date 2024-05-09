@@ -1,0 +1,27 @@
+<\analyzed_contract\>
+contract Crowdsale {
+     address public owner;
+     uint public startBlock;
+     uint public endBlock;
+     uint public tokenPrice;
+     mapping(address => uint) public balance;
+
+     constructor(uint _startBlock, uint _endBlock, uint _tokenPrice) {
+        owner = msg.sender;
+        startBlock = _startBlock;
+        endBlock = _endBlock;
+        tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) external payable {
+        require(block.number >= startBlock && block.number <= endBlock, "Crowdsale is not active");
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        balance[msg.sender] += _amount;
+     }
+
+     function withdrawFunds() external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+     }
+
+}

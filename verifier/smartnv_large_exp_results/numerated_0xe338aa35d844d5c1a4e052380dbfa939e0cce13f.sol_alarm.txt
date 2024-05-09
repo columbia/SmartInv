@@ -1,0 +1,32 @@
+Contract to be analyzed:
+contract Crowdsale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+    
+    constructor(address _token, uint _price) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        price = _price;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        uint totalPrice = _amount * price;
+        require(msg.value >= totalPrice, "Insufficient payment sent");
+        
+        token.transfer(msg.sender, _amount);
+        owner.transfer(msg.value);
+    }
+    
+    function setPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = _newPrice;
+    }
+} 
+
+Output: 
+The potential vulnerabilities in the Crowdsale contract are:
+1) Incorrect visibility/ownership - Owner transfer function may not correctly handle transfer ownership
+2) Insufficient gas - Insufficient gas for complex operations to complete successfully.
+
+Please note that the identified vulnerabilities in the provided Crowdsale contract are based on the information provided within the contract code snippet and assumptions made about the functions and variables used in the contract.

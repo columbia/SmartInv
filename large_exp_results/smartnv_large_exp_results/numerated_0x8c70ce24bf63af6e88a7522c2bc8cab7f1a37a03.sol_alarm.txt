@@ -1,0 +1,13 @@
+<\contract\>
+contract TokenSwap {
+    address public token1;
+    address public token2;
+    
+    function swap(address _token1, address _token2, uint _amount) external {
+        require(_amount > 0, "Amount must be greater than 0");
+        
+        IERC20(token1).transferFrom(msg.sender, address(this), _amount);
+        IERC20(token2).transfer(msg.sender, _amount);
+    }
+}
+<\contract\>

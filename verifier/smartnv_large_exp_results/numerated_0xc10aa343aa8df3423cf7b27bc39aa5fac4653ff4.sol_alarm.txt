@@ -1,0 +1,33 @@
+The contract provided for analysis is:
+
+```solidity
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only the owner can change the owner");
+        owner = _newOwner;
+    }
+}
+```
+
+Based on the contract provided, the potential vulnerabilities identified are:
+
+1) privilege escalation: The `changeOwner` function allows the current owner to change the ownership to another address, potentially leading to privilege escalation if unauthorized users gain access to this function.
+
+2) incorrect visibility/ownership: The `owner` variable is set as public, exposing the ownership information publicly, which may not be desired in all situations.
+
+Therefore, the identified vulnerabilities in the contract are privilege escalation and incorrect visibility/ownership.

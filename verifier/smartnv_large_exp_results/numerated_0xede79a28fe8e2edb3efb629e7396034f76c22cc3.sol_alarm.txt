@@ -1,0 +1,35 @@
+The contract provided for analysis is as follows:
+
+```solidity
+contract Lottery {
+    mapping(address => uint) public tickets;
+
+    function buyTicket(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        tickets[msg.sender] += amount;
+    }
+
+    function drawWinner() public {
+        uint totalTickets;
+        address winner;
+        for (uint i = 0; i < 10; i++) {
+            totalTickets += tickets[address(i)];
+        }
+        uint randomNumber = uint(keccak256(abi.encodePacked(block.timestamp))) % totalTickets;
+        for (uint j = 0; j < 10; j++) {
+            if (randomNumber < tickets[address(j)]) {
+                winner = address(j);
+                break;
+            } else {
+                randomNumber -= tickets[address(j)];
+            }
+        }
+        // Transfer prize to winner
+    }
+}
+```
+
+The potential vulnerabilities identified in the provided contract are:
+1) Inconsistent state update
+2) Integer overflow/underflow
+3) Business logic flaw

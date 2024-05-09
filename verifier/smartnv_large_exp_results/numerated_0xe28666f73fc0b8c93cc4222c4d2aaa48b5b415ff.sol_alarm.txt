@@ -1,0 +1,23 @@
+<\contract\> 
+contract Marketplace {
+    address public owner;
+    mapping(uint => uint) public productPrices;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function setProductPrice(uint productId, uint price) public {
+        require(msg.sender == owner, "Only owner can set product price");
+        productPrices[productId] = price;
+    }
+
+    function buyProduct(uint productId) public payable {
+        require(productPrices[productId] > 0, "Product not available");
+        require(msg.value >= productPrices[productId], "Insufficient funds");
+        owner.transfer(msg.value);
+    }
+}
+<\contract\> 
+Output:
+1) Incorrect visibility/ownership

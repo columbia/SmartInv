@@ -1,0 +1,27 @@
+The contract you are going to analyze for potential vulnerabilities is:
+
+contract Distribution {
+     mapping(address => uint) public balances;
+     address owner;
+
+     constructor() {
+          owner = msg.sender;
+          balances[owner] = 1000; 
+      }
+
+     function transfer(address recipient, uint amount) public {
+          require(balances[msg.sender] >= amount, "Insufficient balance");
+          balances[msg.sender] -= amount;
+          balances[recipient] += amount;
+     }
+
+     function withdraw(uint amount) public {
+          require(msg.sender == owner, "Only owner can withdraw");
+          require(amount <= address(this).balance, "Insufficient balance");
+          payable(owner).transfer(amount);
+     }
+}
+
+Output: 
+1) Incorrect visibility/ownership
+2) No vulnerabilities detected (Healthy)

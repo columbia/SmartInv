@@ -1,0 +1,24 @@
+Contract you are analyzing:
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public investors;
+    uint public totalInvestment;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function invest(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        investors[msg.sender] += amount;
+        totalInvestment += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+} 
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership

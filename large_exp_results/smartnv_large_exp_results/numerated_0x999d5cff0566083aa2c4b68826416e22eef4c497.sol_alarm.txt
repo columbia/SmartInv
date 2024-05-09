@@ -1,0 +1,29 @@
+Contract to analyze:
+
+contract CryptoBank {
+         IERC20 public token;
+         address public owner;
+
+         constructor(address _token) {
+             token = IERC20(_token);
+             owner = msg.sender;
+         }
+         
+         function deposit(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+         
+         function withdraw(uint amount) public {
+             require(msg.sender == owner, "Only owner can withdraw");
+             token.transfer(msg.sender, amount);
+         }
+}
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The `withdraw` function allows anyone to withdraw funds as long as they know the owner's address, which is not secure. The function should only allow the owner to withdraw funds.
+
+2) Ether leakage: The contract does not handle Ether transactions, which means it is not secure against accidental Ether transfers.
+
+3) Insufficient gas: The `withdraw` function depends on the owner having enough gas to perform the transaction, which could lead to a denial-of-service attack if the owner runs out of gas.
+
+Therefore, the potential vulnerabilities in the contract are incorrect visibility/ownership, ether leakage, and insufficient gas.

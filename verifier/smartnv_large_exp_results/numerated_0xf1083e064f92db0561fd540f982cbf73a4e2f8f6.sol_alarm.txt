@@ -1,0 +1,26 @@
+The contract to analyze:
+
+contract SupplyChain {
+    mapping(uint => address) public products;
+    uint public productCount;
+
+    function addProduct(address _product) public {
+        products[productCount++] = _product;
+    }
+
+    function updateProduct(uint _index, address _newProduct) public {
+        require(_index < productCount, "Invalid index");
+        products[_index] = _newProduct;
+    }
+
+    function removeProduct(uint _index) public {
+        require(_index < productCount, "Invalid index");
+        delete products[_index];
+    }
+}
+
+Potential vulnerabilities in the contract:
+
+1) inconsistent state update
+2) ID uniqueness violation
+3) incorrect visibility/ownership

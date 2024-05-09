@@ -1,0 +1,30 @@
+<\contract\>
+contract TokenSale {
+     address public admin;
+     IERC20 public token;
+     mapping(address => uint) public balances;
+    
+    constructor(IERC20 _token) {
+          admin = msg.sender;
+          token = _token;
+    }
+
+    function buyTokens(uint amount) public {
+         require(token.balanceOf(address(this)) >= amount, "Insufficient tokens in contract");
+         token.transfer(msg.sender, amount);
+         balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public {
+         require(balances[msg.sender] > 0, "No tokens to withdraw");
+         uint amount = balances[msg.sender];
+         balances[msg.sender] = 0;
+         token.transfer(msg.sender, amount);
+    }
+
+    function transferOwnership(address newAdmin) public {
+         require(msg.sender == admin, "Only admin can transfer ownership");
+         admin = newAdmin;
+    }
+}
+<\contract\>

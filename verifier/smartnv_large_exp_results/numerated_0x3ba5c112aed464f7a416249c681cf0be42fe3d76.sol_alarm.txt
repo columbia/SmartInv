@@ -1,0 +1,32 @@
+Contract to analyze:
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public deposit;
+     bool public buyerOk;
+     bool public sellerOk;
+
+     function deposit(uint _amount) public {
+          require(msg.sender == buyer || msg.sender == seller, "only buyer or seller can deposit");
+          deposit += _amount;
+     }
+
+     function confirm() public {
+          require(msg.sender == buyer || msg.sender == seller, "only buyer or seller can confirm");
+          if (msg.sender == buyer) {
+               buyerOk = true;
+          } else if (msg.sender == seller) {
+               sellerOk = true;
+          }
+     }
+
+     function release() public {
+          require(msg.sender == arbiter, "only arbiter can release funds");
+          require(buyerOk && sellerOk, "both parties must confirm");
+          payable(buyer).transfer(deposit);
+     }
+}
+Output:
+- business logic flaw
+- incorrect visibility/ownership

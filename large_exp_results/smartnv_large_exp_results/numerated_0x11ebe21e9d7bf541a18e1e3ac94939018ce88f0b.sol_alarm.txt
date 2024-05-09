@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract PaymentContract {
+    uint public totalAmount;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only owner can deposit funds");
+        totalAmount += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(totalAmount >= amount, "Insufficient funds");
+        totalAmount -= amount;
+    }
+}
+<\contract_to_analyze\>
+
+1) Incorrect visibility/ownership: The owner variable should be private to prevent unauthorized access to the owner address.
+
+2) Inconsistent state update: The totalAmount variable should be modified within lock mechanism to avoid inconsistent updates.
+
+3) Insufficient gas: The contract may run out of gas if the totalAmount becomes too large, leading to potential issues in processing transactions.
+
+Therefore, the potential vulnerabilities in the "PaymentContract" contract are:
+- Incorrect visibility/ownership
+- Inconsistent state update
+- Insufficient gas.

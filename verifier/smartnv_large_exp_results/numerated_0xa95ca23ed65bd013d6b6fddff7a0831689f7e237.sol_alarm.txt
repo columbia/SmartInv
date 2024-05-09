@@ -1,0 +1,20 @@
+Contract: 
+
+contract VotingSystem {
+    mapping(address => bool) hasVoted;
+    mapping(uint => uint) voteCount;
+    
+    function vote(uint option) public {
+        require(!hasVoted[msg.sender], "Already voted.");
+        
+        voteCount[option]++;
+        hasVoted[msg.sender] = true;
+    }
+    
+    function getVoteCount(uint option) public view returns(uint) {
+        return voteCount[option];
+    }
+}
+
+Output:
+- ID uniqueness violation: The contract does not prevent the same address from voting multiple times, allowing for ID uniqueness violation.

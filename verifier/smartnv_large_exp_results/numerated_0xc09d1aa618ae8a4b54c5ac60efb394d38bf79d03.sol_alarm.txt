@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+contract PaymentSplitter {
+    address[] public payees;
+    uint[] public shares;
+    
+    constructor(address[] memory _payees, uint[] memory _shares) {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        
+        for (uint i = 0; i < _payees.length; i++) {
+            payees.push(_payees[i]);
+            shares.push(_shares[i]);
+        }
+    }
+    
+    function release() public {
+        for (uint i = 0; i < payees.length; i++) {
+            address(uint160(payees[i])).transfer(shares[i]);
+        }
+    }
+}
+Potential vulnerabilities in the contract:
+1) Integer overflow/underflow: There is a risk of integer underflow if the shares are not properly validated before the transfer.
+2) Ether leakage: The use of transfer in the release function can potentially lead to ether leaking if the transfer fails halfway through the loop execution.
+3) Insufficient gas: The release function may run out of gas if there are too many payees or the loop iteration exceeds the block gas limit.
+4) Incorrect visibility/ownership: The visibility of the payees and shares arrays is public, which may expose sensitive information to external parties.

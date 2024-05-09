@@ -1,0 +1,30 @@
+Contract:
+contract HealthInsurance {
+         address public insurer; 
+         mapping(address => uint) public policyPremiums;
+         mapping(address => bool) public hasPolicy;
+
+         constructor(address _insurer) {
+             insurer = _insurer;
+         }
+
+         function purchasePolicy(uint _premium) public {
+             require(!hasPolicy[msg.sender], "Already has a policy");
+             require(_premium > 0, "Premium cannot be zero");
+             policyPremiums[msg.sender] = _premium;
+             hasPolicy[msg.sender] = true;
+         }
+
+         function claimInsurance(address _policyHolder) public {
+             require(msg.sender == insurer, "Only insurer can claim");
+             require(hasPolicy[_policyHolder], "Policy holder doesn't have a policy");
+             uint payout = policyPremiums[_policyHolder] * 2;
+             _policyHolder.transfer(payout);
+             hasPolicy[_policyHolder] = false;
+             policyPremiums[_policyHolder] = 0;
+         }
+     }
+
+Output:
+- Reentrancy
+- Integer underflow (in claimInsurance function)

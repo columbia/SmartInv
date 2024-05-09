@@ -1,0 +1,25 @@
+1 pragma solidity 0.4.24;
+2 
+3 // File: contracts/Migrations.sol
+4 
+5 contract Migrations {
+6     address public owner;
+7     uint public last_completed_migration; // solhint-disable-line var-name-mixedcase
+8 
+9     modifier restricted() {
+10         if (msg.sender == owner) _;
+11     }
+12 
+13     constructor() public {
+14         owner = msg.sender;
+15     }
+16 
+17     function setCompleted(uint completed) external restricted {
+18         last_completed_migration = completed;
+19     }
+20 
+21     function upgrade(address newAddress) external restricted {
+22         Migrations upgraded = Migrations(newAddress);
+23         upgraded.setCompleted(last_completed_migration);
+24     }
+25 }

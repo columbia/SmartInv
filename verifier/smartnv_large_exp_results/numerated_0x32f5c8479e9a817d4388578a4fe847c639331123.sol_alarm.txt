@@ -1,0 +1,26 @@
+<\contract\>
+contract Marketplace {
+    uint public price;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+        price = 100;
+    }
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "You are not the owner");
+        price = _price;
+    }
+
+    function buy() public payable {
+        require(msg.value >= price, "Not enough ether sent");
+        address payable seller = payable(owner);
+        seller.transfer(msg.value);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership: The "setPrice" function allows anyone to set the price without checking ownership of the contract, potentially leading to unauthorized price manipulation.
+2) Ether leakage: The "buy" function sends ether directly to the owner without updating any state variables, which can result in ether being trapped in the contract and not being distributed correctly upon purchase.

@@ -1,0 +1,32 @@
+<\contract\>
+contract Crowdsale {
+    mapping(address => uint) public balances;
+    address payable public owner;
+    uint public deadline;
+    uint public goal;
+    uint public raisedAmount;
+
+    constructor(uint _goal, uint duration) public {
+        owner = msg.sender;
+        deadline = now + duration;
+        goal = _goal;
+    }
+
+    function invest() public payable {
+        require(now < deadline, "Crowdsale has ended");
+        balances[msg.sender] += msg.value;
+        raisedAmount += msg.value;
+    }
+
+    function withdraw() public {
+        require(now > deadline, "Crowdsale is not over yet");
+        if (raisedAmount >= goal) {
+            owner.transfer(raisedAmount);
+        } else {
+            for(uint i=0; i<balances.length; i++) {
+                balances[i].transfer(balances[i]);
+            }
+        }
+    }
+}
+<\contract\>

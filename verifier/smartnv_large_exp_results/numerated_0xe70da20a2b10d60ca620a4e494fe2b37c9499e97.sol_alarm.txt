@@ -1,0 +1,32 @@
+contract TokenSale {
+     address public token;
+     address public admin;
+     uint public tokenPrice;
+     uint public tokensSold;
+     uint public ethBalance;
+
+     mapping(address => uint) public tokenBalances;
+
+     constructor(address _token, uint _tokenPrice) {
+        token = _token;
+        admin = msg.sender;
+        tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) external payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect amount sent");
+        require(IERC20(token).balanceOf(address(this)) >= _amount, "Not enough tokens in contract");
+        
+        ERC20(token).transfer(msg.sender, _amount);
+        tokenBalances[msg.sender] += _amount;
+        tokensSold += _amount;
+        ethBalance += msg.value;
+     }
+
+     function withdrawEth() external {
+        require(msg.sender == admin, "Only admin can withdraw");
+        
+        msg.sender.transfer(ethBalance);
+        ethBalance = 0;
+     }
+}

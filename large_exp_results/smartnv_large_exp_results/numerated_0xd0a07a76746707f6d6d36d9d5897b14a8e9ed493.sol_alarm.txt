@@ -1,0 +1,21 @@
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        msg.sender.transfer(highestBid);
+    }
+}
+``` 
+
+1) Inconsistent state update: There is a potential vulnerability in the `bid` function where the `highestBidder` and `highestBid` are updated separately, opening up a possibility for inconsistent state if the second update fails.
+2) Reentrancy: The `withdraw` function may be vulnerable to reentrancy attacks as the transfer of funds to the `highestBidder` is executed before updating the state, allowing potential reentrancy exploit.
+```

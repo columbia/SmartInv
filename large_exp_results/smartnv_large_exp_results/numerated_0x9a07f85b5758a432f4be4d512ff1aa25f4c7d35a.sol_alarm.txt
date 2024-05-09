@@ -1,0 +1,19 @@
+<\analyzed_contract\>
+contract PaymentContract {
+     address public owner;
+     mapping(uint256 => bool) public payments;
+     uint256 public totalPayments;
+
+     constructor() {
+         owner = msg.sender;
+         totalPayments = 0;
+     }
+
+     function makePayment(uint256 paymentId) public {
+         require(msg.sender == owner, "Only owner can make payments");
+         require(!payments[paymentId], "Payment has already been made");
+         payments[paymentId] = true;
+         totalPayments++;
+     }
+}
+<\analyzed_contract\>

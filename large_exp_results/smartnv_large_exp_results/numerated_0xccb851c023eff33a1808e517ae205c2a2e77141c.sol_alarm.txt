@@ -1,0 +1,25 @@
+<\contract\>
+contract InvestmentFund {
+     address public admin;
+     mapping(address => uint) public balances;
+     uint public totalInvested;
+     
+     constructor() {
+          admin = msg.sender;
+          totalInvested = 0;
+      }
+     
+     function invest() public payable {
+          require(msg.value > 0, "Investment amount should be greater than 0");
+          balances[msg.sender] += msg.value;
+          totalInvested += msg.value;
+     }
+     
+     function withdraw(uint amount) public {
+          require(balances[msg.sender] >= amount, "Insufficient balance");
+          balances[msg.sender] -= amount;
+          totalInvested -= amount;
+          payable(msg.sender).transfer(amount);
+     }
+}
+<\contract\>

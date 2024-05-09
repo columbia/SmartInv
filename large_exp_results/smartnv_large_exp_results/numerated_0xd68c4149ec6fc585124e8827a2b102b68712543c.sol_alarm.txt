@@ -1,0 +1,41 @@
+The contract to be analyzed for potential vulnerabilities:
+
+contract Lottery {
+    address public manager;
+    address[] public players;
+
+    constructor() {
+        manager = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Minimum entry fee is 0.01 ether.");
+        players.push(msg.sender);
+    }
+
+    function pickWinner() public restricted {
+        require(msg.sender == manager, "Only the manager can pick the winner.");
+        require(players.length > 0, "No players in the lottery.");
+
+        address winner = players[random() % players.length];
+        payable(winner).transfer(address(this).balance);
+
+        players = new address[](0);
+    }
+
+    modifier restricted() {
+        require(msg.sender == manager, "Only the manager can call this function.");
+        _;
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+}
+
+The potential vulnerabilities in the contract are:
+- Insufficient gas
+- Inconsistent state update
+
+Output:
+insufficient gas, inconsistent state update

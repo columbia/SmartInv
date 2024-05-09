@@ -1,0 +1,23 @@
+Contract you are going to analyze:
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+    
+    constructor() {
+        admin = msg.sender;
+    }
+    
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        // Logic for voting
+        hasVoted[msg.sender] = true;
+    }
+    
+    function changeAdmin(address newAdmin) external {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+Output: 
+- privilege escalation: The changeAdmin function allows the admin to change the admin address, potentially leading to privilege escalation vulnerabilities.
+- ID uniqueness violation: The hasVoted mapping does not ensure uniqueness of voter addresses, which can lead to ID uniqueness violation vulnerabilities.

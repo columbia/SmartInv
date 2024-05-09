@@ -1,0 +1,20 @@
+<\Contract\> 
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+    
+    function vote(uint256 amount) external {
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+    
+    function redeemVotes() external {
+        require(userVotes[msg.sender] > 0, "no votes to redeem");
+        totalVotes -= userVotes[msg.sender];
+        userVotes[msg.sender] = 0;
+    }
+}
+<\Contract\> 
+
+<\Output\>
+incorrect visibility/ownership

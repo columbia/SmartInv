@@ -1,0 +1,31 @@
+<\contract\>
+contract Marketplace {
+         address public owner;
+         mapping(uint => Item) public items; 
+
+         struct Item {
+             address seller;
+             uint price;
+             bool sold;
+         }
+
+         constructor() {
+             owner = msg.sender;
+         }
+
+         function list(uint _price) public {
+             Item memory newItem = Item(msg.sender, _price, false);
+             uint newItemId = uint(keccak256(abi.encodePacked(msg.sender, _price, block.timestamp)));
+             items[newItemId] = newItem;
+         }
+
+         function buy(uint _itemId) public payable {
+             require(items[_itemId].seller != address(0), "Item doesn't exist");
+             require(!items[_itemId].sold, "Item already sold");
+             require(msg.value == items[_itemId].price, "Incorrect payment amount");
+             items[_itemId].seller.transfer(msg.value);
+             items[_itemId].sold = true;
+         }
+
+}
+<\contract\>

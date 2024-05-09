@@ -1,0 +1,34 @@
+<\contract\> 
+contract TokenAuction {
+     address public highestBidder;
+     uint public highestBid;
+     mapping(address => uint) public bids;
+
+    function placeBid(uint amount) public {
+         require(amount > highestBid, "Bid amount must be higher than current highest bid.");
+         highestBidder = msg.sender;
+         highestBid = amount;
+         bids[msg.sender] = amount;
+    }
+
+    function withdrawBid() public {
+         require(msg.sender != highestBidder, "Cannot withdraw bid if you are the highest bidder.");
+         uint amount = bids[msg.sender];
+         bids[msg.sender] = 0;
+         msg.sender.transfer(amount);
+    }
+
+    function finalizeAuction() public {
+         address finalWinner = highestBidder;
+         uint finalAmount = highestBid;
+         highestBidder = address(0);
+         highestBid = 0;
+         bids[finalWinner] = 0;
+         finalWinner.transfer(finalAmount);
+    }
+}
+<\contract\> 
+
+Outputs:
+- ID uniqueness violation
+- Reentrancy

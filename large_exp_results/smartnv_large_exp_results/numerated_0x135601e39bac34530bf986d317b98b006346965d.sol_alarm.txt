@@ -1,0 +1,25 @@
+<\contract\> 
+contract SupplyChain {
+         IERC20 public token;
+         address public supplier;
+         address public recipient;
+         uint public orderAmount;
+
+         function placeOrder(uint amount) external {
+             require(msg.sender == supplier, "only supplier can place orders");
+             orderAmount = amount;
+         }
+         function sendOrder() external {
+             require(msg.sender == supplier, "only supplier can send orders");
+             token.transfer(recipient, orderAmount);
+         }
+         function receiveOrder() external {
+             require(msg.sender == recipient, "only recipient can receive orders");
+             token.transferFrom(supplier, recipient, orderAmount);
+         }
+     }
+<\contract\> 
+
+Output:
+- privilege escalation
+- inconsistent state update

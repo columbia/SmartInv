@@ -1,0 +1,33 @@
+<\Contract\>
+
+contract TokenSale {
+    address public token;
+    address public owner;
+    mapping(address => uint) public balances;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor(address _token) {
+        token = _token;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount should be greater than 0");
+        ERC20(token).transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public onlyOwner {
+        ERC20(token).transfer(owner, balances[msg.sender]);
+        balances[msg.sender] = 0;
+    }
+}
+
+<\Contract\>
+Output:
+- incorrect visibility/ownership
+- insufficient gas

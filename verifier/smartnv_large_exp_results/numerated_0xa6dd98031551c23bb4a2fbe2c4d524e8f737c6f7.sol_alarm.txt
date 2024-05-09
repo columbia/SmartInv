@@ -1,0 +1,27 @@
+<\contract\>
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public quorum;
+    
+    function addOwner(address owner) public {
+        require(msg.sender == owners[0], "only the first owner can add owners");
+        owners.push(owner);
+        isOwner[owner] = true;
+        quorum = owners.length / 2 + 1;
+    }
+    
+    function removeOwner(address owner) public {
+        require(msg.sender == owners[0], "only the first owner can remove owners");
+        isOwner[owner] = false;
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == owner) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                quorum = owners.length / 2 + 1;
+                break;
+            }
+        }
+    }
+}
+<\contract\>

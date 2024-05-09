@@ -1,0 +1,28 @@
+<\contract\> 
+contract VotingSystem {
+         struct Voter {
+             address addr;
+             uint256 votedProposalId;
+             bool hasVoted;
+         }
+
+         mapping(address => Voter) public voters;
+         mapping(uint256 => uint256) public proposalVotes;
+
+         function vote(uint256 proposalId) public {
+             require(voters[msg.sender].hasVoted == false, "voter has already voted");
+             voters[msg.sender] = Voter(msg.sender, proposalId, true);
+             proposalVotes[proposalId]++;
+         }
+
+         function executeProposal(uint256 proposalId) public {
+             require(proposalVotes[proposalId] > 0, "no votes for the proposal");
+             // execute the proposal
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) ID uniqueness violation: There is no check in the vote function to ensure that the proposalId being voted on is unique, which could lead to multiple proposals having the same ID and causing confusion in vote counting.
+2) Business logic flaw: The executeProposal function does not perform any validation on who can execute the proposal, which could result in unauthorized execution of proposals.
+3) Inconsistent state update: There is a possibility of inconsistent state if multiple voters try to vote for different proposals simultaneously, as there is no locking mechanism to prevent race conditions.

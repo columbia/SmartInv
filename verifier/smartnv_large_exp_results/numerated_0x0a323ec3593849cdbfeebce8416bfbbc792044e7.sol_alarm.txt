@@ -1,0 +1,38 @@
+<\your_contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You have already voted");
+
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+
+        sender.voted = true;
+        sender.vote = option;
+    }
+
+    function tallyVotes() public view returns (uint256[] memory) {
+        uint256[] memory results;
+        // calculate and return vote results
+        return results;
+    }
+}
+<\your_contract\>

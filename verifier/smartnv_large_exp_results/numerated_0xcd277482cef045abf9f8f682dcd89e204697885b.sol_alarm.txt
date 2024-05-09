@@ -1,0 +1,28 @@
+<\contract\> 
+contract CrowdSale {
+    address public owner;
+    address public tokenAddress;
+    uint256 public tokenPrice;
+    mapping(address => uint256) public balances;
+
+    constructor(address _tokenAddress, uint256 _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint256 _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        uint256 balance = balances[msg.sender];
+        balances[msg.sender] = balance + _amount;
+        tokenAddress.transfer(msg.sender, _amount);
+    }
+
+    function refundTokens(uint256 _amount) public {
+        uint256 balance = balances[msg.sender];
+        require(balance >= _amount, "Insufficient balance for refund");
+        balances[msg.sender] = balance - _amount;
+        msg.sender.transfer(_amount * tokenPrice);
+    }
+}
+<\contract\>

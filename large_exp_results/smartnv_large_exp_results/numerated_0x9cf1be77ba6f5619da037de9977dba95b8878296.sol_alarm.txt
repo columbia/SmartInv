@@ -1,0 +1,45 @@
+<\contract_to_analyze\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproved;
+     bool public sellerApproved;
+
+     function deposit() public payable {
+         require(msg.sender == buyer, "only buyer can deposit");
+     }
+
+     function confirmReceived() public {
+         require(msg.sender == buyer, "only buyer can confirm");
+         buyerApproved = true;
+         if (sellerApproved) {
+             address payable _seller = payable(seller);
+             _seller.transfer(address(this).balance);
+         }
+     }
+
+     function confirmSent() public {
+         require(msg.sender == seller, "only seller can confirm");
+         sellerApproved = true;
+         if (buyerApproved) {
+             address payable _buyer = payable(buyer);
+             _buyer.transfer(address(this).balance);
+         }
+     }
+
+     function setArbiter(address _arbiter) public {
+         arbiter = _arbiter;
+     }
+
+     function claim() public {
+         require(msg.sender == arbiter, "only arbiter can claim");
+         if (!buyerApproved && !sellerApproved) {
+             address payable _buyer = payable(buyer);
+             address payable _seller = payable(seller);
+             _buyer.transfer(address(this).balance / 2);
+             _seller.transfer(address(this).balance);
+         }
+     }
+}
+<\contract_to_analyze\>

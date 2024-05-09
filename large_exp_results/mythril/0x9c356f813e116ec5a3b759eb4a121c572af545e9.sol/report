@@ -1,0 +1,277 @@
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: CryptoTomatoes
+Function name: sellSeeds()
+PC address: 6525
+Estimated Gas Usage: 2919 - 3394
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:188
+
+assert(b <= a)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: sellSeeds(), txdata: 0x196e5c46, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: CryptoTomatoes
+Function name: calculateSeedSell(uint256)
+PC address: 6557
+Estimated Gas Usage: 5624 - 5719
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:83
+
+SafeMath.add(SafeMath.mul(PSN,rs),SafeMath.mul(PSNH,rt))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: calculateSeedSell(uint256), txdata: 0x275b6eb0000d1b71758e219652bd3c36113404ea4a8c154c985f06f694467381d7, decoded_data: (23158417847463239084714197001737581570653996933128112807891516801568210944,), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: CryptoTomatoes
+Function name: calculateSeedBuy(uint256,uint256)
+PC address: 6557
+Estimated Gas Usage: 5392 - 5487
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:83
+
+SafeMath.add(PSNH,SafeMath.div(SafeMath.add(SafeMath.mul(PSN,rs),SafeMath.mul(PSNH,rt)),rt))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: calculateSeedBuy(uint256,uint256), txdata: 0x94d127a8000000000000000000000000000000000000000000000000000000000000000100068db8bac710cb295e9e1b089a027525460aa64c2f837b4a2339c0ebedfa43, decoded_data: (1, 11579208923731619542357098500868790785326998466564056403945758400791312963), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: CryptoTomatoes
+Function name: buySeeds()
+PC address: 6581
+Estimated Gas Usage: 5577 - 5672
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:83
+
+SafeMath.div(SafeMath.add(SafeMath.mul(PSN,rs),SafeMath.mul(PSNH,rt)),rt)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: buySeeds(), txdata: 0x01a88f7d, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: CryptoTomatoes
+Function name: sellSeeds()
+PC address: 6607
+Estimated Gas Usage: 3976 - 4641
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:166
+
+if (a == 0) {
+			  return 0;
+			}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: sellSeeds(), txdata: 0x196e5c46, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: CryptoTomatoes
+Function name: sellSeeds()
+PC address: 6631
+Estimated Gas Usage: 4024 - 4689
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:170
+
+c / a
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: sellSeeds(), txdata: 0x196e5c46, value: 0x0
+
+==== Strict Ether balance check ====
+SWC ID: 132
+Severity: Low
+Contract: CryptoTomatoes
+Function name: calculateSeedSell(uint256)
+PC address: 6635
+Use of strict ether balance checking
+Ether can be forcefully sent to this contract, This may make the contract unusable.
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:170
+
+c / a == b
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: calculateSeedSell(uint256), txdata: 0x275b6eb0, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: CryptoTomatoes
+Function name: sellSeeds()
+PC address: 6641
+Estimated Gas Usage: 4052 - 4717
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:170
+
+assert(c / a == b)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: sellSeeds(), txdata: 0x196e5c46, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: CryptoTomatoes
+Function name: calculateTrade(uint256,uint256,uint256)
+PC address: 6642
+Estimated Gas Usage: 3071 - 3166
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:83
+
+SafeMath.mul(PSN,rs)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: calculateTrade(uint256,uint256,uint256), txdata: 0x229824c4000000000000000000000000000000000000000000000000000000000000000004, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: CryptoTomatoes
+Function name: calculateSeedSell(uint256)
+PC address: 6642
+Estimated Gas Usage: 5530 - 5625
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:83
+
+SafeMath.mul(PSNH,rt)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: calculateSeedSell(uint256), txdata: 0x275b6eb015, decoded_data: (9498569820248594155839807363993929941088553429603327518861754938149123915776,), value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: CryptoTomatoes
+Function name: sellSeeds()
+PC address: 6663
+Estimated Gas Usage: 2990 - 3465
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x9c356f813e116ec5a3b759eb4a121c572af545e9.sol:155
+
+a < b ? a : b
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: sellSeeds(), txdata: 0x196e5c46, value: 0x0
+
+

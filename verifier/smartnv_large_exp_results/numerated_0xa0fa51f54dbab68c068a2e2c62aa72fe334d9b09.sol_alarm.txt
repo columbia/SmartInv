@@ -1,0 +1,23 @@
+<\analyzed_contract\>
+contract Storage {
+    uint256 public data;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function setData(uint256 _data) public {
+        require(msg.sender == owner, "Only owner can set data");
+        data = _data;
+    }
+
+    function getData() public view returns (uint256) {
+        return data;
+    }
+
+    function transferOwnership(address newOwner) public {
+        owner = newOwner;
+    }
+}
+<\analyzed_contract\>

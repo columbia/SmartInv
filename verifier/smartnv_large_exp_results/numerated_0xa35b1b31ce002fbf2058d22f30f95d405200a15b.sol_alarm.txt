@@ -1,0 +1,14 @@
+<\contract_to_analyze\>
+contract StablecoinSwap {
+         IERC20 public stablecoinA;
+         IERC20 public stablecoinB;
+         uint public exchangeRate;
+
+         function swap(uint amountA) public {
+             require(amountA > 0, "Invalid amount");
+             uint amountB = amountA * exchangeRate;
+             stablecoinA.transferFrom(msg.sender, address(this), amountA);
+             stablecoinB.transfer(msg.sender, amountB);
+         }
+}
+<\contract_to_analyze\>

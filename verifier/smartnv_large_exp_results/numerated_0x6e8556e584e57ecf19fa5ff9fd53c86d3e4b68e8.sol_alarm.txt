@@ -1,0 +1,31 @@
+The contract provided is:
+
+```solidity
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _price) {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) external {
+        require(token.balanceOf(msg.sender) >= amount * price, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), amount * price);
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() external {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+- Incorrect visibility/ownership in the `constructor` function.
+- Lack of proper input validation in the `buyTokens` function.

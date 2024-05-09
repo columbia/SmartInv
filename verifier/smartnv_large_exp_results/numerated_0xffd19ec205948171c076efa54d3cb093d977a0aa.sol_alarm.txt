@@ -1,0 +1,50 @@
+The contract provided for analysis:
+
+contract Escrow {
+     address public payer;
+     address public payee;
+     address public arbiter;
+     uint public amount;
+     bool public payerOk;
+     bool public payeeOk;
+
+     function setup(address _payer, address _payee, address _arbiter) public {
+         payer = _payer;
+         payee = _payee;
+         arbiter = _arbiter;
+         payerOk = false;
+         payeeOk = false;
+     }
+    
+     function deposit() public payable {
+         require(msg.sender == payer, "Only payer can deposit");
+         amount += msg.value;
+     }
+
+     function withdrawPayer() public {
+         require(msg.sender == payer, "Only payer can withdraw");
+         require(payerOk == true, "Payer has not confirmed");
+         msg.sender.transfer(amount);
+         amount = 0;
+     }
+
+     function withdrawPayee() public {
+         require(msg.sender == payee, "Only payee can withdraw");
+         require(payeeOk == true, "Payee has not confirmed");
+         msg.sender.transfer(amount);
+         amount = 0;
+     }
+
+     function confirmPayment() public {
+         if (msg.sender == payer) {
+             payerOk = true;
+         } else if (msg.sender == payee) {
+             payeeOk = true;
+         }
+     }
+
+}
+
+Output: 
+- incorrect visibility/ownership
+- atomicity violation

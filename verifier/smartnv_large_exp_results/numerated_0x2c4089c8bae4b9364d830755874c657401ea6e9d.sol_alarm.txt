@@ -1,0 +1,23 @@
+<\Contract\> 
+contract PaymentContract {
+     address public owner;
+     uint public balance;
+
+     constructor() {
+         owner = msg.sender;
+         balance = 0;
+     }
+
+     function deposit() public payable {
+         balance += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(amount <= balance, "Insufficient balance");
+         balance -= amount;
+         msg.sender.transfer(amount);
+     }
+}
+<\Contract\> 
+<Output>
+healthy

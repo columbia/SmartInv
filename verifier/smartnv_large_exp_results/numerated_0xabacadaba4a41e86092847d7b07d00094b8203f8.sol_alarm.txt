@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+contract Ecommerce {
+    address public owner;
+    mapping(uint => address) public productOwners;
+    mapping(uint => uint) public productPrices;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addProduct(uint productId, address productOwner, uint productPrice) external {
+        require(msg.sender == owner, "Only owner can add product");
+        productOwners[productId] = productOwner;
+        productPrices[productId] = productPrice;
+    }
+
+    function purchaseProduct(uint productId) external payable {
+        require(msg.value >= productPrices[productId], "Insufficient funds");
+        address productOwner = productOwners[productId];
+        productOwner.transfer(msg.value);
+    }
+}
+
+Output:
+- Incorrect visibility/ownership.

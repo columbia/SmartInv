@@ -1,0 +1,5 @@
+Potential vulnerability in the contract:
+
+- Incorrect visibility/ownership: Both functions `liquidate` and `calculatePrice` are declared as public, which might expose sensitive functionality to unintended users. It is recommended to restrict access to privileged functions using appropriate visibility modifiers.
+- Integer overflow/underflow: There is a possibility of integer overflow in the expression `getPrice() * cAmount * 80 / 100` inside the `liquidate` function. It is important to handle potential overflow or underflow scenarios to prevent unexpected behavior.
+- Business logic flaw: The condition `getPrice() * cAmount * 80 / 100 < dAmount` in the `liquidate` function could have a business logic flaw that may lead to incorrect liquidation decisions. It is essential to carefully review the logic for accurate execution.

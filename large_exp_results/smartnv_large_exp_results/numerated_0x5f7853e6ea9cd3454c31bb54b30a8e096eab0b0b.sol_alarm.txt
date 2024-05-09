@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract PaymentSplitter {
+    address public owner;
+    address[] public payees;
+    mapping(address => uint) public payments;
+    
+    constructor(address[] memory _payees) {
+        owner = msg.sender;
+        payees = _payees;
+    }
+    
+    function splitPayment() public payable {
+        require(msg.sender == owner, "Only owner can split payment");
+        uint amount = msg.value / payees.length;
+        for (uint i = 0; i < payees.length; i++) {
+            payments[payees[i]] += amount;
+        }
+    }
+    
+    function withdrawPayment() public {
+        uint payment = payments[msg.sender];
+        payments[msg.sender] = 0;
+        msg.sender.transfer(payment);
+    }
+}
+<\analyzed_contract\>

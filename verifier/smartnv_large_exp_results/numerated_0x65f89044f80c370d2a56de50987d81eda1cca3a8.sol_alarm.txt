@@ -1,0 +1,36 @@
+Contract to be analyzed:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+
+    function delegate(address to) public {
+        require(to != msg.sender, "Self-delegation is not allowed");
+        require(voters[msg.sender].voted == false, "You have already voted");
+
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+    }
+
+    function vote(uint256 option) public {
+        require(voters[msg.sender].voted == false, "You have already voted");
+        require(option < 5, "Invalid voting option");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+        totalVotes += voters[msg.sender].weight;
+    }
+}
+
+Output:
+- Inconsistent state update: The weight of the delegate should be decreased when a voter delegates their vote to someone else, but the code only increases the delegate's weight without decreasing the previous delegate's weight.
+- Business logic flaw: There is no mechanism to prevent multiple votes from the same address. The contract should enforce only one vote per address.
+- ID uniqueness violation: The contract does not enforce uniqueness of the delegate address, allowing multiple voters to delegate their votes to the same address. This could lead to unexpected behavior.
+- Incorrect visibility/ownership: The voters mapping is public, exposing sensitive information such as voting status, delegate address, and vote choice to anyone. Consider changing the visibility to internal or private for better security.

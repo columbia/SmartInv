@@ -1,0 +1,24 @@
+The contract provided for analysis is:
+
+contract RewardSystem {
+     IERC20 public token;
+     mapping(address => uint) public rewards;
+
+     function distributeRewards(uint amount) public {
+         require(token.balanceOf(address(this)) >= amount, "insufficient balance");
+         rewards[msg.sender] += amount;
+     }
+
+     function claimReward() public {
+         uint reward = rewards[msg.sender];
+         rewards[msg.sender] = 0;
+         token.transfer(msg.sender, reward);
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) Insufficient gas: The contract does not specify gas limits for its functions, which could lead to out-of-gas exceptions.
+2) Incorrect visibility/ownership: The visibility of the rewards mapping is set to public, which could expose sensitive data to external manipulation.
+3) Inconsistent state update: The claimReward function resets the reward balance to 0 before transferring the reward tokens, which could lead to inconsistency in reward calculations.
+4) Ether leakage: The contract does not handle or account for any potential incoming ether transfers, leading to a risk of ether leakage.
+5) Atomicity violation: The distributeRewards function does not ensure atomicity in updating the rewards balance, potentially exposing the contract to race condition vulnerabilities.

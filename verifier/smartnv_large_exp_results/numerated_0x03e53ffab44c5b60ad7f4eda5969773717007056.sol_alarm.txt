@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function startExecute() updates the state of the proposal without properly initializing the proposal struct, leading to inconsistent state updates.
+2) Arithmetic flaw: In the function endExecute(), the comparison "votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()" may lead to an arithmetic flaw if the values are not properly handled, potentially resulting in incorrect execution.
+3) Insufficient gas: The function liquidate() in the ExchangeTokens contract may require a significant amount of gas due to the potential loop in transferring tokens, leading to insufficient gas for the transaction to complete successfully.

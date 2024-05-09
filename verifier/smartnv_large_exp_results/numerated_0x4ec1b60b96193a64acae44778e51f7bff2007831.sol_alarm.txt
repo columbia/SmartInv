@@ -1,0 +1,21 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        votes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function unVote() public {
+        require(votes[msg.sender] > 0, "No votes to unvote");
+        votes[msg.sender]--;
+        totalVotes--;
+    }
+}
+<\contract\> 
+
+<\output\>
+potential vulnerabilities:
+1) ID uniqueness violation - There is no check for duplicate votes from the same address, potentially allowing the same address to vote multiple times without restriction.

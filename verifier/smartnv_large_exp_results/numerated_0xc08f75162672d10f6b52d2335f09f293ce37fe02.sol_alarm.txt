@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public bids;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than the current highest bid");
+        if(highestBidder != address(0)) {
+            // Refund the previous highest bidder
+            address payable previousBidder = payable(highestBidder);
+            previousBidder.transfer(bids[highestBid]);
+        }
+        highestBid = msg.value;
+        highestBidder = msg.sender;
+        bids[msg.sender] = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "Highest bidder cannot withdraw");
+        uint amount = bids[msg.sender];
+        payable(msg.sender).transfer(amount);
+        bids[msg.sender] = 0;
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "Only the owner can end the auction");
+        address payable winner = payable(highestBidder);
+        winner.transfer(highestBid);
+    }
+}
+<\contract_to_analyze\>

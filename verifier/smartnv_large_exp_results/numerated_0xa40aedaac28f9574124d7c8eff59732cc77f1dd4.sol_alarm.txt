@@ -1,0 +1,28 @@
+The contract:
+
+contract TokenSale {
+    address payable public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenAddress, uint _price) {
+        owner = msg.sender;
+        token = IERC20(_tokenAddress);
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == (_amount * tokenPrice), "Incorrect payment amount");
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Access denied");
+        owner.transfer(address(this).balance);
+    }
+}
+
+Output: 
+1) Incorrect visibility/ownership: The `owner` variable is public, which may expose ownership information to unauthorized parties. Consider making it private and providing a public getter function if necessary.

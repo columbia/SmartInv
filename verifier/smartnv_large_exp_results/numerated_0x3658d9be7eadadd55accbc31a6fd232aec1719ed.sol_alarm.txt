@@ -1,0 +1,27 @@
+Contract to analyze:
+
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    uint public exchangeRate;
+
+    constructor(address _tokenA, address _tokenB, uint _exchangeRate) {
+        tokenA = IERC20(_tokenA);
+        tokenB = IERC20(_tokenB);
+        exchangeRate = _exchangeRate;
+    }
+
+    function swap(uint amount) public {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        
+        uint receivingAmount = amount * exchangeRate;
+        tokenB.transfer(msg.sender, receivingAmount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Integer overflow/underflow: The multiplication in the swap function could potentially lead to integer overflow/underflow if the amount is very large.
+- Incorrect visibility/ownership: The visibility of the exchangeRate variable is public, which may expose sensitive information about the exchange rate.
+- Insufficient gas: If the swap function requires a significant amount of gas to execute, users may encounter insufficient gas issues.
+- Business logic flaw: Depending on the specific requirements, there may be a flaw in the business logic of the swap function that could lead to unexpected behavior.

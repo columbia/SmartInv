@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract Lottery {
+    address public owner;
+    uint public ticketPrice = 0.1 ether;
+    mapping(address => uint) public ticketsBought;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function buyTickets(uint numTickets) public payable {
+        require(msg.value == numTickets * ticketPrice, "Incorrect payment amount");
+        ticketsBought[msg.sender] += numTickets;
+    }
+
+    function drawWinningTicket() public {
+        require(msg.sender == owner, "Only owner can draw the winning ticket");
+        // logic to select winning ticket and distribute prize
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+
+1) Incorrect visibility/ownership - The drawWinningTicket function allows anyone to potentially call it if they figure out the contract owner's address, even though it is intended for the owner. This can lead to unauthorized parties triggering the selection of a winning ticket.
+
+2) Insufficient gas - If the logic to select the winning ticket and distribute the prize in the drawWinningTicket function requires a significant amount of gas, there could be a risk of running out of gas and failing to complete the operation, resulting in an incomplete or inconsistent state update.
+
+Therefore, the potential vulnerabilities in the Lottery contract are incorrect visibility/ownership and insufficient gas.

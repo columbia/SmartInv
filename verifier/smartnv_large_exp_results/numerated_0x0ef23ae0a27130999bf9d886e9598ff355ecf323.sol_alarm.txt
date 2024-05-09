@@ -1,0 +1,20 @@
+<\analyzed_contract\>
+contract VotingSystem {
+     mapping(address => bool) public voters;
+     uint public totalVotes;
+
+     function vote() public {
+          require(!voters[msg.sender], "You have already voted");
+          voters[msg.sender] = true;
+          totalVotes++;
+     }
+
+     function reset() public {
+          require(msg.sender == owner, "Only the owner can reset");
+          for (uint i = 0; i < totalVotes; i++) {
+               voters[address(i)] = false;
+          }
+          totalVotes = 0;
+     }
+}
+<\analyzed_contract\>

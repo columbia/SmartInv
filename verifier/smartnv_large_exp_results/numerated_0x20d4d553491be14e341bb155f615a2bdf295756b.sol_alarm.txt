@@ -1,0 +1,21 @@
+The contract:
+
+contract Marketplace {
+     IERC20 public token;
+     address public owner;
+
+     constructor(address _token) {
+          token = IERC20(_token);
+          owner = msg.sender;
+     }
+
+     function purchase(uint quantity) public {
+          uint totalPrice = quantity * 10; 
+          require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient balance");
+          token.transferFrom(msg.sender, owner, totalPrice);
+     }
+}
+
+Potential vulnerabilities:
+4) Inconsistent state update
+10) Arithmetic flaw

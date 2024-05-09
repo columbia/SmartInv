@@ -1,0 +1,22 @@
+Contract:
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCount;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        voteCount[msg.sender]++;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        uint totalVotes = 0;
+        for (uint i = 0; i < voters.length; i++) {
+            totalVotes += voteCount[voters[i]];
+        }
+        return totalVotes;
+    }
+}
+
+Output:
+- ID uniqueness violation

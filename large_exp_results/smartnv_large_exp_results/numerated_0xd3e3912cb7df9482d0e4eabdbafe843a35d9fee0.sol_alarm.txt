@@ -1,0 +1,20 @@
+The contract you provided is:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address internal owner;
+
+    function vote(uint _proposalId) public {
+        require(votes[msg.sender] == 0, "Already voted");
+        votes[msg.sender] = _proposalId;
+    }
+
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = _newOwner;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- privilege escalation: The `changeOwner` function allows the owner to be changed by any address, not just the current owner.
+- incorrect visibility/ownership: The `owner` variable is declared as internal, meaning it can be accessed by external contracts, which may lead to unauthorized access and manipulation.

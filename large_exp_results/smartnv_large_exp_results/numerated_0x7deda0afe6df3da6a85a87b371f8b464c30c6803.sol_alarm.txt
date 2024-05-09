@@ -1,0 +1,29 @@
+<\contract\> 
+contract SimpleToken {
+    mapping(address => uint) balances;
+    uint public totalSupply;
+
+    constructor(uint _totalSupply) {
+        totalSupply = _totalSupply;
+        balances[msg.sender] = _totalSupply;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+
+    function getBalance(address user) public view returns (uint) {
+        return balances[user];
+    }
+
+    function mint(uint amount) public {
+        totalSupply += amount;
+        balances[msg.sender] += amount;
+    }
+}
+<\contract\> 
+
+Output:
+- integer overflow/underflow

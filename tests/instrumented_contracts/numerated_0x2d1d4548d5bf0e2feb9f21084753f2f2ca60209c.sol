@@ -1,0 +1,100 @@
+1 pragma solidity ^0.4.23;
+2 
+3 
+4 contract Owned {
+5     address public owner;
+6     function Owned() public {
+7         owner = msg.sender;
+8     }
+9 
+10     modifier onlyOwner {
+11         require(msg.sender == owner);
+12         _;
+13     }
+14 
+15     function transferOwnership(address newOwner) onlyOwner public {
+16         owner = newOwner;
+17     }
+18 }
+19 
+20 
+21 interface tokenRecipient { function receiveApproval(address _from, uint _value, address _token, bytes _extraData) public; }
+22 
+23 
+24 contract TokenBase is Owned {
+25     string public name;
+26     string public symbol;
+27     uint8 public decimals = 18;
+28     uint public totalSupply;
+29     uint public tokenUnit = 10 ** uint(decimals);
+30     uint public wanUnit = 10000 * tokenUnit;
+31     uint public foundingTime;
+32 
+33     mapping (address => uint) public balanceOf;
+34     mapping (address => mapping (address => uint)) public allowance;
+35 
+36     event Transfer(address indexed _from, address indexed _to, uint _value);
+37 
+38     function TokenBase() public {
+39         foundingTime = now;
+40     }
+41 
+42     function _transfer(address _from, address _to, uint _value) internal {
+43         require(_to != 0x0);
+44         require(balanceOf[_from] >= _value);
+45         require(balanceOf[_to] + _value > balanceOf[_to]);
+46         uint previousBalances = balanceOf[_from] + balanceOf[_to];
+47         balanceOf[_from] -= _value;
+48         balanceOf[_to] += _value;
+49         Transfer(_from, _to, _value);
+50         assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
+51     }
+52 
+53     function transfer(address _to, uint _value) public {
+54         _transfer(msg.sender, _to, _value);
+55     }
+56 
+57     function transferFrom(address _from, address _to, uint _value) public returns (bool success) {
+58         require(_value <= allowance[_from][msg.sender]);
+59         allowance[_from][msg.sender] -= _value;
+60         _transfer(_from, _to, _value);
+61         return true;
+62     }
+63 
+64     function approve(address _spender, uint _value) public returns (bool success) {
+65         allowance[msg.sender][_spender] = _value;
+66         return true;
+67     }
+68 
+69     function approveAndCall(address _spender, uint _value, bytes _extraData) public returns (bool success) {
+70         tokenRecipient spender = tokenRecipient(_spender);
+71         if (approve(_spender, _value)) {
+72             spender.receiveApproval(msg.sender, _value, this, _extraData);
+73             return true;
+74         }
+75     }
+76 }
+77 
+78 
+79 
+80 contract Token is TokenBase {
+81     uint public initialSupply = 1000000 * wanUnit;
+82     uint public reserveSupply = 0 * wanUnit;
+83 
+84     function Token() public {
+85         totalSupply = initialSupply;
+86         balanceOf[msg.sender] = initialSupply;
+87         name = "EXC";
+88         symbol = "EXC";
+89     }
+90 
+91     function releaseReserve(uint value) onlyOwner public {
+92         require(reserveSupply >= value);
+93         balanceOf[owner] += value;
+94         totalSupply += value;
+95         reserveSupply -= value;
+96         Transfer(0, this, value);
+97         Transfer(this, owner, value);
+98     }
+99 
+100 }

@@ -1,0 +1,9 @@
+There are several potential vulnerabilities in the contract:
+
+1) Privilege escalation: The contract does not restrict who can call the startExecute, execute, and endExecute functions, potentially allowing unauthorized users to manipulate proposals and execute transactions.
+
+2) Inconsistent state update: The execute function updates the votedAmount without properly handling potential reentrant calls, which may lead to inconsistent state updates.
+
+3) Insufficient gas: The endExecute function tries to perform a complex operation of calculating the balance of the contract relative to the total supply within a single transaction, which might result in running out of gas and lead to transaction failure.
+
+Therefore, the potential vulnerabilities in the contract are privilege escalation, inconsistent state update, and insufficient gas.

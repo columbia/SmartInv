@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract Governance {
+    address public admin;
+    mapping(address => bool) public whitelist;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function updateAdmin(address _newAdmin) external {
+        require(msg.sender == admin, "Only admin can update admin");
+        admin = _newAdmin;
+    }
+
+    function addToWhitelist(address _address) external {
+        require(msg.sender == admin, "Only admin can add to whitelist");
+        whitelist[_address] = true;
+    }
+
+    function removeFromWhitelist(address _address) external {
+        require(msg.sender == admin, "Only admin can remove from whitelist");
+        whitelist[_address] = false;
+    }
+}
+
+Output: 
+- healthy

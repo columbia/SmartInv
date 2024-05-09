@@ -1,0 +1,51 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public administrator;
+    uint256 public totalVotes;
+    
+    constructor() {
+        administrator = msg.sender;
+    }
+    
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You have already voted.");
+        require(msg.sender != to, "Self-delegation is not allowed.");
+        
+        voters[msg.sender].delegate = to;
+        
+        if (voters[to].voted) {
+            voters[to].weight += voters[msg.sender].weight;
+        }
+    }
+    
+    function vote(uint256 proposal) public {
+        require(!voters[msg.sender].voted, "You have already voted.");
+        
+        voters[msg.sender].vote = proposal;
+        voters[msg.sender].voted = true;
+        totalVotes += voters[msg.sender].weight;
+    }
+    
+    function tallyVotes() public view returns(uint256) {
+        uint256 winningProposal;
+        uint256 winningVoteCount;
+        
+        for (uint256 i = 0; i < totalVotes; i++) {
+            if (voters[i].voted && voters[i].vote > winningVoteCount) {
+                winningVoteCount = voters[i].vote;
+                winningProposal = i;
+            }
+        }
+        
+        return winningProposal;
+    }
+}
+<\analyzed_contract\> 

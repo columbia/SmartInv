@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentContract {
+    address public owner;
+    mapping(address => uint) public balances;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the "PaymentContract" are:
+1) Integer overflow/underflow: There is a potential for an integer underflow in the "withdraw" function if the 'amount' parameter passed is greater than the balance in the 'balances' mapping.
+2) Insufficient gas: If the 'withdraw' function requires more gas than available due to a large balance, it may result in the transaction failing.
+3) Incorrect visibility/ownership: The 'owner' variable is public, allowing anyone to view the owner's address.

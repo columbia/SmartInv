@@ -1,0 +1,26 @@
+<\contract\> 
+contract PaymentContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the PaymentContract are:
+1) inappropriate access control (privilege escalation) - The owner can manipulate the balance and withdraw funds regardless of the amount deposited.
+2) inconsistent state update - There is a potential inconsistency in updating the balance variable when a withdrawal is made.
+3) incorrect visibility/ownership - The owner variable is public, exposing it to potential manipulation.

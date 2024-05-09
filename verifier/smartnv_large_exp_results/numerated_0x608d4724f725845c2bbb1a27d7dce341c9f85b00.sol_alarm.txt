@@ -1,0 +1,23 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    
+    constructor(uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        totalTokens -= _numTokens;
+        // transfer tokens to buyer
+    }
+}
+
+The potential vulnerabilities in the TokenSale contract are:
+1) price manipulation
+2) inconsistent state update

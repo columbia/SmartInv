@@ -1,0 +1,24 @@
+The contract below has potential vulnerabilities: 
+
+contract VotingSystem {
+     uint256 public totalVotes;
+     mapping(address => uint256) public userVotes;
+     
+     function vote(uint256 amount) public {
+          require(amount > 0, "Amount must be greater than 0");
+          totalVotes += amount;
+          userVotes[msg.sender] += amount;
+     }
+     
+     function redeemVotes() public {
+          uint256 userAmount = userVotes[msg.sender];
+          require(userAmount > 0, "User has no votes to redeem");
+          totalVotes -= userAmount;
+          userVotes[msg.sender] = 0;
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Integer overflow/underflow
+3) Insufficient gas

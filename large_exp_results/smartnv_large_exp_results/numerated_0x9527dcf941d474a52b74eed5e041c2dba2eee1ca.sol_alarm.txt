@@ -1,0 +1,23 @@
+<\contract\>
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => bool) public hasVoted;
+
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function cancelVote() external {
+        require(hasVoted[msg.sender], "Has not voted yet");
+        totalVotes--;
+        hasVoted[msg.sender] = false;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) ID uniqueness violation - the contract relies on the uniqueness of addresses as identifiers for voters, which can potentially lead to issues if there are address collisions or manipulations.
+2) Inconsistent state update - there is a risk of inconsistent state updates between the totalVotes counter and the hasVoted mapping, which can lead to unexpected behavior.
+3) Incorrect visibility/ownership - the lack of access control mechanisms or visibility modifiers can expose the contract to unauthorized access or manipulation of the totalVotes and hasVoted variables.

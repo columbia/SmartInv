@@ -1,0 +1,27 @@
+The contract you are going to analyze is:
+
+contract TokenSwap {
+    mapping(address => uint) public balances;
+
+    function swapTokens(address token1, address token2, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        // Swap logic between token1 and token2
+        transferFrom(token1, msg.sender, address(this), amount);
+        transfer(token2, address(this), msg.sender, amount);
+        
+        balances[msg.sender] -= amount;
+    }
+    
+    function transfer(address token, address from, address to, uint amount) internal {
+        // Transfer logic for token
+    }
+    
+    function transferFrom(address token, address from, address to, uint amount) internal {
+        // TransferFrom logic for token
+    }
+} 
+
+Output: 
+- atomicity violation
+- incorrect visibility/ownership

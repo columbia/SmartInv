@@ -1,0 +1,26 @@
+<\contract\> 
+contract VotingSystem {
+         struct Voter {
+             uint weight;
+             bool voted;
+             address delegate;
+             uint vote;
+         }
+         mapping(address => Voter) public voters;
+         uint public winningProposal;
+         Proposal[] public proposals;
+
+         function vote(uint proposal) public {
+             require(voters[msg.sender].weight > 0, "You have no right to vote");
+             require(!voters[msg.sender].voted, "You have already voted");
+
+             voters[msg.sender].voted = true;
+             voters[msg.sender].vote = proposal;
+             proposals[proposal].voteCount += voters[msg.sender].weight;
+             
+             if (proposals[proposal].voteCount > proposals[winningProposal].voteCount) {
+                 winningProposal = proposal;
+             }
+         }
+     }
+<\contract\>

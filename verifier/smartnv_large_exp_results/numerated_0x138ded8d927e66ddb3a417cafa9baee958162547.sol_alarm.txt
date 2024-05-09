@@ -1,0 +1,19 @@
+<\contract\> 
+contract DepositWithdraw {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+potential vulnerabilities in the contract: 
+8) reentrancy

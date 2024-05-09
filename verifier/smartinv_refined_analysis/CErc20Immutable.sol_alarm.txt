@@ -1,0 +1,11 @@
+This contract may contain potential vulnerabilities:
+
+1) Inconsistent state update: The function startExecute updates the state of the proposal before updating the startingBalanceList, which may lead to inconsistent state.
+
+2) ID uniqueness violation: The contract does not have a mechanism to ensure uniqueness of proposal IDs, which could potentially cause issues with duplicate proposals.
+
+3) Atomicity violation: The execute function does multiple state-changing operations without using proper mechanisms to ensure atomicity, which could result in inconsistent state if one of the operations fails.
+
+4) Business logic flaw: The endExecute function checks if the balance of the contract is more than twice the total supply of the voting token to determine if the execution has failed, which might not be a reliable way to ensure the success of execution.
+
+5) Cross bridge inconsistency: There are multiple functions in the contract that interact with external contracts (such as votingToken and pair), which may introduce inconsistencies or dependencies on external contract behavior.

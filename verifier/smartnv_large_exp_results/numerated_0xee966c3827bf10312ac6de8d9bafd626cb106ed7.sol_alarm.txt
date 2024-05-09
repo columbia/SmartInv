@@ -1,0 +1,12 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update:
+- In the `liquidate` function, the calculation for liquidation (`getPrice() * cAmount * 80 / 100 < dAmount`) is based on the current state of the contract and may not accurately reflect the actual debt and collateral values of the user at the time of execution.
+
+2) Arithmetic flaw:
+- The calculation in the `calculatePrice` function (`return (USDC.balanceOf(address(pair)) / WETH.balanceOf(address(pair));`) may result in arithmetic flaws if the denominator (WETH balance) becomes zero, leading to division by zero errors.
+
+3) Incorrect visibility/ownership:
+- The visibility of the `debt` and `collateral` mappings is set to public, potentially exposing sensitive user data to external parties.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, arithmetic flaw, and incorrect visibility/ownership.

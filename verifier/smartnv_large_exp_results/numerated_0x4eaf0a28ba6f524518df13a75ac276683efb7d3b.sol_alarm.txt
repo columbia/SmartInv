@@ -1,0 +1,44 @@
+<\contract\>
+contract EscrowContract {
+         address public buyer;
+         address public seller;
+         uint public price;
+         enum State { Created, Locked, Released, Inactive }
+         State public state;
+
+         modifier onlyBuyer() {
+             require(msg.sender == buyer, "Only buyer can call this function");
+             _;
+         }
+         modifier onlySeller() {
+             require(msg.sender == seller, "Only seller can call this function");
+             _;
+         }
+
+         function initiateEscrow(address _seller, uint _price) external {
+             require(state == State.Inactive, "Escrow already initiated");
+             buyer = msg.sender;
+             seller = _seller;
+             price = _price;
+             state = State.Created;
+         }
+
+         function confirmPurchase() onlyBuyer external payable {
+             require(state == State.Created, "Escrow not in correct state");
+             require(msg.value == price, "Incorrect payment amount");
+             state = State.Locked;
+         }
+
+         function confirmDelivery() onlyBuyer external {
+             require(state == State.Locked, "Escrow not in correct state");
+             seller.transfer(price);
+             state = State.Released;
+         }
+
+         function refundPayment() onlySeller external {
+             require(state == State.Locked, "Escrow not in correct state");
+             buyer.transfer(price);
+             state = State.Inactive;
+         }
+}
+<\contract\>

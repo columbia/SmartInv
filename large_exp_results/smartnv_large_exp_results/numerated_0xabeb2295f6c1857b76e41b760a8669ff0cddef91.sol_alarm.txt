@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Insufficient funds");
+        balances[msg.sender] += _numTokens;
+        totalTokens -= _numTokens;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        payable(owner).transfer(address(this).balance);
+    }
+
+    function getBalance(address _addr) public view returns (uint) {
+        return balances[_addr];
+    }
+}
+<\contract\> 
+
+Output:
+- consistent state update
+- insufficient gas

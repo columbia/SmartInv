@@ -1,0 +1,23 @@
+<\contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint id;
+        uint vote;
+        bool voted;
+    }
+    
+    mapping(address => Voter) public voters;
+    
+    function vote(uint _id, uint _vote) public {
+        require(voters[msg.sender].id == _id, "Invalid voter ID");
+        require(voters[msg.sender].voted == false, "Voter has already voted");
+        
+        voters[msg.sender].vote = _vote;
+        voters[msg.sender].voted = true;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- ID uniqueness violation
+- Incorrect visibility/ownership

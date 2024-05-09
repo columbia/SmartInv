@@ -1,0 +1,33 @@
+<\Your contract\>
+contract Crowdsale {
+     address public owner;
+     IERC20 public token;
+     uint public tokenPrice;
+
+     constructor(IERC20 _token, uint _tokenPrice) {
+          owner = msg.sender;
+          token = _token;
+          tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public payable {
+          require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+          token.transfer(msg.sender, _amount);
+     }
+
+     function withdrawFunds() public {
+          require(msg.sender == owner, "Only owner can withdraw funds");
+          payable(owner).transfer(address(this).balance);
+     }
+
+     function changeTokenPrice(uint _newPrice) public {
+          require(msg.sender == owner, "Only owner can change token price");
+          tokenPrice = _newPrice;
+     }
+}
+Possible vulnerabilities in the contract:
+1) Incorrect visibility/ownership - The owner variable is public, meaning anyone can access and potentially modify it, which can lead to privilege escalation.
+2) Integer overflow/underflow - In the buyTokens function, there is a multiplication involving msg.value and tokenPrice, which can potentially lead to integer overflow/underflow.
+3) Incorrect payment amount - The buyTokens function checks if the payment amount is equal to the product of _amount and tokenPrice, but this comparison might not handle all edge cases and could lead to inconsistencies.
+4) Inconsistent state update - There is no check for token transfer success in the buyTokens function, which can result in inconsistent state if the transfer fails.
+5) Ether leakage - In the withdrawFunds function, transferring the balance directly to the owner's address can lead to ether leakage if the owner's address is a contract that does not handle received ether properly.

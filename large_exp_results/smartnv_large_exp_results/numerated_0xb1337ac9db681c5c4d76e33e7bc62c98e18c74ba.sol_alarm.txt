@@ -1,0 +1,28 @@
+The contract provided for analysis:
+contract PaymentSplitter {
+    address[] internal payees;
+    mapping(address => uint256) internal shares;
+    address internal owner;
+
+    constructor(address[] memory _payees, uint256[] memory _shares) public payable {
+        require(_payees.length == _shares.length, "Payees and Shares length mismatch");
+        owner = msg.sender;
+        for (uint256 i = 0; i < _payees.length; i++) {
+            payees.push(_payees[i]);
+            shares[_payees[i]] = _shares[i];
+        }
+    }
+
+    function release() public {
+        for (uint256 i = 0; i < payees.length; i++) {
+            address payable payee = address(uint160(payees[i]));
+            uint256 amount = shares[payee] / 100 * address(this).balance;
+            payee.transfer(amount);
+        }
+    }
+}
+
+Output:
+- Arithmetic flaw: The calculation in the release function (uint256 amount = shares[payee] / 100 * address(this).balance;) may result in unexpected outcomes due to potential integer division rounding and multiplication issues.
+
+Overall assessment: The contract contains an arithmetic flaw vulnerability.

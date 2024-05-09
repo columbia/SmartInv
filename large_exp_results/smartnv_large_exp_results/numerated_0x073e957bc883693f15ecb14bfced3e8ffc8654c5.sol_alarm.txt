@@ -1,0 +1,8 @@
+<\example_1\>
+1) Inconsistent state update: The `proposal.votedAmount` is updated non-atomically leading to potential inconsistencies.
+2) ID uniqueness violation: There is no mechanism to ensure unique proposals, as `proposal` can be overwritten by subsequent calls to `startExecute`.
+3) Insufficient gas: Gas limit concerns due to potential high gas consumption in `endExecute` function.
+
+<\example_2\>
+1) Price manipulation: The `liquidate` function may be vulnerable to price manipulation depending on the `getPrice` implementation.
+2) Incorrect visibility/ownership: Lack of visibility for `debt` and `collateral` mappings, potentially enabling unauthorized access or manipulation.

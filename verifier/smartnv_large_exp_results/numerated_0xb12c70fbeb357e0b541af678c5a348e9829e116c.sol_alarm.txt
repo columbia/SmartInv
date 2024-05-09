@@ -1,0 +1,24 @@
+<\contract\>
+contract TokenVesting {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public vestedAmount;
+
+    constructor(address _beneficiary, uint _releaseTime, uint _vestedAmount) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+        vestedAmount = _vestedAmount;
+    }
+
+    function release() public {
+        require(block.timestamp >= releaseTime, "Release time hasn't come yet");
+        // Transfer vested amount to beneficiary
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Inconsistent state update: The vestedAmount can be modified after deployment using direct access, which can lead to unexpected behavior.
+2) Incorrect visibility/ownership: The release function lacks access control, allowing anyone to trigger the release of funds, which may not be intended.
+3) Insufficient gas: If the transfer of funds in the release function requires excessive gas, it may fail and prevent the beneficiary from receiving the funds.
+4) Integer overflow/underflow: The calculations involving vestedAmount may be vulnerable to integer overflow or underflow if not properly handled.

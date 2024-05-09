@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract InsuranceClaim {
+    struct Claim {
+        address claimant;
+        uint amount;
+        bool isApproved;
+    }
+
+    mapping(uint => Claim) public claims;
+    uint public claimCount;
+
+    function fileClaim(uint _amount) public {
+        claims[claimCount] = Claim(msg.sender, _amount, false);
+        claimCount++;
+    }
+
+    function approveClaim(uint _claimId) public {
+        require(msg.sender == owner, "Only owner can approve claims");
+        require(!claims[_claimId].isApproved, "Claim is already approved");
+        
+        address payable recipient = payable(claims[_claimId].claimant);
+        recipient.transfer(claims[_claimId].amount);
+        claims[_claimId].isApproved = true;
+    }
+}
+
+Output:
+- incorrect visibility/ownership

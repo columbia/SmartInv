@@ -1,0 +1,29 @@
+The contract below does not contain any vulnerabilities:
+
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect token amount provided");
+        
+        token.transfer(msg.sender, _numTokens);
+        tokensSold += _numTokens;
+    }
+
+    function endSale() public {
+        require(msg.sender == admin, "Only admin can end the sale");
+        
+        // Perform remaining tasks and distribute remaining tokens if any
+    }
+} 
+
+Output: Healthy

@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public fundsDisbursed;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        fundsDisbursed = false;
+    }
+    
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(!fundsDisbursed, "Funds already disbursed");
+        
+        // Transfer escrow amount from this contract to the seller
+        seller.transfer(escrowAmount);
+        fundsDisbursed = true;
+    }
+    
+    function refundFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(!fundsDisbursed, "Funds already disbursed");
+        
+        // Transfer escrow amount back to the buyer
+        buyer.transfer(escrowAmount);
+        fundsDisbursed = true;
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,34 @@
+The contract to analyze:
+
+contract CycledLoan {
+    struct Loan {
+        address borrower;
+        uint256 amount;
+        uint256 duration;
+        uint256 interestRate;
+        uint256 startTime;
+        bool isActive;
+    }
+
+    mapping(uint256 => Loan) public loans;
+    uint256 public loanCounter;
+
+    function requestLoan(uint256 _amount, uint256 _duration, uint256 _interestRate) public {
+        loans[loanCounter] = Loan(msg.sender, _amount, _duration, _interestRate, block.timestamp, true);
+        loanCounter++;
+    }
+
+    function repayLoan(uint256 _loanId) public {
+        require(loans[_loanId].isActive, "Loan is not active");
+        require(msg.sender == loans[_loanId].borrower, "Only borrower can repay the loan");
+        
+        uint256 totalAmount = loans[_loanId].amount + (loans[_loanId].amount * loans[_loanId].interestRate / 100);
+        require(msg.value >= totalAmount, "Insufficient funds"); 
+
+        loans[_loanId].isActive = false;
+    }
+}
+
+Output:
+1) arithmetic flaw
+2) inconsistent state update

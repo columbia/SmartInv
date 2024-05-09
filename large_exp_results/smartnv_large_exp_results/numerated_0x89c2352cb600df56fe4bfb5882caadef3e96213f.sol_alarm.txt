@@ -1,0 +1,34 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokenSold;
+
+    constructor(address _token, uint _tokenPrice) public {
+        owner = msg.sender;
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+        tokenSold = 0;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalPrice = _amount * tokenPrice;
+        require(token.balanceOf(owner) >= _amount, "Not enough tokens in owner's balance");
+        require(token.balanceOf(msg.sender) >= totalPrice, "Not enough funds to buy tokens");
+        
+        token.transferFrom(owner, msg.sender, _amount);
+        tokenSold += _amount;
+
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

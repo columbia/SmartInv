@@ -1,0 +1,15 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() external {
+        votes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function getVoteCount(address _voter) external view returns (uint) {
+        return votes[_voter];
+    }
+}
+<\contract\>

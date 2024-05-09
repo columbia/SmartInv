@@ -1,0 +1,38 @@
+<\contract_X\>
+contract VotingSystem {
+     struct Voter {
+           address addr;
+           uint256 votedProposalId;
+           bool hasVoted;
+           bool hasVotedProposalId;
+       }
+     mapping(address => Voter) public voters;
+     mapping(uint256 => bool) public proposals;
+     address public admin;
+     bool public votingEnabled;
+     
+     constructor() {
+         admin = msg.sender;
+         votingEnabled = true;
+     }
+
+     function submitProposal(uint256 proposalId) external {
+         require(votingEnabled, "voting is disabled");
+         require(!proposals[proposalId], "proposal already exists");
+         proposals[proposalId] = true;
+     }
+
+     function vote(uint256 proposalId) external {
+         require(votingEnabled, "voting is disabled");
+         require(voters[msg.sender].hasVoted == false, "already voted");
+         require(proposals[proposalId], "proposal doesn't exist");
+         voters[msg.sender].votedProposalId = proposalId;
+         voters[msg.sender].hasVoted = true;
+     }
+
+     function disableVoting() external {
+         require(msg.sender == admin, "only admin can disable voting");
+         votingEnabled = false;
+     }
+}
+<\contract_X\>

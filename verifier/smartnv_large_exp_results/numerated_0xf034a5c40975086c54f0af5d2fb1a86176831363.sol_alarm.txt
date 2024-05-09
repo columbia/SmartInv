@@ -1,0 +1,33 @@
+<\Analyzing Contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public isComplete;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        isComplete = false;
+    }
+    
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Not authorized");
+        require(isComplete == false, "Amount already released");
+        
+        seller.transfer(amount);
+        isComplete = true;
+    }
+    
+    function refundAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Not authorized");
+        require(isComplete == false, "Amount already released");
+        
+        buyer.transfer(amount);
+        isComplete = true;
+    }
+}
+<\Analyzing Contract\>

@@ -1,0 +1,25 @@
+<\contract\> 
+contract VotingSystem {
+         mapping(address => uint) public votes;
+         uint public totalVotes;
+         address public owner;
+
+         function vote(uint amount) public {
+             require(amount > 0, "Amount must be greater than 0");
+             votes[msg.sender] += amount;
+             totalVotes += amount;
+         }
+         function revokeVote() public {
+             uint amount = votes[msg.sender];
+             require(amount > 0, "No votes to revoke");
+             votes[msg.sender] = 0;
+             totalVotes -= amount;
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+- Integer overflow in the totalVotes variable, as the addition of votes might exceed the maximum value that a uint can hold.
+- ID uniqueness violation, as the mapping votes uses addresses as keys which could lead to potential conflicts if multiple users have the same address.
+- Inconsistent state update, as the totalVotes variable is updated without proper synchronization with the votes mapping, potentially leading to incorrect calculations.
+- Incorrect visibility/ownership, as the owner variable is not being used or properly specified in the contract.

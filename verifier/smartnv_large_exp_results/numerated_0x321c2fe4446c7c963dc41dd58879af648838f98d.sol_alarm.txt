@@ -1,0 +1,60 @@
+Contract to be analyzed:
+
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier inState(State _state) {
+        require(state == _state, "Invalid state");
+        _;
+    }
+
+    constructor(address _seller, address _arbiter) {
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.Created;
+    }
+
+    function deposit(address _buyer) public payable {
+        require(state == State.Created, "Invalid state");
+        require(msg.value > 0, "Invalid amount");
+        buyer = _buyer;
+        amount = msg.value;
+        state = State.Locked;
+    }
+
+    function release() public onlySeller inState(State.Locked) {
+        seller.transfer(amount);
+        state = State.Released;
+    }
+
+    function refund() public onlyBuyer inState(State.Locked) {
+        buyer.transfer(amount);
+        state = State.Released;
+    }
+
+    function dispute() public {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        state = State.Inactive;
+    }
+}
+
+Output: potential vulnerabilities: 
+1) No timeout mechanism for the escrow, leaving the funds locked indefinitely.
+2) Lack of fee handling, potential for fee manipulation.
+3) Not handling the case where the arbiter is unresponsive or biased in the dispute resolution process.

@@ -1,0 +1,43 @@
+<\contract_to_be_analyzed\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     address public constant IGCOIN = 0x1; 
+     uint public value;
+     enum State { CREATED, LOCKED, RELEASED, INACTIVE }
+     State public state;
+
+     modifier onlyBuyer() {
+         require(msg.sender == buyer, "Only buyer can call this function");
+         _;
+     }
+
+     constructor(address _buyer, address _seller, uint _value) {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = msg.sender;
+         value = _value;
+         state = State.CREATED;
+     }
+
+     function deposit() public payable onlyBuyer {
+         require(state == State.CREATED, "Transaction in incorrect state");
+         require(msg.value == value, "Incorrect value deposited");
+         state = State.LOCKED;
+     }
+
+     function release() public onlyBuyer {
+         require(state == State.LOCKED, "Transaction in incorrect state");
+         seller.transfer(value);
+         state = State.RELEASED;
+     }
+
+     function refund() public {
+         require(value == 0, "Value not refunded");
+         require(state == State.LOCKED, "Transaction in incorrect state");
+         buyer.transfer(value);
+         state = State.INACTIVE;
+     }
+}
+<\contract_to_be_analyzed\>

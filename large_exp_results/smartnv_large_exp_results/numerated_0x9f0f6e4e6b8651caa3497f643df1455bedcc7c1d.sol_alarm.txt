@@ -1,0 +1,55 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+          uint256 weight; 
+          bool voted;
+          address delegate;
+          uint vote;
+          bool isRegistered;
+     }
+     struct Proposal {
+          uint256 voteCount; 
+     }
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+
+     function registerVoter(address voter) public {
+          require(msg.sender == chairperson, "Only chairperson can register voters");
+          require(!voters[voter].isRegistered, "Voter already registered");
+          voters[voter].weight = 1;
+          voters[voter].isRegistered = true;
+     }
+
+     function delegate(address to) public {
+          voters[msg.sender].delegate = to;
+          Voter storage delegate_ = voters[to];
+          if(delegate_.voted) {
+               proposals[delegate_.vote].voteCount += voters[msg.sender].weight;
+          }
+          else {
+               delegate_.weight += voters[msg.sender].weight;
+          }
+          voters[msg.sender].weight = 0;
+     }
+
+     function vote(uint proposal) public {
+          Voter storage sender = voters[msg.sender];
+          require(sender.isRegistered, "You are not registered");
+          require(!sender.voted, "Already voted");
+          sender.voted = true;
+          sender.vote = proposal;
+          proposals[proposal].voteCount += sender.weight;
+     }
+
+     function winningProposal() public view returns (uint winningProposal_) {
+          uint winningVoteCount = 0;
+          for (uint p = 0; p < proposals.length; p++) {
+               if (proposals[p].voteCount > winningVoteCount) {
+                    winningVoteCount = proposals[p].voteCount;
+                    winningProposal_ = p;
+               }
+          }
+     }
+}
+<\contract\>

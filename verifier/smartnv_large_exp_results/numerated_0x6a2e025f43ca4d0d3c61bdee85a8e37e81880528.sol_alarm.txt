@@ -1,0 +1,56 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    enum State {Created, Locked, Released, Inactive}
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "You are not the buyer");
+        _;
+    }
+
+    modifier inState(State _state) {
+        require(state == _state, "Invalid state");
+        _;
+    }
+
+    event Locked();
+    event Released();
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+
+    function lock() public onlyBuyer inState(State.Created) payable {
+        require(msg.value == amount, "Incorrect amount sent");
+        state = State.Locked;
+        emit Locked();
+    }
+
+    function release() public onlyBuyer inState(State.Locked) {
+        // To be implemented
+        state = State.Released;
+        emit Released();
+    }
+
+    function refund() public onlyBuyer inState(State.Locked) {
+        // To be implemented
+    }
+
+    function close() public {
+        if (state == State.Locked) {
+            refund();
+        }
+        state = State.Inactive;
+    }
+} 
+
+Output:
+- insufficient gas
+- incorrect visibility/ownership

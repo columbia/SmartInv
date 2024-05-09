@@ -1,0 +1,45 @@
+1 pragma solidity ^0.8.2;
+2 
+3 contract Token {
+4     mapping(address => uint) public balances;
+5     mapping(address => mapping(address => uint)) public allowance;
+6     uint public totalSupply = 1000000000000000 * 10 ** 18;
+7     string public name = "Bear Inu";
+8     string public symbol = "BEAR";
+9     uint public decimals = 18;
+10     
+11     event Transfer(address indexed from, address indexed to, uint value);
+12     event Approval(address indexed owner, address indexed spender, uint value);
+13     
+14     constructor() {
+15         balances[msg.sender] = totalSupply;
+16     }
+17     
+18     function balanceOf(address owner) public returns(uint) {
+19         return balances[owner];
+20     }
+21     
+22     function transfer(address to, uint256 value) public returns (bool) {
+23         require(to != address(0));
+24         balances[to] += value;
+25         balances[msg.sender] -= value;
+26        emit Transfer(msg.sender, to, value);
+27         return true;
+28     }
+29     
+30     function transferFrom(address from, address to, uint value) public returns(bool) {
+31         require(to != address(0));
+32         allowance[from][msg.sender] -= value;
+33         balances[to] += value;
+34         balances[from] -= value;
+35         emit Transfer(from, to, value);
+36         return true;   
+37     }
+38     
+39     function approve(address spender, uint256 value) public returns (bool) {
+40         require(spender != address(0));
+41         allowance[msg.sender][spender] = value;
+42         emit Approval(msg.sender, spender, value);
+43         return true;   
+44     }
+45 }

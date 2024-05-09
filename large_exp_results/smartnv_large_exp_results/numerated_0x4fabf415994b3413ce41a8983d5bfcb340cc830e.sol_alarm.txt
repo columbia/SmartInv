@@ -1,0 +1,44 @@
+<\contract\> 
+contract PaymentSplitter {
+         
+         address[] public payees;
+         uint256[] public shares;
+         uint256 totalShares;
+         mapping(address => uint256) released;
+         mapping(address => uint256) totalReleased;
+
+         constructor(address[] memory _payees, uint256[] memory _shares) {
+             require(_payees.length == _shares.length, "Payees and shares length mismatch");
+             require(_payees.length > 0, "No payees specified");
+             payees = _payees;
+             shares = _shares;
+             for (uint256 i = 0; i < payees.length; i++) {
+                 totalShares += _shares[i];
+             }
+         }
+         
+         function release(address payable account) public {
+             require(totalShares > 0, "No shares to distribute");
+             uint256 payment = calculatePayment(account);
+             require(payment > 0, "No payment available for the account");
+             require(payment <= address(this).balance, "Insufficient contract balance");
+             released[account] += payment;
+             totalReleased[account] += payment;
+             account.transfer(payment);
+         }
+         
+         function calculatePayment(address account) public view returns (uint256) {
+             uint256 payment = (shares[payeeIndex(account)] * address(this).balance) / totalShares - totalReleased[account];
+             return payment;
+         }
+
+         function payeeIndex(address account) public view returns (uint256) {
+             for (uint256 i = 0; i < payees.length; i++) {
+                 if (payees[i] == account) {
+                     return i;
+                 }
+             }
+             revert("Account not found in payees list");
+         }
+}
+<\contract\>

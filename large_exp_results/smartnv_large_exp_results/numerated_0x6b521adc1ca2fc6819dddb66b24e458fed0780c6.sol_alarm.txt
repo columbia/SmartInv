@@ -1,0 +1,21 @@
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public bids;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than highest bid");
+        if(highestBid != 0) {
+            bids[highestBidder] += highestBid;
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "Cannot withdraw if highest bidder");
+        uint amount = bids[msg.sender];
+        bids[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}

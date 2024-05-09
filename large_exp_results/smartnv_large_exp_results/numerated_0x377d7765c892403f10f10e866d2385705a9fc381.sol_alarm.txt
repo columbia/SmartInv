@@ -1,0 +1,23 @@
+The contract to be analyzed for potential vulnerabilities:
+
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public prices;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function setPrice(uint _price) public {
+        prices[msg.sender] = _price;
+    }
+
+    function buy() public payable {
+        require(msg.value >= prices[msg.sender], "Insufficient payment");
+        owner.transfer(msg.value);
+    }
+}
+
+Potential vulnerabilities in the Marketplace contract:
+1) Price manipulation
+2) Reentrancy

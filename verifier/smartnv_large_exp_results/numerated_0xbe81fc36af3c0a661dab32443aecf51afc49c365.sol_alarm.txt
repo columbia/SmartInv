@@ -1,0 +1,35 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public isPaid;
+    
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = msg.value;
+    }
+    
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        require(isPaid == false, "Already paid out");
+        
+        seller.transfer(amount);
+        isPaid = true;
+    }
+    
+    function refundAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        require(isPaid == false, "Already paid out");
+        
+        buyer.transfer(amount);
+        isPaid = true;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are: 
+1) Incorrect visibility/ownership

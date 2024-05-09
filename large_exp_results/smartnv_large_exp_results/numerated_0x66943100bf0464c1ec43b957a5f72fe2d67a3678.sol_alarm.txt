@@ -1,0 +1,29 @@
+Contract you are analyzing:
+
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributions;
+    uint public totalContribution;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function contribute() public payable {
+        contributions[msg.sender] += msg.value;
+        totalContribution += msg.value;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "only owner can withdraw funds");
+        uint balance = address(this).balance;
+        payable(owner).transfer(balance);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership: The `owner` variable is public, which could lead to potential privilege escalation issues.
+2) insufficient gas: If the `withdrawFunds` function holds a significant amount of funds, it may exceed the gas limit and fail to execute properly.
+3) atomicity violation: The `withdrawFunds` function does not have a proper check to ensure atomicity of the transfer, which could result in loss of funds in case of reentrancy attacks.
+4) ether leakage: If the `withdrawFunds` function is called with a large gas stipend, it could leak ether during the transfer to the owner.
+5) integer overflow/underflow: Potential for integer overflow if the total contribution exceeds the maximum uint value, leading to unexpected behavior.

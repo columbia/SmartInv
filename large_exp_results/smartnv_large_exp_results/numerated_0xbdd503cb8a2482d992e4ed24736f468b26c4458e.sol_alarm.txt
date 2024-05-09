@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract Marketplace {
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+    }
+
+    mapping(uint => Product) public products;
+    uint public nextProductId = 1;
+
+    function addProduct(string memory _name, uint _price) public {
+        products[nextProductId] = Product(nextProductId, _name, _price);
+        nextProductId++;
+    }
+
+    function buyProduct(uint _productId) public payable {
+        require(products[_productId].id != 0, "Product does not exist");
+        require(msg.value >= products[_productId].price, "Insufficient funds");
+        
+        address payable seller = payable(msg.sender);
+        seller.transfer(msg.value);
+
+        delete products[_productId];
+    }
+}
+
+Output: 
+1) atomicity violation
+2) incorrect visibility/ownership

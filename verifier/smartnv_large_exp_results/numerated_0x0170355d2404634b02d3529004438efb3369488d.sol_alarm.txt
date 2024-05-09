@@ -1,0 +1,25 @@
+<\Your Contract\> 
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => uint) public userVotes;
+
+    function vote(uint _numVotes) public {
+        require(_numVotes > 0, "Number of votes must be greater than 0");
+        totalVotes += _numVotes;
+        userVotes[msg.sender] += _numVotes;
+    }
+
+    function redeemVotes() public {
+        require(userVotes[msg.sender] > 0, "User has no votes to redeem");
+        uint numVotes = userVotes[msg.sender];
+        userVotes[msg.sender] = 0;
+        totalVotes -= numVotes;
+        // perform redemption logic here, such as issuing tokens or other benefits
+    }
+}
+<\Your Contract\> 
+
+Potential vulnerabilities:
+7) ID uniqueness violation: There is no check for unique identifiers for users voting, which may lead to voting manipulation.
+13) Insufficient gas: Redemption logic may require more gas than available in a single transaction, causing it to fail.
+14) Incorrect visibility/ownership: The function redeemVotes can be misused if visibility modifiers are not correctly set or if ownership is not properly managed.

@@ -1,0 +1,30 @@
+Contract to analyze:
+
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        
+        uint amount = highestBid;
+        highestBid = 0;
+        highestBidder.transfer(amount);
+    }
+}
+```
+
+Output: 
+This contract is healthy.

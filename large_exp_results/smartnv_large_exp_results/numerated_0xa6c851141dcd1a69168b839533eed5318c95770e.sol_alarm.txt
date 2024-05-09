@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function buy(uint quantity) public payable {
+        uint price = quantity * 10; // Price per unit is 10 wei
+        require(msg.value >= price, "Insufficient funds");
+
+        balances[msg.sender] += quantity;
+        owner.transfer(msg.value);
+    }
+
+    function withdraw() public {
+        uint amount = balances[msg.sender] * 10; // Withdrawal amount per unit is 10 wei
+        require(amount > 0, "Insufficient balance");
+
+        msg.sender.transfer(amount);
+        balances[msg.sender] = 0;
+    }
+}
+
+Output: 
+1) Incorrect price calculation 
+2) Inconsistent state update 
+3) Insufficient funds 
+4) Insufficient balance

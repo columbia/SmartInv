@@ -1,0 +1,26 @@
+{{
+  "language": "Solidity",
+  "sources": {
+    "ATEM.sol": {
+      "content": "pragma solidity ^0.6.0;\n\nlibrary SafeMath {\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        if (a == 0) return 0;\n        uint256 c = a * b;\n        assert(c / a == b);\n        return c;\n    }\n\n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a / b;\n        return c;\n    }\n\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        assert(b <= a);\n        return a - b;\n    }\n\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        assert(c >= a);\n        return c;\n    }\n}\n\ncontract MinterRole {\n    bool private _initialized;\n    address private _minter;\n\n    constructor () internal {\n        _initialized = false;\n        _minter = msg.sender;\n    }\n\n    modifier onlyMinter() {\n        require(isMinter(msg.sender), \"Mintable: msg.sender does not have the Minter role\");\n        _;\n    }\n\n    function isMinter(address _addr) public view returns (bool) {\n        return (_addr == _minter);\n    }\n\n    function setMinter(address _addr) public onlyMinter {\n        //require(!_initialized);\n        _minter = _addr;\n        _initialized = true;\n    }\n}\n\ncontract ERC20 is MinterRole {\n    using SafeMath for uint256;\n    \n    string public constant name = \"ATEM\";\n    string public constant symbol = \"ATEM\";\n    uint256 public constant decimals = 18;\n    uint256 public totalSupply = 0;\n    bool public frozen = false;\n    \n    mapping (address => uint256) balances;\n    mapping (address => mapping (address => uint256)) internal allowed;\n\n    event Transfer(address indexed from, address indexed to, uint256 value);\n    event Approval(address indexed owner, address indexed spender, uint256 value);\n\n    modifier isUnfrozen(){\n        require(!frozen, \"Transfer frozen.\");\n        _;\n    }\n    \n    constructor() public {\n        // Do nothing\n    }\n\n    function transfer(address _to, uint256 _value) external isUnfrozen returns (bool) {\n        require(_to != address(0), \"Cannot send to zero address\");\n        require(balances[msg.sender] >= _value, \"Insufficient fund\");\n\n        balances[msg.sender] = balances[msg.sender].sub(_value);\n        balances[_to] = balances[_to].add(_value);\n        \n        emit Transfer(msg.sender, _to, _value);\n        return true;\n    }\n    \n    function balanceOf(address _owner) external view returns (uint256 balance) {\n        return balances[_owner];\n    }\n\n    function transferFrom(address _from, address _to, uint256 _value) external isUnfrozen returns (bool) {\n        require(_to != address(0));\n        require(_value <= balances[_from]);\n        require(_value <= allowed[_from][msg.sender]);\n\n        balances[_from] = balances[_from].sub(_value);\n        balances[_to] = balances[_to].add(_value);\n        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);\n        \n        emit Transfer(_from, _to, _value);\n        return true;\n    }\n\n    function approve(address _spender, uint256 _value) public returns (bool) {\n        allowed[msg.sender][_spender] = _value;\n        emit Approval(msg.sender, _spender, _value);\n        return true;\n    }\n\n    function allowance(address _owner, address _spender) public view returns (uint256) {\n        return allowed[_owner][_spender];\n    }\n    \n    function increaseApproval(address _spender, uint _addedValue) public returns (bool) {\n        allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);\n        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);\n        return true;\n    }\n    \n    function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {\n        uint oldValue = allowed[msg.sender][_spender];\n        if (_subtractedValue > oldValue) {\n            allowed[msg.sender][_spender] = 0;\n        } else {\n            allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);\n        }\n        emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);\n        return true;\n    }\n    \n    function mint(address payable _to, uint256 _value) external onlyMinter returns (bool) {\n        balances[_to] = balances[_to].add(_value);\n        totalSupply = totalSupply.add(_value);\n        emit Transfer(address(0), _to, _value);\n    }\n\n    function burn(uint256 _value) external returns (bool) {\n        require(balances[msg.sender] >= _value, \"Insufficient fund\");\n        balances[msg.sender] = balances[msg.sender].sub(_value);\n        totalSupply = totalSupply.sub(_value);\n        emit Transfer(msg.sender, address(0), _value);\n    }\n\n    function freeze() external onlyMinter(){\n        frozen = true;\n    }\n\n    function unfreeze() external onlyMinter(){\n        frozen = false;\n    }\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    }
+  }
+}}

@@ -1,0 +1,32 @@
+<\contract_to_analyze\> 
+contract PaymentChannel {
+    address public sender;
+    address public recipient;
+    uint public amount;
+    bool public isClosed;
+
+    constructor(address _recipient) payable {
+        sender = msg.sender;
+        recipient = _recipient;
+        amount = msg.value;
+        isClosed = false;
+    }
+
+    function closeChannel() public {
+        require(msg.sender == recipient, "Only recipient can close the channel");
+        recipient.transfer(amount);
+        isClosed = true;
+    }
+
+    function updateAmount(uint _newAmount) public {
+        require(!isClosed, "Channel is already closed");
+        amount = _newAmount;
+    }
+
+    function refund() public {
+        require(msg.sender == sender, "Only sender can request a refund");
+        sender.transfer(amount);
+        isClosed = true;
+    }
+}
+<\contract_to_analyze\>

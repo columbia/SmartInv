@@ -1,0 +1,44 @@
+The contract provided for analysis is:
+
+```solidity
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerPaid;
+    bool public sellerPaid;
+
+    function Escrow(address _seller, address _arbiter, uint _price) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller);
+        require(buyerPaid && sellerPaid);
+        if(msg.sender == arbiter) {
+            buyer.transfer(price);
+        } else if(msg.sender == buyer) {
+            seller.transfer(price);
+        } else {
+            revert();
+        }
+    }
+
+    function deposit() public payable {
+        if(msg.sender == buyer && msg.value == price) {
+            buyerPaid = true;
+        } else if(msg.sender == seller && msg.value == price) {
+            sellerPaid = true;
+        }
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+
+1) Reentrancy
+2) Incorrect visibility/ownership

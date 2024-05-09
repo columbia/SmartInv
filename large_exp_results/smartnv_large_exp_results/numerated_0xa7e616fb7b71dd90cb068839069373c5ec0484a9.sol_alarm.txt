@@ -1,0 +1,23 @@
+<\The Contract to Analyze\>
+pragma solidity ^0.8.0;
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        payable(msg.sender).transfer(highestBid);
+        highestBid = 0;
+    }
+}
+
+Potential vulnerabilities in the contract:
+2) Price manipulation
+10) Arithmetic flaw

@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        highestBidder.transfer(highestBid); 
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+        msg.sender.transfer(highestBid);
+        highestBid = 0;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Reentrancy
+2) Integer overflow/underflow
+3) Ether leakage

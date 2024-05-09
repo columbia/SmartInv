@@ -1,0 +1,32 @@
+The contract you are going to analyze is:
+
+contract TokenSale {
+    uint public tokenPrice;
+    address public token;
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor(address _token, uint _tokenPrice) {
+        token = _token;
+        tokenPrice = _tokenPrice;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        uint totalCost = amount * tokenPrice;
+        require(totalCost > 0, "Invalid amount");
+        balances[msg.sender] += amount;
+        // Transfer tokens to the buyer
+        // Transfer funds to the owner
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        // Transfer funds to the owner
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set token price");
+        tokenPrice = _newPrice;
+    }
+}

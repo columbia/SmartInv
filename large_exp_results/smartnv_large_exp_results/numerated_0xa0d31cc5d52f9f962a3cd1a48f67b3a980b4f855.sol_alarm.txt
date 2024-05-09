@@ -1,0 +1,27 @@
+Contract to be analyzed:
+
+contract Marketplace {
+     IERC20 public token;
+     mapping(address => uint) public balances;
+     
+     function buy(uint amount) external {
+         require(token.balanceOf(msg.sender) >= amount, "Insufficient token balance");
+         token.transferFrom(msg.sender, address(this), amount);
+         balances[msg.sender] += amount;
+     }
+     
+     function sell(uint amount) external {
+         require(balances[msg.sender] >= amount, "Insufficient balance to sell");
+         token.transfer(msg.sender, amount);
+         balances[msg.sender] -= amount;
+     }
+}
+
+Output: 
+- Atomicity violation (in buy function): The transferFrom and balances update should ideally be performed atomically to ensure consistency.
+
+- Incorrect visibility/ownership: It is recommended to specify visibility (e.g., internal, external) for functions to ensure they are called correctly.
+
+- Insufficient gas: There is a possibility of running out of gas, especially during the execution of token transfers.
+
+Therefore, the identified potential vulnerabilities in the Marketplace contract are atomicity violation, incorrect visibility/ownership, and insufficient gas.

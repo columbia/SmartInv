@@ -1,0 +1,26 @@
+<\contract\> 
+contract PaymentGateway {
+    address public owner;
+    mapping(uint => bool) public paymentHistory;
+    uint public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function processPayment(uint paymentId) external payable {
+        require(msg.value > 0, "Payment value must be greater than 0");
+        require(!paymentHistory[paymentId], "Payment has already been processed");
+        
+        paymentHistory[paymentId] = true;
+        totalPayments += msg.value;
+    }
+
+    function withdrawFunds() external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        // Withdraw all funds
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\>

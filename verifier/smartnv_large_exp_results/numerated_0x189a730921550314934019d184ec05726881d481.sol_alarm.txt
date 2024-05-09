@@ -1,0 +1,24 @@
+<\contract\>
+contract VotingSystem {
+    address public admin;
+    mapping(address => uint) public votes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(address voter, uint amount) external {
+        require(msg.sender == admin, "Only admin can call this function");
+        votes[voter] += amount;
+    }
+
+    function getVotes(address user) external view returns(uint) {
+        return votes[user];
+    }
+
+    function changeAdmin(address newAdmin) external {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+<\contract\>

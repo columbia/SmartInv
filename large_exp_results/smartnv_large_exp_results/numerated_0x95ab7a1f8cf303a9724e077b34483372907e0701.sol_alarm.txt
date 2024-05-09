@@ -1,0 +1,22 @@
+Contract:
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than zero");
+        votes[msg.sender] += _amount;
+        totalVotes += _amount;
+    }
+
+    function redeem(uint _amount) public {
+        require(votes[msg.sender] >= _amount, "Not enough votes to redeem");
+        votes[msg.sender] -= _amount;
+        totalVotes -= _amount;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Inconsistent state update: The totalVotes variable is updated in the vote and redeem functions separately, which could lead to inconsistencies if one function is called multiple times before the other.
+- Arithmetic flaw: The redeem function does not check for potential underflow when subtracting _amount from votes[msg.sender] and totalVotes.
+- Insufficient gas: If the number of votes becomes very high, the contract may require excessive gas to execute the redeem function, potentially leading to transaction failures.

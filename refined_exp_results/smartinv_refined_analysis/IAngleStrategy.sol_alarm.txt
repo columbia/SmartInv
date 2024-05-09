@@ -1,0 +1,20 @@
+The contract provided for analysis:
+
+```solidity
+contract TokenExchange {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     
+     function swapTokens(uint amount) external {
+         tokenA.transferFrom(msg.sender, address(this), amount);
+         tokenB.transfer(msg.sender, amount);
+     }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The contract does not check if the `transferFrom` and `transfer` functions execute successfully before updating the state variables, which could lead to inconsistent state updates.
+2) Atomicity violation: The contract does not use any form of mutex or locking mechanism to ensure that the swap operation is performed atomically, leaving room for potential race conditions.
+3) Cross bridge inconsistency: There is a risk of inconsistency between the two tokens being swapped, as the contract does not verify if the correct tokens are being exchanged in the `swapTokens` function.
+
+Overall, the contract has potential vulnerabilities related to inconsistent state updates, atomicity violations, and cross bridge inconsistency.

@@ -1,0 +1,24 @@
+<\contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+
+    constructor(IERC20 _token, uint _price) {
+         token = _token;
+         owner = msg.sender;
+         price = _price;
+    }
+
+    function buyTokens(uint amount) external {
+         uint totalCost = amount * price;
+         token.transferFrom(msg.sender, address(this), amount);
+         token.transfer(msg.sender, amount);
+         owner.transfer(totalCost);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract: 
+1) Integer overflow/underflow in the calculation of totalCost.
+2) Incorrect visibility/ownership of the owner variable.

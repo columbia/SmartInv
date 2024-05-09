@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function execute() updates the votedAmount of the proposal without enforcing any checks on the total amount voted. This could lead to an inconsistent state if the total amount is not properly validated.
+
+2) Atomicity violation: The function execute() transfers tokens from the proposal.addr to the contract address but does not ensure that the transfer is atomic. This could lead to funds being stuck or lost if the execution is interrupted midway.
+
+3) ID uniqueness violation: The contract does not enforce uniqueness of IDs for proposals, which could lead to conflicts or ambiguities in tracking and managing proposals.

@@ -1,0 +1,46 @@
+The contract to analyze for potential vulnerabilities:
+
+contract VotingSystem {
+     struct Voter {
+          bool voted; 
+          address delegate; 
+          uint vote; 
+          }
+     mapping(address => Voter) public voters;
+     address public leader;
+     uint public winningProposal;
+     uint public winningVoteCount;
+
+     function vote(uint proposal) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "Already voted.");
+          sender.voted = true;
+          sender.vote = proposal;
+          if (proposal > winningVoteCount) {
+               winningVoteCount = proposal;
+               winningProposal = proposal;
+               leader = msg.sender;
+          }
+     }
+
+     function delegate(address to) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "Already voted.");
+          require(to != msg.sender, "Self-delegation is not allowed.");
+          while (voters[to].delegate != address(0)) {
+              to = voters[to].delegate;
+          }
+          sender.voted = true;
+          sender.delegate = to;
+          Voter storage delegateTo = voters[to];
+          if (delegateTo.voted) {
+              winningVoteCount += 1;
+          }
+     }
+}
+
+Output: 
+1) Business logic flaw: The winning proposal is determined by the highest vote count, regardless of whether it actually represents the winning choice.
+2) Inconsistent state update: The winning proposal and winning vote count are updated together without proper checking or validation.
+3) ID uniqueness violation: There is no mechanism in place to ensure unique identification of voters, which may lead to issues with tracking and validation.
+4) Incorrect visibility/ownership: The visibility of certain variables like leader may not be appropriate for maintaining the integrity of the contract.

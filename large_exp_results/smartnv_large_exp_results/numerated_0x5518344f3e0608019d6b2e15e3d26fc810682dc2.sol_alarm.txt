@@ -1,0 +1,37 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public isPaymentReleased;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        isPaymentReleased = false;
+    }
+    
+    function releasePayment() public {
+        require(msg.sender == arbiter, "Only arbiter can release payment");
+        require(!isPaymentReleased, "Payment has already been released");
+        
+        (bool success, ) = payable(seller).call{value: escrowAmount}("");
+        require(success, "Payment release failed");
+        
+        isPaymentReleased = true;
+    }
+    
+    function refundPayment() public {
+        require(msg.sender == arbiter, "Only arbiter can refund payment");
+        require(!isPaymentReleased, "Payment has already been released");
+        
+        (bool success, ) = payable(buyer).call{value: escrowAmount}("");
+        require(success, "Payment refund failed");
+        
+        isPaymentReleased = true;
+    }
+}
+<\contract\>

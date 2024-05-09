@@ -1,0 +1,20 @@
+contract TokenSale {
+         address public owner;
+         IERC20 public token;
+
+         constructor(IERC20 _token) {
+             owner = msg.sender;
+             token = _token;
+         }
+
+         function buyTokens(uint amount) public {
+             require(amount > 0, "Invalid amount");
+             uint price = amount * 2;
+             token.transferFrom(msg.sender, owner, price);
+         }
+
+         function withdrawTokens(uint amount) public {
+             require(msg.sender == owner, "Unauthorized");
+             token.transfer(owner, amount);
+         }
+     }

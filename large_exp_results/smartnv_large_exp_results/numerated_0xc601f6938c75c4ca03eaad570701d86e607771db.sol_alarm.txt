@@ -1,0 +1,33 @@
+Contract:
+```solidity
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    address public beneficiary;
+    uint public deadline;
+    uint public tokenPrice;
+    uint public tokensSold;
+    
+    constructor(IERC20 _token, address _beneficiary, uint _deadline, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        beneficiary = _beneficiary;
+        deadline = _deadline;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) public {
+        require(block.timestamp < deadline, "Deadline passed");
+        require(_amount * tokenPrice <= token.balanceOf(msg.sender), "Insufficient balance");
+        
+        uint cost = _amount * tokenPrice;
+        token.transferFrom(msg.sender, beneficiary, _amount);
+        tokensSold += _amount;
+        payable(owner).transfer(cost);
+    }
+}
+```
+
+Output:
+- inconsistent state update
+- incorrect visibility/ownership

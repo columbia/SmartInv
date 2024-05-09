@@ -1,0 +1,36 @@
+<\contract_3\> 
+contract Crowdsale {
+         address public owner;
+         IERC20 public token;
+         uint public rate;
+         uint public totalSoldTokens;
+         mapping(address => uint) public balances;
+
+         constructor(address _token, uint _rate) public {
+             owner = msg.sender;
+             token = IERC20(_token);
+             rate = _rate;
+         }
+
+         function buyTokens(uint _amount) public {
+             require(_amount > 0, "Amount cannot be zero");
+             uint totalPrice = _amount * rate;
+             require(token.balanceOf(address(this)) >= totalPrice, "Not enough tokens in the contract");
+             token.transfer(msg.sender, _amount);
+             balances[msg.sender] += _amount;
+             totalSoldTokens += _amount;
+         }
+
+         function withdrawFunds() public {
+             require(msg.sender == owner, "Only the owner can withdraw funds");
+             token.transfer(owner, token.balanceOf(address(this)));
+         }
+
+         function getBalance() public view returns (uint) {
+             return balances[msg.sender];
+         }
+} 
+
+Output:
+- Integer overflow in the buyTokens function.
+- Incorrect visibility/ownership of the withdrawFunds function.

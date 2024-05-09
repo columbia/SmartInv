@@ -1,0 +1,24 @@
+Contract:  
+contract Marketplace {
+    IERC20 public token;
+    uint public price;
+    address public owner;
+    
+    constructor(address _token, uint _price) {
+        token = IERC20(_token);
+        price = _price;
+        owner = msg.sender;
+    }
+
+    function buy() public {
+        require(token.balanceOf(msg.sender) >= price, "Insufficient funds");
+        token.transferFrom(msg.sender, owner, price);
+    }
+
+    function setPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = _newPrice;
+    }
+}
+Output: 
+healthy

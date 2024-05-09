@@ -1,0 +1,18 @@
+Contract to be analyzed:
+contract Escrow {
+      address public payer;
+      address public receiver;
+      uint public amount;
+
+      function deposit(address _receiver) public payable {
+            require(msg.sender == payer, "Only payer can deposit funds");
+            require(msg.value == amount, "Incorrect amount deposited");
+            receiver = _receiver;
+      }
+
+      function withdraw() public {
+            require(msg.sender == receiver, "Only receiver can withdraw funds");
+            uint balance = address(this).balance;
+            payable(receiver).transfer(balance);
+      }
+}

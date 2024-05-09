@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility/ownership: The contract does not specify any visibility or ownership control for functions like `startExecute`, `execute`, `endExecute`, `votedProposal`, `getStartingBalance`, and `proposal`. This could lead to unauthorized access or manipulation of contract data and functions.
+
+2) Insufficient gas: The `endExecute` function checks if the execution failed by comparing the balance of the contract with twice the total supply of `votingToken`. This operation could consume a significant amount of gas and potentially cause the transaction to run out of gas before completing.
+
+3) Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without checking if the transfer of tokens was successful. This could lead to an inconsistent state if the token transfer fails after updating the voted amount.
+
+4) Ether leakage: The contract does not handle Ether transactions explicitly, which could result in unintended Ether transfers or Ether getting stuck in the contract.
+
+5) Integer overflow/underflow: Some calculations like `debt[user] * getPrice() * collateral[user] * 80 / 100` in the `liquidate` function could potentially result in integer overflow if the values are large enough.
+
+6) Ownership vulnerability: The ownership concept seems to be missing, and the `owner` variable is not utilized in any part of the contract. It could potentially lead to ownership-related vulnerabilities.

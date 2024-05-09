@@ -1,0 +1,48 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+     mapping(address => bool) public owners;
+     uint public transactionCount;
+     mapping(uint => Transaction) public transactions;
+     
+     struct Transaction {
+          address destination;
+          uint value;
+          bytes data;
+          bool executed;
+          mapping(address => bool) approvals;
+          uint approvalsCount;
+     }
+     
+     function submitTransaction(address destination, uint value, bytes memory data) public {
+          uint transactionId = transactionCount;
+          transactions[transactionId] = Transaction({
+               destination: destination,
+               value: value,
+               data: data,
+               executed: false,
+               approvalsCount: 0
+          });
+          transactionCount++;
+     }
+     
+     function approveTransaction(uint transactionId) public {
+          Transaction storage transaction = transactions[transactionId];
+          require(owners[msg.sender] == true, "not an owner");
+          require(!transaction.executed, "transaction already executed");
+          require(!transaction.approvals[msg.sender], "already approved");
+          
+          transaction.approvals[msg.sender] = true;
+          transaction.approvalsCount++;
+     }
+     
+     function executeTransaction(uint transactionId) public {
+          Transaction storage transaction = transactions[transactionId];
+          require(!transaction.executed, "transaction already executed");
+          require(transaction.approvalsCount >= 2, "not enough approvals");
+
+          transaction.executed = true;
+          (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+          require(success, "transaction failed");
+     }
+}
+<\contract_to_analyze\>

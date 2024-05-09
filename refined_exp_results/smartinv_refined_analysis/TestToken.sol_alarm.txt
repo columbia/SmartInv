@@ -1,0 +1,19 @@
+The contract provided for analysis:
+
+```solidity
+contract CrossBridge {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swapTokens(uint amount) external {
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The contract performs two state updates in the `swapTokens` function, which can potentially lead to inconsistent state if one transfer succeeds and the other fails.
+2) Atomicity violation: The `swapTokens` function lacks atomicity in the transfer operations, which could result in an incomplete swap if one transfer fails and the other succeeds.
+3) ID uniqueness violation: There are no checks for duplicate transfers, leading to potential issues with ID uniqueness in the context of token transfers.
+4) Cross bridge inconsistency: The contract facilitates token swaps between tokenA and tokenB without proper validation, raising concerns about potential inconsistencies or errors in the bridge mechanism.

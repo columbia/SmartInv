@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+     
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         totalVotes += 1;
+         hasVoted[msg.sender] = true;
+     }
+     
+     function modifyVote() public {
+         require(hasVoted[msg.sender], "Not voted yet");
+         totalVotes -= 1;
+         hasVoted[msg.sender] = false;
+     }
+} 
+
+Output:
+-ID uniqueness violation: The `hasVoted` mapping uses the `msg.sender` address as the key, which may not guarantee uniqueness in certain scenarios. This could lead to unexpected behavior if multiple users have the same address.
+-Arithmetic flaw: The `totalVotes` count is directly manipulated with addition and subtraction operations, which could lead to integer overflows or underflows if the count becomes very large or negative.
+-Healthy

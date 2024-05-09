@@ -1,0 +1,50 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+     address[] internal owners;
+     mapping(address => bool) internal isOwner;
+     uint internal numConfirmationsRequired;
+     Transaction[] public transactions;
+     
+     struct Transaction {
+         address to;
+         uint value;
+         bytes data;
+         bool executed;
+         mapping(address => bool) isConfirmed;
+         uint numConfirmations;
+     }
+
+     function sendMultiSigTransaction(address _to, uint _value, bytes calldata _data) external onlyOwner {
+         transactions.push(Transaction({
+             to: _to,
+             value: _value,
+             data: _data,
+             executed: false,
+             numConfirmations: 0
+         }));
+     }
+
+     function confirmTransaction(uint _txIndex) external {
+         Transaction storage transaction = transactions[_txIndex];
+         require(isOwner[msg.sender], "Not an owner");
+         require(!transaction.isConfirmed[msg.sender], "Transaction already confirmed");
+         transaction.isConfirmed[msg.sender] = true;
+         transaction.numConfirmations += 1;
+     }
+     
+     function executeTransaction(uint _txIndex) external {
+         Transaction storage transaction = transactions[_txIndex];
+         require(!transaction.executed, "Transaction already executed");
+         require(transaction.numConfirmations >= numConfirmationsRequired, "Not enough confirmations");
+         _executeTransaction(_txIndex);
+     }
+
+     function _executeTransaction(uint _txIndex) internal {
+         Transaction storage transaction = transactions[_txIndex];
+         (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+         require(success, "Transaction execution failed");
+         transaction.executed = true;
+     }
+} 
+
+<\contract_to_analyze\> 

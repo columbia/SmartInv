@@ -1,0 +1,25 @@
+<\contract\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public amount;
+    mapping(address => uint) public balances;
+
+    constructor(address _token) {
+        token = _token;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        amount = _amount;
+        balances[msg.sender] += _amount;
+        ERC20(token).transferFrom(msg.sender, address(this), _amount);
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        ERC20(token).transfer(owner, amount);
+    }
+}
+<\contract\>

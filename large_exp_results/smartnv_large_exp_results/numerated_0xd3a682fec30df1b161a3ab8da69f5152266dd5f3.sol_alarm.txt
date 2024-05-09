@@ -1,0 +1,25 @@
+<\contract_XYZ\>
+contract XYZ {
+    mapping(address => uint) balances;
+    uint totalSupply;
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+
+    function mint(uint amount) public {
+        require(amount > 0, "Amount must be positive");
+        totalSupply += amount;
+        balances[msg.sender] += amount;
+    }
+
+    function burn(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        require(totalSupply >= amount, "Total supply cannot be negative");
+        totalSupply -= amount;
+        balances[msg.sender] -= amount;
+    }
+}
+<\contract_XYZ\>

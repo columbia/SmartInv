@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    
+    mapping(address => uint) public balances;
+    
+    function swapTokens(uint amountA, uint amountB) public {
+        require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance of tokenA");
+        require(tokenB.balanceOf(msg.sender) >= amountB, "Insufficient balance of tokenB");
+        
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+        
+        balances[msg.sender] += amountA;
+        balances[msg.sender] += amountB;
+    }
+}
+
+The potential vulnerabilities in the contract TokenSwap are:
+
+1) Inconsistent state update: The line `balances[msg.sender] += amountB;` is updating the balance incorrectly by adding `amountB` to the balance twice instead of updating it with `amountA`.
+
+2) Incorrect visibility/ownership: The public visibility of the `balances` mapping can expose sensitive information about users' token balances to anyone. It might be preferable to make this mapping private or internal to avoid potential privacy concerns.
+
+Therefore, the identified potential vulnerabilities in the TokenSwap contract are inconsistent state update and incorrect visibility/ownership.

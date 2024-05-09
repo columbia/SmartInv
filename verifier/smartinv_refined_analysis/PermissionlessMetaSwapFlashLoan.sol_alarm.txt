@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update:
+   - The `proposal.votedAmount` is updated in the `execute` function, but there is no check to ensure that the `votedProposal` event is emitted before updating the `proposal.votedAmount`, leading to a potential inconsistent state update.
+
+2) Atomicity violation:
+   - The `execute` function involves multiple state changes, like transferring tokens and updating the `proposal.votedAmount`, without utilizing the necessary mechanisms to ensure atomicity, potentially leading to atomicity violations.
+
+3) Cross bridge inconsistency:
+   - The `proposal` struct is not provided as a parameter in the `execute` and `endExecute` functions, making it possible for external calls to modify the state in unintended ways, potentially causing cross bridge inconsistencies. 
+
+4) ID uniqueness violation:
+   - The `proposal` struct does not have a unique identifier or compound key to differentiate between different proposals, which could lead to ID uniqueness violations and conflicts in the system.
+
+It should be noted that the contract does not contain price manipulation, privilege escalation, business logic flaw, or other vulnerabilities listed.

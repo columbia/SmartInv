@@ -1,0 +1,27 @@
+<\contract\> 
+contract SubscriptionService {
+     address public owner;
+     mapping(address => bool) public subscribers;
+     
+     constructor() {
+         owner = msg.sender;
+     }
+     
+     function subscribe() public {
+         require(msg.sender != owner, "Owner cannot subscribe");
+         subscribers[msg.sender] = true;
+     }
+     
+     function unsubscribe() public {
+         subscribers[msg.sender] = false;
+     }
+     
+     function isSubscribed(address _user) public view returns (bool) {
+         return subscribers[_user];
+     }
+}
+<\contract\> 
+
+
+Output:
+- potential vulnerability: incorrect visibility/ownership

@@ -1,0 +1,23 @@
+<\contract\> 
+contract Marketplace {
+   struct Product {
+       address owner;
+       uint price;
+       string name;
+   }
+   
+   mapping(uint => Product) public products;
+   uint public productCounter;
+
+   function addProduct(uint _price, string memory _name) public {
+       products[productCounter] = Product(msg.sender, _price, _name);
+       productCounter++;
+   }
+
+   function buyProduct(uint _productId) public payable {
+       require(msg.value == products[_productId].price, "Incorrect payment amount");
+       products[_productId].owner.transfer(msg.value);
+       delete products[_productId];
+   }
+}
+<\contract\>

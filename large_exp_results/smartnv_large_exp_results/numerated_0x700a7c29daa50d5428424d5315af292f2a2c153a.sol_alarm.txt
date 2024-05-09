@@ -1,0 +1,45 @@
+The contract provided for analysis: 
+
+contract Lottery {
+    IERC20 public token;
+    address public winner;
+    uint public totalParticipants;
+    uint public totalPrize;
+
+    mapping(address => bool) public participants;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+    }
+
+    function joinLottery() external {
+        require(participants[msg.sender] == false, "You have already joined the lottery");
+        participants[msg.sender] = true;
+        totalParticipants++;
+    }
+
+    function pickWinner() external {
+        require(totalParticipants > 0, "No participants in the lottery");
+        require(winner == address(0), "Winner already picked");
+        uint randomIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalParticipants;
+        address[] memory participantAddresses = new address[](totalParticipants);
+        uint currentIndex = 0;
+        for (uint i = 0; i < totalParticipants; i++) {
+            if (participants[participantAddresses[i]]) {
+                if (currentIndex == randomIndex) {
+                    winner = participantAddresses[i];
+                    break;
+                }
+                currentIndex++;
+            }
+        }
+        token.transfer(winner, totalPrize);
+    }
+
+    function getTotalParticipants() external view returns (uint) {
+        return totalParticipants;
+    }
+} 
+
+Output: 
+healthy

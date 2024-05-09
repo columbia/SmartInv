@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract Governor {
+    address public governor;
+    uint public totalVotes;
+
+    mapping(address => uint) public votes;
+    mapping(address => bool) public hasVoted;
+
+    function vote(address proposal, uint amount) public {
+        require(amount > 0, "Invalid amount");
+        require(amount <= votes[msg.sender], "Not enough votes");
+        
+        votes[msg.sender] -= amount;
+        totalVotes -= amount;
+        
+        // Logic for voting on the proposal
+        // ...
+        
+        hasVoted[msg.sender] = true;
+    }
+    
+    function changeGovernor(address newGovernor) public {
+        require(msg.sender == governor, "Not authorized");
+        governor = newGovernor;
+    }
+}
+   
+Output:
+- Privilege Escalation
+- Inconsistent State Update

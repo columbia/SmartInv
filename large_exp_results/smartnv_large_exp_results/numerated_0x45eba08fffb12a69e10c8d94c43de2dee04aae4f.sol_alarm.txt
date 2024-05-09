@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentSplitter {
+         address[] internal payees;
+         uint256[] internal shares;
+         mapping(address => uint256) internal totalReleased;
+         mapping(address => uint256) internal totalShares;
+         address[] tokens;
+         mapping(address => uint256) tokenBalances;
+
+         function release(address token) public {
+              uint256 totalReceived = IERC20(token).balanceOf(address(this));
+              uint256 paymentTotal = tokenBalances[token];
+              require(paymentTotal > 0, "payment is 0");
+              for (uint256 i = 0; i < payees.length; i++) {
+                   address payee = payees[i];
+                   uint256 payment = paymentTotal * shares[i] / totalShares[payee];
+                   require(totalReleased[payee] + payment >= totalReleased[payee], "integer overflow");
+                   require(totalReleased[payee] + payment <= totalShares[payee], "arithmetic flaw");
+                   totalReleased[payee] += payment;
+                   IERC20(token).transfer(payee, payment);
+               }
+               tokenBalances[token] = 0;
+         }
+}
+<\contract\>

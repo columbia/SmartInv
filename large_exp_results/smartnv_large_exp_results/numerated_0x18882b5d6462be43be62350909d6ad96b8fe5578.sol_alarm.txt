@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+contract SupplyChain {
+     struct Product {
+         uint productId;
+         string name;
+         uint price;
+         address owner;
+     }
+     mapping (uint => Product) public products;
+     uint public productCounter;
+     
+     function createProduct(string memory _name, uint _price) public {
+          productCounter++;
+          products[productCounter] = Product(productCounter, _name, _price, msg.sender);
+     }
+     
+     function purchaseProduct(uint _productId) public payable {
+          Product storage product = products[_productId];
+          require(msg.value == product.price, "Incorrect amount sent");
+          address payable productOwner = payable(product.owner);
+          productOwner.transfer(msg.value);
+          product.owner = msg.sender;
+     }
+}
+
+Output:
+- Incorrect state update: The ```purchaseProduct``` function allows the current caller to become a new owner of the product without checking if they should have the privilege. This could potentially lead to unauthorized ownership change of a product.
+- Inconsistent state update: The ```purchaseProduct``` function updates the owner address without checking if the transaction succeeded or failed, which may lead to an inconsistent state of the contract.
+- Insufficient gas: The contract does not specify gas requirements for the functions, which may lead to out-of-gas exceptions during execution. It is advisable to define and manage gas requirements properly in complex or lengthy operations.

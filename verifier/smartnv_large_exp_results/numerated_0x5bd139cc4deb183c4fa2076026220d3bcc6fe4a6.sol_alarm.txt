@@ -1,0 +1,24 @@
+The contract provided is:
+
+contract Escrow {
+    uint public balance;
+    address public depositor;
+    
+    function deposit(address _depositor) public payable {
+        balance += msg.value;
+        depositor = _depositor;
+    }
+    
+    function withdraw(address payable _to, uint _amount) public {
+        require(msg.sender == depositor, "Only depositor can withdraw");
+        require(_amount <= balance, "Insufficient balance");
+        
+        balance -= _amount;
+        _to.transfer(_amount);
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+
+1) Atomicity violation
+2) Incorrect visibility/ownership

@@ -1,0 +1,34 @@
+Contract to be analyzed: 
+
+contract TokenSale {
+    uint public tokenPrice;
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice, uint _totalSupply) {
+        tokenPrice = _tokenPrice;
+        totalSupply = _totalSupply;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value >= amount * tokenPrice, "Insufficient funds provided");
+
+        uint tokensToTransfer = amount;
+        balances[msg.sender] += tokensToTransfer;
+        totalSupply -= tokensToTransfer;
+
+        payable(owner()).transfer(msg.value);
+    }
+
+    function checkBalance(address account) public view returns (uint) {
+        return balances[account];
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        tokenPrice = _newPrice;
+    }
+}
+
+Output: 
+- price manipulation
+- inconsistent state update

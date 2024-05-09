@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function `endExecute()` updates the `lockedFunds` based on the balance of the contract, which can lead to inconsistent state if the balance changes between the check and the update.
+2) Incorrect visibility/ownership: The `startExecute()` and `endExecute()` functions are not restricted by any access control mechanism, potentially allowing unauthorized users to execute these functions. 
+3) Insufficient gas: The `endExecute()` function checks the balance of the contract multiplied by 2 against the total supply, which may require excessive gas if the contract balance or total supply is large. This could lead to out-of-gas errors.
+4) ID uniqueness violation: The contract does not enforce any uniqueness constraints on the proposals' identifiers, potentially allowing for duplicate or conflicting proposals to be created.

@@ -1,0 +1,38 @@
+<\contract\> 
+contract TokenSale {
+     IERC20 public token;
+     address payable public owner;
+     address payable public beneficiary;
+     uint public tokensForSale;
+     uint public tokenPrice;
+     uint public tokensSold;
+     bool public saleOpen;
+
+     constructor (IERC20 _token, address payable _beneficiary, uint _tokensForSale, uint _tokenPrice) public {
+         token = _token;
+         owner = msg.sender;
+         beneficiary = _beneficiary;
+         tokensForSale = _tokensForSale;
+         tokenPrice = _tokenPrice;
+         tokensSold = 0;
+         saleOpen = true;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(saleOpen, "Sale is not open");
+         require(_amount > 0, "Amount must be greater than 0");
+         require(msg.value == _amount * tokenPrice, "Incorrect token price");
+
+         token.transfer(msg.sender, _amount);
+         tokensSold += _amount;
+     }
+
+     function endSale() public {
+         require(msg.sender == owner, "Only owner can end sale");
+         saleOpen = false;
+         uint remainingTokens = tokensForSale - tokensSold;
+         token.transfer(beneficiary, remainingTokens);
+         beneficiary.transfer(address(this).balance);
+     }
+}
+<\contract\>

@@ -1,0 +1,26 @@
+The contract to be analyzed for potential vulnerabilities is as follows:
+
+contract Auction {
+   address public highestBidder;
+   uint public highestBid;
+
+   function bid(uint amount) public {
+       require(amount > highestBid, "Bid must be higher than current highest bid");
+       require(amount > 0, "Bid amount must be greater than 0");
+       if (highestBidder != address(0)) {
+           require(amount <= msg.sender.balance, "Insufficient balance to place bid");
+           highestBidder.transfer(highestBid);
+       }
+       highestBidder = msg.sender;
+       highestBid = amount;
+   }
+
+   function withdraw() public {
+       require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+       msg.sender.transfer(highestBid);
+   }
+}
+
+Output:
+- atomicity violation
+- inconsistent state update

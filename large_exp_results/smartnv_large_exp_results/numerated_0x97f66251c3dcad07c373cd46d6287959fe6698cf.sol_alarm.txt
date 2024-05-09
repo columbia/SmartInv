@@ -1,0 +1,27 @@
+Contract:
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+     uint public maxTokens;
+
+     constructor(IERC20 _token, uint _price, uint _maxTokens) public {
+         token = _token;
+         owner = msg.sender;
+         price = _price;
+         maxTokens = _maxTokens;
+     }
+
+     function buyTokens(uint amount) public {
+         require(amount > 0, "Amount must be greater than 0");
+         require(amount <= maxTokens, "Amount exceeds maximum tokens available");
+         uint cost = amount * price;
+         token.transferFrom(msg.sender, address(this), cost);
+         token.transfer(msg.sender, amount);
+     }
+}
+Potential vulnerabilities:
+1) integer overflow/underflow in the calculation of `cost` in the `buyTokens` function.
+2) possible price manipulation in the `buyTokens` function if the `price` value can be changed by the owner.
+3) insufficient gas when transferring tokens in the `buyTokens` function.
+4) incorrect visibility/ownership of the `owner` variable, if it should be private.

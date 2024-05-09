@@ -1,0 +1,31 @@
+Contract to be analyzed:
+
+contract Payment {
+         address public owner;
+         uint256 public totalAmount;
+         mapping(address => uint256) public balances;
+
+         constructor() {
+             owner = msg.sender;
+             totalAmount = 0;
+         }
+
+         function deposit() external payable {
+             balances[msg.sender] += msg.value;
+             totalAmount += msg.value;
+         }
+
+         function withdraw(uint256 amount) external {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             totalAmount -= amount;
+             payable(msg.sender).transfer(amount);
+         }
+
+         function getBalance(address account) external view returns(uint256) {
+             return balances[account];
+         }
+     }
+
+Output: 
+No vulnerabilities were found in the provided contract. This contract appears to be healthy.

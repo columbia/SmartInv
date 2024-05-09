@@ -1,0 +1,29 @@
+The contract provided below for analysis:
+
+```solidity
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+
+    function bid() external payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+
+        if (highestBid > 0) {
+            highestBidder.transfer(highestBid);
+        }
+
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() external {
+        require(msg.sender != highestBidder, "Cannot withdraw while being the highest bidder");
+
+        msg.sender.transfer(highestBid);
+        highestBid = 0;
+    }
+}
+```
+
+Output: 
+8) reentrancy

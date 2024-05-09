@@ -1,0 +1,50 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+
+    enum State { Created, Locked, Inactive }
+    State public state;
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Not authorized");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Not authorized");
+        _;
+    }
+
+    modifier inState(State _state) {
+        require(state == _state, "Invalid state");
+        _;
+    }
+
+    event Aborted();
+    event PurchaseConfirmed();
+    event ItemReceived();
+
+    constructor() {
+        arbiter = msg.sender;
+    }
+
+    function abort() public onlyArbiter inState(State.Created) {
+        emit Aborted();
+        state = State.Inactive;
+    }
+
+    function confirmPurchase() public payable inState(State.Created) {
+        require(msg.value == 2 ether, "Value must be 2 ether");
+        emit PurchaseConfirmed();
+        state = State.Locked;
+    }
+
+    function confirmReceived() public onlySeller inState(State.Locked) {
+        emit ItemReceived();
+        seller.transfer(address(this).balance);
+        state = State.Inactive;
+    }
+}
+<\contract_to_analyze\>

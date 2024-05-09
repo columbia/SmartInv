@@ -1,0 +1,19 @@
+Contract to Analyze:
+
+contract CrossBridge {
+    address public tokenBridge;
+    mapping(uint256 => bool) processedTransactions;
+
+    function transferToken(uint256 transactionId) external {
+        require(processedTransactions[transactionId] == false, "Transaction already processed");
+        require(msg.sender == tokenBridge, "Only tokenBridge can call this function");
+        
+        // Process transfer logic
+        
+        processedTransactions[transactionId] = true;
+    }
+}
+
+Potential Vulnerabilities:
+1) Privilege Escalation: The `transferToken` function only checks if the caller is the `tokenBridge`, but it does not have any other access control mechanisms in place. This could potentially lead to privilege escalation if unauthorized users gain access to the `tokenBridge` account.
+2) Inconsistent State Update: The `processedTransactions` mapping is updated to mark a transaction as processed without any further verification or validation logic, which could lead to inconsistent state updates or vulnerability to reentrancy attacks.

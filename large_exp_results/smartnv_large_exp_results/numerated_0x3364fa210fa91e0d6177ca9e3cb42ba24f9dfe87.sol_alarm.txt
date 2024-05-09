@@ -1,0 +1,21 @@
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        return totalVotes;
+    }
+} 
+
+The potential vulnerabilities in the contract are:
+1) ID uniqueness violation: The contract does not enforce uniqueness of voter IDs, which may lead to multiple votes from the same address.
+2) Incorrect visibility/ownership: The state variables totalVotes and hasVoted are public, which may expose sensitive information and allow unauthorized access or modification.
+3) Inconsistent state update: There is a potential for inconsistent state updates if multiple votes are made concurrently, as there is no locking mechanism in place.
+4) Insufficient gas: If the totalVotes exceeds the gas limits, the contract may fail to execute properly.
+5) Atomicity violation: The operations within the vote function are not atomic, which may lead to unexpected behavior in case of failures during execution.

@@ -1,0 +1,21 @@
+<\contract\> 
+contract Escrow {
+      mapping(address => uint) public deposits;
+
+      function deposit() public payable {
+          deposits[msg.sender] += msg.value;
+      }
+
+      function withdraw(uint amount) public {
+          require(deposits[msg.sender] >= amount, "Insufficient balance");
+          deposits[msg.sender] -= amount;
+          msg.sender.transfer(amount);
+      }
+  }
+<\contract\> 
+
+The potential vulnerabilities in the Escrow contract are:
+
+1) Inconsistent state update: The deposits mapping is updated in the deposit function and withdraw function without properly checking for potential inconsistencies or race conditions.
+2) Integer underflow: The subtraction in deposits[msg.sender] -= amount; could lead to an integer underflow if the amount is larger than the deposited value.
+3) Insufficient gas: If the withdraw function sends funds to a contract that does not implement a fallback function or runs out of gas, the transaction could fail, leaving the user's funds locked in the contract.

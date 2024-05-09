@@ -1,0 +1,20 @@
+<\contract\> 
+contract Vault {
+         mapping (address => uint) public balances;
+
+         function deposit() public payable {
+             balances[msg.sender] += msg.value;
+         }
+
+         function withdraw(uint _amount) public {
+             require(balances[msg.sender] >= _amount,"Insufficient balance");
+             msg.sender.transfer(_amount);
+             balances[msg.sender] -= _amount;
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Reentrancy
+
+Please note that the contract example provided is vulnerable to a reentrancy attack due to the possibility of the "withdraw" function being called by an external contract that can recursively call back into the contract, potentially draining funds.

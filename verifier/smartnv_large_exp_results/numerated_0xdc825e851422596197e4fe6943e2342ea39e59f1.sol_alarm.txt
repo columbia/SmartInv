@@ -1,0 +1,22 @@
+Contract to analyze:
+```solidity
+contract VotingSystem {
+     mapping (address => bool) public hasVoted;
+     mapping (address => uint) public voteCount;
+     uint public totalVotes;
+
+     function vote(uint _proposalId) public {
+          require(!hasVoted[msg.sender], "Already voted");
+          voteCount[msg.sender] = _proposalId;
+          hasVoted[msg.sender] = true;
+          totalVotes++;
+     }
+
+     function getTotalVotes() public view returns (uint) {
+          return totalVotes;
+     }
+}
+```
+
+Output:
+- Correctness: healthy

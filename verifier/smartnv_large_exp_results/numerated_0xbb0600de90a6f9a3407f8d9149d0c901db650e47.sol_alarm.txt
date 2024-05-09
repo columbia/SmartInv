@@ -1,0 +1,31 @@
+<\contract\>
+contract TokenSwap {
+    IERC20 public token1;
+    IERC20 public token2;
+    address public owner;
+    uint public exchangeRate;
+
+    constructor(address _token1, address _token2, uint _rate) public {
+        token1 = IERC20(_token1);
+        token2 = IERC20(_token2);
+        owner = msg.sender;
+        exchangeRate = _rate;
+    }
+
+    function swapTokens(uint amount) public {
+        require(token1.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        require(token2.balanceOf(address(this)) >= amount * exchangeRate, "Not enough tokens available for swap");
+
+        token1.transferFrom(msg.sender, address(this), amount);
+        token2.transfer(msg.sender, amount * exchangeRate);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The contract allows token swapping based on an exchange rate set during initialization. If the exchange rate is manipulated after deployment, it can lead to inconsistent state updates.
+
+2) Incorrect visibility/ownership: The owner of the contract is set during initialization, but there are no access control mechanisms in place to restrict certain functions to only be called by the owner. This lack of proper visibility and ownership control can lead to unauthorized access and manipulation of the contract's functionality.
+
+3) Insufficient gas: Depending on the complexity of the token swap process and the gas limit set by users, there is a possibility of running out of gas during the execution of the swapTokens function, leading to incomplete token swaps or failed transactions.

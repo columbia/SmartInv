@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+
+contract TokenSale {
+    uint public totalTokens;
+    uint public tokensSold;
+    address public tokenAddress;
+
+    function buyTokens(uint amount) external {
+        require(amount > 0, "Invalid amount");
+        
+        require(tokensSold + amount <= totalTokens, "Not enough tokens left");
+        
+        IERC20 token = IERC20(tokenAddress);
+        token.transfer(msg.sender, amount);
+        
+        tokensSold += amount;
+    }
+}

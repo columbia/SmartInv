@@ -1,0 +1,32 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+    }
+
+    function deposit() external payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        require(msg.value == amount, "Incorrect deposit amount");
+
+        // Deposit funds into escrow
+    }
+
+    function release() external {
+        require(msg.sender == payer, "Only payer can release funds");
+
+        // Release funds to payee
+    }
+
+    function cancel() external {
+        require(msg.sender == payer, "Only payer can cancel");
+
+        // Return funds to payer
+    }
+}
+<\contract\>

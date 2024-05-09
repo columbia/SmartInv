@@ -1,0 +1,34 @@
+<\contract\> 
+contract PaymentSplitter {
+        address[] public payees;
+        uint256[] public shares;
+        uint256 public totalShares;
+        mapping(address => uint256) public released;
+        mapping(address => uint256) public vesting;
+
+        function addPayee(address _payee, uint256 _shares, uint256 _vesting) public {
+            require(_payee != address(0), "Invalid address");
+            require(_shares > 0, "Shares must be greater than 0");
+            require(_vesting >= block.timestamp, "Vesting time must be in the future");
+            
+            payees.push(_payee);
+            shares.push(_shares);
+            totalShares += _shares;
+            
+            vesting[_payee] = _vesting;
+        }
+
+        function release(address _payee) public {
+            require(vesting[_payee] <= block.timestamp, "Vesting period has not ended");
+            
+            uint256 payment = shares[_payee] * (block.timestamp - released[_payee]) / (vesting[_payee] - released[_payee]);
+            released[_payee] = block.timestamp;
+            
+            _payee.transfer(payment);
+        }
+}
+<\contract\> 
+
+The potential vulnerabilities identified in the contract are as follows:
+1) Inconsistent state update: The update of the released mapping in the release function may not accurately reflect the payment calculation, leading to incorrect payouts.
+2) Arithmetic flaw: The calculation of the payment in the release function may result in integer overflow/underflow if the values are not properly constrained.

@@ -1,0 +1,33 @@
+The following contract may contain the potential vulnerabilities:
+
+<\contract\>
+contract TokenSale {
+    IERC20 public token;
+    uint public tokenPrice;
+    address public owner;
+    uint public totalTokensSold;
+    
+    constructor(address _token, uint _tokenPrice) public {
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+        owner = msg.sender;
+    }
+    
+    function buyTokens(uint _numTokens) public {
+        uint totalCost = _numTokens * tokenPrice;
+        token.transferFrom(msg.sender, address(this), totalCost);
+        token.transfer(msg.sender, _numTokens);
+        totalTokensSold += _numTokens;
+    }
+    
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\contract\>
+
+The potential vulnerabilities in the contract are:
+1) Price manipulation
+2) Inconsistent state update
+3) Incorrect visibility/ownership

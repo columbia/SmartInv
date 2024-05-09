@@ -1,0 +1,9 @@
+The contract contains the following potential vulnerabilities:
+
+1) Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without properly checking if the voting has indeed gone through, potentially leading to inconsistent state.
+
+2) Incorrect visibility/ownership: The `votedProposal` function is called in the `execute` function without its implementation provided in the contract, which could lead to an incorrect behavior.
+
+3) Insufficient gas: The `endExecute` function checks the balance of `votingToken` and if it exceeds a certain threshold, it would update the `lockedFunds` variable. However, this operation could consume a considerable amount of gas, leading to insufficient gas for the operation to complete.
+
+Therefore, the identified vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and insufficient gas.

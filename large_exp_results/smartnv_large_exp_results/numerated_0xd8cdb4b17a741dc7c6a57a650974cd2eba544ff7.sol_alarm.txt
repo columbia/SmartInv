@@ -1,0 +1,24 @@
+contract Escrow {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+} 
+
+Potential vulnerabilities in the Escrow contract:
+- Incorrect visibility/ownership: The balances mapping is public, exposing all balances to anyone.
+- Insufficient gas: The transfer function might fail if the gas provided is not enough.
+- Ether leakage: There could be a risk of ether being stuck in the contract if the transfer or withdrawal fails.

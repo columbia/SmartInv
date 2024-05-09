@@ -1,0 +1,15 @@
+Contract to analyze:
+
+contract PaymentContract {
+    mapping(uint => address) public payments;
+    uint public totalPayments;
+
+    function makePayment(address _recipient, uint _amount) public {
+        require(_amount > 0, "Payment amount must be greater than 0");
+        _recipient.transfer(_amount);
+        payments[totalPayments] = _recipient;
+        totalPayments++;
+    }
+}
+Output: 
+1) reentrancy

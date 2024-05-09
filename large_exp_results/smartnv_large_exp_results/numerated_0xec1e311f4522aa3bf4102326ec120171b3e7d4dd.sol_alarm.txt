@@ -1,0 +1,30 @@
+<\contract\>
+ contract Vesting {
+     address public beneficiary;
+     uint public startTime;
+     uint public totalAmount;
+     uint public releaseAmount;
+     uint public releaseInterval;
+     uint public lastReleaseTime;
+
+     constructor(address _beneficiary, uint _totalAmount, uint _releaseAmount, uint _releaseInterval) {
+         beneficiary = _beneficiary;
+         totalAmount = _totalAmount;
+         releaseAmount = _releaseAmount;
+         releaseInterval = _releaseInterval;
+         startTime = block.timestamp;
+         lastReleaseTime = startTime;
+     }
+
+     function release() public {
+         require(msg.sender == beneficiary, "Sender not authorized");
+         require(block.timestamp >= lastReleaseTime + releaseInterval, "Not eligible for release yet");
+         require(totalAmount >= releaseAmount, "Not enough funds left for release");
+
+         totalAmount -= releaseAmount;
+         lastReleaseTime = block.timestamp;
+         // transfer releaseAmount to beneficiary
+         // beneficiary.transfer(releaseAmount);
+     }
+ }
+<\contract\>

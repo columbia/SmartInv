@@ -1,0 +1,20 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => address) public tokenIdToOwner;
+    mapping(uint256 => uint256) public tokenIdToPrice;
+
+    function buyToken(uint256 tokenId) public payable {
+        require(tokenIdToOwner[tokenId] != msg.sender, "You already own this token");
+        require(tokenIdToPrice[tokenId] > 0 && msg.value >= tokenIdToPrice[tokenId], "Invalid price or not enough funds provided");
+        
+        address previousOwner = tokenIdToOwner[tokenId];
+        uint256 sellingPrice = tokenIdToPrice[tokenId];
+        
+        payable(previousOwner).transfer(sellingPrice);
+        
+        tokenIdToOwner[tokenId] = msg.sender;
+        tokenIdToPrice[tokenId] = 0;
+    }
+}
+<\contract\>

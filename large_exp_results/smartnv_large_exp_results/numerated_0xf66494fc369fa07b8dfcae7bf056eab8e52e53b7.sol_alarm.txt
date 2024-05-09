@@ -1,0 +1,25 @@
+<\contract\>
+contract Crowdsale {
+    address public owner;
+    IERC20 public token;
+
+    constructor(IERC20 _token) {
+        token = _token;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _amount) external payable {
+        uint tokenAmount = _amount * 1000;
+        require(msg.value >= tokenAmount, "Not enough ETH sent");
+        token.transfer(msg.sender, tokenAmount);
+        owner.transfer(msg.value);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Integer overflow/underflow: The calculation in buyTokens function could potentially lead to integer overflow if _amount is a very large value, causing unexpected behavior.
+2) Incorrect visibility/ownership: The owner variable is public, which may expose sensitive information or allow unauthorized access to contract state. 
+
+Output:
+Integer overflow/underflow, Incorrect visibility/ownership

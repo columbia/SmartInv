@@ -1,0 +1,23 @@
+<\contract\>
+contract Vesting {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public amount;
+
+    constructor(address _beneficiary, uint _releaseTime, uint _amount) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+        amount = _amount;
+    }
+
+    function release() public {
+        require(block.timestamp >= releaseTime, "Vesting: current time is before release time");
+        address _this = address(this);
+        ERC20 token = ERC20(_this);
+        token.transfer(beneficiary, amount);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- incorrect visibility/ownership: The constructor is missing the visibility specifier "public" which can lead to potential issues with contract deployment and ownership control.

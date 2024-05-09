@@ -1,0 +1,32 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) external {
+        uint cost = amount * tokenPrice;
+        require(token.balanceOf(owner) >= amount, "Not enough tokens available");
+        require(token.transfer(msg.sender, amount), "Token transfer failed");
+        balances[msg.sender] += cost;
+    }
+
+    function withdraw() external {
+        uint balance = balances[msg.sender];
+        require(balance > 0, "No balance to withdraw");
+        require(token.transferFrom(msg.sender, owner, balance), "Transfer failed");
+        balances[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+Output:
+- potential vulnerability: 2) price manipulation
+- potential vulnerability: 8) reentrancy

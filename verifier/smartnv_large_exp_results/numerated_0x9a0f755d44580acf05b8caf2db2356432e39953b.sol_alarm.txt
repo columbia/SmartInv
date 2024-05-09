@@ -1,0 +1,24 @@
+<\contract\> 
+contract Escrow {
+     mapping(address => uint) public deposits; 
+     address public seller;
+     address public buyer; 
+     bool public isPaid = false; 
+
+     constructor(address _seller, address _buyer) {
+          seller = _seller;
+          buyer = _buyer;
+     }
+     function deposit() public payable {
+          require(msg.sender == buyer, "only buyer can deposit"); 
+          deposits[buyer] += msg.value;
+     }
+     function release() public {
+          require(msg.sender == seller, "only seller can release funds"); 
+          require(isPaid == true, "funds already released"); 
+          require(deposits[buyer] > 0, "no funds to release"); 
+          payable(seller).transfer(deposits[buyer]);
+          isPaid = true; 
+     }
+}
+<\contract\>

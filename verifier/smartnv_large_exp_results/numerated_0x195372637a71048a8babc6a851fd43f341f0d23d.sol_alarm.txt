@@ -1,0 +1,33 @@
+The contract provided for analysis: 
+
+contract OrderBook {
+    mapping(uint256 => Order) public orders;
+    uint256 public totalOrders;
+
+    struct Order {
+        address user;
+        uint256 amount;
+        bool executed;
+    }
+
+    function createOrder(uint256 _amount) external {
+        orders[totalOrders] = Order(msg.sender, _amount, false);
+        totalOrders++;
+    }
+
+    function executeOrder(uint256 _orderId) external {
+        require(orders[_orderId].executed == false, "Order has already been executed");
+        // Execute order logic...
+        orders[_orderId].executed = true;
+    }
+
+    function cancelOrder(uint256 _orderId) external {
+        require(orders[_orderId].user == msg.sender, "Only order creator can cancel the order");
+        orders[_orderId].executed = true;
+        // Refund logic...
+    }
+}
+
+Output: 
+1) incorrect visibility/ownership
+2) business logic flaw

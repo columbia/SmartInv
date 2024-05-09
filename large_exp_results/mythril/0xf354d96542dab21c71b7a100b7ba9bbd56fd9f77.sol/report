@@ -1,0 +1,34 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: LetterToken350
+Function name: get(uint256)
+PC address: 5109
+Estimated Gas Usage: 2251 - 2866
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xf354d96542dab21c71b7a100b7ba9bbd56fd9f77.sol:538
+
+function get(uint256 _id) public view returns (address owner,string Letter,string GameID,string FortuneCookie) {
+    return (
+    
+      tokenOwner[_id],
+      tokens[_id].Letter,
+      tokens[_id].GameID,
+      tokens[_id].FortuneCookie
+    );
+  }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: get(uint256), txdata: 0x9507d39a, value: 0x0
+
+

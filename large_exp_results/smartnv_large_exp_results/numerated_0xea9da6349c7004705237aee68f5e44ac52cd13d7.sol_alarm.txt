@@ -1,0 +1,21 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+     address public owner;
+     mapping(address => uint) public investorBalance;
+     uint public totalTokens;
+     uint public tokenPrice;
+    
+    constructor(uint _totalTokens, uint _tokenPrice) public {
+          owner = msg.sender;
+          totalTokens = _totalTokens;
+          tokenPrice = _tokenPrice;
+      }
+     function buyTokens(uint _numTokens) public payable {
+          require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+          investorBalance[msg.sender] += _numTokens;
+      }
+     function withdrawFunds() public {
+          require(msg.sender == owner, "Only owner can withdraw funds");
+          msg.sender.transfer(address(this).balance);
+      }
+}

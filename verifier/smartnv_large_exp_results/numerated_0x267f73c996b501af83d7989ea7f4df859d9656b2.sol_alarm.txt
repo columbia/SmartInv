@@ -1,0 +1,28 @@
+<\contract\>
+contract Insurance {
+    address public owner;
+    mapping(uint => uint) public policyAmounts;
+    mapping(uint => bool) public policyStatus;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyPolicy(uint policyId, uint amount) external {
+        require(msg.sender != owner, "Owner cannot buy a policy");
+        policyAmounts[policyId] = amount;
+        policyStatus[policyId] = true;
+    }
+
+    function claimPolicy(uint policyId) external {
+        require(policyStatus[policyId] == true, "Policy doesn't exist");
+        uint claimAmount = policyAmounts[policyId];
+        // Process claim amount
+    }
+
+    function cancelPolicy(uint policyId) external {
+        require(msg.sender == owner, "Only owner can cancel policies");
+        policyStatus[policyId] = false;
+    }
+}
+<\contract\>

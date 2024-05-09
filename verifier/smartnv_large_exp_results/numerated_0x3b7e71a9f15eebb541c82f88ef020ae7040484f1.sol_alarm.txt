@@ -1,0 +1,38 @@
+The contract given for analysis:
+
+contract MultiSigWallet {
+    address[] public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+    
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        uint transactionId = transactionCount;
+        transactions[transactionId] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        require(transactionId < transactionCount, "Invalid transactionId");
+        require(transactions[transactionId].executed == false, "Transaction already executed");
+
+        address destination = transactions[transactionId].destination;
+        uint value = transactions[transactionId].value;
+        bytes memory data = transactions[transactionId].data;
+        
+        (bool success, ) = destination.call{value: value}(data);
+        require(success, "Transaction execution failed");
+
+        transactions[transactionId].executed = true;
+    }
+}
+
+Output:
+- atomicity violation
+- reentrancy

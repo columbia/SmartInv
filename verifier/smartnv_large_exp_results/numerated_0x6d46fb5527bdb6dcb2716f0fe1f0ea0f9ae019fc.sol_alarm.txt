@@ -1,0 +1,34 @@
+The contract in question is:
+
+contract MultiSigWallet {
+    mapping(address => bool) public owners;
+    mapping(uint256 => Transaction) public transactions;
+    
+    struct Transaction {
+        address to;
+        uint256 value;
+        bytes data;
+        bool executed;
+    }
+    
+    function submitTransaction(address _to, uint256 _value, bytes memory _data) public {
+        transactions[transactionId] = Transaction({
+            to: _to,
+            value: _value,
+            data: _data,
+            executed: false
+        });
+    }
+    
+    function executeTransaction(uint256 _transactionId) public {
+        require(transactions[_transactionId].executed == false, "Transaction already executed");
+        transactions[_transactionId].executed = true;
+        (bool success, ) = transactions[_transactionId].to.call{value: transactions[_transactionId].value}(_data);
+        require(success, "Transaction execution failed");
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

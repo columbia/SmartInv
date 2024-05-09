@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) inconsistent state update: The function `startExecute` updates the state of the proposal without checking for existing ongoing proposals, potentially leading to inconsistent state.
+2) atomicity violation: The function `execute` performs multiple state-changing operations without using proper synchronization mechanisms, leading to atomicity violations.
+3) integer underflow: The subtraction operation in the `liquidate` function can lead to integer underflow if `dAmount` is larger than `getPrice() * cAmount * 80 / 100`.
+4) incorrect visibility: The variables `debt` and `collateral` are publicly accessible, which may expose sensitive information.

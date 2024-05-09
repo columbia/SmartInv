@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The "votedAmount" in the Proposal struct is directly modified in the execute function, which may lead to inconsistent state updates if multiple transactions try to update the same proposal simultaneously.
+
+2) Cross bridge inconsistency: The execution flow involves calling external functions like transferFrom and balanceOf from the votingToken contract, which may introduce inconsistencies if these external calls fail or return unexpected results.
+
+3) ID uniqueness violation: The proposal struct does not contain any unique identifier for each proposal, which may lead to ID uniqueness violations if multiple proposals are created without proper differentiation.

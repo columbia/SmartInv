@@ -1,0 +1,33 @@
+<\analyzed_contract\> 
+contract VoteToken is IERC20 {
+    struct Voter {
+        uint256 tokensVoted;
+        bool hasVoted;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalSupply;
+    uint256 public totalVoted;
+
+    function vote(uint256 amount) external {
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        
+        voters[msg.sender].tokensVoted += amount;
+        voters[msg.sender].hasVoted = true;
+        totalVoted += amount;
+    }
+
+    function distributeRewards() external {
+        for (uint256 i = 0; i < totalSupply; i++) {
+            if (voters[address(i)].hasVoted) {
+                // distribute rewards
+            }
+        }
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+1) inconsistent state update
+2) insufficient gas

@@ -1,0 +1,41 @@
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+    }
+    address  internal owner;
+    IERC20 votingToken;
+    mapping(address => uint256) startingBalanceList;
+    Proposal public proposal;
+
+    function startExecute() external {
+        require(proposal.sTime == 0,"on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        uint256 startingBlance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBlance;
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount;
+        votedProposal(proposal); 
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+        uint256 lockedFunds = votingToken.balanceOf(address(this));
+    }
+
+    function getStartingBalance(address _addr) internal returns (uint256) {
+        //Function to retrieve starting balance
+    }
+} 
+
+Output:
+- Inconsistent State Update: The update of the 'lockedFunds' variable in the 'endExecute' function might be inconsistent as it does not utilize a safe atomic operation.
+- Business Logic Flaw: The condition "require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");" in the 'endExecute' function might have a business logic flaw that could lead to unexpected behavior.

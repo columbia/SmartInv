@@ -1,0 +1,26 @@
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        uint votedProposalId;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(address => bool) public proposals;
+
+    function vote(uint proposalId) public {
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].votedProposalId = proposalId;
+    }
+
+    function addProposal(address proposalAddr) public {
+        require(!proposals[proposalAddr], "Proposal already exists");
+
+        proposals[proposalAddr] = true;
+    }
+
+    function getVoteResult(address voterAddr) public view returns(bool, uint) {
+        return (voters[voterAddr].hasVoted, voters[voterAddr].votedProposalId);
+    }
+}

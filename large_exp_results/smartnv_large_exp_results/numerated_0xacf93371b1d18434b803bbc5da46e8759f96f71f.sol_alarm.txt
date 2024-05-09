@@ -1,0 +1,34 @@
+<\contract_3\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    constructor(address _buyer, address _seller, uint _price) public {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        state = State.Created;
+    }
+
+    function lock() public {
+        require(msg.sender == buyer, "Only buyer can lock funds");
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can refund funds");
+        state = State.Inactive;
+    }
+}
+<\contract_3\> 
+
+1) privilege escalation
+2) business logic flaw

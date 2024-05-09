@@ -1,0 +1,44 @@
+<\contract\> 
+contract MultisigWallet {
+    address[] public owners;
+    mapping(address => bool) isOwner;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        require(isOwner[msg.sender], "Not an owner");
+        
+        transactions[transactionCount] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        require(isOwner[msg.sender], "Not an owner");
+        Transaction storage txn = transactions[transactionId];
+        require(!txn.executed, "Transaction already executed");
+
+        (bool success, ) = txn.destination.call{value: txn.value}(txn.data);
+        require(success, "Transaction execution failed");
+
+        txn.executed = true;
+    }
+
+    function addOwner(address newOwner) public {
+        require(isOwner[msg.sender], "Not an owner");
+        require(!isOwner[newOwner], "Already an owner");
+
+        isOwner[newOwner] = true;
+        owners.push(newOwner);
+    }
+} 
+
+Output:
+1) potential vulnerability: privilege escalation
+2) potential vulnerability: inconsistent state update

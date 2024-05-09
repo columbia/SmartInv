@@ -1,0 +1,39 @@
+<\Analyzing Contract\> 
+contract VestingContract {
+     address public beneficiary;
+     uint public start;
+     uint public duration;
+     uint public cliff;
+     uint public released;
+     IERC20 public token;
+
+     constructor(address _beneficiary, uint _start, uint _duration, uint _cliff, IERC20 _token) {
+         beneficiary = _beneficiary;
+         start = _start;
+         duration = _duration;
+         cliff = _cliff;
+         token = _token;
+     }
+
+     function release() public {
+         require(block.timestamp >= start + cliff, "Cliff period has not passed yet.");
+         uint unreleased = vestedAmount() - released;
+         require(unreleased > 0, "No tokens to release.");
+         require(token.balanceOf(address(this)) >= unreleased, "Insufficient balance for release.");
+         released = released + unreleased;
+         token.transfer(beneficiary, unreleased);
+     }
+
+     function vestedAmount() public view returns (uint) {
+         uint currentBalance = token.balanceOf(address(this));
+         uint totalVested = currentBalance * (block.timestamp - start) / duration;
+         if (block.timestamp < start + cliff) {
+             return 0;
+         } else if (totalVested > currentBalance) {
+             return currentBalance;
+         } else {
+             return totalVested;
+         }
+     }
+}
+<\Analyzing Contract\>

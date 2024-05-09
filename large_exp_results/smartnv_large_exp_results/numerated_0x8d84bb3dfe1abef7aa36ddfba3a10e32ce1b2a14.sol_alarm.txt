@@ -1,0 +1,20 @@
+Contract:
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid amount must be higher than current highest bid");
+        if (highestBid != 0) {
+            payable(highestBidder).transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+}
+```
+
+Potential vulnerabilities:
+1) Reentrancy
+2) Inconsistent state update

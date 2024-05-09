@@ -1,0 +1,21 @@
+The contract provided to analyze:
+
+contract Purchase {
+     address public buyer;
+     uint public price;
+
+     function buy() public {
+          require(msg.sender != buyer, "You cannot buy from yourself");
+          require(msg.value == price, "Incorrect price");
+          address payable seller = msg.sender;
+          seller.transfer(msg.value);
+          buyer = msg.sender;
+     }
+}
+
+The potential vulnerabilities in the above contract are:
+1) Incorrect visibility/ownership: The `buyer` and `price` variables are declared as public, which exposes them to be read by anyone. This can potentially lead to a privacy concern.
+2) Inconsistent state update: The state update of `buyer` happens after transferring the funds to the seller. This can potentially result in a scenario where the funds are transferred but the buyer is not updated correctly.
+3) Insufficient gas: The transfer of funds to the seller might fail if the seller is a contract with a complex fallback function that consumes more gas than the provided gas limit. This can result in a failed transaction without reverting the state changes.
+
+The vulnerabilities identified in the contract are incorrect visibility/ownership, inconsistent state update, and insufficient gas.

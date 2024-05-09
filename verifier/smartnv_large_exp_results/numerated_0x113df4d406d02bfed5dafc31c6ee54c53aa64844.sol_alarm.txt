@@ -1,0 +1,34 @@
+<\contract\> 
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    bool public isCompleted;
+
+    constructor(address _buyer, address _seller) {
+        buyer = _buyer;
+        seller = _seller;
+        isCompleted = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == buyer, "Only buyer can release funds");
+        require(address(this).balance > 0, "No funds to release");
+        seller.transfer(address(this).balance);
+        isCompleted = true;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == seller, "Only seller can refund funds");
+        require(address(this).balance > 0, "No funds to refund");
+        buyer.transfer(address(this).balance);
+        isCompleted = true;
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

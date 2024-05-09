@@ -1,0 +1,16 @@
+<\contract\>
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swapTokens(uint amount) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the TokenSwap contract are:
+1) Integer underflow/overflow in the swapTokens function.
+2) Incorrect visibility/ownership in the tokenA and tokenB variables.

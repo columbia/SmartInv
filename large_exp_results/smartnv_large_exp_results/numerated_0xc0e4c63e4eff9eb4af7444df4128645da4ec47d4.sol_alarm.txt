@@ -1,0 +1,32 @@
+<\contract\> 
+contract TokenSale {
+     uint public price;
+     address public seller;
+     address public buyer;
+     IERC20 public token;
+
+     constructor(uint _price, address _seller, address _token) {
+         price = _price;
+         seller = _seller;
+         token = IERC20(_token);
+     }
+
+     function buy(uint _amount) external {
+         require(msg.sender != seller, "seller cannot buy");
+         require(token.balanceOf(msg.sender) >= _amount, "insufficient token balance");
+         uint totalCost = price * _amount;
+         token.transferFrom(msg.sender, seller, _amount);
+         token.transferFrom(seller, msg.sender, totalCost);
+     }
+
+     function setPrice(uint _newPrice) external {
+         require(msg.sender == seller, "only seller can set price");
+         price = _newPrice;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Price manipulation: The price in the TokenSale contract can be manipulated by the seller using the setPrice function, potentially leading to unfair pricing or exploits.
+2) Inconsistent state update: In the buy function, the transfer of tokens between the buyer and seller occurs before transferring the total cost. This inconsistent state update can lead to unexpected behavior or vulnerabilities.
+3) Incorrect visibility/ownership: The setPrice function only checks if the caller is the seller but does not ensure that the seller is the owner of the contract, which could lead to unauthorized price changes.

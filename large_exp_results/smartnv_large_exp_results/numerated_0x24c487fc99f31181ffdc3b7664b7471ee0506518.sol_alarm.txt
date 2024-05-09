@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function `endExecute()` updates the state variable `lockedFunds` based on the balance of the contract, but the logic for checking the condition `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` may lead to inconsistent state updates.
+
+2) Integer overflow/underflow: There is a potential risk of integer overflow in the line `getPrice() * cAmount * 80 / 100` inside the `liquidate()` function, where the multiplication result could exceed the maximum value of a uint.
+
+3) Incorrect visibility/ownership: The state variables `debt` and `collateral` are declared as public, which exposes them to the risk of unauthorized access or modification.
+
+4) Insufficient gas: There is a risk of running out of gas during the execution of functions that involve transferring tokens, such as `USDC.transferFrom()` and `WETH.transferFrom()`, which may leave the contract in an inconsistent state.

@@ -1,0 +1,43 @@
+The contract you provided:
+
+```solidity
+contract SupplyChain {
+    address public owner;
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    struct Product {
+        uint productId;
+        string name;
+        uint price;
+        address owner;
+        bool isSold;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        productCount = 0;
+    }
+
+    function addProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+    }
+
+    function purchaseProduct(uint _productId) public payable {
+        Product storage product = products[_productId];
+        require(msg.value == product.price, "Insufficient funds");
+        require(product.isSold == false, "Product already sold");
+        product.owner = msg.sender;
+        product.isSold = true;
+        payable(owner).transfer(msg.value);
+        payable(product.owner).transfer(msg.value*9/10);
+    }
+}
+```
+
+Output:
+1) Arithmetic flaw: The multiplication operation in `purchaseProduct` function may result in arithmetic overflow/underflow if the values involved are not properly validated.
+2) Incorrect visibility/ownership: The `owner` variable is declared as `public`, which exposes it to potential manipulation. Consider changing the visibility to `private` and providing a function to access it if necessary.
+
+Overall, the contract has potential vulnerabilities that need to be addressed.

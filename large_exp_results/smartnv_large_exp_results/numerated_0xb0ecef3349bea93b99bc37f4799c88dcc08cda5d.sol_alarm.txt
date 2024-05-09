@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `startingBalanceList` mapping is updated in the `startExecute` function, but there is no check to ensure that the `proposal` struct has been initialized before updating `startingBalanceList`.
+
+2) Incorrect visibility/ownership: The `proposal` struct and `lockedFunds` variable are declared as internal, which may restrict access to these variables from outside the contract where visibility may be required.
+
+3) Insufficient gas: The `endExecute` function may run out of gas if the `require` statement `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` consumes a large amount of gas, potentially leaving the contract in an inconsistent state.
+
+Therefore, the contract may have vulnerabilities related to inconsistent state update, incorrect visibility/ownership, and insufficient gas.

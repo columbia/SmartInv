@@ -1,0 +1,21 @@
+<\contract_to_analyze\> 
+contract Auction {
+     mapping(address=>uint) public bids;
+     uint public highestBid;
+     address public highestBidder;
+     
+    function placeBid(uint amount) public {
+        require(amount > highestBid,"bid amount should be higher than current highest bid");
+        if(highestBidder != address(0)){
+            highestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = amount;
+        bids[msg.sender] += amount;
+    }
+    
+    function endAuction() public {
+        require(msg.sender == owner,"only owner can end the auction");
+        highestBidder.transfer(highestBid);
+    }
+}

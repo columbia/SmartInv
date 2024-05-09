@@ -1,0 +1,18 @@
+<\contract\> 
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid() public payable {
+             require(msg.value > highestBid, "Bid not high enough");
+             highestBidder.transfer(highestBid);
+             highestBidder = msg.sender;
+             highestBid = msg.value;
+         }
+} 
+
+<\contract\> 
+
+The potential vulnerabilities in the contract could be:
+- Reentrancy: The function `bid()` allows for transferring funds to `highestBidder` before updating their details, which can make the contract vulnerable to reentrancy attacks.
+- Inconsistent state update: There is a possibility of inconsistent state update if multiple bids are submitted simultaneously and the contract does not handle this scenario properly.

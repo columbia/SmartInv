@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+- incorrect visibility/ownership: The variables `debt` and `collateral` are publicly accessible, which may expose sensitive information. Consider making them private and adding appropriate getter functions.
+- atomicity violation: The `liquidate` function performs multiple state changes without using appropriate synchronization mechanisms, which could potentially lead to race conditions.
+- inconsistent state update: The `liquidate` function updates the `debt` and `collateral` mappings without considering the order of operations, leading to inconsistent state updates.
+- arithmetic flaw: In the `liquidate` function, the calculation `getPrice() * cAmount * 80 / 100 < dAmount` may result in unexpected behavior due to the order of operations. Consider adding parentheses for clarity and correctness.

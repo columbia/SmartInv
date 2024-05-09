@@ -1,0 +1,25 @@
+<\Contract\>
+contract DEX {
+     address public owner;
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+          require(msg.value > 0, "Deposit value must be greater than zero");
+          balances[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+          require(amount > 0, "Withdrawal amount must be greater than zero");
+          require(balances[msg.sender] >= amount, "Insufficient balance");
+          balances[msg.sender] -= amount;
+          msg.sender.transfer(amount);
+     }
+}
+<\Contract\>
+
+The potential vulnerabilities in the contract are:
+1) Insufficient gas: The contract does not specify enough gas for certain operations that involve value transfers, potentially leading to transaction failure.
+2) Incorrect visibility/ownership: The owner variable is public, potentially exposing it to unauthorized access or modifications.
+3) Integer overflow/underflow: There is a possibility of integer overflow when performing arithmetic operations on balances.
+4) Ether leakage: The contract does not handle unexpected errors or exceptions during value transfers, which may lead to loss of ether.
+5) Inconsistent state update: The withdrawal function updates the balance after transferring the amount, which can lead to inconsistent state if the transfer fails after deducting the balance.

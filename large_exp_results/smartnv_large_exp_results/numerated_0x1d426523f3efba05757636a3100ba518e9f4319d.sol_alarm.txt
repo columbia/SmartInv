@@ -1,0 +1,23 @@
+Contract Name: Crowdsale
+
+contract Crowdsale {
+    address public owner;
+    IERC20 public token;
+    uint public rate;
+    
+    constructor(address _token, uint _rate) public {
+        owner = msg.sender;
+        token = IERC20(_token);
+        rate = _rate;
+    }
+    
+    function buyTokens(uint _amount) public {
+        require(_amount > 0);
+        uint cost = _amount * rate;
+        token.transfer(msg.sender, _amount);
+        owner.transfer(cost);
+    }
+}
+Output: 
+1) integer overflow/underflow
+2) incorrect visibility/ownership

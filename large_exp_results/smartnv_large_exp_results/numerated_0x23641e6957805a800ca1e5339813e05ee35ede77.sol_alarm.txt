@@ -1,0 +1,19 @@
+<\contract\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    
+    function bid(uint amount) external {
+        require(amount > highestBid, "Bid not higher than current highest bid");
+        if (highestBidder != address(0)) {
+            highestBidder.transfer(highestBid); 
+        }
+        highestBidder = msg.sender;
+        highestBid = amount; 
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract "Auction" are:
+- Inconsistent state update
+- Integer overflow/underflow

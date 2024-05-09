@@ -1,0 +1,42 @@
+The contract provided for analysis is:
+
+contract StandardToken is IERC20 {
+    mapping (address => uint256) internal balances;
+    mapping (address => mapping (address => uint256)) internal allowed;
+    uint256 internal totalSupply;
+
+    function transfer(address _to, uint256 _value) public returns (bool) {
+        require(_to != address(0), "Invalid address");
+        require(balances[msg.sender] >= _value, "Insufficient balance");
+
+        balances[msg.sender] -= _value;
+        balances[_to] += _value;
+
+        emit Transfer(msg.sender, _to, _value);
+        return true;
+    }
+
+    function approve(address _spender, uint256 _value) public returns (bool) {
+        allowed[msg.sender][_spender] = _value;
+
+        emit Approval(msg.sender, _spender, _value);
+        return true;
+    }
+
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+        require(_to != address(0), "Invalid address");
+        require(balances[_from] >= _value, "Insufficient balance");
+        require(allowed[_from][msg.sender] >= _value, "Not enough allowance");
+
+        balances[_from] -= _value;
+        balances[_to] += _value;
+        allowed[_from][msg.sender] -= _value;
+
+        emit Transfer(_from, _to, _value);
+        return true;
+    }
+}
+
+Based on the contract provided, the potential vulnerabilities are:
+1) Insufficient gas
+2) Incorrect visibility/ownership

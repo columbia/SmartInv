@@ -1,0 +1,31 @@
+Contract analyzed:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public tokenPrice;
+    IERC20 public token;
+
+    constructor(uint _tokenPrice, address _tokenAddress) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        token = IERC20(_tokenAddress);
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(address(this)) >= _amount * tokenPrice, "Not enough tokens in the contract");
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Not enough tokens in the user's balance");
+        balances[msg.sender] -= _amount;
+        token.transfer(msg.sender, _amount);
+    }
+}
+
+Output:
+- SUICIDAL CONTRACTS
+- INCONSISTENT STATE UPDATE
+- INSUFFICIENT GAS

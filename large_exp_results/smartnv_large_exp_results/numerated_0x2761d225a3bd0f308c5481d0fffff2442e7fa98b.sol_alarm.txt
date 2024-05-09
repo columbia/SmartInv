@@ -1,0 +1,13 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint256 => uint256) public payments;
+    uint256 public totalPayments;
+
+    function makePayment(uint256 paymentId, uint256 amount) public {
+        require(totalPayments + amount >= totalPayments, "integer overflow");
+        payments[paymentId] += amount;
+        totalPayments += amount;
+    }
+}
+<\contract_to_analyze\>

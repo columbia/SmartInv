@@ -1,0 +1,33 @@
+Contract to be analyzed:
+
+contract UniswapV2Router02 {
+    mapping(address => uint) public amountsOut;
+    mapping(address => uint) public amountsInMax;
+    address public factory;
+    
+    constructor(address _factory, address _WETH) public {
+        factory = _factory;
+    }
+    
+    function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external returns (uint[] memory amounts) {
+        require(path.length >= 2, 'Invalid path');
+        require(deadline >= block.timestamp, 'Deadline passed');
+        
+        uint[] memory resAmounts = new uint[](path.length);
+        resAmounts[0] = amountIn;
+        resAmounts[path.length - 1] = amountOutMin;
+        amounts = resAmounts;
+        
+        for (uint i; i < path.length - 1; i++) {
+            address input = path[i];
+            address output = path[i + 1];
+            amountsOut[output] += amountIn;
+            amountsInMax[input] += amountOutMin;
+        }
+        
+        return amounts;
+    }
+}
+
+Output:
+Potential vulnerabilities: atomicity violation, inconsistent state update

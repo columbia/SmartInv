@@ -1,0 +1,39 @@
+<\contract\> 
+contract Lottery {
+         address public manager;
+         address[] public players;
+
+         constructor() {
+             manager = msg.sender;
+         }
+
+         function enter() public payable {
+             require(msg.value > 0.01 ether, "Minimum entry fee is 0.01 ether");
+             players.push(msg.sender);
+         }
+
+         function pickWinner() public restricted {
+             require(msg.sender == manager, "Only manager can pick a winner");
+             require(players.length > 0, "No players to pick a winner from");
+             uint index = random() % players.length;
+             address winner = players[index];
+             address(this).transfer(address(this).balance);
+             players = new address[](0);
+         }
+
+         modifier restricted() {
+             require(msg.sender == manager, "Only manager can perform this operation");
+             _;
+         }
+
+         function random() private view returns (uint) {
+             return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership: The "pickWinner" function should also have the "restricted" modifier to ensure only the manager can call it.
+- Insufficient gas: The transfer of balance in the "pickWinner" function could fail if there are too many players, leading to an incomplete distribution of funds.
+- Ether leakage: The transfer of ETH to the winner's address may be susceptible to reentrancy attacks.
+- Integer overflow/underflow: The calculation of index in the "pickWinner" function could potentially result in an integer underflow if players.length is 0.

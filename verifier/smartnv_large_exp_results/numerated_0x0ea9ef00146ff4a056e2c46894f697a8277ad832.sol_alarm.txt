@@ -1,0 +1,29 @@
+<\contract\>
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 votedAmount;
+        address proposer;
+    }
+    
+    mapping(address => uint256) public startingBalanceList;
+    mapping(uint256 => Proposal) public proposals;
+    uint256 public totalProposals;
+    
+    function startProposal(uint256 _startTime) external {
+        require(proposals[totalProposals].startTime == 0, "ongoing proposal");
+        proposals[totalProposals].startTime = _startTime;
+        proposals[totalProposals].proposer = msg.sender;
+        totalProposals++;
+    }
+    
+    function vote(uint256 _proposalId, uint256 _amount) external {
+        require(proposals[_proposalId].startTime != 0, "no existing proposal");
+        require(proposals[_proposalId].proposer != msg.sender, "proposer cannot vote");
+        
+        proposals[_proposalId].votedAmount += _amount;
+        
+        // There should be some further logic to handle voting process
+    }
+}
+<\contract\>

@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract Escrow {
+        address public payer;
+        address public recipient;
+        uint public amount;
+
+        constructor(address _payer, address _recipient, uint _amount) {
+            payer = _payer;
+            recipient = _recipient;
+            amount = _amount;
+        }
+
+        function deposit() public payable {
+            require(msg.sender == payer, "Only payer can deposit");
+            require(msg.value == amount, "Incorrect deposit amount");
+        }
+
+        function release() public {
+            require(msg.sender == payer, "Only payer can release funds");
+            recipient.transfer(amount);
+        }
+    }
+
+Output:  
+1) Atomicity violation  
+2) Incorrect visibility/ownership  

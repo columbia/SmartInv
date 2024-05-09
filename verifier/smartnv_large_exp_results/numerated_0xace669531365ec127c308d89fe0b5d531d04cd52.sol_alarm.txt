@@ -1,0 +1,31 @@
+Contract:
+```solidity
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+    bool public payed;
+    
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+        payed = false;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        require(msg.value == amount, "Incorrect amount deposited");
+    }
+    
+    function release() public {
+        require(msg.sender == payee, "Only payee can release funds");
+        require(address(this).balance >= amount, "Insufficient balance in contract");
+        payee.transfer(amount);
+        payed = true;
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership

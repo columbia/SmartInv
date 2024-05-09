@@ -1,0 +1,19 @@
+The contract provided for analysis is:
+
+contract MyContract {
+         IERC20 public token1;
+         IERC20 public token2;
+         uint public totalSupply;
+
+         function swapTokens(uint amount1, uint amount2) external {
+             token1.transferFrom(msg.sender, address(this), amount1);
+             token2.transferFrom(msg.sender, address(this), amount2);
+             token1.transfer(msg.sender, amount2);
+             token2.transfer(msg.sender, amount1);
+             totalSupply += amount1 + amount2;
+         }
+}
+
+Based on the provided contract, the potential vulnerabilities identified are:
+1) inconsistent state update
+2) insufficient gas

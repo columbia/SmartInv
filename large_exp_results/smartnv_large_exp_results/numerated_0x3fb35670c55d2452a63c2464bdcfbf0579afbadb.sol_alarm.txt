@@ -1,0 +1,33 @@
+<\analyzed_contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+     uint public totalTokensSold;
+     uint public totalEthCollected;
+    
+     mapping(address => uint) public tokenBalance;
+    
+     constructor(address _token, uint _tokenPrice) {
+         token = IERC20(_token);
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+    
+     function buyTokens(uint _tokenAmount) public payable {
+         uint totalCost = _tokenAmount * tokenPrice;
+         require(msg.value >= totalCost, "Insufficient funds provided");
+         
+         token.transfer(msg.sender, _tokenAmount);
+         totalTokensSold += _tokenAmount;
+         totalEthCollected += totalCost;
+         tokenBalance[msg.sender] += _tokenAmount;
+     }
+    
+     function withdrawEth() public {
+         require(msg.sender == owner, "Only the owner can withdraw Eth");
+         owner.transfer(totalEthCollected);
+         totalEthCollected = 0;
+     }
+}
+<\analyzed_contract\>

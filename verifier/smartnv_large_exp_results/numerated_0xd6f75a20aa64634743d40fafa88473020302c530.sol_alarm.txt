@@ -1,0 +1,27 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+
+    constructor(address _tokenAddress, uint _tokenPrice) public {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        ERC20(tokenAddress).transfer(msg.sender, _amount);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) privilege escalation: The "withdrawFunds" function lacks the necessary access control, allowing anyone to call it and possibly withdraw funds without being the owner.
+2) incorrect payment amount: There is a vulnerability related to the possibility of incorrect payment amount being accepted in the "buyTokens" function, potentially leading to loss of funds for the buyer or the contract owner.

@@ -1,0 +1,26 @@
+Contract being analyzed:
+
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        uint votedProposalId;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint => uint) public proposalVotes;
+
+    function vote(uint proposalId) public {
+        require(!voters[msg.sender].hasVoted, "You have already voted");
+        require(proposalId < 10, "Invalid proposal");
+        
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].votedProposalId = proposalId;
+        
+        proposalVotes[proposalId]++;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation: There is no check to ensure that the proposalIds are unique, leaving room for duplicate proposalIds to be voted on.
+- Incorrect visibility/ownership: The mapping for voters is public, which exposes sensitive voter information for anyone to access.
+- Business logic flaw: There is no check to ensure that only valid voters can vote, allowing potentially unauthorized users to cast votes.

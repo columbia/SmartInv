@@ -1,0 +1,25 @@
+The contract provided for analysis:
+contract TokenSwap {
+    IERC20 public token1;
+    IERC20 public token2;
+    address public owner;
+
+    constructor(address _token1, address _token2) {
+        token1 = IERC20(_token1);
+        token2 = IERC20(_token2);
+        owner = msg.sender;
+    }
+
+    function swapTokens(uint amount1, uint amount2) public {
+        require(msg.sender == owner, "Only owner can swap tokens");
+        token1.transferFrom(msg.sender, address(this), amount1);
+        token2.transferFrom(msg.sender, address(this), amount2);
+        token1.transfer(msg.sender, amount2);
+        token2.transfer(msg.sender, amount1);
+    }
+}
+Potential vulnerabilities in the TokenSwap contract:
+1) reentrancy: The contract lacks checks to prevent reentrancy attacks, allowing malicious contracts to call the swapTokens function repeatedly before the balance updates are completed.
+2) incorrect visibility/ownership: The swapTokens function allows any caller to initiate token swaps, whereas it should only be callable by the owner of the contract based on the require statement.
+3) inconsistent state update: The swapTokens function performs token transfers before updating balances, which can lead to inconsistent states if the transfers fail after balances have been deducted.
+4) atomicity violation: The swapTokens function does not use a single atomic transaction to ensure that both token transfers occur together, potentially leaving the contract in an inconsistent state if one transfer fails after the other has succeeded.

@@ -1,0 +1,29 @@
+The contract provided for analysis is:
+
+contract ERC20Token {
+    mapping(address => uint) balances;
+    
+    function transfer(address _to, uint _value) public {
+        require(balances[msg.sender] >= _value);
+        balances[msg.sender] -= _value;
+        balances[_to] += _value;
+    }
+    
+    function approve(address _spender, uint _value) public {
+        allowed[msg.sender][_spender] = _value;
+    }
+    
+    function transferFrom(address _from, address _to, uint _value) public {
+        require(allowed[_from][msg.sender] >= _value);
+        allowed[_from][msg.sender] -= _value;
+        balances[_from] -= _value;
+        balances[_to] += _value;
+    }
+    
+    // Other functions...
+}
+
+Output:
+1) inconsistent state update
+2) integer overflow/underflow
+3) insufficient gas

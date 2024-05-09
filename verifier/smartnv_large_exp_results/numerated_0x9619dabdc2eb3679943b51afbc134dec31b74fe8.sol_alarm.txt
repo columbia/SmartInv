@@ -1,0 +1,18 @@
+Contract:
+
+contract VotingSystem {
+    mapping(address => uint) public voteCount;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint candidate) public {
+        require(candidate != admin, "Admin cannot be voted for");
+        voteCount[msg.sender] += 1;
+    }
+}
+
+Output:
+- Incorrect Visibility/Ownership: The admin variable is publicly accessible, which may expose sensitive information about the contract's administration. This could lead to potential security risks if malicious actors gain access to the admin address.

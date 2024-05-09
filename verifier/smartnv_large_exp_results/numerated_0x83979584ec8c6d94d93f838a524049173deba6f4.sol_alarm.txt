@@ -1,0 +1,34 @@
+The contract for analysis:
+
+contract Escrow {
+  address public buyer;
+  address public seller;
+  address public arbiter;
+  uint public price;
+
+  constructor(address _buyer, address _seller, address _arbiter, uint _price) public {
+    buyer = _buyer;
+    seller = _seller;
+    arbiter = _arbiter;
+    price = _price;
+  }
+
+  function releaseFunds() public {
+    require(msg.sender == arbiter, "Only arbiter can release funds");
+    seller.transfer(price);
+  }
+
+  function refundFunds() public {
+    require(msg.sender == arbiter, "Only arbiter can refund funds");
+    buyer.transfer(price);
+  }
+
+  function dispute() public {
+    require(msg.sender == arbiter, "Only arbiter can arbitrate");
+    buyer.transfer(price / 2);
+    seller.transfer(price / 2);
+  }
+}
+
+Output:
+- incorrect visibility/ownership

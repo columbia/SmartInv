@@ -1,0 +1,44 @@
+The contract shown below contains potential vulnerabilities:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The "execute" function updates the "votedAmount" in the proposal struct without proper synchronization or atomicity checks, which can lead to inconsistent state.
+2) Privilege escalation: The contract uses an internal owner address, but there doesn't seem to be any proper access control mechanism implemented to prevent unauthorized access to critical functions.
+3) Business logic flaw: The "endExecute" function checks if the balance of the contract is greater than double the total supply of the voting token, which may not be the intended business logic.
+4) Incorrect visibility/ownership: The visibility and ownership of certain functions and variables are not clearly defined, which can lead to potential security risks.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, privilege escalation, business logic flaw, and incorrect visibility/ownership.

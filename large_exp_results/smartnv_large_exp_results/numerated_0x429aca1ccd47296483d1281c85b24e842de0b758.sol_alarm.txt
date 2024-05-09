@@ -1,0 +1,31 @@
+The contract to analyze:
+
+contract VotingSystem {
+    struct Voter {
+        uint id;
+        bool hasVoted;
+    }
+
+    mapping(address => Voter) public voters;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!voters[msg.sender].hasVoted, "Voter has already voted.");
+        voters[msg.sender].hasVoted = true;
+        totalVotes++;
+    }
+
+    function resetVotes() public {
+        totalVotes = 0;
+        for (uint i = 0; i < totalVotes; i++) {
+            voters[msg.sender].hasVoted = false;
+        }
+    }
+}
+
+Potential vulnerabilities in the contract:
+
+7) ID uniqueness violation: The contract does not assign a unique ID to each voter, which could lead to a violation of ID uniqueness.
+14) Incorrect visibility/ownership: The `voters` mapping is public, potentially exposing sensitive information about voters.
+10) Arithmetic flaw: In the `resetVotes` function, the loop condition `i < totalVotes` should be `i < totalVotes` instead to properly iterate over voter counts.
+13) Insufficient gas: The `resetVotes` function permanently locks up the contract by setting `totalVotes = 0` without resetting individual voter's `hasVoted` status, causing potential gas exhaustion.

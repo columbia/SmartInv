@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function startExecute() initializes the proposal struct without setting the value of proposal.sTime to 0, but checks for it to be 0 in the require statement. This can lead to inconsistent state updates.
+
+2) Incorrect visibility/ownership: The ownership of the contract is not explicitly defined or managed, which can lead to issues with ownership and visibility control.
+
+3) Atomicity violation: There are multiple state changes happening in the execute() function without using any mechanisms to ensure atomicity, which can lead to inconsistent state updates if any of the require statements fail.
+
+4) Insufficient gas: The endExecute() function might fail if the gas limit is insufficient to execute all the required operations, particularly the require statement checking for the balance of the contract.
+
+5) Business logic flaw: The endExecute() function calculates the lockedFunds based on a specific condition, which might not necessarily be an accurate representation of the actual locked funds, leading to a business logic flaw.

@@ -1,0 +1,37 @@
+<\contract\> 
+contract EscrowContract {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public depositAmount;
+         bool public buyerApproved;
+         bool public sellerApproved;
+         bool public arbiterApproved;
+
+         function deposit(uint amount) public {
+             require(msg.sender == buyer, "only buyer can deposit");
+             require(amount > 0, "amount must be greater than 0");
+             depositAmount = amount;
+         }
+
+         function approve(bool _approve) public {
+             if (msg.sender == buyer) {
+                 buyerApproved = _approve;
+             } else if (msg.sender == seller) {
+                 sellerApproved = _approve;
+             } else if (msg.sender == arbiter) {
+                 arbiterApproved = _approve;
+             }
+         }
+
+         function releaseFunds() public {
+             require(buyerApproved && sellerApproved, "buyer and seller must approve");
+             msg.sender.transfer(depositAmount);
+         }
+
+         function refundAmount() public {
+             require(arbiterApproved, "arbiter must approve");
+             seller.transfer(depositAmount);
+         }
+}
+<\contract\> 

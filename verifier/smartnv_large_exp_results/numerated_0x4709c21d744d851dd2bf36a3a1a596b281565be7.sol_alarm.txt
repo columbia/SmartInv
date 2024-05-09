@@ -1,0 +1,25 @@
+<\contract\> 
+contract VotingSystem {
+    mapping(address => uint256) public voteCount;
+    mapping(address => bool) public hasVoted;
+    address public admin;
+
+    function vote(uint256 option) public {
+        require(option == 0 || option == 1, "Invalid option");
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        voteCount[option]++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function updateAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can update admin");
+        
+        admin = newAdmin;
+    }
+}
+<\contract\> 
+
+Output: 
+- Privilege escalation (updateAdmin function allows changing admin without proper authorization check)
+- Incorrect visibility/ownership (admin variable is public and can be changed by anyone)

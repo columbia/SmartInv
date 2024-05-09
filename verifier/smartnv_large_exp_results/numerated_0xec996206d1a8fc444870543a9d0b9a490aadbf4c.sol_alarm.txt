@@ -1,0 +1,3 @@
+- Inconsistent state update: The function `endExecute` does not reset the proposal state after execution, potentially allowing for multiple executions of the same proposal.
+- Atomicity violation: The function `execute` transfers tokens and updates the proposal state in multiple steps without using a single transaction or atomic operation, which may lead to unexpected behavior if the second step fails.
+- Insufficient gas: The function `endExecute` may require a large amount of gas if the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` is triggered, potentially causing the transaction to revert.

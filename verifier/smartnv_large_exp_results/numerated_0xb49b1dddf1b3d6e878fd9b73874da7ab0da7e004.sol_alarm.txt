@@ -1,0 +1,17 @@
+<\contract\>
+contract TokenExchange {
+    IERC20 public token1;
+    IERC20 public token2;
+    
+    function exchangeTokens(uint amount1, uint amount2) external {
+        token1.transferFrom(msg.sender, address(this), amount1);
+        token2.transferFrom(msg.sender, address(this), amount2);
+        
+        token1.transfer(msg.sender, amount2);
+        token2.transfer(msg.sender, amount1);
+    }
+}
+<\contract\>
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Insufficient gas

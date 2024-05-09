@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated without proper synchronization or locking mechanisms, which can lead to inconsistent state if multiple executions happen simultaneously.
+2) Incorrect visibility/ownership: The `lockedFunds` variable is not declared, making it publicly visible to all users, which may lead to unauthorized access or manipulation.
+3) Insufficient gas: The `endExecute` function may fail due to insufficient gas if the gas limit is reached while executing the function.
+4) Integer overflow/underflow: There is a potential for integer overflow in the calculation `votingToken.balanceOf(address(this))*2` in the `endExecute` function if the balance exceeds the maximum value representable by the data type used.

@@ -1,0 +1,38 @@
+The contract provided for analysis:
+<\example_3\>
+
+contract Marketplace {
+    address public owner;
+    uint public productCount;
+    mapping(uint => Product) public products;
+
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address owner;
+        bool isSold;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        productCount = 0;
+    }
+
+    function createProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+    }
+
+    function buyProduct(uint _productId) public payable {
+        require(_productId > 0 && _productId <= productCount, "Invalid product id");
+        Product memory _product = products[_productId];
+        require(msg.value == _product.price, "Incorrect price");
+        require(!_product.isSold, "Product is already sold");
+        address payable _seller = payable(_product.owner);
+        _seller.transfer(msg.value);
+        _product.isSold = true;
+    }
+}
+
+<\example_3\>

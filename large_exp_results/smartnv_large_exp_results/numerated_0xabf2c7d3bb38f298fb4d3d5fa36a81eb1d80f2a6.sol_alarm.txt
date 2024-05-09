@@ -1,0 +1,46 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate; 
+          uint256 vote; 
+      }
+      
+      bool public votingStarted;
+      uint256 public totalVotes;
+      mapping(address => Voter) public voters;
+
+      function startVoting() external {
+          require(!votingStarted, "voting has already started");
+          votingStarted = true; 
+      }
+
+      function delegate(address to) external {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "you already voted");
+          require(to != msg.sender, "self-delegation is not allowed");
+          while (voters[to].delegate != address(0)) {
+               to = voters[to].delegate; 
+          }
+          sender.voted = true; 
+          sender.delegate = to; 
+          Voter storage delegate_ = voters[to]; 
+          if (delegate_.voted) {
+              totalVotes += sender.weight; 
+          }
+          delegate_.weight += sender.weight;
+      }
+
+      function vote(uint256 option) external {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "you already voted");
+          require(votingStarted, "voting has not started yet");
+          sender.voted = true; 
+          sender.vote = option; 
+          totalVotes += sender.weight;  
+      }
+}
+Potential vulnerabilities:
+- inconsistent state update
+- incorrect visibility/ownership

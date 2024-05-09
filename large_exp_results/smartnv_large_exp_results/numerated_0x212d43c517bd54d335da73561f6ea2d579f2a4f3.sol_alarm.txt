@@ -1,0 +1,27 @@
+Contract being analyzed: 
+
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function changeAdmin(address _newAdmin) external {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = _newAdmin;
+    }
+
+    function getVoteCount() external view returns (uint) {
+        return totalVotes;
+    }
+}
+
+Potential vulnerabilities:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

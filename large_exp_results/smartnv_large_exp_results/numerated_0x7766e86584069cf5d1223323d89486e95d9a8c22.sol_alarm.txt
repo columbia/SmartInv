@@ -1,0 +1,20 @@
+<\contract_to_analyze\>
+contract PaymentGateway {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function getBalance(address user) public view returns (uint) {
+        return balances[user];
+    }
+}
+<\contract_to_analyze\>

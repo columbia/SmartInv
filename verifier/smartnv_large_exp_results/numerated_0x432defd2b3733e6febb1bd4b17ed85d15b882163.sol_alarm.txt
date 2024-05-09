@@ -1,0 +1,25 @@
+<\contract_to_be_analyzed\>
+contract Lottery {
+    address internal admin;
+    mapping(uint => address) public players;
+    uint public playerCount;
+    uint public winnerIndex;
+    uint public totalPot;
+    
+    function participate() public payable {
+        require(msg.value == 1 ether, "Incorrect amount sent");
+        players[playerCount] = msg.sender;
+        playerCount++;
+        totalPot += msg.value;
+    }
+    
+    function selectWinner() public {
+        require(msg.sender == admin, "Only admin can select winner");
+        winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty, playerCount))) % playerCount;
+        address winner = players[winnerIndex];
+        payable(winner).transfer(totalPot);
+        totalPot = 0;
+        playerCount = 0;
+    }
+}
+<\contract_to_be_analyzed\>

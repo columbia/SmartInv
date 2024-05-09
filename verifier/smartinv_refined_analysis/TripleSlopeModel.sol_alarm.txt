@@ -1,0 +1,7 @@
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without atomicity checks, which could lead to inconsistent state updates if multiple transactions try to update the `votedAmount` simultaneously.
+
+2) Cross bridge inconsistency: The `startExecute` function sets the `proposal` without ensuring that the previous proposal has been completed or canceled, leading to potential inconsistencies when managing multiple proposals.
+
+3) ID uniqueness violation: The contract does not enforce uniqueness of IDs for proposals, which could result in conflicts or unexpected behavior if two proposals have the same ID.

@@ -1,0 +1,21 @@
+contract SimpleToken {
+       mapping(address => uint) balances;
+       uint totalSupply;
+
+       function transfer(address _to, uint _value) public {
+           require(balances[msg.sender] >= _value);
+           balances[msg.sender] -= _value;
+           balances[_to] += _value;
+       }
+
+       function mint(uint _amount) public {
+           totalSupply += _amount;
+           balances[msg.sender] += _amount;
+       }
+
+       function burn(uint _amount) public {
+           require(balances[msg.sender] >= _amount);
+           totalSupply -= _amount;
+           balances[msg.sender] -= _amount;
+       }
+   }

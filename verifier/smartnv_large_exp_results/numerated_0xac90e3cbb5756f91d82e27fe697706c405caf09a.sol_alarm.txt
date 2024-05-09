@@ -1,0 +1,16 @@
+The contract provided for analysis:
+
+contract Airdrop {
+    mapping(address => uint) public balances;
+
+    function distributeToken(address[] memory recipients, uint amount) public {
+        require(msg.sender == owner, "Only owner can distribute tokens");
+        
+        for(uint i = 0; i < recipients.length; i++) {
+            balances[recipients[i]] += amount;
+        }
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership: The "owner" variable is not defined in the contract, so the check "msg.sender == owner" will always fail, allowing anyone to call the distributeToken function and distribute tokens. This could lead to unauthorized token distribution.

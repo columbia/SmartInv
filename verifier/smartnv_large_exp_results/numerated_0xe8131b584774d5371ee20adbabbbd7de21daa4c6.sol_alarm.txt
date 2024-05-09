@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+- Inconsistent state update: The variable `proposal.votedAmount` is being updated directly in the `execute` function, which could lead to inconsistent state if multiple transactions are executed simultaneously.
+- Incorrect visibility/ownership: The `startExecute` function and `execute` function are marked as external, but they are modifying internal state variables which could be accessed by malicious contracts. Consider changing the visibility to internal.
+- Insufficient gas: The `endExecute` function has a requirement that checks if the balance of the contract is greater than half of the total supply. This could potentially lead to out of gas exceptions if the contract holds a large amount of tokens.
+- Business logic flaw: The contract logic relies on certain time-based conditions (`proposal.sTime + 24 < block.timestamp`) which may have unintended consequences or could be manipulated by malicious actors. 
+- Atomicity violation: The `endExecute` function updates the `lockedFunds` variable after checking a condition, which could create a race condition if multiple transactions are trying to end execution simultaneously.

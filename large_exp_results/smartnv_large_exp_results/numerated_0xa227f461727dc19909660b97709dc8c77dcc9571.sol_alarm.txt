@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public productPrices;
+
+    function addProduct(address product, uint price) public {
+        require(msg.sender == owner, "Only owner can add products");
+        productPrices[product] = price;
+    }
+
+    function purchaseProduct(address product) public payable {
+        require(productPrices[product] > 0, "Product does not exist");
+        require(msg.value >= productPrices[product], "Insufficient funds");
+        address payable seller = address(uint160(owner));
+        seller.transfer(msg.value);
+        // Transfer product ownership logic here
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only current owner can change ownership");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

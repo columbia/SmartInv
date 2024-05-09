@@ -1,0 +1,21 @@
+<\contract\>
+contract PaymentContract {
+    address public owner;
+    mapping(address => uint256) public balances;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Value must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\>

@@ -1,0 +1,30 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    mapping(address => uint) public deposits;
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    function setPrice(uint _price) public {
+        require(msg.sender == seller, "Only seller can set the price");
+        price = _price;
+    }
+
+    function deposit() public payable {
+        require(msg.value == price, "Incorrect deposit amount");
+        deposits[msg.sender] += msg.value;
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        payable(seller).transfer(price);
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can request a refund");
+        uint amount = deposits[buyer];
+        deposits[buyer] = 0;
+        payable(buyer).transfer(amount);
+    }
+}
+<\contract_to_analyze\>

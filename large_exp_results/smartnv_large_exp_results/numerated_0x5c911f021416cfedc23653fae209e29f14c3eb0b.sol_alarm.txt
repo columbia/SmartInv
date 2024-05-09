@@ -1,0 +1,33 @@
+The contract:
+
+```solidity
+contract Insurance {
+    
+    uint public totalClaims;
+    mapping(address => uint) public claimAmounts;
+    
+    function fileClaim(uint amount) public {
+        require(amount > 0, "Claim amount must be greater than 0");
+        require(claimAmounts[msg.sender] == 0, "Already filed a claim");
+        
+        claimAmounts[msg.sender] = amount;
+        totalClaims += amount;
+    }
+    
+    function processClaim(address user) public {
+        require(claimAmounts[user] > 0, "No claim to process");
+        
+        // Process claim logic
+        
+        totalClaims -= claimAmounts[user];
+        claimAmounts[user] = 0;
+    }
+    
+    function checkClaimStatus(address user) public view returns (uint) {
+        return claimAmounts[user];
+    }
+}
+```
+
+Output: 
+- Correctness: healthy

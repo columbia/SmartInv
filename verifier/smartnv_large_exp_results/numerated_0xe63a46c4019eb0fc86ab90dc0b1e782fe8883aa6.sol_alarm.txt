@@ -1,0 +1,36 @@
+<\contract\>
+
+contract TokenDistribution {
+    address public owner;
+    mapping(address => uint256) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function distributeTokens(address[] calldata recipients, uint256 amount) external {
+        require(msg.sender == owner, "only owner can distribute tokens");
+        require(recipients.length > 0, "no recipients specified");
+
+        uint256 totalAmount = amount * recipients.length;
+        require(totalAmount <= balances[msg.sender], "insufficient balance");
+
+        for (uint i = 0; i < recipients.length; i++) {
+            balances[recipients[i]] += amount;
+        }
+
+        balances[msg.sender] -= totalAmount;
+    }
+
+    function withdrawTokens() external {
+        require(balances[msg.sender] > 0, "no tokens to withdraw");
+
+        uint256 amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "transfer failed");
+    }
+}
+
+<\contract\>

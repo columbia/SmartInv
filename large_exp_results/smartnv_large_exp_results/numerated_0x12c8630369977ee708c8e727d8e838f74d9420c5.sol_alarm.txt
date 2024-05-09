@@ -1,0 +1,31 @@
+The contract provided for analysis is:
+
+```solidity
+contract MyContract {
+    IERC20 public token;
+    address public owner;
+    uint public balance;
+
+    function deposit(uint amount) external {
+        require(amount > 0, "Invalid amount");
+        token.transferFrom(msg.sender, address(this), amount);
+        balance += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount > 0, "Invalid amount");
+        require(amount <= balance, "Insufficient balance");
+        token.transfer(msg.sender, amount);
+        balance -= amount;
+    }
+
+    function updateOwner(address newOwner) external {
+        require(msg.sender == owner, "Not authorized");
+        owner = newOwner;
+    }
+}
+```
+
+Output: 
+The potential vulnerabilities in the provided contract are:
+1) incorrect visibility/ownership

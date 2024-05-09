@@ -1,0 +1,49 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The proposal struct is being updated inside the startExecute function without defining it beforehand. This can lead to unexpected behavior and inconsistencies in the data.
+2) Incorrect visibility/ownership: The owner variable is declared as internal, which might not be the intended visibility.
+3) ID uniqueness violation: The uniqueness of proposal IDs is not ensured, which could lead to conflicts or issues in tracking proposals.
+4) Insufficient gas: Depending on the gas consumption of the functions and the available gas limit, there might be a risk of running out of gas during execution.
+5) Business logic flaw: The logic for handling proposals, executing functions, and ending execution should be carefully reviewed for any potential flaws or vulnerabilities.
+
+Therefore, the potential vulnerabilities in the provided contract are:
+1) Inconsistent state update
+2) Incorrect visibility/ownership
+3) ID uniqueness violation
+4) Insufficient gas
+5) Business logic flaw

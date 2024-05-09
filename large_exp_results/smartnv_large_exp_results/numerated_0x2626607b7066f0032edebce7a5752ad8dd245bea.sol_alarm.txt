@@ -1,0 +1,22 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address public winner;
+
+    function vote(address _candidate) external {
+        require(votes[msg.sender] == 0, "Already voted");
+        votes[msg.sender] = 1;
+    }
+
+    function tallyVotes() external {
+        uint maxVotes = 0;
+        address winningCandidate;
+        for (uint i = 0; i < votes.length; i++) {
+            if (votes[i] > maxVotes) {
+                maxVotes = votes[i];
+                winner = i;
+            }
+        }
+    }
+}
+<\contract\>

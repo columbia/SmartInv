@@ -1,0 +1,34 @@
+<\analyzed_contract\>
+contract Escrow {
+     address public payer;
+     address public recipient;
+     address public arbiter;
+     bool public payerOk;
+     bool public recipientOk;
+
+     function Escrow(address _recipient, address _arbiter) public {
+         payer = msg.sender;
+         recipient = _recipient;
+         arbiter = _arbiter;
+     }
+
+     function confirmPayer() public {
+         require(msg.sender == payer, "Not authorized");
+         payerOk = true;
+     }
+
+     function confirmRecipient() public {
+         require(msg.sender == recipient, "Not authorized");
+         recipientOk = true;
+     }
+
+     function confirmArbiter() public {
+         require(msg.sender == arbiter, "Not authorized");
+     }
+
+     function release() public {
+         require(payerOk && recipientOk, "Not confirmed");
+         payable(recipient).transfer(address(this).balance);
+     }
+}
+<\analyzed_contract\>

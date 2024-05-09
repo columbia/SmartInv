@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+
+1) reentrancy: The contract is transferring funds in the `liquidate` function without following the Checks-Effects-Interactions pattern, which could potentially lead to a reentrancy attack.
+2) incorrect visibility/ownership: The `WETH` and `USDC` variables are declared as public, exposing sensitive contract state variables to the public. Consider using private visibility and access control mechanisms to restrict access.
+3) business logic flaw: The `liquidate` function checks a condition involving a price calculation, which could potentially be manipulated to bypass the liquidation process. Consider adding additional checks or validations to prevent malicious behavior.

@@ -1,0 +1,39 @@
+The contract for analysis:
+
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime; 
+        uint256 endTime; 
+        uint256 votes; 
+        address proposer; 
+    }
+
+    address public owner;
+    mapping(uint256 => Proposal) public proposals;
+    uint256 public totalVotes;
+
+    function createProposal(uint256 _startTime, uint256 _endTime) public {
+        proposals[totalVotes] = Proposal(_startTime, _endTime, 0, msg.sender);
+        totalVotes++;
+    }
+
+    function vote(uint256 proposalId) public {
+        require(proposalId < totalVotes, "Invalid proposal ID");
+        require(now >= proposals[proposalId].startTime && now <= proposals[proposalId].endTime, "Voting period has ended");
+        
+        proposals[proposalId].votes++;
+    }
+
+    function endVoting(uint256 proposalId) public {
+        require(proposalId < totalVotes, "Invalid proposal ID");
+        require(now > proposals[proposalId].endTime, "Voting period has not ended yet");
+
+        if(proposals[proposalId].votes > totalVotes / 2) {
+            // execute proposal
+        }
+    }
+}
+
+Output: 
+1) inconsistent state update
+2) arithmetic flaw

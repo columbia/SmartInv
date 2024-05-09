@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint256) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function pay() public payable {
+        payments[msg.sender] += msg.value;
+    }
+    
+    function withdraw(address payable _to, uint256 _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(payments[_to] >= _amount, "Insufficient balance");
+        
+        _to.transfer(_amount);
+        payments[_to] -= _amount;
+    }
+}
+<\contract_to_analyze\>

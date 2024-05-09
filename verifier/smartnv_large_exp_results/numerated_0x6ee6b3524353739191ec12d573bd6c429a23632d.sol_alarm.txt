@@ -1,0 +1,28 @@
+<\contract\>
+contract SubscriptionManager {
+    mapping(address => uint) public subscriptionFee;
+    mapping(address => bool) public isSubscribed;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function subscribe(uint amount) public {
+        require(!isSubscribed[msg.sender], "Already subscribed");
+        subscriptionFee[msg.sender] = amount;
+        isSubscribed[msg.sender] = true;
+    }
+
+    function unsubscribe() public {
+        require(isSubscribed[msg.sender], "Not subscribed");
+        isSubscribed[msg.sender] = false;
+        subscriptionFee[msg.sender] = 0;
+    }
+
+    function updateFee(address subscriber, uint newFee) public {
+        require(msg.sender == owner, "Not authorized");
+        subscriptionFee[subscriber] = newFee;
+    }
+}
+<\contract\>

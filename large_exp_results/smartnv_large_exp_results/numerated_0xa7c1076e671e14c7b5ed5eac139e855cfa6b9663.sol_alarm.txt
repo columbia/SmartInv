@@ -1,0 +1,35 @@
+<\contract\> 
+contract Escrow {
+     address public seller;
+     address public buyer;
+     uint public price;
+     bool public isPaid;
+
+     constructor(address _seller, uint _price) public {
+         seller = _seller;
+         price = _price;
+     }
+
+     function deposit() public payable {
+         require(msg.sender == buyer, "You are not the buyer");
+         require(msg.value == price, "Incorrect amount");
+         isPaid = true;
+     }
+
+     function release() public {
+         require(msg.sender == seller, "You are not the seller");
+         require(isPaid, "Payment has not been made");
+         payable(seller).transfer(address(this).balance);
+     }
+
+     function withdraw() public {
+         require(msg.sender == buyer, "You are not the buyer");
+         require(!isPaid, "Payment has been made");
+         payable(buyer).transfer(address(this).balance);
+     }
+}
+<\contract\> 
+
+Output:
+- Reentrancy
+- Inconsistent state update

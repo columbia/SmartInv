@@ -1,0 +1,17 @@
+<\contract\>
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    mapping(address => uint) public balanceOf;
+
+    function swap(uint amount) public {
+        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+        balanceOf[msg.sender] -= amount;
+    }
+}
+<\contract\> 
+
+<\output\>
+business logic flaw

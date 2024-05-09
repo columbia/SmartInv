@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract EscrowContract {
+    IERC20 public token;
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    constructor(address _token, address _buyer, address _seller, uint _amount) public {
+        token = IERC20(_token);
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only the seller can release funds");
+        token.transfer(buyer, amount);
+    }
+    
+    function refund() public {
+        require(msg.sender == buyer, "Only the buyer can request a refund");
+        token.transfer(seller, amount);
+    }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities in EscrowContract:
+- incorrect visibility/ownership (refund function can be called by anyone)
+- inconsistent state update (no check for whether tokens are actually transferred before updating state)
+- insufficient gas (if transferring tokens consumes a lot of gas, refund function may not complete successfully)

@@ -1,0 +1,9 @@
+This contract may have potential vulnerabilities in:
+
+1) inconsistent state update: The "proposal.votedAmount" is updated in the "execute" function, but it is not checked against the total voted amount in the "endExecute" function, potentially leading to inconsistent state.
+
+2) integer overflow/underflow: There are calculations involving adding and subtracting amounts in the functions, which could potentially lead to integer overflow or underflow if not properly handled.
+
+3) insufficient gas: The "endExecute" function checks if the execution has failed due to insufficient funds, but there is no gas stipend provided for the transaction to revert if it runs out of gas during this check, potentially leaving the contract in an inconsistent state.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, integer overflow/underflow, and insufficient gas.

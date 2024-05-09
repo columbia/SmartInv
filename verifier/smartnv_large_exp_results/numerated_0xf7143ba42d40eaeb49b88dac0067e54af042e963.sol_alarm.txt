@@ -1,0 +1,31 @@
+Contract:
+```solidity
+contract Marketplace {
+    address public owner;
+    mapping(uint => address) public tokenIdToOwner;
+    mapping(uint => uint) public tokenIdToPrice;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function setPrice(uint _tokenId, uint _price) public {
+        require(msg.sender == tokenIdToOwner[_tokenId], "You are not the owner of this token");
+        tokenIdToPrice[_tokenId] = _price;
+    }
+    
+    function buyToken(uint _tokenId) public payable {
+        require(msg.value == tokenIdToPrice[_tokenId], "Incorrect payment amount");
+        address payable seller = payable(tokenIdToOwner[_tokenId]);
+        seller.transfer(msg.value);
+        tokenIdToOwner[_tokenId] = msg.sender;
+        tokenIdToPrice[_tokenId] = 0;
+    }
+}
+```
+
+Output:
+```
+potential vulnerabilities:
+- incorrect visibility/ownership
+```

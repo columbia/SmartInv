@@ -1,0 +1,43 @@
+<\contract_to_analyze\>
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public balance;
+    uint public prizePool;
+    uint public totalTickets;
+    
+    constructor() public {
+        owner = msg.sender;
+        prizePool = 0;
+        totalTickets = 0;
+    }
+    
+    function buyTickets(uint tickets) public payable {
+        require(msg.value == tickets * 0.1 ether, "Incorrect payment amount");
+        balance[msg.sender] += tickets;
+        totalTickets += tickets;
+        prizePool += msg.value;
+    }
+    
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw the winner");
+        require(totalTickets > 0, "No tickets bought yet");
+        
+        uint winningTicket = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, totalTickets))) % totalTickets;
+        
+        address winner;
+        uint tickets = 0;
+        for (uint i = 0; i < totalTickets; i++) {
+            if (tickets < winningTicket) {
+                tickets += balance[msg.sender];
+            } else {
+                winner = msg.sender;
+                break;
+            }
+        }
+        
+        uint amountWon = prizePool;
+        prizePool = 0;
+        winner.transfer(amountWon);
+    }
+}
+<\contract_to_analyze\>

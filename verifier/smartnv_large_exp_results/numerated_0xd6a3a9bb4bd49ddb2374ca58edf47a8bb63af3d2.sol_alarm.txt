@@ -1,0 +1,26 @@
+contract PurchaseOrder {
+     uint public orderID; 
+     address public customer;
+     address public merchant; 
+     uint public price; 
+     uint public quantity; 
+     bool public fulfilled; 
+
+     modifier onlyMerchant() {
+         require(msg.sender == merchant, "Only the merchant can call this function");
+         _;
+     } 
+
+     constructor(uint _orderID, address _customer, uint _price, uint _quantity) {
+         orderID = _orderID; 
+         customer = _customer; 
+         price = _price; 
+         quantity = _quantity; 
+         fulfilled = false; 
+     }
+
+     function fulfillOrder() onlyMerchant public {
+         require(!fulfilled, "Order has already been fulfilled"); 
+         fulfilled = true; 
+     }
+}

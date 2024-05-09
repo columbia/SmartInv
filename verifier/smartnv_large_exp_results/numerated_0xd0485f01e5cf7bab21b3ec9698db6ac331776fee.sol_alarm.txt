@@ -1,0 +1,35 @@
+The contract to analyze for potential vulnerabilities:
+
+contract Lottery {
+     uint256 public totalTickets;
+     mapping(address => bool) public tickets;
+     address public winner;
+
+     function buyTicket() public {
+          require(tickets[msg.sender] == false, "You already have a ticket");
+          tickets[msg.sender] = true;
+          totalTickets++;
+     }
+
+     function pickWinner() public {
+          require(totalTickets > 0, "No tickets sold");
+          uint256 index = uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets;
+          address[] memory addressList = new address[](totalTickets);
+          uint256 count = 0;
+
+          for (uint256 i = 0; i < totalTickets; i++) {
+               if (tickets[addressList[i]] == true) {
+                    if (count == index) {
+                         winner = addressList[i];
+                         break;
+                    }
+                    count++;
+               }
+          }
+     }
+}
+
+Output:
+- incorrect visibility/ownership: public variables should be marked as private
+- inconsistent state update: addressList in pickWinner() not properly updated
+- business logic flaw: potential issue in picking winner logic and ticket buying logic

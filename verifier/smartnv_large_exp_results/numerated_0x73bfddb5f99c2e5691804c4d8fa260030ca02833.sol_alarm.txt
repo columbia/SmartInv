@@ -1,0 +1,28 @@
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount * tokenPrice, "Insufficient balance");
+        balances[msg.sender] -= _amount * tokenPrice;
+        // Transfer tokens to buyer
+        // Some code to transfer tokens
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        uint balance = address(this).balance;
+        msg.sender.transfer(balance);
+    }
+} 
+
+Output:
+- incorrect visibility/ownership

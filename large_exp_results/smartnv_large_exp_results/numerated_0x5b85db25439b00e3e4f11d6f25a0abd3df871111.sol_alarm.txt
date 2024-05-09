@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributions;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function contribute() public payable {
+        contributions[msg.sender] += msg.value;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "only owner can withdraw");
+        uint amount = address(this).balance;
+        payable(owner).transfer(amount);
+    }
+}
+
+Analysis:
+1) incorrect visibility/ownership: The withdraw function can be called by anyone, not just the owner, as the check for ownership is only done in the require statement. This could lead to unauthorized withdrawals.
+
+Therefore, the potential vulnerability in the Crowdsale contract is incorrect visibility/ownership.

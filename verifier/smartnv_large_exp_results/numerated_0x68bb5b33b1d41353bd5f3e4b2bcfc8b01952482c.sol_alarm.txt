@@ -1,0 +1,53 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+          uint256 weight;
+          bool voted;
+          address delegate;
+          uint256 vote;
+     }
+     struct Proposal {
+          uint256 totalVotes;
+          mapping(address => uint256) votes;
+          string description;
+     }
+     
+     address public owner;
+     mapping(address => Voter) public voters;
+     mapping(uint256 => Proposal) public proposals;
+     uint256 public numProposals;
+
+     constructor() {
+          owner = msg.sender;
+     }
+
+     function delegate(address _to) public {
+          require(voters[msg.sender].weight > 0, "You have no voting weight");
+          require(_to != msg.sender, "Self-delegate is not allowed");
+          require(voters[_to].delegate != msg.sender, "Re-delegation is not allowed");
+
+          voters[msg.sender].delegate = _to;
+          voters[msg.sender].weight = 0;
+          voters[_to].weight += 1;
+     }
+
+     function vote(uint256 _proposalId) public {
+          require(!voters[msg.sender].voted, "Already voted.");
+          uint256 voteWeight = voters[msg.sender].weight;
+          
+          proposals[_proposalId].votes[msg.sender] = voteWeight;
+          proposals[_proposalId].totalVotes += voteWeight;
+          
+          voters[msg.sender].voted = true;
+          voters[msg.sender].vote = _proposalId;
+     }
+
+     function createProposal(string memory _description) public {
+          require(msg.sender == owner, "Only owner can create proposals");
+          
+          numProposals++;
+          proposals[numProposals].description = _description;
+     }
+
+}
+<\contract\>

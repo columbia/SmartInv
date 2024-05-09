@@ -1,0 +1,27 @@
+The contract provided for analysis is:
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        votes[msg.sender] += 1;
+        totalVotes += 1;
+    }
+
+    function removeVote() public {
+        require(votes[msg.sender] > 0, "No votes to remove");
+        votes[msg.sender] -= 1;
+        totalVotes -= 1;
+    }
+
+    function getVoteCount(address _voter) public view returns (uint) {
+        return votes[_voter];
+    }
+}
+<\contract\>
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Integer overflow/underflow
+3) Incorrect visibility/ownership

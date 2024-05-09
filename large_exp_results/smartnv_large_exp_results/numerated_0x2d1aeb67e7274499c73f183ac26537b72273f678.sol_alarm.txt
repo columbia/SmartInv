@@ -1,0 +1,23 @@
+<\contract\>
+contract Escrow {
+         address public buyer;
+         address public seller;
+         uint public price;
+         IERC20 public token;
+
+         function deposit(uint _amount) public {
+             require(msg.sender == buyer, "only buyer can deposit funds");
+             token.transferFrom(msg.sender, address(this), _amount);
+         }
+
+         function release() public {
+             require(msg.sender == seller, "only seller can release funds");
+             token.transfer(seller, price);
+         }
+
+         function refund() public {
+             require(msg.sender == buyer, "only buyer can refund funds");
+             token.transfer(buyer, price);
+         }
+}
+<\contract\>

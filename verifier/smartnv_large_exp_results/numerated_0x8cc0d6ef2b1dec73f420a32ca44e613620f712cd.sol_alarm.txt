@@ -1,0 +1,65 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    mapping(uint => uint) public voteCount;
+
+    address public admin;
+    uint public totalVotes;
+    
+    constructor() {
+        admin = msg.sender;
+        totalVotes = 0;
+    }
+
+    function delegate(address to) public {
+        require(msg.sender != to, "Cannot delegate to yourself");
+        require(voters[to].delegate != msg.sender, "Circular delegation is not allowed");
+
+        Voter storage sender = voters[msg.sender];
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegateTo = voters[to];
+        delegateTo.weight += sender.weight;
+
+        if (delegateTo.voted) {
+            voteCount[delegateTo.vote] += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+
+        sender.voted = true;
+        sender.vote = option;
+        voteCount[option] += sender.weight;
+        totalVotes += sender.weight;
+    }
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    function endVoting() public onlyAdmin {
+        // logic to end voting and declare the result
+    }
+}
+<\contract\> 
+Potential Vulnerabilities:
+- ID uniqueness violation: The contract does not enforce uniqueness of voter ID, which could lead to manipulation of votes by creating multiple accounts to vote multiple times.
+- Incorrect visibility/ownership: The admin variable is public, which may expose sensitive information to all users of the contract. 
+
+Output:
+ID uniqueness violation
+Incorrect visibility/ownership

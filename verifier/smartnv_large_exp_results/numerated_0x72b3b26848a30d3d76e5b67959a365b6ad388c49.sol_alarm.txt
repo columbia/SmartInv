@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The "execute" function updates the state of the proposal by incrementing "proposal.votedAmount" without checking if the proposal is still in progress or if the amount transferred during execution is valid.
+
+2) Business logic flaw: The logic in the "endExecute" function to determine the success of execution may not accurately reflect the actual situation, potentially leading to incorrect outcomes.
+
+3) Ether leakage: When transferring tokens in the "liquidate" function of the ExchangeTokens contract, there is a risk of losing Ether if the transfer fails, which may be exploited by malicious actors to drain Ether from the contract.

@@ -1,0 +1,64 @@
+<\contract\> 
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    struct Proposal {
+        string description;
+        uint forVotes;
+        uint againstVotes;
+        bool executed;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint => Proposal) public proposals;
+    uint public numProposals;
+
+    function vote(uint proposalId, uint voteValue) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = voteValue;
+
+        if (voteValue == 1) {
+            proposals[proposalId].forVotes++;
+        } else {
+            proposals[proposalId].againstVotes++;
+        }
+    }
+
+    function executeProposal(uint proposalId) public {
+        require(!proposals[proposalId].executed, "Proposal already executed.");
+        
+        if (proposals[proposalId].forVotes > proposals[proposalId].againstVotes) {
+            //execute proposal
+            proposals[proposalId].executed = true;
+        }
+    }
+
+    function delegateVote(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+
+            require(to != msg.sender, "Cannot delegate to self.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegate_ = voters[to];
+        if (delegate_.voted) {
+            if (delegate_.vote == 1) {
+                proposals[delegate_.vote].forVotes++;
+            } else {
+                proposals[delegate_.vote].againstVotes++;
+            }
+        }
+    }
+}

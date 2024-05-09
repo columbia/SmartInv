@@ -1,0 +1,37 @@
+This is the contract you are going to analyze:
+
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    bool public payerApproved;
+    bool public recipientApproved;
+    uint public amount;
+    
+    constructor(address _recipient, address _arbiter) {
+        payer = msg.sender;
+        recipient = _recipient;
+        arbiter = _arbiter;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        amount += msg.value;
+    }
+    
+    function approve() public {
+        if(msg.sender == payer){
+            payerApproved = true;
+        } else if(msg.sender == recipient){
+            recipientApproved = true;
+        }
+    }
+    
+    function release() public {
+        require(arbiter == msg.sender, "Only arbiter can release funds");
+        require(payerApproved && recipientApproved, "Both parties must approve before funds can be released");
+        payable(recipient).transfer(amount);
+    }
+} 
+
+Please identify potential vulnerabilities in the above contract.

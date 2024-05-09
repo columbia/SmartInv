@@ -1,0 +1,23 @@
+Contract:
+
+contract Payment {
+    uint public totalBalance;
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities:
+1) Inconsistent state update: The totalBalance is updated in the deposit() function, but not updated again when a user withdraws funds. This could lead to inconsistencies in the totalBalance variable.
+2) Reentrancy: The withdraw function allows for reentrancy by calling an external contract before updating the user's balance. This could lead to potential vulnerabilities if the external contract exploit this design.
+3) Ether leakage: If an external attacker calls the deposit function with a large value, the totalBalance may overflow, leading to ether leakage. Additionally, there is no check for overflow in the contract.

@@ -1,0 +1,19 @@
+<\example_3\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid amount is too low");
+
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+}
+<\example_3\> 
+1) inconsistent state update
+2) ether leakage

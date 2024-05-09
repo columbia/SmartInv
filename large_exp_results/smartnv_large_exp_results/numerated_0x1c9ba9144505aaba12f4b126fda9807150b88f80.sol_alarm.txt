@@ -1,0 +1,26 @@
+The contract to analyze:
+
+contract PaymentChannel {
+    address public payer;
+    address public payee;
+    uint public amount;
+    bool public isOpen;
+
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+        isOpen = true;
+    }
+
+    function closeChannel() public {
+        require(msg.sender == payer || msg.sender == payee, "only payer or payee can close the channel");
+        isOpen = false;
+    }
+
+    function settle() public {
+        require(!isOpen, "channel is still open");
+        require(address(this).balance == amount, "incorrect amount sent");
+        payee.transfer(amount);
+    }
+}

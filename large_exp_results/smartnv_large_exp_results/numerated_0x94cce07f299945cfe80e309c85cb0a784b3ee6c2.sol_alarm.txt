@@ -1,0 +1,69 @@
+<\your_contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public chairperson;
+    uint public winningProposal;
+    
+    Proposal[] public proposals;
+    
+    event Voted(address voter, uint proposalNum);
+    
+    function VotingSystem(uint numProposals) public {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+        proposals.length = numProposals;
+        winningProposal = 0;
+    }
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted.");
+        
+        require(to != msg.sender, "Self-delegation is disallowed.");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Avoiding loop in delegation.");
+        }
+        
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            proposals[delegateTo.vote].vote += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+    
+    function vote(uint proposalNum) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Only voters can vote.");
+        require(!sender.voted, "Already voted.");
+        
+        sender.voted = true;
+        sender.vote = proposalNum;
+        
+        proposals[proposalNum].vote += sender.weight;
+        
+        emit Voted(msg.sender, proposalNum);
+    }
+    
+    function winningProposal() public {
+        uint winningVoteCount = 0;
+        for (uint i = 0; i < proposals.length; i++) {
+            if (proposals[i].vote > winningVoteCount) {
+                winningVoteCount = proposals[i].vote;
+                winningProposal = i;
+            }
+        }
+    }
+}
+<\your_contract\>

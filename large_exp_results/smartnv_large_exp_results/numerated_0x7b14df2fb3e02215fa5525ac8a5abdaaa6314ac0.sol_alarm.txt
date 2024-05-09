@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `execute` function updates the `votedAmount` in the `proposal` struct directly without consideration for potential concurrency issues.
+2) Insufficient gas: The `endExecute` function may fail if there is not enough gas to execute the required computations due to the use of `require` statements and potential gas limit constraints.
+3) Incorrect visibility/ownership: The `votingToken` variable is declared as public, which may expose sensitive information and should be restricted to reduce potential attack vectors.

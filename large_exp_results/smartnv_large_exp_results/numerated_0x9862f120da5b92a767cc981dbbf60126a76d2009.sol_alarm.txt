@@ -1,0 +1,32 @@
+Contract to be analyzed:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public tokenContract;
+    uint public price;
+    uint public tokensSold;
+
+    event Sell(address _buyer, uint _amount);
+
+    constructor(IERC20 _tokenContract, uint _price) {
+        owner = msg.sender;
+        tokenContract = _tokenContract;
+        price = _price;
+        tokensSold = 0;
+    }
+
+    function buyTokens(uint _numberOfTokens) public payable {
+        require(msg.value == _numberOfTokens * price);
+        require(tokenContract.balanceOf(address(this)) >= _numberOfTokens);
+
+        emit Sell(msg.sender, _numberOfTokens);
+        tokensSold += _numberOfTokens;
+
+        require(tokenContract.transfer(msg.sender, _numberOfTokens));
+    }
+}
+
+Output:
+- price manipulation
+- inconsistent state update
+- integer overflow/underflow

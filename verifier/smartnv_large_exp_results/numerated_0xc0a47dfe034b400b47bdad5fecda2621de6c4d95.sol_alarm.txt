@@ -1,0 +1,40 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+          uint256 weight;
+          bool voted;
+          address delegate;
+          uint256 vote;
+     }
+     struct Proposal {
+          uint256 votesReceived;
+          address[] voters;
+          mapping(address => uint256) voterWeight;
+          bool executed;
+     }
+     
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+
+     function delegate(address to) public {
+          require(chairperson == msg.sender, "Only chairperson can delegate.");
+          voters[to].weight++;
+     }
+
+     function vote(uint256 proposalIndex) public {
+          require(voters[msg.sender].weight > 0, "You don't have the right to vote.");
+          require(!voters[msg.sender].voted, "You already voted.");
+          proposals[proposalIndex].votesReceived += voters[msg.sender].weight;
+          voters[msg.sender].voted = true;
+          voters[msg.sender].vote = proposalIndex;
+          proposals[proposalIndex].voters.push(msg.sender);
+     }
+
+     function executeProposal(uint256 proposalIndex) public {
+          require(chairperson == msg.sender, "Only chairperson can execute proposal.");
+          require(!proposals[proposalIndex].executed, "Proposal already executed.");
+          proposals[proposalIndex].executed = true;
+     }
+}
+<\contract\>

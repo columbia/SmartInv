@@ -1,0 +1,27 @@
+<\contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public rate;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function setRate(uint _rate) external {
+        require(msg.sender == admin, "only admin can set rate");
+        rate = _rate;
+    }
+
+    function buyTokens(uint amount) external {
+        uint cost = amount * rate;
+        token.transferFrom(msg.sender, address(this), cost);
+        token.transfer(msg.sender, amount);
+    }
+
+    function withdrawTokens(uint amount) external {
+        require(msg.sender == admin, "only admin can withdraw tokens");
+        token.transfer(msg.sender, amount);
+    }
+}
+<\contract\>

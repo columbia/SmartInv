@@ -1,0 +1,23 @@
+Contract to be analyzed:
+
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         address public owner;
+         
+         constructor(address _tokenA, address _tokenB) {
+             tokenA = IERC20(_tokenA);
+             tokenB = IERC20(_tokenB);
+             owner = msg.sender;
+         }
+         
+         function swap(uint amount) public {
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             tokenB.transferFrom(owner, msg.sender, amount);
+         }
+}
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership (the owner variable is public and can be accessed/modified by any external contract)
+2) Insufficient gas (if the swap function requires a significant amount of gas, it may fail when called due to gas limitations)
+3) Atomicity violation (the swap function does two separate token transfers, which can result in inconsistency if one transfer fails and the other succeeds)

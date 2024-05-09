@@ -1,0 +1,19 @@
+Potential vulnerabilities in the following contract:
+
+1) Integer overflow/underflow: 
+- In the `execute` function, there is potential for integer overflow in `proposal.votedAmount += amount` if the voted amount surpasses the maximum uint256 value.
+
+2) Incorrect visibility/ownership: 
+- The `proposal` struct is not specified with a visibility modifier, making it public by default. This could potentially expose sensitive data.
+
+3) Inconsistent state update: 
+- In the `endExecute` function, the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` might lead to an inconsistent state if the balance of the contract changes between the balance check and the subsequent code execution.
+
+4) Atomicity violation:
+- Operations in functions like `startExecute` and `execute` involve multiple steps where various state changes are made. However, these steps are not wrapped in a transaction, potentially leading to atomicity violations if one of the steps fails.
+
+5) Ether leakage:
+- There is no handling for the transfer of Ether in any of the functions, which could result in Ether leakage if Ether is inadvertently sent to the contract.
+
+6) Privilege escalation:
+- The access control for critical functions like `startExecute`, `execute`, and `endExecute` is not clearly defined, leaving a potential vulnerability for privilege escalation if unauthorized users can call these functions.

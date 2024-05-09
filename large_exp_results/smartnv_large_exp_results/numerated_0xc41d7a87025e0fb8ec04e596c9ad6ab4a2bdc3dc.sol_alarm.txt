@@ -1,0 +1,6 @@
+The contract is vulnerable to:
+1) Inconsistent state update: The function `endExecute()` updates `lockedFunds` based on the balance of the contract at the end of execution, which can be manipulated if the balance changes unexpectedly before the execution ends.
+2) Incorrect visibility/ownership: The contract does not specify the visibility of the `votingToken` variable, potentially allowing unauthorized access to it.
+3) Atomicity violation: The `execute()` function is not atomic as it performs multiple operations that can fail independently, leading to inconsistent state if one operation fails.
+4) Insufficient gas: The `endExecute()` function might fail if it runs out of gas during execution, as it carries out multiple balance checks and operations.
+5) ID uniqueness violation: The contract does not handle ensuring uniqueness of proposal identifiers, potentially leading to conflicts if duplicate IDs are used.

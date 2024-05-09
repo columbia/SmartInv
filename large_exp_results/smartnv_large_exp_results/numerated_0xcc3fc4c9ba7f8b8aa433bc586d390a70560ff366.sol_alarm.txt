@@ -1,0 +1,35 @@
+Contract to analyze:
+
+contract VotingSystem {
+    mapping(address => bool) private hasVoted;
+    mapping(address => uint) private voteCount;
+    mapping(uint => uint) private proposalVotes;
+    address private admin;
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    function vote(uint proposalId) public {
+        require(hasVoted[msg.sender] == false, "Already voted");
+        voteCount[msg.sender]++;
+        proposalVotes[proposalId]++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function createProposal(uint proposalId) public onlyAdmin {
+        proposalVotes[proposalId] = 0;
+    }
+
+    function getVoteCount(address voter) public view returns (uint) {
+        return voteCount[voter];
+    }
+}
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation: There is no check to ensure that the proposalId is unique when creating a new proposal, which could lead to conflicts or unexpected behavior.
+2) Incorrect visibility/ownership: The admin variable is set to private, meaning only the contract itself can access and modify it, potentially limiting the functionality of the contract.
+3) Insufficient gas: The contract does not have any gas optimization mechanisms in place, which could result in costly operations or failed transactions.
+4) Inconsistent state update: The state updates in the vote function are not atomic, which could lead to inconsistent data if multiple transactions are processed simultaneously.
+5) Business logic flaw: There may be a business logic flaw depending on the specific requirements of the voting system, such as the lack of validation for the number of votes allowed per address.
+6) Reentrancy: The contract is susceptible to reentrancy attacks as there is no check to prevent reentrant calls in the vote function.

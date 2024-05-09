@@ -1,0 +1,43 @@
+Contract:
+```solidity
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, AWAITING_ARBITER, COMPLETE, REFUNDED}
+    State public currentState;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier inState(State expectedState) {
+        require(currentState == expectedState, "Invalid state for this operation");
+        _;
+    }
+
+    function makePayment() public payable onlyBuyer inState(State.AWAITING_PAYMENT) {
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public onlyBuyer inState(State.AWAITING_DELIVERY) {
+        currentState = State.AWAITING_ARBITER;
+    }
+
+    function resolveDispute(bool isRefunded) public {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        if(isRefunded){
+            currentState = State.REFUNDED;
+        } else {
+            currentState = State.COMPLETE;
+            payable(seller).transfer(address(this).balance);
+        }
+    }
+}
+```
+
+Output:
+The potential vulnerabilities in the provided contract are:
+1) Incorrect state update

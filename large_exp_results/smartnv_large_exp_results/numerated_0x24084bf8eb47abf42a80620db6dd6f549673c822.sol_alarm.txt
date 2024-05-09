@@ -1,0 +1,33 @@
+<\analyzed_contract\> 
+contract PaymentGateway {
+    address public owner;
+    mapping(address => uint256) public balance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can change owner");
+        owner = newOwner;
+    }
+
+    function getBalance(address account) public view returns (uint256) {
+        return balance[account];
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+- Reentrancy
+- Incorrect visibility/ownership

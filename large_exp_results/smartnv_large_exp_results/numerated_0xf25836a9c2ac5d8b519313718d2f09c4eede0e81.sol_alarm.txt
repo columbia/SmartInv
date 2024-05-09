@@ -1,0 +1,45 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBalance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Based on a review of the provided contract, the potential vulnerabilities identified are:
+
+1) Inconsistent state update: The contract may have inconsistent state updates as there is no explicit enforcement of state transitions and sequence of actions that should take place, leaving room for potential inconsistencies in the state of the contract.
+
+2) Incorrect visibility/ownership: The `owner` variable is declared as internal, which may lead to incorrect visibility and ownership control, potentially allowing unauthorized access to critical functions or data.
+
+3) Business logic flaw: There might be potential business logic flaws in the implementation of the functions `startExecute`, `execute`, and `endExecute` where the conditions for proposal handling and fund management could lead to unintended outcomes.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and business logic flaw.

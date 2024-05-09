@@ -1,0 +1,37 @@
+<\contract_to_analyze\>
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         address public admin;
+         uint public tokenPrice;
+         uint public totalTokens;
+         mapping(address => uint) public tokenBalances;
+         
+         constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+             token = _token;
+             owner = msg.sender;
+             tokenPrice = _tokenPrice;
+             totalTokens = _totalTokens;
+         }
+         
+         function buyTokens(uint _amount) public {
+             require(_amount > 0, "Amount must be greater than 0");
+             require(_amount * tokenPrice <= token.balanceOf(msg.sender), "Insufficient balance");
+             
+             uint cost = _amount * tokenPrice;
+             require(token.transferFrom(msg.sender, owner, cost), "Transfer failed");
+             
+             tokenBalances[msg.sender] += _amount;
+         }
+         
+         function withdrawTokens() public {
+             require(msg.sender == owner || msg.sender == admin, "You are not authorized");
+             require(token.transfer(msg.sender, tokenBalances[msg.sender]), "Transfer failed");
+         }
+         
+         function setAdmin(address _admin) public {
+             require(msg.sender == owner, "You are not authorized");
+             admin = _admin;
+         }
+}
+<\contract_to_analyze\>

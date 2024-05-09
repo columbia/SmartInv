@@ -1,0 +1,6 @@
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The update of `proposal.votedAmount` in the `execute` function may lead to inconsistent state if multiple transactions try to update it simultaneously.
+2) Incorrect visibility/ownership: The `owner` variable is defined as `internal`, which may lead to incorrect visibility and access control issues.
+3) Insufficient gas: The `endExecute` function may run out of gas if the loop to check `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` consumes excessive gas.
+4) Cross bridge inconsistency: There is a risk of inconsistency between different bridge networks when transferring tokens in the `liquidate` function, which involves transferring tokens between `USDC` and `WETH`.
+5) Integer overflow/underflow: There is a potential risk of integer overflow in the calculation `getPrice() * cAmount * 80 / 100` in the `liquidate` function if the values involved are large enough.

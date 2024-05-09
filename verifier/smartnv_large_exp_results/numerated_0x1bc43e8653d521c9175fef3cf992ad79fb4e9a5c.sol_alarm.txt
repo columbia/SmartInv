@@ -1,0 +1,35 @@
+Contract:
+```solidity
+contract TokenSale {
+    uint public price;
+    uint public totalTokens;
+    address public owner;
+    IERC20 public token;
+
+    constructor(uint _price, uint _totalTokens, address _tokenAddress) {
+        price = _price;
+        totalTokens = _totalTokens;
+        owner = msg.sender;
+        token = IERC20(_tokenAddress);
+    }
+
+    function buyTokens(uint _amount) external {
+        require(_amount * price <= token.balanceOf(msg.sender), "Insufficient balance");
+        require(_amount <= totalTokens, "Tokens sold out");
+
+        token.transferFrom(owner, msg.sender, _amount);
+        totalTokens -= _amount;
+    }
+
+    function changePrice(uint _newPrice) external {
+        require(msg.sender == owner, "Unauthorized");
+        price = _newPrice;
+    }
+}
+```
+
+Potential Vulnerabilities:
+1) Price manipulation: The owner can change the price of the tokens arbitrarily, which can lead to price manipulation.
+2) Privilege escalation: The `changePrice` function does not restrict who can change the price, allowing any address to modify the price if they call this function.
+3) Inconsistent state update: The `totalTokens` variable is decremented without any synchronization mechanism, which could lead to inconsistent state updates if multiple transactions try to buy tokens simultaneously.
+4) Incorrect visibility/ownership: The `owner` variable should be marked as private to prevent external entities from directly accessing or modifying it.

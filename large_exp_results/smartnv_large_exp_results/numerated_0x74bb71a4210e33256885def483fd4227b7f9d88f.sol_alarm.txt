@@ -1,0 +1,26 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) hasVoted;
+    uint256 totalVotes;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+
+    function getTotalVotes() public view returns (uint256) {
+        return totalVotes;
+    }
+}
+<\contract\>

@@ -1,0 +1,8 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The execute function modifies the state of the proposal struct by incrementing the votedAmount without explicitly updating the struct in storage. This can lead to inconsistent state if the storage is not updated correctly.
+
+2) Privilege escalation: The startExecute function allows any address to initiate a new proposal, which could potentially lead to unauthorized privilege escalation if a malicious actor creates a proposal without proper authorization.
+
+3) Cross bridge inconsistency: The contract implements the IERC20 interface but does not include all the required functions for a standard ERC20 token. This can lead to inconsistencies when interacting with other contracts or systems that expect a complete ERC20 implementation.
+
+4) ID uniqueness violation: There is no mechanism in place to ensure that each proposal has a unique identifier, which could lead to conflicts or errors when processing multiple proposals concurrently.

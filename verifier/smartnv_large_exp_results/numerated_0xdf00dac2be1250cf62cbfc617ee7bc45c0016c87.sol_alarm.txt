@@ -1,0 +1,32 @@
+<\contract_to_be_analyzed\>
+contract EscrowContract {
+   address public seller;
+   address public buyer;
+   address public arbiter;
+   bool public sellerApproved;
+   bool public buyerApproved;
+   bool public arbiterApproved;
+   uint public amount;
+
+   constructor(address _seller, address _buyer, address _arbiter, uint _amount) {
+      seller = _seller;
+      buyer = _buyer;
+      arbiter = _arbiter;
+      amount = _amount;
+   }
+
+   function approveRelease(address approver) public {
+      require(approver == seller || approver == buyer || approver == arbiter, "Invalid approver");
+      if (approver == seller) {
+         sellerApproved = true;
+      } else if (approver == buyer) {
+         buyerApproved = true;
+      } else if (approver == arbiter) {
+         arbiterApproved = true;
+      }
+      if (sellerApproved && buyerApproved && arbiterApproved) {
+         payable(seller).transfer(amount);
+      }
+   }
+}
+<\contract_to_be_analyzed\>

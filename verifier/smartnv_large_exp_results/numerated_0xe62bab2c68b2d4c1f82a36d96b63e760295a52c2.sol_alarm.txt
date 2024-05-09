@@ -1,0 +1,38 @@
+<\contract_to_be_analyzed\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    mapping(uint => uint) public voteCount;
+    
+    uint public totalVotes;
+
+    function vote(uint _candidate) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        
+        voters[msg.sender].vote = _candidate;
+        voters[msg.sender].voted = true;
+        
+        voteCount[_candidate]++;
+        totalVotes++;
+    }
+    
+    function delegate(address _to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        
+        sender.voted = true;
+        sender.delegate = _to;
+        
+        Voter storage delegateTo = voters[_to];
+        if (delegateTo.voted) {
+            voteCount[delegateTo.vote]++;
+            totalVotes++;
+        }
+    }
+}
+<\contract_to_be_analyzed\>

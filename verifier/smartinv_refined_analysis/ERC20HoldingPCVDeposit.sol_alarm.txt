@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function, but there is no check to ensure that the `proposal.addr` has enough balance to transfer the `amount`. This could lead to inconsistent state if the transfer fails.
+
+2) Atomicity violation: The `execute` function performs multiple actions without being wrapped in a single transaction. This opens up the possibility of a partial execution where some actions succeed while others fail, leading to an inconsistent state.
+
+3) Cross bridge inconsistency: The contract interacts with external contracts like `votingToken` and `address(this)`, which could potentially introduce inconsistencies if the external contracts behave unexpectedly.
+
+4) ID uniqueness violation: The contract does not enforce uniqueness for the `sTime` value in the `Proposal` struct. This could lead to issues if multiple proposals are created with the same `sTime` value.
+
+5) Business logic flaw: The requirement `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")` in the `endExecute` function checks if the balance of the contract is more than twice the total token supply, which seems incorrect and could lead to unintended consequences.

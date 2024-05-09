@@ -1,0 +1,23 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint256 public amount;
+
+    function deposit(address _payee) public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        payee = _payee;
+        amount = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == payee, "Only payee can withdraw funds");
+        payee.transfer(amount);
+    }
+
+    function cancel() public {
+        require(msg.sender == payer, "Only payer can cancel the escrow");
+        payer.transfer(amount);
+    }
+}
+<\contract\>

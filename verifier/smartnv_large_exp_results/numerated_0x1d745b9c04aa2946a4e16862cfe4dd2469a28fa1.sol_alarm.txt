@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+     address public owner;
+     mapping(address => uint) public payments;
+
+     constructor() public {
+          owner = msg.sender;
+     }
+
+    function processPayment() public {
+          uint payment = msg.value;
+          payments[msg.sender] += payment;
+     }
+
+    function withdraw() public {
+          uint amount = payments[msg.sender];
+          require(amount > 0, "No funds to withdraw");
+          (bool success, ) = msg.sender.call{value: amount}("");
+          require(success, "Transfer failed");
+          payments[msg.sender] = 0;
+    }
+}
+<\contract_to_analyze\>

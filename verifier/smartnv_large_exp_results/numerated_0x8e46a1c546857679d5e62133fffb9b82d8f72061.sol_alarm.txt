@@ -1,0 +1,19 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility/ownership: The `votingToken` and `proposal` variables are not properly defined in the contract, which could lead to issues with ownership and visibility.
+
+2) Inconsistent state update: The `proposal.votedAmount` is being directly modified in the `execute` function without proper synchronization mechanisms, which could lead to inconsistent state updates.
+
+3) Insufficient gas: There is a lack of gas stipend in the `execute` function, which could result in insufficient gas for the transaction to complete successfully.
+
+4) Integer overflow/underflow: There are multiple calculations involving integers (such as `startingBlance = getStartingBalance(proposal.addr)`) without proper checks for potential overflow or underflow.
+
+5) Privilege escalation: The `execute` function can be called by any address without proper access control mechanisms, which could lead to privilege escalation vulnerabilities.
+
+6) Cross bridge inconsistency: There is potential inconsistency between different bridges/interfaces used in the contract, such as `IERC20`, `IUniswapV2Pair`, and `IUniswapV2Pair`, which could result in cross bridge inconsistencies.
+
+7) Business logic flaw: The `endExecute` function has a condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")` that could potentially lead to flawed business logic.
+
+8) Suicidal contracts: There are no measures in place to prevent the contract from being destroyed maliciously, which could result in suicidal contract vulnerabilities.
+
+9) Price manipulation: There are calculations involving prices (`getPrice()` in the `liquidate` function) without proper checks, which could lead to price manipulation vulnerabilities.

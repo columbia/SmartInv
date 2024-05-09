@@ -1,0 +1,24 @@
+The contract provided for analysis is:
+
+contract Staking {
+    mapping(address => uint) public stakes;
+    IERC20 public token;
+
+    function stake(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), _amount);
+        stakes[msg.sender] += _amount;
+    }
+    
+    function unstake(uint _amount) public {
+        require(stakes[msg.sender] >= _amount, "Insufficient stakes");
+        token.transfer(msg.sender, _amount);
+        stakes[msg.sender] -= _amount;
+    }
+}
+
+The potential vulnerabilities in the given contract are:
+
+1) Inconsistent state update: There is no check to ensure that the stakes mapping is updated accurately when users unstake their tokens.
+2) Incorrect visibility/ownership: The stakes mapping is public, which exposes sensitive information about user stakes to the public.
+3) Insufficient gas: The contract does not account for potential gas costs that users may incur when calling the stake or unstake functions, potentially leading to failed transactions or user frustration.

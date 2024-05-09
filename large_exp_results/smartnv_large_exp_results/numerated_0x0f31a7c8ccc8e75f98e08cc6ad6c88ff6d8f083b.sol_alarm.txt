@@ -1,0 +1,23 @@
+<\contract_3\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == price, "Incorrect deposit amount");
+    }
+
+    function withdraw() public {
+        require(msg.sender == seller, "Only seller can withdraw");
+        payable(seller).transfer(address(this).balance);
+    }
+}
+<\contract_3\>

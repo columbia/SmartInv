@@ -1,0 +1,23 @@
+
+contract FinancialContract {
+    address public owner;
+    uint public balance;
+    
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit(uint amount) public {
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}

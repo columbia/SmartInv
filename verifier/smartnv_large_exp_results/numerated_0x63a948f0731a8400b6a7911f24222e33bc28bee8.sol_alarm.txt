@@ -1,0 +1,30 @@
+Contract:
+contract VotingSystem {
+     address public owner;
+     mapping(address => uint256) public votes;
+     uint256 public totalVotes;
+
+     constructor() {
+         owner = msg.sender;
+         totalVotes = 0;
+     }
+
+     function vote() public {
+         votes[msg.sender]++;
+         totalVotes++;
+     }
+
+     function changeOwner(address newOwner) public {
+         require(msg.sender == owner, "Only the owner can change the owner");
+         owner = newOwner;
+     }
+
+     function endVoting() public {
+         require(msg.sender == owner, "Only the owner can end the voting");
+         // Code to end the voting process
+     }
+}
+
+Potential vulnerabilities:
+- Privilege escalation (changeOwner function can be exploited to change ownership by unauthorized users)
+- Incorrect visibility/ownership (owner variable is public, potentially exposing sensitive information)

@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `endExecute()` updates the `lockedFunds` based on the balance of `votingToken`, which may lead to inconsistent state if the balances change before the function completes.
+
+2) Insufficient gas: The function `endExecute()` checks the balance of `votingToken` and performs multiple operations within the same function, which might require a significant amount of gas to execute, potentially leading to out-of-gas errors.
+
+3) Incorrect visibility/ownership: The function `startExecute()` and `execute()` are marked as external, but they access internal variables such as `proposal`, which might be intended for internal use only. This could expose the contract to unauthorized access or manipulation.
+
+Overall, the contract may have vulnerabilities related to inconsistent state update, insufficient gas, and incorrect visibility/ownership.

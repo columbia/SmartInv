@@ -1,0 +1,31 @@
+<\example\> 
+contract Escrow {
+    uint public balance = 0;
+    address public buyer;
+    address public seller;
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only the buyer can deposit");
+        balance += msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == seller, "Only the seller can withdraw");
+        msg.sender.transfer(balance);
+        balance = 0;
+    }
+
+    function setBuyer(address _buyer) public {
+        buyer = _buyer;
+    }
+
+    function setSeller(address _seller) public {
+        seller = _seller;
+    }
+}
+<\example\> 
+
+Potential vulnerabilities in the contract: 
+- Incorrect state update: The balance is updated directly in the deposit function without considering potential reentrancy issues.
+- Incorrect visibility/ownership: The setBuyer and setSeller functions do not have any access control mechanism, allowing anyone to change the buyer or seller address.
+- Ether leakage: In the withdraw function, the balance is transferred to the msg.sender before setting it to 0, which can potentially lead to ether leakage if the transfer fails after sending the balance.

@@ -1,0 +1,34 @@
+The contract provided:
+
+contract TokenExchange {
+      IERC20 public tokenA;
+      IERC20 public tokenB;
+      uint public tokenAReserve;
+      uint public tokenBReserve;
+
+      function swap(uint amount, bool forA) public {
+          uint calculatedAmount = calculateAmount(amount, forA);
+          require(forA ? tokenA.balanceOf(msg.sender) >= amount : tokenB.balanceOf(msg.sender) >= amount, "Insufficient balance");
+         
+          if(forA) {
+              tokenA.transferFrom(msg.sender, address(this), amount);
+              tokenB.transfer(msg.sender, calculatedAmount);
+          } else {
+              tokenB.transferFrom(msg.sender, address(this), amount);
+              tokenA.transfer(msg.sender, calculatedAmount);
+          }
+     }
+
+     function calculateAmount(uint amount, bool forA) internal view returns (uint) {
+          if(forA) {
+              return amount * tokenBReserve / tokenAReserve;
+          } else {
+              return amount * tokenAReserve / tokenBReserve;
+          }
+     }
+}
+
+Output: 
+- Incorrect visibility/ownership: The state variables tokenAReserve and tokenBReserve are public, providing unrestricted read access to them.
+- Inconsistent state update: The state variables tokenAReserve and tokenBReserve are not updated in the swap function, which may lead to inconsistent token reserves.
+- Arithmetic flaw: There is a potential arithmetic flaw in the calculateAmount function, as it performs division without considering potential overflow/underflow issues.

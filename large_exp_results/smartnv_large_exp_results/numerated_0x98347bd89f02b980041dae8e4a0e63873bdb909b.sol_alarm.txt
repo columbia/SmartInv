@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) privilege escalation: The contract does not have proper access control mechanisms, allowing any user to call functions such as startExecute, execute, and endExecute without appropriate permissions.
+2) inconsistent state update: The proposal state is being updated directly in the execute function based on the votedAmount, which can lead to inconsistencies if multiple transactions are processed concurrently.
+3) integer overflow/underflow: There is a potential for integer overflow in the endExecute function when calculating votingToken.balanceOf(address(this))*2, which could result in incorrect calculations and potential vulnerabilities.

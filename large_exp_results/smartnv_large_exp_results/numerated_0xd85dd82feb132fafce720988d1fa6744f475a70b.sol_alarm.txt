@@ -1,0 +1,24 @@
+<\contract\>
+contract Lottery {
+    mapping(address => uint) public players;
+    uint public totalPlayers;
+    uint public winningAmount;
+
+    function participate() public payable {
+        require(msg.value > 0, "You need to send some ether");
+        players[msg.sender] += msg.value;
+        totalPlayers++;
+    }
+
+    function selectWinner() public {
+        require(totalPlayers > 0, "No players participated");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty, totalPlayers))) % totalPlayers;
+        address winner = address(uint160(winnerIndex));
+        uint amount = players[winner];
+        delete players[winner];
+        totalPlayers--;
+        winningAmount = amount;
+        payable(winner).transfer(winningAmount);
+    }
+}
+<\contract\>

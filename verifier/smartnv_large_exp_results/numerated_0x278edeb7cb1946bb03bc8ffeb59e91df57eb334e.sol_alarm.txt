@@ -1,0 +1,36 @@
+<\contract\> 
+contract SubscriptionService {
+      struct Subscription {
+           address subscriber;
+           uint256 startTime;
+           uint256 endTime;
+           uint256 amountPaid;
+           bool active;
+      }
+      mapping(uint256 => Subscription) public subscriptions;
+      uint256 public subscriptionCount;
+
+      function subscribe(address _subscriber, uint256 _duration) external payable {
+           require(msg.value >= _duration * 0.1 ether, "Insufficient payment");
+           subscriptionCount++;
+           subscriptions[subscriptionCount] = Subscription(_subscriber, block.timestamp, block.timestamp + _duration, msg.value, true);
+      }
+
+      function unsubscribe(uint256 _subscriptionId) external {
+           require(subscriptions[_subscriptionId].subscriber == msg.sender, "Unauthorized");
+           require(subscriptions[_subscriptionId].active, "Subscription already inactive");
+           subscriptions[_subscriptionId].active = false;
+      }
+
+      function extendSubscription(uint256 _subscriptionId, uint256 _additionalDuration) external payable {
+           require(subscriptions[_subscriptionId].subscriber == msg.sender, "Unauthorized");
+           require(msg.value >= _additionalDuration * 0.1 ether, "Insufficient payment");
+           subscriptions[_subscriptionId].endTime += _additionalDuration;
+           subscriptions[_subscriptionId].amountPaid += msg.value;
+      }
+}
+<\contract\> 
+
+Output:
+- Insufficient gas
+- Incorrect visibility/ownership

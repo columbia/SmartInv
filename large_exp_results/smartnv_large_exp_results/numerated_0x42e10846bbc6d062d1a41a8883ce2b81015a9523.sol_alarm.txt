@@ -1,0 +1,40 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Voter {
+          uint256 tokens;
+          bool hasVoted;
+     }
+     mapping(address => Voter) public voters;
+     uint256 public totalTokens;
+     address public owner;
+
+    constructor(uint256 _totalTokens) {
+        totalTokens = _totalTokens;
+        owner = msg.sender;
+    }
+
+    function vote(uint256 tokens) external {
+        require(tokens <= voters[msg.sender].tokens, "Not enough tokens to vote");
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        
+        voters[msg.sender].tokens -= tokens;
+        voters[msg.sender].hasVoted = true;
+    }
+
+    function distributeTokens(address[] memory recipients, uint256[] memory tokens) external {
+        require(msg.sender == owner, "Only owner can distribute tokens");
+        require(recipients.length == tokens.length, "Arrays length mismatch");
+        
+        for (uint i = 0; i < recipients.length; i++) {
+            voters[recipients[i]].tokens += tokens[i];
+        }
+    }
+
+    function revokeVote() external {
+        require(voters[msg.sender].hasVoted, "Hasn't voted yet");
+        
+        voters[msg.sender].tokens += 1;
+        voters[msg.sender].hasVoted = false;
+    }
+}
+<\contract_to_analyze\>

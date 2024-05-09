@@ -1,0 +1,29 @@
+<\analyzed_contract\>
+contract EscrowContract {
+     address public buyer; 
+     address public seller; 
+     address public arbiter; 
+     uint public escrowAmount; 
+     bool public isPaid;
+     bool public isRefunded;
+
+     function deposit() public payable {
+          require(msg.sender == buyer, "only buyer can deposit"); 
+          require(!isPaid && !isRefunded, "escrow already completed");
+          require(msg.value == escrowAmount, "incorrect deposit amount");
+          isPaid = true; 
+     }
+
+     function release() public {
+          require(msg.sender == arbiter, "only arbiter can release funds");
+          require(isPaid && !isRefunded, "funds not available for release");
+          payable(seller).transfer(escrowAmount);
+     }
+
+     function refund() public {
+          require(msg.sender == arbiter, "only arbiter can refund funds");
+          require(isPaid && !isRefunded, "funds not available for refund");
+          payable(buyer).transfer(escrowAmount);
+          isRefunded = true; 
+     }
+}

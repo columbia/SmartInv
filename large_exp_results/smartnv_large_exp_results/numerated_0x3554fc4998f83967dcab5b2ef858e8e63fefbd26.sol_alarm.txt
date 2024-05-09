@@ -1,0 +1,28 @@
+The contract you provided:
+contract VestingContract {
+    address public beneficiary;
+    uint public startTime;
+    uint public duration;
+    uint public totalAmount;
+    uint public amountWithdrawn;
+
+    constructor(address _beneficiary, uint _duration, uint _totalAmount) public {
+        beneficiary = _beneficiary;
+        startTime = block.timestamp;
+        duration = _duration;
+        totalAmount = _totalAmount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == beneficiary, "Only beneficiary can withdraw");
+        require(block.timestamp >= startTime + duration, "Vesting period not over yet");
+
+        uint amount = (totalAmount * (block.timestamp - startTime) / duration) - amountWithdrawn;
+        amountWithdrawn += amount;
+        msg.sender.transfer(amount);
+    }
+}
+The potential vulnerabilities in the contract are:
+3) business logic flaw
+5) atomicity violation
+6) cross bridge inconsistency

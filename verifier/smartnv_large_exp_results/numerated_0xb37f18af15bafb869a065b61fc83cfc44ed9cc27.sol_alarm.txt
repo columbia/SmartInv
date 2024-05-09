@@ -1,0 +1,20 @@
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid value must be higher than current highest bid");
+        // return funds to the previous highest bidder
+        address payable previousBidder = payable(highestBidder);
+        previousBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function endAuction() public {
+        require(msg.sender == highestBidder, "Only highest bidder can end the auction");
+        // transfer funds to the auction owner
+        address payable auctionOwner = payable(address(this));
+        auctionOwner.transfer(highestBid);
+    }
+}

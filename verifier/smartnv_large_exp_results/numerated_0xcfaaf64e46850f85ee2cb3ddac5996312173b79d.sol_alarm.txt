@@ -1,0 +1,24 @@
+<\Contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint _paymentID, uint _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_paymentID] = _amount;
+    }
+
+    function getPaymentAmount(uint _paymentID) public view returns (uint) {
+        return payments[_paymentID];
+    }
+}
+<\Contract\> 
+
+The potential vulnerabilities in the contract are:
+1) privileged escalation, as the makePayment function allows only the owner to make payments;
+2) insufficient gas, as the makePayment function may require excessive gas to execute;
+3) incorrect visibility/ownership, as the owner variable is public.

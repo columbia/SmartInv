@@ -1,0 +1,29 @@
+Contract analysis: 
+
+contract Vault {
+     address public owner;
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+         balances[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         msg.sender.transfer(amount);
+     }
+
+     function changeOwner(address newOwner) public {
+         require(msg.sender == owner, "Only owner can change owner");
+         owner = newOwner;
+     }
+
+     function destroy() public {
+         selfdestruct(msg.sender);
+     }
+}
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership
+2) Suicidal contracts

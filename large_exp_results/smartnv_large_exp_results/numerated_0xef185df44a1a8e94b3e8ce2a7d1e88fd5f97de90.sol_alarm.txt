@@ -1,0 +1,28 @@
+contract Marketplace {
+    IERC20 public token;
+    address public admin;
+    mapping(address => uint) public balances;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        admin = msg.sender;
+    }
+
+    function deposit(uint amount) external {
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        token.transfer(msg.sender, amount);
+    }
+
+    function buy(address seller, uint price) external {
+        require(balances[msg.sender] >= price, "Insufficient balance");
+        balances[seller] += price;
+        balances[msg.sender] -= price;
+        token.transfer(seller, price);
+    }
+}

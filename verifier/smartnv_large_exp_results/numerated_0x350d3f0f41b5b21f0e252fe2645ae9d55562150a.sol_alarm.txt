@@ -1,0 +1,37 @@
+<\contract\> 
+contract Insurance {
+    struct Policy {
+        uint256 policyID;
+        uint256 premium;
+        uint256 claimAmount;
+        bool isActive;
+    }
+
+    mapping(address => Policy) public policies;
+    uint256 public totalPolicies;
+
+    function buyPolicy(uint256 _policyID, uint256 _premium) external {
+        require(!policies[msg.sender].isActive, "Policy already active");
+        policies[msg.sender] = Policy(_policyID, _premium, 0, true);
+        totalPolicies++;
+    }
+
+    function fileClaim(uint256 _claimAmount) external {
+        require(policies[msg.sender].isActive, "No active policy");
+        require(policies[msg.sender].claimAmount == 0, "Claim already filed");
+        policies[msg.sender].claimAmount = _claimAmount;
+    }
+
+    function payClaim() external {
+        require(policies[msg.sender].claimAmount > 0, "No claim to pay");
+        msg.sender.transfer(policies[msg.sender].claimAmount);
+        policies[msg.sender].claimAmount = 0;
+    }
+
+    function cancelPolicy() external {
+        require(policies[msg.sender].isActive, "No active policy");
+        policies[msg.sender].isActive = false;
+        totalPolicies--;
+    }
+}
+<\contract\>

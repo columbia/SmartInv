@@ -1,0 +1,28 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+    uint256 public totalVotes;
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeAdmin(address _newAdmin) public onlyAdmin {
+        admin = _newAdmin;
+    }
+
+    function resetVotes() public onlyAdmin {
+        totalVotes = 0;
+        for (uint i = 0; i < totalVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+    }
+}

@@ -1,0 +1,23 @@
+The contract to analyze:
+
+contract Account {
+    address public owner;
+    uint public balance;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Withdraw amount must be greater than 0");
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) atomicity violation
+2) integer overflow/underflow
+3) insufficient gas

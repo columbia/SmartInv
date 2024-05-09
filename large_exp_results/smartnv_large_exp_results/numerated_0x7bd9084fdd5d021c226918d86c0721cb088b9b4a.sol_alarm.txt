@@ -1,0 +1,16 @@
+<\your_contract\>
+contract PaymentProcessor {
+         address public owner;
+         address public paymentAddress;
+
+         function setPaymentAddress(address _paymentAddress) public {
+             require(msg.sender == owner, "only the owner can set the payment address");
+             paymentAddress = _paymentAddress;
+         }
+
+         function processPayment(uint amount) public {
+             require(msg.sender == paymentAddress, "only the designated payment address can process payments");
+             // process payment logic
+         }
+}
+<\your_contract\>

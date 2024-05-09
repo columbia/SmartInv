@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) atomicity violation: The functions startExecute, execute, and endExecute operate on the proposal struct without proper synchronization, potentially leading to inconsistent state updates if multiple users interact with the contract concurrently.
+2) inconsistent state update: The endExecute function locks the funds based on a condition involving the total supply of the voting token, which may not accurately reflect the intended logic of the operation.
+3) incorrect visibility/ownership: The contract implements the IERC20 interface but does not define the necessary functions, potentially causing issues with external contract interactions.

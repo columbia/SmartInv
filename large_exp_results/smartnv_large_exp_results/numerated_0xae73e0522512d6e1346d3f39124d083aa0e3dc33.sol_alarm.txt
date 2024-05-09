@@ -1,0 +1,19 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    IERC20 public token;
+    mapping(address => uint) public votes;
+
+    function vote(uint amount) public {
+        token.transferFrom(msg.sender, address(this), amount);
+        votes[msg.sender] += amount;
+    }
+
+    function getVoteCount(address user) public view returns (uint) {
+        return votes[user];
+    }
+
+    function endVoting() public {
+        // logic to calculate final results and take appropriate action
+    }
+}
+<\analyzed_contract\>

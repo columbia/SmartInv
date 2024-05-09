@@ -1,0 +1,35 @@
+The contract provided for analysis is:
+
+contract SupplyChain {
+     uint public proID = 1;      
+     struct Product {
+          uint id;
+          string name;
+          uint quantity;
+          address owner;
+          bool isSold;
+     }
+     mapping(uint => Product) public products;
+
+     function addProduct(string memory _name, uint _quantity) public {
+          Product memory newProduct = Product(proID, _name, _quantity, msg.sender, false);
+          products[proID] = newProduct;
+          proID++;
+     }
+
+     function buyProduct(uint _id) public payable {
+          Product storage product = products[_id];
+          require(product.id > 0 && !product.isSold, "Product is not available for sale");
+          require(msg.value >= calculatePrice(product.quantity), "Insufficient funds sent");
+          product.isSold = true;
+          product.owner.transfer(msg.value);
+     }
+
+     function calculatePrice(uint _quantity) internal view returns (uint) {
+          return _quantity * 100;
+     }
+}
+
+output:
+1) integer overflow/underflow
+2) incorrect visibility/ownership

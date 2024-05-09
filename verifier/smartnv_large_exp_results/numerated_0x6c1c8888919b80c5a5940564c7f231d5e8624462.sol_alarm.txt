@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public candidate;
+    uint256 public totalVotes;
+    
+    function vote(uint256 _candidate) public {
+        require(!voters[msg.sender].voted, "You have already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = _candidate;
+        totalVotes++;
+    }
+    
+    function declareWinner() public view returns (address) {
+        require(totalVotes > 0, "No votes have been cast");
+        return candidate;
+    }
+}
+<\contract\>

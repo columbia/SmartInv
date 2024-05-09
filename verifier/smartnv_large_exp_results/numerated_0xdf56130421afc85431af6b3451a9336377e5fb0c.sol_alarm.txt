@@ -1,0 +1,30 @@
+<\contract\> 
+contract PaymentChannel {
+    address public sender;
+    address public receiver;
+    uint public amount;
+    bool public isOpen;
+
+    constructor(address _receiver) payable {
+        sender = msg.sender;
+        receiver = _receiver;
+        amount = msg.value;
+        isOpen = true;
+    }
+
+    function closeChannel() public {
+        require(msg.sender == sender || msg.sender == receiver, "only sender or receiver can close the channel");
+        require(isOpen == true, "channel is already closed");
+        isOpen = false;
+        if (msg.sender == sender) {
+            sender.transfer(amount);
+        } else {
+            receiver.transfer(amount);
+        }
+    }
+}
+<\contract\> 
+
+<\output\>
+- atomicity violation
+- incorrect visibility/ownership

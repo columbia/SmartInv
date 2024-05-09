@@ -1,0 +1,38 @@
+<\The Contract You Are Analyzing\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address  internal admin;
+     IERC20 votingToken;
+
+    function createProposal() external {
+              uint256 startingBalance;
+              Proposal memory newProposal;
+              newProposal.startTime = block.timestamp;
+              newProposal.proposer = msg.sender;
+              startingBalance = getStartingBalance(newProposal.proposer);
+              startingBalanceList[newProposal.proposer] = startingBalance; 
+
+        }
+
+    function vote(uint256 amount) external {
+              Proposal storage currentProposal = getCurrentProposal();
+              require(currentProposal.startTime + 24 > block.timestamp, "voting period has ended");
+              votingToken.transferFrom(msg.sender, address(this), amount);
+              currentProposal.votedAmount += amount; 
+              votedProposal(currentProposal); 
+
+        }
+    function endVoting() external {
+              Proposal memory currentProposal = getCurrentProposal();
+              require(currentProposal.startTime != 0, "no proposal exists");
+              require(currentProposal.startTime + 24 < block.timestamp, "voting period has not ended");
+              require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "voting failed");
+        }
+}
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

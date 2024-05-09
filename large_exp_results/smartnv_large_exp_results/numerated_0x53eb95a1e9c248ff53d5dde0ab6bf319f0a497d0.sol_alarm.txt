@@ -1,0 +1,39 @@
+<\analyzed_contract\> 
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+     enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED }
+     State public currentState;
+
+    function initiate(address _seller) external {
+          seller = _seller;
+          buyer = msg.sender;
+          currentState = State.AWAITING_PAYMENT;
+      }
+
+    function makePayment() external payable {
+          require(msg.sender == buyer, "only buyer can make payment");
+          require(currentState == State.AWAITING_PAYMENT, "payment already made");
+          currentState = State.AWAITING_DELIVERY;
+      }
+
+    function confirmDelivery() external {
+          require(msg.sender == buyer, "only buyer can confirm delivery");
+          require(currentState == State.AWAITING_DELIVERY, "delivery not awaited");
+          seller.transfer(address(this).balance);
+          currentState = State.COMPLETE;
+      }
+
+    function refundPayment() external {
+          require(msg.sender == buyer, "only buyer can request refund");
+          require(currentState == State.AWAITING_DELIVERY, "refund not available yet");
+          currentState = State.REFUNDED;
+          buyer.transfer(address(this).balance);
+      }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the EscrowContract are:
+1) `refundPayment` function allows the buyer to request a refund even when the currentState is not AWAITING_DELIVERY.
+2) No check is in place to prevent the seller from confirming delivery before the buyer makes a payment, which could lead to inconsistent state update.
+3) The contract could experience ether leakage if there are any errors in handling ether transfers within the functions.

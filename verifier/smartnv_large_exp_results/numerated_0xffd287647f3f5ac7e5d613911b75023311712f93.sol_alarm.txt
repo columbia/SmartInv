@@ -1,0 +1,24 @@
+<\contract\>
+contract MultiSigWallet {
+    mapping(address => uint) public balances;
+    mapping(address => bool) public isOwner;
+    uint public totalOwners;
+    
+    modifier onlyOwner {
+        require(isOwner[msg.sender] == true, "Not an owner");
+        _;
+    }
+
+    function addOwner(address _newOwner) public onlyOwner {
+        require(totalOwners < 5, "Max number of owners reached");
+        isOwner[_newOwner] = true;
+        totalOwners++;
+    }
+
+    function withdraw(uint _amount) public onlyOwner {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        msg.sender.transfer(_amount);
+        balances[msg.sender] -= _amount;
+    }
+}
+<\contract\>

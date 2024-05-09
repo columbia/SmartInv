@@ -1,0 +1,23 @@
+<\the_contract_to_be_analyzed\>
+contract Marketplace {
+    address public admin;
+    mapping(address => uint) public productPrices;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function setProductPrice(address product, uint price) public {
+        require(msg.sender == admin, "only admin can set prices");
+        productPrices[product] = price;
+    }
+
+    function purchaseProduct(address product) public payable {
+        uint price = productPrices[product];
+        require(msg.value >= price, "insufficient funds");
+        admin.transfer(price * 95 / 100);
+        address _this = address(this);
+        product.transferFrom(_this, msg.sender, price);
+    }
+}
+<\the_contract_to_be_analyzed\>

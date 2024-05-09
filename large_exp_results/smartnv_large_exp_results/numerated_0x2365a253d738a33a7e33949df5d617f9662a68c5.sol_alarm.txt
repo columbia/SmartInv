@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract EscrowContract {
+     address public depositor;
+     address public beneficiary;
+     uint public amount;
+     mapping(address => uint) public balances;
+
+     constructor(address _beneficiary) public {
+         depositor = msg.sender;
+         beneficiary = _beneficiary;
+     }
+
+     function deposit(uint _amount) public {
+         require(msg.sender == depositor, "Only the depositor can deposit funds");
+         require(_amount > 0, "Deposit amount must be greater than 0");
+         balances[depositor] += _amount;
+         amount += _amount;
+     }
+
+     function withdraw() public {
+         require(msg.sender == beneficiary, "Only the beneficiary can withdraw funds");
+         uint amountToWithdraw = amount;
+         balances[depositor] -= amount;
+         amount = 0;
+         msg.sender.transfer(amountToWithdraw);
+     }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities:
+1) inconsistent state update
+2) incorrect visibility/ownership

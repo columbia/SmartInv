@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract Lottery {
+    address public manager;
+    address[] public players;
+
+    function join() public payable {
+        require(msg.value == 0.1 ether, "Insufficient funds");
+        players.push(msg.sender);
+    }
+
+    function pickWinner() public {
+        require(msg.sender == manager, "Only the manager can pick a winner");
+        uint index = random() % players.length;
+        address winner = players[index];
+        payable(winner).transfer(address(this).balance);
+        players = new address[](0);
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+}
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

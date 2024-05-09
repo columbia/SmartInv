@@ -1,0 +1,30 @@
+The contract to analyze:
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+    mapping(address => uint) public tokenBalance;
+
+    constructor(address _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+        totalTokensSold = 0;
+    }
+
+    function buyTokens(uint _numTokens) external {
+        uint totalCost = _numTokens * tokenPrice;
+        require(token.balanceOf(msg.sender) >= totalCost, "Insufficient balance");
+        token.transferFrom(msg.sender, owner, totalCost);
+        tokenBalance[msg.sender] += _numTokens;
+        totalTokensSold += _numTokens;
+    }
+
+    function withdrawTokens() external {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+Output: 
+- incorrect visibility/ownership

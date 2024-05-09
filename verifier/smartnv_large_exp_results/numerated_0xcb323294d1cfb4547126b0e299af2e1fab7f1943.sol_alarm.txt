@@ -1,0 +1,44 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+        }
+
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The "proposal" variable is being accessed directly in functions without specifying its visibility, which can lead to potential issues.
+2) Inconsistent state update: In the startExecute function, there is a typo in the variable name "startingBlance", which can lead to inconsistent state updates.
+3) Business logic flaw: The execution of proposals is based on time checks and voting conditions, which might have flaws in the overall business logic flow.
+4) Insufficient gas: If the contract has complex logic or heavy computation, there might be a risk of running out of gas during execution, leading to failures.
+
+Therefore, the identified vulnerabilities in the contract are:
+3) business logic flaw
+4) insufficient gas

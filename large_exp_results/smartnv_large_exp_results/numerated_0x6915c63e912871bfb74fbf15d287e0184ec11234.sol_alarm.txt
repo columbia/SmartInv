@@ -1,0 +1,25 @@
+Contract being analyzed: 
+
+contract MultiTokenSale {
+    mapping(address => uint) public balances;
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        balances[msg.sender] += amount;
+    }
+
+    function sellTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Insufficient gas - Gas limits not considered in buyTokens and sellTokens functions.
+2) Incorrect visibility/ownership - The balances mapping is public, exposing all user balances publicly.
+3) Inconsistent state update - In sellTokens function, balances are updated without checking if the transfer of tokens is successful, leaving room for inconsistent state if the transfer fails.
+4) Integer overflow/underflow - No checks performed for potential integer overflow/underflow in the balances mappings.
+5) Cross bridge inconsistency - No verification of token balances across different contracts, if tokens are being used from/for other contracts.
+6) Incorrect visibility/ownership - The balances mapping should be made private to protect user balances.
+7) Inconsistent state update - The balances mapping is updated without proper checks or error handling in buyTokens and sellTokens functions.

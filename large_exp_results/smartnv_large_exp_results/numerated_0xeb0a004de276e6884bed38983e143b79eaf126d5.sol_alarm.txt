@@ -1,0 +1,38 @@
+<\contract_1\>
+contract Escrow {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public price;
+         enum State {Created, Paid, Delivered, Refunded}
+         State public currentState;
+
+         function initiateEscrow(address _seller, address _arbiter) public {
+             require(currentState == State.Created, "Escrow already initiated");
+             buyer = msg.sender;
+             seller = _seller;
+             arbiter = _arbiter;
+             currentState = State.Paid;
+         }
+
+         function makePayment() public payable {
+             require(msg.sender == buyer, "Only the buyer can make the payment");
+             require(currentState == State.Paid, "Payment already made");
+             require(msg.value == price, "Incorrect payment amount");
+             currentState = State.Delivered;
+         }
+
+         function requestRefund() public {
+             require(msg.sender == buyer, "Only the buyer can request a refund");
+             require(currentState == State.Paid, "Payment not made yet");
+             currentState = State.Refunded;
+             payable(buyer).transfer(price);
+         }
+
+         function confirmDelivery() public {
+             require(msg.sender == buyer || msg.sender == arbiter, "Only the buyer or arbiter can confirm delivery");
+             require(currentState == State.Delivered, "Not yet delivered");
+             currentState = State.Refunded;
+             payable(seller).transfer(price);
+         }
+}

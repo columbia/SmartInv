@@ -1,0 +1,25 @@
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    mapping(address => uint) public fundsDeposited;
+
+    function depositFunds() public payable {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can deposit funds");
+        fundsDeposited[msg.sender] += msg.value;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        uint amount = fundsDeposited[buyer];
+        fundsDeposited[buyer] = 0;
+        payable(seller).transfer(amount);
+    }
+
+    function refundFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        uint amount = fundsDeposited[buyer];
+        fundsDeposited[buyer] = 0;
+        payable(buyer).transfer(amount);
+    }
+}

@@ -1,0 +1,34 @@
+Contract:
+
+contract TokenSale {
+  address public tokenAddress;
+  address public owner;
+  uint public tokenPrice;
+  uint public totalTokens;
+  mapping(address => uint) public tokensBought;
+
+  constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+    tokenAddress = _tokenAddress;
+    owner = msg.sender;
+    tokenPrice = _tokenPrice;
+    totalTokens = _totalTokens;
+  }
+
+  function buyTokens(uint _numTokens) public payable {
+    require(msg.value == _numTokens * tokenPrice, "Incorrect value sent for tokens");
+    require(tokensBought[msg.sender] + _numTokens <= totalTokens, "Exceeds total tokens available");
+    tokensBought[msg.sender] += _numTokens;
+    // transfer tokens to buyer address
+  }
+
+  function withdraw(address _to, uint _amount) public {
+    require(msg.sender == owner, "Only owner can withdraw funds");
+    require(address(this).balance >= _amount, "Insufficient balance");
+    payable(_to).transfer(_amount);
+  }
+}
+
+Output:
+1) Inconsistent state update: The contract does not verify if the buyer has enough balance before updating their token balance.
+2) Incorrect visibility/ownership: The `owner` variable is public, which could potentially lead to unauthorized access if not properly managed.
+3) Insufficient gas: Transferring funds in the `withdraw` function could potentially run out of gas if the contract's balance is too low.

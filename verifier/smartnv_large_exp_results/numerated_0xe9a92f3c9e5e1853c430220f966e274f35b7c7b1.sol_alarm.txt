@@ -1,0 +1,13 @@
+The contract contains the following potential vulnerabilities:
+
+1) Privilege escalation:
+   - The contract does not have proper access control mechanisms in place to prevent unauthorized users from calling critical functions.
+
+2) Inconsistent state update:
+   - The `execute` function updates the `votedAmount` of the proposal directly, which may lead to inconsistent state if multiple users try to execute the proposal simultaneously.
+
+3) Insufficient gas:
+   - If the `endExecute` function requires a large amount of gas to execute due to a high number of locked funds, it may run out of gas and fail to complete successfully.
+
+4) Incorrect visibility/ownership:
+   - It is unclear if the owner of the contract should have exclusive access to certain functions or data, as the `owner` variable is declared but not used in the provided code snippet. This lack of clarity can lead to ownership-related vulnerabilities.

@@ -1,0 +1,19 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `startExecute()` updates the proposal state without checking the current state, potentially allowing for inconsistent state updates.
+
+2) Incorrect visibility/ownership: The contract does not specify the visibility of the `proposal` variable, which may lead to potential visibility issues.
+
+3) Insufficient gas: The function `endExecute()` performs a loop to check if the locked funds are greater than half of the total supply, which may consume a significant amount of gas and result in insufficient gas for the transaction.
+
+4) ID uniqueness violation: The contract does not enforce uniqueness on the proposal ID, which may lead to conflicts or unexpected behavior.
+
+5) Atomicity violation: The function `execute()` updates the `votedAmount` before completing all the necessary operations, potentially resulting in atomicity violations.
+
+6) Ether leakage: The contract does not handle Ether transactions or consider potential Ether leakage scenarios.
+
+7) Business logic flaw: The function `endExecute()` checks if the double of the balance is greater than the total supply, which may not be a valid condition for execution.
+
+8) Arithmetic flaw: The function `liquidate()` contains an arithmetic operation that may lead to arithmetic flaws if not handled properly.
+
+Therefore, the identified potential vulnerabilities in the contract are: inconsistent state update, incorrect visibility/ownership, insufficient gas, ID uniqueness violation, atomicity violation, ether leakage, business logic flaw, and arithmetic flaw.

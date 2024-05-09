@@ -1,0 +1,146 @@
+1 pragma solidity ^0.4.4;
+2 
+3 contract Token {
+4 
+5     /// @return total amount of tokens
+6     function totalSupply() constant returns (uint256 supply) {}
+7 
+8     /// @param _owner The address from which the balance will be retrieved
+9     /// @return The balance
+10     function balanceOf(address _owner) constant returns (uint256 balance) {}
+11 
+12     /// @notice send `_value` token to `_to` from `msg.sender`
+13     /// @param _to The address of the recipient
+14     /// @param _value The amount of token to be transferred
+15     /// @return Whether the transfer was successful or not
+16     function transfer(address _to, uint256 _value) returns (bool success) {}
+17 
+18     /// @notice send `_value` token to `_to` from `_from` on the condition it is approved by `_from`
+19     /// @param _from The address of the sender
+20     /// @param _to The address of the recipient
+21     /// @param _value The amount of token to be transferred
+22     /// @return Whether the transfer was successful or not
+23     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {}
+24 
+25     /// @notice `msg.sender` approves `_addr` to spend `_value` tokens
+26     /// @param _spender The address of the account able to transfer the tokens
+27     /// @param _value The amount of wei to be approved for transfer
+28     /// @return Whether the approval was successful or not
+29     function approve(address _spender, uint256 _value) returns (bool success) {}
+30 
+31     /// @param _owner The address of the account owning tokens
+32     /// @param _spender The address of the account able to transfer the tokens
+33     /// @return Amount of remaining tokens allowed to spent
+34     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {}
+35 
+36     event Transfer(address indexed _from, address indexed _to, uint256 _value);
+37     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+38 }
+39 
+40 
+41 
+42 contract StandardToken is Token {
+43 
+44     function transfer(address _to, uint256 _value) returns (bool success) {
+45         //Default assumes totalSupply can't be over max (2^256 - 1).
+46         //If your token leaves out totalSupply and can issue more tokens as time goes on, you need to check if it doesn't wrap.
+47         //Replace the if with this one instead.
+48         //if (balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+49         if (balances[msg.sender] >= _value && _value > 0) {
+50             balances[msg.sender] -= _value;
+51             balances[_to] += _value;
+52             Transfer(msg.sender, _to, _value);
+53             return true;
+54         } else { return false; }
+55     }
+56 
+57     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+58         //same as above. Replace this line with the following if you want to protect against wrapping uints.
+59         //if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && balances[_to] + _value > balances[_to]) {
+60         if (balances[_from] >= _value && allowed[_from][msg.sender] >= _value && _value > 0) {
+61             balances[_to] += _value;
+62             balances[_from] -= _value;
+63             allowed[_from][msg.sender] -= _value;
+64             Transfer(_from, _to, _value);
+65             return true;
+66         } else { return false; }
+67     }
+68 
+69     function balanceOf(address _owner) constant returns (uint256 balance) {
+70         return balances[_owner];
+71     }
+72 
+73     function approve(address _spender, uint256 _value) returns (bool success) {
+74         allowed[msg.sender][_spender] = _value;
+75         Approval(msg.sender, _spender, _value);
+76         return true;
+77     }
+78 
+79     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
+80       return allowed[_owner][_spender];
+81     }
+82 
+83     mapping (address => uint256) balances;
+84     mapping (address => mapping (address => uint256)) allowed;
+85     uint256 public totalSupply;
+86 }
+87 
+88 
+89 contract XVKcoin is StandardToken {
+90 
+91     uint256 constant private MAX_UINT256 = 2**256 - 1;
+92     mapping (address => uint256) public balances;
+93     mapping (address => mapping (address => uint256)) public allowed;
+94     /*
+95     NOTE:
+96     The following variables are OPTIONAL vanities. One does not have to include them.
+97     They allow one to customise the token contract & in no way influences the core functionality.
+98     Some wallets/interfaces might not even bother to look at this information.
+99     */
+100     string public name = "XVK Coin";                   //fancy name: eg Simon Bucks
+101     uint8 public decimals = 18;                //How many decimals to show.
+102     string public symbol = "XVK";                 //An identifier: eg SBX
+103 
+104     function XVKcoin(
+105     ) public {
+106         balances[msg.sender] = 88888888000000000000000000;               // Give the creator all initial tokens
+107         totalSupply = 88888888000000000000000000;                        // Update total supply
+108         name = "XVKcoin";                                   // Set the name for display purposes
+109         decimals = 18;                            // Amount of decimals for display purposes
+110         symbol = "XVK";                               // Set the symbol for display purposes
+111     }
+112 
+113     function transfer(address _to, uint256 _value) public returns (bool success) {
+114         require(balances[msg.sender] >= _value);
+115         balances[msg.sender] -= _value;
+116         balances[_to] += _value;
+117         Transfer(msg.sender, _to, _value);
+118         return true;
+119     }
+120 
+121     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+122         uint256 allowance = allowed[_from][msg.sender];
+123         require(balances[_from] >= _value && allowance >= _value);
+124         balances[_to] += _value;
+125         balances[_from] -= _value;
+126         if (allowance < MAX_UINT256) {
+127             allowed[_from][msg.sender] -= _value;
+128         }
+129         Transfer(_from, _to, _value);
+130         return true;
+131     }
+132 
+133     function balanceOf(address _owner) public view returns (uint256 balance) {
+134         return balances[_owner];
+135     }
+136 
+137     function approve(address _spender, uint256 _value) public returns (bool success) {
+138         allowed[msg.sender][_spender] = _value;
+139         Approval(msg.sender, _spender, _value);
+140         return true;
+141     }
+142 
+143     function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
+144         return allowed[_owner][_spender];
+145     }   
+146 }

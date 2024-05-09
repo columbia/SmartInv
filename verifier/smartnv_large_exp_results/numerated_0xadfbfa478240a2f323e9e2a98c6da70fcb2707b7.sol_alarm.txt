@@ -1,0 +1,24 @@
+Contract to be analyzed:
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+
+    function addOwner(address owner) public {
+        require(!isOwner[owner], "Owner already exists");
+        owners.push(owner);
+        isOwner[owner] = true;
+    }
+
+    function removeOwner(address owner) public {
+        require(isOwner[owner], "Owner does not exist");
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == owner) {
+                isOwner[owner] = false;
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                break;
+            }
+        }
+    }
+}
+Output: potential vulnerabilities in the contract are ID uniqueness violation.

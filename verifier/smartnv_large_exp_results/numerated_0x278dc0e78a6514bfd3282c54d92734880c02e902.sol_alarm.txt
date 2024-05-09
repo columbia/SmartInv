@@ -1,0 +1,25 @@
+Contract TokenSale {
+    address public admin;
+    IERC20 public token;
+
+    constructor(IERC20 _token) {
+        admin = msg.sender;
+        token = _token;
+    }
+
+    function buyTokens(uint256 amount) external {
+        require(msg.value >= amount, "Insufficient payment");
+        uint256 tokensToTransfer = amount * getPrice();
+        token.transfer(msg.sender, tokensToTransfer);
+    }
+
+    function getPrice() public view returns(uint256) {
+        // external price oracle function call here
+    }
+} 
+
+The potential vulnerabilities in the TokenSale contract are:
+4) inconsistent state update: The contract does not update the state of the contract after transferring tokens to the buyer, which can lead to an inconsistent state.
+5) atomicity violation: The calculation of tokens to transfer is not atomic, as it involves multiple operations, which can lead to race conditions.
+13) insufficient gas: The buyTokens function may fail due to insufficient gas if the amount of tokens to transfer is large, causing the transaction to revert.
+14) incorrect visibility/ownership: The admin variable is declared as public, potentially exposing sensitive information about the contract owner.

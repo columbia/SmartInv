@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+contract MultiSigWallet {
+     mapping(address => uint) public balances;
+     address[] public owners;
+     address[] public pendingOwners;
+
+     function transfer(uint amount, address recipient) external {
+         require(amount <= balances[msg.sender], "Insufficient balance");
+         balances[msg.sender] -= amount;
+         balances[recipient] += amount;
+     }
+
+     function addOwner(address newOwner) external {
+         pendingOwners.push(newOwner);
+         if (pendingOwners.length == owners.length) {
+             for (uint i = 0; i < pendingOwners.length; i++) {
+                 owners.push(pendingOwners[i]);
+             }
+             pendingOwners = new address[](0);
+         }
+     }
+
+     function removeOwner(address owner) external {
+         for (uint i = 0; i < owners.length; i++) {
+             if (owners[i] == owner) {
+                 delete owners[i];
+             }
+         }
+     }
+}
+
+Potential vulnerabilities in the contract:
+7) ID uniqueness violation: There is a potential issue where the removeOwner function does not properly remove the specified owner from the owners array, leading to a possible ID uniqueness violation.
+8) reentrancy: The transfer function does not include any mechanisms to prevent reentrancy attacks, leaving the contract vulnerable to reentrancy exploits.

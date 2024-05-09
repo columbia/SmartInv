@@ -1,0 +1,22 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint256) public votesReceived;
+    
+    function vote(uint256 proposalId) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        votesReceived[proposalId]++;
+        hasVoted[msg.sender] = true;
+    }
+    
+    function getVoteCount(uint256 proposalId) public view returns (uint256) {
+        return votesReceived[proposalId];
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract VotingSystem could be:
+1) Inconsistent state update: The state of whether an address has voted or not is updated directly in the vote function without considering potential reentrancy or other scenarios.
+2) ID uniqueness violation: There is no uniqueness check for the proposalId, which may lead to vote count inaccuracies.
+3) Incorrect visibility/ownership: The visibility of the hasVoted mapping and votesReceived mapping being public may expose sensitive information and lead to unauthorized access.

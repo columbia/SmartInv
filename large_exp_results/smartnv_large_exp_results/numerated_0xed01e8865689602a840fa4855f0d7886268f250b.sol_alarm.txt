@@ -1,0 +1,24 @@
+contract Crowdsale {
+    address public owner;
+    uint public totalTokens;
+    mapping(address => uint) public tokenBalances;
+
+    constructor(uint _totalTokens) {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount should be greater than 0");
+        require(tokenBalances[msg.sender] + amount <= totalTokens, "Not enough tokens left");
+        tokenBalances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        // Implement token withdrawal logic here
+    }
+} 
+
+Output:
+1) incorrect visibility/ownership

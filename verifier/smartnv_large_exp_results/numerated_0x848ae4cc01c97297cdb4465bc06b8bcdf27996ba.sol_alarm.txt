@@ -1,0 +1,31 @@
+Contract to Analyze:
+
+contract CrowdSale {
+    address public owner;
+    uint public totalSupply;
+    mapping(address => uint) public balanceOf;
+    bool public isOpen;
+
+    constructor(uint _totalSupply) {
+        owner = msg.sender;
+        totalSupply = _totalSupply;
+        isOpen = true;
+    }
+
+    function buyTokens(uint amount) public {
+        require(isOpen, "Crowdsale is closed");
+        require(totalSupply >= amount, "Not enough tokens left");
+        
+        balanceOf[msg.sender] += amount;
+        totalSupply -= amount;
+    }
+
+    function closeCrowdsale() public {
+        require(msg.sender == owner, "Only owner can close the crowdsale");
+        isOpen = false;
+    }
+}
+
+Output:
+- incorrect visibility/ownership
+- inconsistent state update

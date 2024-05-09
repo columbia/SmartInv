@@ -1,0 +1,36 @@
+<\contract\> 
+contract TokenSale {
+     address public token;
+     address public admin;
+     uint public tokenPrice;
+     uint public tokensSold;
+    
+     constructor(address _token, uint _tokenPrice) {
+         token = _token;
+         admin = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(msg.value == _amount * tokenPrice, "Incorrect amount sent");
+         require(IERC20(token).balanceOf(address(this)) >= _amount, "Not enough tokens in sale");
+
+         (bool success, ) = address(token).call(abi.encodeWithSignature("transfer(address,uint256)", msg.sender, _amount));
+         require(success, "Token transfer failed");
+
+         tokensSold += _amount;
+     }
+
+     function endSale() public {
+         require(msg.sender == admin, "Only admin can end the sale");
+         // Transfer remaining tokens back to admin
+         uint remainingTokens = IERC20(token).balanceOf(address(this));
+         (bool success, ) = address(token).call(abi.encodeWithSignature("transfer(address,uint256)", admin, remainingTokens));
+         require(success, "Token transfer failed");
+
+         // Transfer Ether in contract to admin
+         (success, ) = admin.call{value: address(this).balance}("");
+         require(success, "Ether transfer failed");
+     }
+}
+<\contract\>

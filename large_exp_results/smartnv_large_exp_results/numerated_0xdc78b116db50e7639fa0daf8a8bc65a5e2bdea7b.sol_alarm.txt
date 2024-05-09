@@ -1,0 +1,18 @@
+<\contract\> 
+contract Market {
+    uint public price;
+    address public owner;
+    
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "only owner can set price");
+        price = _price;
+    }
+    
+    function buy() public payable {
+        require(msg.value >= price, "insufficient payment");
+        address(this).transfer(msg.value);
+    }
+}
+<\contract\> 
+Output:
+1) incorrect visibility/ownership.

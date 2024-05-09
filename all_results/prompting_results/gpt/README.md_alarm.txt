@@ -1,0 +1,1 @@
+a set of instructions written in a programming language that tells a computer how to perform a specific task or set of tasks. It can be written by a programmer and is used to create software applications, websites, and other computer programs.

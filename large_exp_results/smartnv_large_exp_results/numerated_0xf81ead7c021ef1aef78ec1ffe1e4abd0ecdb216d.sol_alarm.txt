@@ -1,0 +1,26 @@
+<\contract_to_analyze\> 
+contract Escrow {
+     mapping(address => uint) public deposits; 
+     address public beneficiary; 
+
+     function deposit() public payable {
+         deposits[msg.sender] += msg.value;
+     }
+
+     function withdraw() public {
+         uint amount = deposits[msg.sender];
+         deposits[msg.sender] = 0;
+         payable(msg.sender).transfer(amount);
+     }
+
+     function setBeneficiary(address _beneficiary) public {
+         require(msg.sender == beneficiary, "only beneficiary can set");
+         beneficiary = _beneficiary;
+     }
+} 
+
+<\contract_to_analyze\> 
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) incorrect visibility/ownership

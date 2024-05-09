@@ -1,0 +1,14 @@
+The contract to analyze:
+contract VotingSystem {
+         mapping(address => bool) public hasVoted;
+         mapping(uint => uint) public votes;
+         
+         function vote(uint proposalId) public {
+             require(!hasVoted[msg.sender], "You have already voted");
+             votes[proposalId]++;
+             hasVoted[msg.sender] = true;
+         }
+}
+Potential vulnerabilities:
+7) ID uniqueness violation: The contract does not enforce uniqueness of the proposal ID, which could lead to conflicts or inconsistencies in the voting results.
+14) Incorrect visibility/ownership: The state variables `hasVoted` and `votes` are publicly accessible, which may lead to unauthorized access or manipulation of the voting data.

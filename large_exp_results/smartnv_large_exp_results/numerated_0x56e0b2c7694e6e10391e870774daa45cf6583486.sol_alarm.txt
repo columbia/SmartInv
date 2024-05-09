@@ -1,0 +1,30 @@
+<\contract\>
+contract TokenExchange {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         uint256 public price;
+
+         function initializeExchange(IERC20 _tokenA, IERC20 _tokenB) external {
+              tokenA = _tokenA;
+              tokenB = _tokenB;
+              price = 1;
+         }
+
+         function updatePrice(uint256 newPrice) external {
+              price = newPrice;
+         }
+
+         function exchange(uint256 amount, bool isAToB) external {
+              uint256 amountToReceive;
+              if(isAToB) {
+                   amountToReceive = amount * price;
+                   tokenA.transferFrom(msg.sender, address(this), amount);
+                   tokenB.transfer(msg.sender, amountToReceive);
+              } else {
+                   amountToReceive = amount / price;
+                   tokenB.transferFrom(msg.sender, address(this), amount);
+                   tokenA.transfer(msg.sender, amountToReceive);
+              }
+         }
+}
+<\contract\>

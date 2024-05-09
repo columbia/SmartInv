@@ -1,0 +1,39 @@
+Contract: 
+contract MultiSigWallet {
+    address[] public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+    
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+    
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        require(msg.sender == owners[0], "Only owner 1 can submit transaction");
+        transactions[transactionCount] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+    
+    function executeTransaction(uint transactionId) public {
+        require(msg.sender == owners[1], "Only owner 2 can execute transaction");
+        Transaction storage transaction = transactions[transactionId];
+        require(!transaction.executed, "Transaction already executed");
+        
+        (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+        
+        transaction.executed = true;
+    }
+    
+    function addOwner(address newOwner) public {
+        require(msg.sender == owners[0], "Only owner 1 can add new owner");
+        owners.push(newOwner);
+    }
+}
+Output: 
+1) inconsistent state update
+2) improper access control (addOwner function can be called by any owner)
+3) transaction execution without proper validation or confirmation (executeTransaction function)

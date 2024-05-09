@@ -1,0 +1,33 @@
+{{
+  "language": "Solidity",
+  "sources": {
+    "token.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.10;\n\nimport \"erc20.sol\";\n\n/**\n *  Token\n *\n * ERC-20 implementation, with mint & burn\n */\ncontract Token is IERC20 {\n    address internal owner;\n    address internal pendingOwner;\n    address internal issuer;\n\n    uint8 public decimals;\n    uint256 public totalSupply;\n    uint256 internal maxSupply;\n\n    mapping (address => uint256) public override balanceOf;\n    mapping (address => mapping (address => uint256)) public override allowance;\n\n    string public name;\n    string public symbol;\n\n    event NewIssuer(address indexed issuer);\n    event TransferOwnership(address indexed owner, bool indexed confirmed);\n\n    modifier only(address role) {\n        require(msg.sender == role); // dev: missing role\n        _;\n    }\n\n    /**\n     * Sets the token fields: name, symbol and decimals\n     *\n     * @param tokenName Name of the token\n     * @param tokenSymbol Token Symbol\n     * @param tokenDecimals Decimal places\n     * @param tokenOwner Token Owner\n     * @param tokenIssuer Token Issuer\n     * @param tokenMaxSupply Max total supply\n     */\n    constructor(string memory tokenName, string memory tokenSymbol, uint8 tokenDecimals, address tokenOwner, address tokenIssuer, uint256 tokenMaxSupply) {\n        require(tokenOwner != address(0)); // dev: invalid owner\n        require(tokenIssuer != address(0)); // dev: invalid issuer\n        require(tokenMaxSupply > 0); // dev: invalid max supply\n\n        name = tokenName;\n        symbol = tokenSymbol;\n        decimals = tokenDecimals;\n        owner = tokenOwner;\n        issuer = tokenIssuer;\n        maxSupply = tokenMaxSupply;\n    }\n\n    /**\n     * Sets the owner\n     *\n     * @param newOwner Address of the new owner (must be confirmed by the new owner)\n     */\n    function transferOwnership(address newOwner)\n    external\n    only(owner) {\n        pendingOwner = newOwner;\n\n        emit TransferOwnership(pendingOwner, false);\n    }\n\n    /**\n     * Confirms the new owner\n     */\n    function confirmOwnership()\n    external\n    only(pendingOwner) {\n        owner = pendingOwner;\n        pendingOwner = address(0);\n\n        emit TransferOwnership(owner, true);\n    }\n\n    /**\n     * Sets the issuer\n     *\n     * @param newIssuer Address of the issuer\n     */\n    function setIssuer(address newIssuer)\n    external\n    only(owner) {\n        issuer = newIssuer;\n\n        emit NewIssuer(issuer);\n    }\n\n    /**\n     * Mints {value} tokens to the {to} wallet.\n     *\n     * @param to The address receiving the newly minted tokens\n     * @param value The number of tokens to mint\n     */\n    function mint(address to, uint256 value)\n    external\n    only(issuer) {\n        require(to != address(0)); // dev: requires non-zero address\n        require(totalSupply + value <= maxSupply); // dev: exceeds max supply\n\n        unchecked {\n            totalSupply += value;\n            balanceOf[to] += value;\n        }\n\n        emit Transfer(address(0), to, value);\n    }\n\n    /**\n     * Approves the {spender} to transfer {value} tokens of the caller.\n     *\n     * @param spender The address which will spend the funds\n     * @param value The value approved to be spent by the spender\n     * @return A boolean that indicates if the operation was successful\n     */\n    function approve(address spender, uint256 value)\n    external\n    override\n    returns(bool) {\n        allowance[msg.sender][spender] = value;\n\n        emit Approval(msg.sender, spender, value);\n\n        return true;\n    }\n\n    /**\n     * Transfers {value} tokens from the caller, to {to}\n     *\n     * @param to The address to transfer tokens to\n     * @param value The number of tokens to be transferred\n     * @return A boolean that indicates if the operation was successful\n     */\n    function transfer(address to, uint256 value)\n    external\n    override\n    returns (bool) {\n        updateBalance(msg.sender, to, value);\n\n        return true;\n    }\n\n    /**\n     * Transfers {value} tokens of {from} to {to}, on behalf of the caller.\n     *\n     * @param from The address to transfer tokens from\n     * @param to The address to transfer tokens to\n     * @param value The number of tokens to be transferred\n     * @return A boolean that indicates if the operation was successful\n     */\n    function transferFrom(address from, address to, uint256 value)\n    external\n    override\n    returns (bool) {\n        require(allowance[from][msg.sender] >= value); // dev: exceeds allowance\n        updateBalance(from, to, value);\n        unchecked {\n            allowance[from][msg.sender] -= value;\n        }\n\n        return true;\n    }\n\n    function updateBalance(address from, address to, uint256 value)\n    internal {\n        require(to != address(0)); // dev: requires non-zero address\n        require(balanceOf[from] >= value); // dev: exceeds balance\n        unchecked {\n            balanceOf[from] -= value;\n            balanceOf[to] += value;\n        }\n\n        emit Transfer(from, to, value);\n    }\n}"
+    },
+    "erc20.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.0;\n\ninterface IERC20 {\n    function totalSupply() external view returns (uint);\n    function balanceOf(address account) external view returns (uint);\n    function transfer(address recipient, uint amount) external returns (bool);\n    function transferFrom(address sender, address recipient, uint amount) external returns (bool);\n    function approve(address spender, uint amount) external returns (bool);\n    function allowance(address owner, address spender) external view returns (uint);\n\n    event Transfer(address indexed from, address indexed to, uint value);\n    event Approval(address indexed owner, address indexed spender, uint value);\n}\n"
+    }
+  },
+  "settings": {
+    "evmVersion": "istanbul",
+    "optimizer": {
+      "enabled": true,
+      "runs": 1000
+    },
+    "libraries": {
+      "token.sol": {}
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    }
+  }
+}}

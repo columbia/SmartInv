@@ -1,0 +1,27 @@
+Contract to analyze:
+contract SimpleToken {
+     mapping(address => uint) public balances;
+     uint public totalSupply;
+     address public owner;
+
+     constructor(uint _totalSupply) public {
+         totalSupply = _totalSupply;
+         owner = msg.sender;
+         balances[msg.sender] = _totalSupply;
+     }
+
+     function transfer(address to, uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         balances[to] += amount;
+     }
+
+     function mint(uint amount) public {
+         require(msg.sender == owner, "Only owner can mint tokens");
+         totalSupply += amount;
+         balances[owner] += amount;
+     }
+}
+Output:
+- correct ownership
+- suicidal contracts

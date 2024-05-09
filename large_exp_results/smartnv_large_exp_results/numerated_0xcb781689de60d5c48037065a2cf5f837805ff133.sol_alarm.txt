@@ -1,0 +1,25 @@
+<\your_contract\>
+   contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         address public beneficiary;
+         uint public tokenPrice;
+         uint public tokenAmount;
+
+         constructor(IERC20 _token, address _beneficiary, uint _tokenPrice, uint _tokenAmount) {
+               token = _token;
+               owner = msg.sender;
+               beneficiary = _beneficiary;
+               tokenPrice = _tokenPrice;
+               tokenAmount = _tokenAmount;
+         }
+
+         function buyTokens() public payable {
+               uint totalPrice = tokenPrice * msg.value;
+               require(token.balanceOf(address(this)) >= totalPrice, "Not enough tokens available for sale");
+               token.transfer(msg.sender, msg.value);
+               token.transfer(beneficiary, totalPrice);
+               tokenAmount -= msg.value;
+         }
+   }
+<\your_contract\>

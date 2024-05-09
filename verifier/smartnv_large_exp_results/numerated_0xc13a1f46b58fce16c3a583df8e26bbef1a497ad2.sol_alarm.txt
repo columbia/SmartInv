@@ -1,0 +1,18 @@
+The contract being analyzed for potential vulnerabilities is:
+
+```solidity
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swap(uint amount) public {
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+```
+
+The potential vulnerabilities in the TokenSwap contract are:
+1) Reentrancy
+2) Integer overflow/underflow
+3) Inconsistent state update

@@ -1,0 +1,24 @@
+The contract to analyze:
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        votes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function checkVotes() public view returns(uint) {
+        return votes[msg.sender];
+    }
+
+    function getTotalVotes() public view returns(uint) {
+        return totalVotes;
+    }
+} 
+
+The potential vulnerabilities in the contract VotingSystem are:
+1) ID uniqueness violation - as there is no check to ensure that the same address cannot vote multiple times.
+2) Inconsistent state update - the totalVotes variable is directly incremented without any additional checks, which could lead to inconsistencies.
+3) Insufficient gas - if there are a significant number of votes, the gas required to execute the functions might exceed the gas limit.
+4) Incorrect visibility/ownership - the variables votes and totalVotes are public, which allows anyone to access and potentially manipulate them.

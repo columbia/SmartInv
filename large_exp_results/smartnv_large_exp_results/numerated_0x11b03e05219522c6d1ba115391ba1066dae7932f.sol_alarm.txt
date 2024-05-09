@@ -1,0 +1,32 @@
+<\contract\> 
+contract InvestmentContract {
+     IERC20 public token;
+     address public owner;
+     uint public totalInvestment;
+     mapping(address => uint) public investments;
+
+     constructor(address _token) {
+          token = IERC20(_token);
+          owner = msg.sender;
+     }
+
+     function invest(uint amount) public {
+          require(amount > 0, "Invalid amount");
+          token.transferFrom(msg.sender, address(this), amount);
+          investments[msg.sender] += amount;
+          totalInvestment += amount;
+     }
+
+     function withdraw(uint amount) public {
+          require(investments[msg.sender] >= amount, "Insufficient balance");
+          investments[msg.sender] -= amount;
+          totalInvestment -= amount;
+          token.transfer(msg.sender, amount);
+     }
+
+     function updateOwnership(address newOwner) public {
+          require(msg.sender == owner, "You are not the owner");
+          owner = newOwner;
+     }
+}
+<\contract\>

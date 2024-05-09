@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+     uint public totalTokens;
+     uint public tokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+         token = _token;
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+         totalTokens = _totalTokens;
+         tokensSold = 0;
+    }
+
+    function buyTokens(uint _amount) public {
+         require(tokensSold + _amount <= totalTokens, "Not enough tokens available");
+         uint cost = _amount * tokenPrice;
+         token.transferFrom(msg.sender, address(this), cost);
+         token.transfer(msg.sender, _amount);
+         tokensSold += _amount;
+    }
+
+    function endSale() public {
+         require(msg.sender == owner, "Only the owner can end the sale");
+         token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership (endSale can be called by anyone, not just by the owner)

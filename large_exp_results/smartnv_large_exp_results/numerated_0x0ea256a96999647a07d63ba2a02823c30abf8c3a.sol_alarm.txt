@@ -1,0 +1,37 @@
+<\Contract\> 
+contract SupplyChain {
+     address public owner;
+     mapping(uint => Product) public products;
+     
+     struct Product {
+         uint id;
+         string name;
+         uint price;
+         uint quantity;
+     }
+
+     modifier onlyOwner() {
+         require(msg.sender == owner, "Only owner can call this function");
+         _;
+     }
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function addProduct(uint _id, string memory _name, uint _price, uint _quantity) public onlyOwner {
+         products[_id] = Product(_id, _name, _price, _quantity);
+     }
+
+     function buyProduct(uint _id, uint _quantity) public {
+         require(products[_id].quantity >= _quantity, "Not enough quantity available");
+         require(products[_id].price * _quantity <= msg.value, "Insufficient funds");
+
+         products[_id].quantity -= _quantity;
+         payable(owner).transfer(products[_id].price * _quantity);
+     }
+ }
+ 
+ Output: 
+ - integer overflow/underflow
+ - Insufficient gas

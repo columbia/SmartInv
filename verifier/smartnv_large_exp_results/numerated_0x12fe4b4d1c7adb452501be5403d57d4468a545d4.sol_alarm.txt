@@ -1,0 +1,48 @@
+The contract provided for analysis is:
+
+```solidity
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Loop in delegation is not allowed.");
+        }
+
+        sender.delegate = to;
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            voters[delegateTo.vote].weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted.");
+        sender.voted = true;
+        sender.vote = option;
+        voters[option].weight += sender.weight;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

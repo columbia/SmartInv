@@ -1,0 +1,43 @@
+Contract analyzed:
+```solidity
+contract SupplyChain {
+    address public owner;
+    mapping(uint => Product) public products;
+    uint public productId;
+    
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        uint quantity;
+        address supplier;
+        bool exists;
+    }
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function addProduct(string memory _name, uint _price, uint _quantity) public {
+        require(msg.sender == owner, "Only owner can add products");
+        productId++;
+        products[productId] = Product(productId, _name, _price, _quantity, msg.sender, true);
+    }
+    
+    function purchaseProduct(uint _productId, uint _quantity) public payable {
+        require(products[_productId].exists, "Product does not exist");
+        require(products[_productId].quantity >= _quantity, "Insufficient quantity available");
+        require(msg.value >= products[_productId].price * _quantity, "Insufficient payment");
+        
+        products[_productId].quantity -= _quantity;
+        payable(products[_productId].supplier).transfer(msg.value);
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) There is no check for integer overflow in the `productId` increment in the `addProduct` function.
+2) The `purchaseProduct` function should implement a safe transfer method to handle potential vulnerabilities related to Ether transfer.
+3) Lack of access control to the `purchaseProduct` function may allow unauthorized purchases.
+4) The contract does not handle cases where a product is purchased but the quantity is not updated correctly.
+5) The `purchaseProduct` function does not check for consistency between the requested quantity and the available quantity of a product.

@@ -1,0 +1,32 @@
+Contract to be analyzed:
+```
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        votes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function doubleVote() public {
+        votes[msg.sender] += 2;
+        totalVotes += 2;
+    }
+}
+```
+
+Potential vulnerabilities:
+1) Inconsistent state update: The `doubleVote()` function allows a user to increase their vote count by 2 without proper validation, potentially leading to an inconsistent state in the contract.
+
+2) Atomicity violation: Both the `vote()` and `doubleVote()` functions update multiple state variables, which can lead to atomicity violations where intermediate states can be accessed by other transactions.
+
+3) Integer overflow/underflow: If a user repeatedly calls `doubleVote()` until the vote count exceeds the maximum value that an `uint` can hold, an integer overflow may occur, compromising the integrity of the voting system.
+
+4) Arithmetic flaw: The calculation of total votes in the `doubleVote()` function by adding 2 directly to `totalVotes` may have an arithmetic flaw if the calculation process is not properly handled.
+
+5) Incorrect visibility/ownership: The lack of access control and visibility modifiers in the contract may expose sensitive functions and variables to unauthorized users, leading to potential security vulnerabilities. 
+
+6) Insufficient gas: If the contract does not have appropriate gas management for expensive operations like updating multiple votes, it may run out of gas during execution, causing transactions to fail or leaving the contract in inconsistent states.
+
+7) Potential sucidal contracts: If the contract allows for a function that could destroy the contract, it may be at risk of a suicidal contract vulnerability.

@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract SafeEscrow {
+    address private owner;
+    mapping(address => uint256) public deposits;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        deposits[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(deposits[msg.sender] >= amount, "Insufficient balance");
+        deposits[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

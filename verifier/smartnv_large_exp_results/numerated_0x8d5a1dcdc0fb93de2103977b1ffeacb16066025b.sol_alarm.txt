@@ -1,0 +1,30 @@
+<\contract\>  
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public value;
+    bool public buyerOk;
+    bool public sellerOk;
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        value = msg.value;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        if (msg.sender == buyer) {
+            buyerOk = true;
+        } else if (msg.sender == seller) {
+            sellerOk = true;
+        }
+
+        if (buyerOk && sellerOk) {
+            seller.transfer(value);
+        }
+    }
+}
+<\contract\>  

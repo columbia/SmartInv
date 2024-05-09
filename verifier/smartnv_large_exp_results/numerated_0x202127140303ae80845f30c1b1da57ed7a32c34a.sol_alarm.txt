@@ -1,0 +1,18 @@
+<\contract\>
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract\>
+
+Output:
+- ID uniqueness violation: The contract does not handle the uniqueness of voter IDs, which could allow the same address to vote multiple times.

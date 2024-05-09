@@ -1,0 +1,8 @@
+<\example_1\>
+1) inconsistency of proposal start and end time: the function endExecute() requires that the proposal start time should not be 0, but it does not reset the start time to 0 after execution has ended, potentially leading to re-execution of a proposal.
+2) unbounded map writing: the startingBalanceList map is being written to in the startExecute() function without any bounds checking, which could lead to excessive memory usage or other vulnerabilities.
+
+<\example_2\>
+1) potential price manipulation: the liquidate function relies on the getPrice() function to determine if a user's funds can be liquidated, but this function is not implemented in the given code snippet, potentially leading to manipulation of the price calculation.
+2) lack of access control: the liquidate function does not include any access control measures, meaning any user can call this function and potentially liquidate another user's funds without proper authorization.
+3) potential arithmetic flaw: the calculation in the liquidate function could lead to an arithmetic flaw if the values are not validated or if overflow/underflow conditions are not handled properly.

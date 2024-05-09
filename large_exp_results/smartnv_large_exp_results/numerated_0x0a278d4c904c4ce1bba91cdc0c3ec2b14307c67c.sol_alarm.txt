@@ -1,0 +1,38 @@
+<\contract\> 
+contract MultiSigWallet {
+    mapping(address => bool) public owners;
+    uint public transactionCount;
+    mapping (uint => Transaction) public transactions;
+
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    function submitTransaction(address _to, uint _value, bytes memory _data) public {
+        // Check if msg.sender is one of the owners
+        require(owners[msg.sender] == true, "Only owners can submit transactions");
+
+        transactions[transactionCount] = Transaction(_to, _value, _data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint _transactionId) public {
+        Transaction storage transaction = transactions[_transactionId];
+        require(owners[msg.sender] == true, "Only owners can execute transactions");
+        require(transaction.executed == false, "Transaction has already been executed");
+
+        (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+
+        transaction.executed = true;
+    }
+}
+<\contract\> 
+
+Output:
+- privilege escalation (submitTransaction can be called by any address, not limited to owners)
+- inconsistent state update (no check for duplicate transactions being submitted)
+- incorrect visibility/ownership (owners mapping should ideally be private and updated only by authorized functions)

@@ -1,0 +1,7 @@
+<\TimelockController\>
+1) Inconsistent state update: The function `startExecute` updates the proposal struct but does not check if a proposal is already in progress, leading to a potential inconsistency in the state of the contract.
+2) Incorrect visibility/ownership: The `owner` variable is declared as internal but it is used throughout the contract without considering ownership controls.
+3) Insufficient gas: The function `endExecute` may fail if not enough gas is provided for the execution, potentially leaving the contract in an inconsistent state.
+4) Integer overflow/underflow: There is a potential integer overflow in the calculation `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` where the balanceOf multiplication could exceed the maximum integer value.
+
+Therefore, the potential vulnerabilities in the TimelockController contract are Inconsistent state update, Incorrect visibility/ownership, Insufficient gas, and Integer overflow/underflow.

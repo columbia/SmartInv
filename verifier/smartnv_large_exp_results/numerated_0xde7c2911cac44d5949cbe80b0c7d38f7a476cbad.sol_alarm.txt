@@ -1,0 +1,15 @@
+<\contract_to_analyze\>
+contract Escrow {
+     mapping(uint => uint) public balances;
+     address public owner;
+
+     function deposit(uint id, uint amount) public {
+         balances[id] += amount;
+     }
+
+     function withdraw(uint id, uint amount) public {
+         require(balances[id] >= amount, "Insufficient balance");
+         balances[id] -= amount;
+     }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,22 @@
+The contract provided is:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function placeBid(uint _bid) external {
+        require(_bid > highestBid, "Bid must be higher than current highest bid");
+        highestBidder = msg.sender;
+        highestBid = _bid;
+    }
+
+    function withdraw() external {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+        // logic to transfer funds to bidder
+    }
+}
+
+Based on the analysis of the contract, the potential vulnerabilities are:
+1) price manipulation
+2) inconsistent state update
+3) incorrect visibility/ownership

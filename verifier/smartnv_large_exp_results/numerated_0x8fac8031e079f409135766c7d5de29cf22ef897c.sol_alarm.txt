@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract Escrow {
+    address public arbiter;
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    constructor(address _arbiter, address _buyer, address _seller, uint _amount) {
+        arbiter = _arbiter;
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+    }
+
+    function releaseAmountToSeller() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        seller.transfer(amount);
+    }
+
+    function refundAmountToBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        buyer.transfer(amount);
+    }
+}
+
+Output: 
+healthy

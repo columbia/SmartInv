@@ -1,0 +1,22 @@
+<\contract\> 
+contract PaymentContract {
+    mapping(address => uint) public payments;
+    address internal owner;
+
+    function makePayment(address _to, uint _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_to] += _amount;
+    }
+
+    function withdraw() public {
+        uint amount = payments[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        payments[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+- Incorrect visibility/ownership (the `owner` variable is marked as internal instead of being properly defined as private)
+- Privilege escalation (only the owner should be able to make payments, but the ownership check is missing in the `makePayment` function)

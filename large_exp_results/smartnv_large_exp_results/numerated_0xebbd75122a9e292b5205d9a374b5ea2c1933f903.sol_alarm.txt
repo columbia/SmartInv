@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function execute() modifies the state variable proposal.votedAmount in a non-atomic manner by using the "+=" operator, which can lead to inconsistent state updates if multiple transactions try to modify this variable simultaneously.
+
+2) Insufficient gas: The endExecute() function checks if the balance of the contract multiplied by 2 is greater than the total token supply, which could potentially consume a large amount of gas depending on the token supply and cause the transaction to fail due to running out of gas.
+
+3) Incorrect visibility/ownership: The variable lockedFunds is accessed in the endExecute() function but is not declared in the code snippet provided, indicating a potential discrepancy in variable visibility or ownership.

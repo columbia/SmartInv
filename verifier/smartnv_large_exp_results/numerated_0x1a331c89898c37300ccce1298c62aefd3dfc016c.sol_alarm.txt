@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract TokenMarket {
+    address public owner;
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+        totalSupply = 1000;
+        balances[msg.sender] = totalSupply;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(balances[owner] >= amount, "Insufficient token balance");
+        
+        balances[msg.sender] += amount;
+        balances[owner] -= amount;
+    }
+
+    function transferTokens(address to, uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(balances[msg.sender] >= amount, "Insufficient token balance");
+        
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+
+Output:
+- insufficient gas

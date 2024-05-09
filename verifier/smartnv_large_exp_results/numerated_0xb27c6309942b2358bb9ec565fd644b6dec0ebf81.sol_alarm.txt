@@ -1,0 +1,21 @@
+<\contract\> 
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        totalVotes++;
+        votes[msg.sender]++;
+    }
+
+    function revokeVote() public {
+        require(votes[msg.sender] > 0, "No vote to revoke");
+        totalVotes--;
+        votes[msg.sender]--;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Increment and decrement operations on totalVotes without proper synchronization

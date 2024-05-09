@@ -1,0 +1,27 @@
+{{
+  "language": "Solidity",
+  "sources": {
+    "contracts/DIAOracleV2.sol": {
+      "content": "pragma solidity ^0.8.0;\n\ncontract DIAOracleV2 {\n    mapping (string => uint256) public values;\n    address public oracleUpdater;\n    \n    event OracleUpdate(string key, uint128 value, uint128 timestamp);\n    event UpdaterAddressChange(address newUpdater);\n    \n    constructor() {\n        oracleUpdater = msg.sender;\n    }\n    \n    function setValue(string memory key, uint128 value, uint128 timestamp) public {\n        require(msg.sender == oracleUpdater,\"not a updater\");\n        uint256 cValue = (((uint256)(value)) << 128) + timestamp;\n        values[key] = cValue;\n        emit OracleUpdate(key, value, timestamp);\n    }\n    \n    function getValue(string memory key) external view returns (uint128, uint128) {\n        uint256 cValue = values[key];\n        uint128 timestamp = (uint128)(cValue % 2**128);\n        uint128 value = (uint128)(cValue >> 128);\n        return (value, timestamp);\n    }\n    \n    function updateOracleUpdaterAddress(address newOracleUpdaterAddress) public {\n        require(msg.sender == oracleUpdater,\"not a updater\");\n        oracleUpdater = newOracleUpdaterAddress;\n        emit UpdaterAddressChange(newOracleUpdaterAddress);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    },
+    "libraries": {}
+  }
+}}

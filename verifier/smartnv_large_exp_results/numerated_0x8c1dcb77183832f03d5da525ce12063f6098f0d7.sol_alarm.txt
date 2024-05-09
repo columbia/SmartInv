@@ -1,0 +1,35 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public isFundsReleased;
+    bool public isDisputeResolved;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        isFundsReleased = false;
+        isDisputeResolved = false;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorized");
+        require(!isFundsReleased, "Funds already released");
+        
+        isFundsReleased = true;
+        // transfer funds to seller
+    }
+
+    function resolveDispute() public {
+        require(msg.sender == arbiter, "Unauthorized");
+        require(isFundsReleased, "Funds not yet released");
+
+        isDisputeResolved = true;
+        // logic to resolve dispute
+    }
+}
+<\contract\>

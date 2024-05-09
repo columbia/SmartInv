@@ -1,0 +1,33 @@
+<\Contract\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient token balance");
+        require(token.allowance(msg.sender, address(this)) >= _amount, "Insufficient token allowance");
+
+        uint totalCost = tokenPrice * _amount;
+        require(token.balanceOf(address(this)) >= totalCost, "Insufficient token balance in contract");
+
+        token.transferFrom(msg.sender, address(this), _amount);
+        token.transfer(msg.sender, _amount);
+        tokensSold += _amount;
+    }
+}
+<\Contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow: There is a potential for integer overflow when calculating the total cost of tokens to be bought.
+2) Insufficient gas: If the token balance or allowance check requires a lot of gas, it may lead to out-of-gas exceptions.
+3) Incorrect visibility/ownership: The `admin` variable is public, which may expose sensitive information about the contract owner.
+
+Therefore, the identified vulnerabilities in the given contract are integer overflow/underflow, insufficient gas, and incorrect visibility/ownership.

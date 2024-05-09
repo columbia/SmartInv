@@ -1,0 +1,44 @@
+1 {{
+2   "language": "Solidity",
+3   "sources": {
+4     "contracts/WBT.sol": {
+5       "content": "// SPDX-License-Identifier: MIT\npragma solidity =0.8.12;\n\nimport \"./ERC20Detailed.sol\";\n\ncontract WBT is ERC20Detailed {\n    constructor() ERC20Detailed(\"WBT\", \"WBT\", 8, 300_000_000_00000000) {\n    }\n}\n"
+6     },
+7     "contracts/ERC20Detailed.sol": {
+8       "content": "// SPDX-License-Identifier: MIT\npragma solidity =0.8.12;\n\nimport \"./ERC20.sol\";\n\ncontract ERC20Detailed is ERC20 {\n\n    string private _name;\n    string private _symbol;\n    uint8 private _decimals;\n\n    constructor (\n        string memory name_,\n        string memory symbol_,\n        uint8 decimals_,\n        uint256 totalSupply\n    )  {\n        _name = name_;\n        _symbol = symbol_;\n        _decimals = decimals_;\n        _mint(msg.sender, totalSupply);\n    }\n\n    function name() external view returns (string memory) {\n        return _name;\n    }\n\n    function symbol() external view returns (string memory) {\n        return _symbol;\n    }\n\n    function decimals() external view returns (uint8) {\n        return _decimals;\n    }\n}"
+9     },
+10     "contracts/ERC20.sol": {
+11       "content": "// SPDX-License-Identifier: MIT\npragma solidity =0.8.12;\n\nimport \"./IERC20.sol\";\nimport \"./Ownable.sol\";\nimport \"./Pausable.sol\";\nimport \"./BlackList.sol\";\n\ncontract ERC20 is IERC20, BlackList, Pausable {\n    mapping (address => uint256) _balances;\n\n    mapping (address => mapping (address => uint256)) _allowed;\n\n    uint256 internal _totalSupply;\n\n    function totalSupply() external view override virtual returns (uint256) {\n        return _totalSupply;\n    }\n\n    function balanceOf(address user) external view override returns (uint256) {\n        return _balances[user];\n    }\n\n    function allowance(address user, address spender) external view returns (uint256) {\n        return _allowed[user][spender];\n    }\n\n    function approve(address spender, uint256 value) external returns (bool) {\n        require(spender != address(0));\n        require(msg.sender != address(0));\n\n        _allowed[msg.sender][spender] = value;\n        emit Approval(msg.sender, spender, value);\n\n        return true;\n    }\n\n    function increaseAllowance(\n        address spender,\n        uint256 addedValue\n    ) external returns (bool)\n    {\n        require(spender != address(0), 'Spender zero address prohibited');\n        require(msg.sender != address(0), 'Zero address could not call method');\n\n        _allowed[msg.sender][spender] += addedValue;\n        emit Approval(msg.sender, spender, _allowed[msg.sender][spender]);\n\n        return true;\n    }\n    \n    function decreaseAllowance(\n        address spender,\n        uint256 subtractedValue\n    ) external returns (bool)\n    {\n        require(spender != address(0), 'Spender zero address prohibited');\n        require(msg.sender != address(0), 'Zero address could not call method');\n\n        _allowed[msg.sender][spender] -= subtractedValue;\n        emit Approval(msg.sender, spender, _allowed[msg.sender][spender]);\n\n        return true;\n    }\n\n    function transferFrom(address from, address to, uint256 value) external returns (bool) {\n        require(value <= _allowed[from][msg.sender], 'Not allowed to spend');\n        _transfer(from, to, value);\n        _allowed[from][msg.sender] -= value;\n\n        return true;\n    }\n\n    function transfer(address to, uint256 value) external returns (bool) {\n        _transfer(msg.sender, to, value);\n\n        return true;\n    }\n\n    function _transfer(address from, address to, uint256 value) internal whenNotPaused {\n        require(!isBlacklisted(from), 'Sender address in blacklist');\n        require(!isBlacklisted(to), 'Receiver address in blacklist');\n        require(to != address(0), 'Zero address can not be receiver');\n\n        _balances[from] -= value;\n        _balances[to] += value;\n        emit Transfer(from, to, value);\n    }\n\n    function _mint(address account, uint256 value) internal {\n        require(account != address(0));\n\n        _totalSupply += value;\n        _balances[account] += value;\n        emit Transfer(address(0), account, value);\n    }\n\n    function burn(uint256 amount) external onlyOwner() virtual {\n        _burn(msg.sender, amount);\n    }\n\n    function _burn(address account, uint256 value) internal {\n        require(account != address(0));\n\n        _totalSupply -= value;\n        _balances[account] -= value;\n        emit Transfer(account, address(0), value);\n    }\n\n    function destroyBlackFunds (address _blackListedUser) external onlyOwner  {\n        require(isBlacklisted(_blackListedUser), 'Address is not in blacklist');\n        uint dirtyFunds = _balances[_blackListedUser];\n        _balances[_blackListedUser] = 0;\n        _totalSupply -= dirtyFunds;\n        emit DestroyedBlackFunds(_blackListedUser, dirtyFunds);\n    }\n}"
+12     },
+13     "contracts/BlackList.sol": {
+14       "content": "// SPDX-License-Identifier: MIT\npragma solidity =0.8.12;\n\nimport \"./Ownable.sol\";\n\ncontract BlackList is Ownable {\n\n    mapping(address => bool) _blacklist;\n\n    function isBlacklisted(address _maker) public view returns (bool) {\n        return _blacklist[_maker];\n    }\n\n    function blacklistAccount(address account, bool sign) external onlyOwner {\n        _blacklist[account] = sign;\n    }\n}"
+15     },
+16     "contracts/Pausable.sol": {
+17       "content": "// SPDX-License-Identifier: MIT\npragma solidity =0.8.12;\n\nimport \"./Ownable.sol\";\n\ncontract Pausable is Ownable {\n    event Pause();\n    event Unpause();\n\n    bool public paused = false;\n\n    modifier whenNotPaused() {\n        require(!paused);\n        _;\n    }\n\n    modifier whenPaused() {\n        require(paused);\n        _;\n    }\n\n    function pause() onlyOwner whenNotPaused external {\n        paused = true;\n        emit Pause();\n    }\n\n    function unpause() onlyOwner whenPaused external {\n        paused = false;\n        emit Unpause();\n    }\n}"
+18     },
+19     "contracts/Ownable.sol": {
+20       "content": "// SPDX-License-Identifier: MIT\npragma solidity =0.8.12;\n\ncontract Ownable {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    constructor () {\n        _owner = msg.sender;\n        emit OwnershipTransferred(address(0), _owner);\n    }\n\n    modifier onlyOwner() {\n        require(isOwner(msg.sender), 'Available only for owner');\n        _;\n    }\n\n    function owner() external view returns (address) {\n        return _owner;\n    }\n\n    function isOwner(address userAddress) public view returns (bool) {\n        return userAddress == _owner;\n    }\n\n    function renounceOwnership() external onlyOwner {\n        emit OwnershipTransferred(_owner, address(0));\n        _owner = address(0);\n    }\n\n    function transferOwnership(address newOwner) external onlyOwner {\n        _transferOwnership(newOwner);\n    }\n\n    function _transferOwnership(address newOwner) internal {\n        require(newOwner != address(0));\n        emit OwnershipTransferred(_owner, newOwner);\n        _owner = newOwner;\n    }\n}"
+21     },
+22     "contracts/IERC20.sol": {
+23       "content": "// SPDX-License-Identifier: MIT\npragma solidity =0.8.12;\n\ninterface IERC20 {\n    function totalSupply() external view returns (uint256);\n\n    function balanceOf(address who) external view returns (uint256);\n\n    function allowance(address owner, address spender) external view returns (uint256) ;\n\n    function transfer(address to, uint256 value) external returns (bool);\n    function transferFrom(address from, address to, uint256 value) external returns (bool);\n    function approve(address spender, uint256 value) external returns (bool);\n    function decreaseAllowance(address spender,uint256 subtractedValue) external returns (bool);\n    function increaseAllowance(address spender,uint256 addedValue) external returns (bool);\n\n    event Transfer(\n        address indexed from,\n        address indexed to,\n        uint256 value\n    );\n\n    event Approval(\n        address indexed owner,\n        address indexed spender,\n        uint256 value\n    );\n\n    event DestroyedBlackFunds(\n        address indexed blackListedUser,\n        uint balance\n    );\n}"
+24     }
+25   },
+26   "settings": {
+27     "optimizer": {
+28       "enabled": false,
+29       "runs": 200
+30     },
+31     "outputSelection": {
+32       "*": {
+33         "*": [
+34           "evm.bytecode",
+35           "evm.deployedBytecode",
+36           "devdoc",
+37           "userdoc",
+38           "metadata",
+39           "abi"
+40         ]
+41       }
+42     }
+43   }
+44 }}

@@ -1,0 +1,22 @@
+contract TokenSale {
+     mapping(address => uint) public balances;
+     address public owner;
+     IERC20 public token;
+
+     constructor(address _token) public {
+         owner = msg.sender;
+         token = IERC20(_token);
+     }
+
+     function buyTokens(uint _amount) public {
+         balances[msg.sender] += _amount;
+         token.transfer(msg.sender, _amount);
+     }
+
+     function withdrawTokens() public {
+         require(msg.sender == owner, "only owner can withdraw tokens");
+         uint balance = balances[msg.sender];
+         balances[msg.sender] = 0;
+         token.transfer(msg.sender, balance);
+     }
+}

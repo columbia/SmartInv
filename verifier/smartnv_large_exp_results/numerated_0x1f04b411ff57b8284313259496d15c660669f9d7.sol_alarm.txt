@@ -1,0 +1,33 @@
+The contract provided for analysis is:
+
+```solidity
+contract TokenSwap {
+    address public tokenA;
+    address public tokenB;
+
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenA, address _tokenB) {
+        tokenA = _tokenA;
+        tokenB = _tokenB;
+    }
+
+    function swap(uint _amount, address _token) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        
+        if (_token == tokenA) {
+            // Swap tokenA for tokenB logic
+            balances[msg.sender] -= _amount;
+            // transfer logic
+        } else if (_token == tokenB) {
+            // Swap tokenB for tokenA logic
+            balances[msg.sender] -= _amount;
+            // transfer logic
+        }
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+1) Inconsistent state update
+2) Business logic flaw

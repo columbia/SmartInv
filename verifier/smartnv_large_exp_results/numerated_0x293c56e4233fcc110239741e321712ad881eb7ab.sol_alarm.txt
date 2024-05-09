@@ -1,0 +1,22 @@
+The contract below contains potential vulnerabilities:
+
+<\contract\>
+contract PaymentGateway {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+}
+<\contract\>
+
+The potential vulnerabilities in the PaymentGateway contract are:
+1) reentrancy vulnerability
+2) incorrect visibility/ownership vulnerability

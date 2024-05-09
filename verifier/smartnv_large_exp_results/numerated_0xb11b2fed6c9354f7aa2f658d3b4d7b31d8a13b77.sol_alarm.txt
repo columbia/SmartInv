@@ -1,0 +1,48 @@
+<\contract\> 
+contract EscrowContract {
+    address public buyer; 
+    address public seller; 
+    address public arbitrator; 
+    bool public buyerApproved; 
+    bool public sellerApproved; 
+    bool public arbitratorApproved; 
+    uint public totalPrice; 
+    bool public fundsReleased;
+
+    function setup(address _buyer, address _seller, address _arbitrator, uint _totalPrice) external {
+        require(msg.sender == buyer, "not authorized");
+        buyer = _buyer;
+        seller = _seller;
+        arbitrator = _arbitrator;
+        totalPrice = _totalPrice;
+    }
+
+    function approveBuyer() external {
+        require(msg.sender == buyer, "not authorized");
+        buyerApproved = true;
+    }
+
+    function approveSeller() external {
+        require(msg.sender == seller, "not authorized");
+        sellerApproved = true;
+    }
+
+    function approveArbitrator() external {
+        require(msg.sender == arbitrator, "not authorized");
+        arbitratorApproved = true;
+    }
+
+    function releaseFunds() external {
+        require(buyerApproved && sellerApproved && arbitratorApproved, "not all parties approved");
+        _releaseFunds();
+    }
+
+    function _releaseFunds() internal {
+        require(!fundsReleased, "funds already released");
+        // Release funds to seller
+        fundsReleased = true;
+    }
+} 
+
+Output:
+- incorrect visibility/ownership

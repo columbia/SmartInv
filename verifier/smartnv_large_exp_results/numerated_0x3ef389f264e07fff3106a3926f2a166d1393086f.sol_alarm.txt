@@ -1,0 +1,35 @@
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public isPaid;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        isPaid = false;
+    }
+
+    function pay() public payable {
+        require(msg.sender == buyer, "Only the buyer can pay");
+        require(msg.value == price, "Incorrect payment amount");
+        isPaid = true;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller, "Only the seller can release funds");
+        require(isPaid, "Payment has not been made yet");
+        payable(seller).transfer(price);
+    }
+
+    function refundFunds() public {
+        require(msg.sender == buyer, "Only the buyer can request a refund");
+        require(!isPaid, "Payment has already been made");
+        payable(buyer).transfer(price);
+    }
+} 
+
+The potential vulnerabilities in the EscrowContract are:
+1) Incorrect visibility/ownership
+2) Inconsistent state update.

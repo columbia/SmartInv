@@ -1,0 +1,22 @@
+The contract provided for analysis is:
+
+```solidity
+contract Vault {
+    mapping(address => uint) private balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Insufficient gas
+2) Incorrect visibility/ownership

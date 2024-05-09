@@ -1,0 +1,37 @@
+contract VotingSystem {
+    address public admin;
+    mapping(uint => Proposal) public proposals;
+    uint public proposalCounter;
+
+    struct Proposal {
+        address creator;
+        uint votes;
+        mapping(address => bool) voters;
+        bool executed;
+    }
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function createProposal() public {
+        proposalCounter++;
+        proposals[proposalCounter] = Proposal(msg.sender, 0, false);
+    }
+
+    function vote(uint proposalId) public {
+        require(!proposals[proposalId].executed, "Proposal already executed");
+        require(!proposals[proposalId].voters[msg.sender], "Already voted");
+        
+        proposals[proposalId].votes++;
+        proposals[proposalId].voters[msg.sender] = true;
+    }
+
+    function executeProposal(uint proposalId) public {
+        require(msg.sender == admin, "Only admin can execute proposal");
+        require(proposals[proposalId].votes > 0, "No votes for this proposal");
+        
+        proposals[proposalId].executed = true;
+        // Execute proposal logic here
+    }
+}

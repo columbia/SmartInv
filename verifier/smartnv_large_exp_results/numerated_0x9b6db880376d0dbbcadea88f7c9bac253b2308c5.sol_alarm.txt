@@ -1,0 +1,31 @@
+The contract provided below does not contain any vulnerabilities:
+
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public amount;
+    bool public paid;
+    
+    constructor(address _payer, address _payee, address _arbiter, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+        amount = _amount;
+        paid = false;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == payer, "Only the payer can deposit funds");
+        require(msg.value == amount, "Incorrect amount deposited");
+    }
+    
+    function release() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        require(paid == false, "Funds have already been released");
+        
+        payable(payee).transfer(amount);
+        paid = true;
+    }
+}
+Healthy

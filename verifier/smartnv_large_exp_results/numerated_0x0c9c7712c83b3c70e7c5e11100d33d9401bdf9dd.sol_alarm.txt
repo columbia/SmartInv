@@ -1,0 +1,34 @@
+The contract provided for analysis:
+
+```
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 endTime;
+        address creator;
+        uint256 votes;
+    }
+    
+    mapping(uint256 => Proposal) public proposals;
+    uint256 public totalProposals;
+    
+    function createProposal(uint256 _startTime, uint256 _endTime) public {
+        totalProposals++;
+        proposals[totalProposals] = Proposal(_startTime, _endTime, msg.sender, 0);
+    }
+    
+    function vote(uint256 _proposalId) public {
+        require(proposals[_proposalId].startTime < block.timestamp, "voting has not started yet");
+        require(proposals[_proposalId].endTime > block.timestamp, "voting has ended");
+        proposals[_proposalId].votes++;
+    }
+    
+    function getProposalVotes(uint256 _proposalId) public view returns (uint256) {
+        return proposals[_proposalId].votes;
+    }
+}
+```
+
+Output:  
+- inconsistent state update: The `votes` of a proposal is directly incremented without checking if the user has already voted. This could lead to inconsistent voting results.  
+- incorrect visibility/ownership: The `proposals` mapping is set to public, which exposes all proposals to external entities. This could be a security risk if sensitive information is stored in the proposals.

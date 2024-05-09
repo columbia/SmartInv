@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        payable(seller).transfer(price);
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund buyer");
+        payable(buyer).transfer(price);
+    }
+
+    function dispute() public {
+        require(msg.sender == arbiter, "Only arbiter can arbitrate");
+        payable(buyer).transfer(price);
+    }
+}
+<\contract_to_analyze\> 
+Output:
+- incorrect visibility/ownership

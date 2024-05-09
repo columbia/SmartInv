@@ -1,0 +1,50 @@
+Contract:
+
+contract MultiSigWallet {
+    mapping(address => uint) private balances;
+    mapping(address => bool) private isOwner;
+    mapping(bytes32 => bool) private isTransaction;
+    uint private threshold;
+    uint private totalBalance;
+
+    event Deposit(address indexed sender, uint amount);
+    event Transfer(address indexed from, address indexed to, uint amount, bytes indexed data);
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+        emit Deposit(msg.sender, msg.value);
+    }
+
+    function submitTransaction(address to, uint amount, bytes memory data) public {
+        require(isOwner[msg.sender], "Not an owner");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        bytes32 txHash = keccak256(abi.encodePacked(to, amount, data));
+        require(!isTransaction[txHash], "Transaction already submitted");
+        
+        isTransaction[txHash] = true;
+        
+        (bool success, ) = to.call{value: amount}(data);
+        require(success, "Transfer failed");
+        
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+        
+        emit Transfer(msg.sender, to, amount, data);
+    }
+
+    function addOwner(address newOwner) public {
+        isOwner[newOwner] = true;
+        threshold++;
+    }
+
+    function removeOwner(address owner) public {
+        isOwner[owner] = false;
+        threshold--;
+    }
+}
+
+Output: 
+1) Inconsistent state update
+2) Insufficient gas.Italic text

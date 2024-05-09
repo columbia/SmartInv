@@ -1,0 +1,35 @@
+The contract provided for analysis is as follows:
+
+contract Crowdsale {
+    address public owner;
+    address public token;
+    uint public tokenPrice;
+
+    constructor(address _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) external payable {
+        require(msg.value >= (_amount * tokenPrice), "Insufficient funds sent");
+
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function withdrawFunds() external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+
+        owner.transfer(address(this).balance);
+    }
+}
+
+Potential vulnerabilities in the Crowdsale contract:
+1) Inconsistent state update: The owner can change the token price after the contract deployment, leading to potential inconsistencies in the token purchase process.
+2) Incorrect visibility/ownership: The withdrawal function is public, allowing anyone to attempt to withdraw funds. This could lead to unauthorized fund withdrawals.
+3) Ether leakage: The contract does not handle failed token transfers in the buyTokens function, potentially causing ether to be trapped in the contract after unsuccessful token transfers.
+
+Therefore, the potential vulnerabilities in the Crowdsale contract are:
+4) Inconsistent state update
+5) Incorrect visibility/ownership
+6) Ether leakage

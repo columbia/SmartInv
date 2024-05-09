@@ -1,0 +1,35 @@
+<\contract_3\>
+contract VotingSystem {
+     struct Voter {
+          bool voted;
+          address delegate; 
+          uint vote; 
+          bool hasVoted;
+          }
+     address public chairperson;
+     mapping(address => Voter) public voters;
+
+     function delegate(address to) public {
+          require(!voters[msg.sender].voted, "voter already voted");
+          require(to != msg.sender, "cannot delegate to self");
+          require(hasVoted(to) == false, "delegate has already voted");
+          voters[msg.sender].voted = true;
+          voters[msg.sender].delegate = to;
+     }
+
+     function vote(uint proposal) public {
+          Voter storage sender = voters[msg.sender];
+          require(sender.voted == false, "already voted");
+          sender.voted = true;
+          sender.vote = proposal;
+     }
+
+     function hasVoted(address user) public view returns (bool) {
+          return voters[user].hasVoted;
+     }
+}
+<\contract_3\> 
+
+The potential vulnerabilities in <\contract_3\> are:
+- Incorrect visibility/ownership: The `hasVoted` function allows anyone to view if a specific user has voted, potentially exposing private information. Visibility should be controlled based on the requirements of the application.
+- Inconsistent state update: The `delegate` function updates the `voted` status of the sender without ensuring that the `hasVoted` function accurately reflects this change, leading to inconsistencies in the contract state.

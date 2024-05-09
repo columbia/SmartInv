@@ -1,0 +1,5 @@
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility: The state variables `debt`, `collateral`, `WETH`, `USDC`, and `pair` are declared as public, which exposes sensitive data to the public. 
+2) Price manipulation: The `calculatePrice` function potentially allows an attacker to manipulate the price calculation by sending a large amount of `USDC` or `WETH` tokens to the address of the `pair`, influencing the price returned by the function. 
+3) Ether leakage: The `liquidate` function can potentially result in ether leakage if the `msg.sender` is able to trigger the liquidation process without an appropriate check on the assets being transferred.

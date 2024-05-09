@@ -1,0 +1,12 @@
+The following contract may have potential vulnerabilities: 
+
+1) Inconsistent state update: The function `startExecute()` seems to update the state of the contract by setting the `proposal` struct and `startingBalanceList`, but it does not check if the `proposal.sTime` is already set, potentially leading to inconsistent state updates. 
+
+2) Incorrect visibility/ownership: The contract `TimelockController` implements the interface `IERC20`, but it is unclear if the necessary functions from the interface are implemented with the correct visibility and ownership. 
+
+3) Insufficient gas: The function `endExecute()` might require a significant amount of gas to perform the check `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")`, which could potentially lead to running out of gas during execution. 
+
+Therefore, the potential vulnerabilities in the contract are: 
+- Inconsistent state update
+- Incorrect visibility/ownership
+- Insufficient gas

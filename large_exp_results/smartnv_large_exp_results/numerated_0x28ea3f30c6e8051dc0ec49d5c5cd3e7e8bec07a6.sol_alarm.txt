@@ -1,0 +1,20 @@
+<\contract\>
+
+contract RewardProgram {
+    uint public rewardPoints;
+    mapping(address => uint) public balances;
+
+    function earnPoints(uint amount) public {
+        rewardPoints += amount;
+        balances[msg.sender] += amount;
+    }
+
+    function redeemPoints(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient points");
+        balances[msg.sender] -= amount;
+        rewardPoints -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+<\contract\>

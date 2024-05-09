@@ -1,0 +1,35 @@
+<\analyzed_contract\> 
+contract PaymentContract {
+    address public owner;
+    mapping(uint => bool) paymentStatus;
+    uint public totalPayments;
+    
+    constructor() {
+        owner = msg.sender;
+        totalPayments = 0;
+    }
+
+    function makePayment(uint paymentId) external payable {
+        require(msg.value > 0, "Invalid payment amount");
+        require(!paymentStatus[paymentId], "Payment already made");
+        
+        paymentStatus[paymentId] = true;
+        totalPayments++;
+    }
+
+    function withdrawFunds() external {
+        require(msg.sender == owner, "Unauthorized");
+        require(totalPayments > 0, "No payments to withdraw");
+        
+        uint totalBalance = address(this).balance;
+        owner.transfer(totalBalance);
+    }
+}
+<\analyzed_contract\> 
+
+<\output\>
+- Incorrect visibility/ownership: The function withdrawFunds() should be marked as onlyOwner to restrict access to the owner for withdrawal of funds.
+
+- Integer overflow: The totalPayments variable could potentially overflow if a large number of payments are made, leading to unexpected behavior. Consider using a different data type or implementing checks to prevent overflow.
+
+- Insufficient gas: The contract may run out of gas during the withdrawal process if the number of totalPayments is very large, preventing the owner from withdrawing funds. Additional gas optimization may be required for a smooth withdrawal process.

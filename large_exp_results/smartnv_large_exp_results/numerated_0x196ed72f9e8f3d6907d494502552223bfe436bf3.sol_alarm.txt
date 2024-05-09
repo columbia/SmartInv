@@ -1,0 +1,37 @@
+<\contract\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+
+    mapping(address => uint) public balances;
+
+    constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(_amount * tokenPrice <= token.balanceOf(msg.sender), "Insufficient balance");
+        require(_amount <= totalTokens, "Exceeds total tokens available");
+
+        balances[msg.sender] += _amount;
+        totalTokens -= _amount;
+        token.transferFrom(owner, msg.sender, _amount * tokenPrice);
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\contract\> 
+
+1) Inconsistent state update: The totalTokens variable is updated in the buyTokens function without properly checking if the transaction will be successful. This can lead to an inconsistency in the contract state if the transfer fails after deducting the tokens from totalTokens.
+
+2) Incorrect visibility/ownership: The withdrawTokens function allows anyone to call it to withdraw tokens from the contract. This can lead to unauthorized withdrawal of tokens if someone other than the owner calls this function.
+
+3) Insufficient gas: The buyTokens function does not specify a gas limit for the token.transferFrom function, which can lead to out-of-gas errors if the transaction consumes a large amount of gas.

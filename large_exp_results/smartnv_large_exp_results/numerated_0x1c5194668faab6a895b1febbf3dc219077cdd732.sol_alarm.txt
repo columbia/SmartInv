@@ -1,0 +1,45 @@
+Contract analysis:
+
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The startingBalanceList is being updated in the startExecute function without being properly initialized or defined in the contract.
+2) Incorrect visibility/ownership: The owner variable is defined as internal but is not being used or updated within the contract, potentially leading to concerns about ownership and access control.
+3) Business logic flaw: The execute function allows for the transfer of tokens based on the proposal's votedAmount, which could lead to unexpected behavior if the proposal is not properly validated.
+4) Insufficient gas: The endExecute function performs a balance check that involves iterating through all token holders, which could potentially run out of gas if the token holder list is too large. 
+
+Overall, the contract contains potential vulnerabilities that need to be addressed to ensure its security.

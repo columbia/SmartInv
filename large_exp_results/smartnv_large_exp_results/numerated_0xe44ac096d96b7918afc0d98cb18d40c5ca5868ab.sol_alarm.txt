@@ -1,0 +1,26 @@
+The contract mentioned for analysis is:
+
+contract Store {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Based on the provided contract, the potential vulnerabilities are:
+1) integer overflow/underflow - Possible in the function withdraw if the amount to withdraw is greater than the balance.
+2) insufficient gas - The withdraw function may fail due to insufficient gas if the balance is too high.
+3) inconsistent state update - There is a risk of inconsistent state update in the deposit function if an error occurs after increasing the user's balance but before finalizing the transaction.
+
+Therefore, the identified vulnerabilities in the contract are:
+1) integer overflow/underflow
+2) insufficient gas
+3) inconsistent state update

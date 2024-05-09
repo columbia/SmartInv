@@ -1,0 +1,28 @@
+<\analyzed_contract\> 
+contract Crowdsale {
+    address public owner;
+    address public token;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(address _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += amount;
+        /* Transfer tokens to buyer */
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        /* Withdraw funds from the contract */
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+- incorrect visibility/ownership

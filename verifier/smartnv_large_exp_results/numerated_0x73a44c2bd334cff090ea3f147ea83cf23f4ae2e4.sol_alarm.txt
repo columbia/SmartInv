@@ -1,0 +1,44 @@
+<\analyzed_contract\> 
+contract Crowdsale {
+     address public owner;
+     uint public goal;
+     uint public endTime;
+     mapping(address => uint) public contributions;
+     bool public goalReached;
+
+     constructor(uint _goal, uint _endTime) public {
+          owner = msg.sender;
+          goal = _goal;
+          endTime = _endTime;
+          goalReached = false;
+     }
+
+     function contribute() public payable {
+          require(now < endTime, "Crowdsale has ended");
+          contributions[msg.sender] += msg.value;
+          if (address(this).balance >= goal) {
+              goalReached = true;
+          }
+     }
+
+     function withdrawFunds() public {
+          require(msg.sender == owner, "Only the owner can withdraw funds");
+          require(goalReached, "Goal has not been reached");
+          owner.transfer(address(this).balance);
+     }
+
+     function refund() public {
+          require(now > endTime, "Crowdsale is still ongoing");
+          require(contributions[msg.sender] > 0, "No contribution to refund");
+          msg.sender.transfer(contributions[msg.sender]);
+          contributions[msg.sender] = 0;
+     }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the analyzed_contract are:
+1) incorrect visibility/ownership in withdrawFunds function - any address can call this function which should be restricted to only the owner.
+2) inconsistent state update in contribute function - goalReached may be set to true before verifying if the goal is actually reached, leading to incorrect behavior.
+3) integer overflow/underflow in contribute function - potential for overflow when adding msg.value to contributions[msg.sender].
+4) incorrect visibility/ownership in refund function - any address can call this function which should be restricted to only contributors.
+5) inconsistent state update in refund function - contributions[msg.sender] is reset to 0 after transferring funds, which may cause issues with tracking contributions accurately.

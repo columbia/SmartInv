@@ -1,0 +1,49 @@
+<\contract_to_analyze\>
+contract Lottery {
+    address public owner;
+    mapping(address => bool) public participants;
+    uint public totalParticipants;
+    
+    constructor() public {
+        owner = msg.sender;
+        totalParticipants = 0;
+    }
+    
+    function participate() public {
+        require(msg.sender != owner, "Owner cannot participate in the lottery");
+        require(!participants[msg.sender], "You have already participated");
+        
+        participants[msg.sender] = true;
+        totalParticipants++;
+    }
+    
+    function drawWinner() public {
+        require(msg.sender == owner, "Only the owner can draw the winner");
+        require(totalParticipants > 0, "No participants in the lottery");
+        
+        address winner = generateWinner();
+        transferPrize(winner);
+        
+        totalParticipants = 0;
+    }
+    
+    function generateWinner() private view returns (address) {
+        uint randIndex = uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalParticipants;
+        
+        address[] memory participantsArray = new address[](totalParticipants);
+        uint index = 0;
+        for (uint i = 0; i < totalParticipants; i++) {
+            if (participants[address(i)]) {
+                participantsArray[index] = address(i);
+                index++;
+            }
+        }
+        
+        return participantsArray[randIndex];
+    }
+    
+    function transferPrize(address winner) private {
+        // Transfer prize to the winner
+    }
+}
+<\contract_to_analyze\>

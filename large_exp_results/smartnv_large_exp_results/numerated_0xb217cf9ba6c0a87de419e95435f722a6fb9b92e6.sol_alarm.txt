@@ -1,0 +1,21 @@
+<\contract_to_analyze\> 
+contract Escrow {
+     address public depositor;
+     address public beneficiary;
+     uint public balance;
+
+     function deposit(address _beneficiary) public payable {
+          require(msg.sender != _beneficiary, "depositor and beneficiary cannot be the same");
+          require(msg.value > 0, "deposit amount must be greater than 0");
+          depositor = msg.sender;
+          beneficiary = _beneficiary;
+          balance += msg.value;
+     }
+     
+     function withdraw() public {
+          require(msg.sender == beneficiary, "only beneficiary can withdraw");
+          uint amount = balance;
+          balance = 0;
+          payable(beneficiary).transfer(amount);
+     }
+}

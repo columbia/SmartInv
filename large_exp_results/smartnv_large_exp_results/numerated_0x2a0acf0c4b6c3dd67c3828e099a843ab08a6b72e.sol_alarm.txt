@@ -1,0 +1,27 @@
+The contract provided for analysis:
+contract SupplyChain {
+     struct Product {
+         uint productId;
+         string productName;
+         uint productPrice;
+         address owner;
+     }
+     mapping(uint => Product) public products;
+     uint public productCount;
+     
+     function addProduct(string memory _name, uint _price) public {
+         productCount++;
+         products[productCount] = Product(productCount, _name, _price, msg.sender);
+     }
+     
+     function purchaseProduct(uint _productId) public payable {
+         require(products[_productId].productPrice == msg.value, "Incorrect payment amount");
+         products[_productId].owner = msg.sender;
+         payable(products[_productId].owner).transfer(msg.value);
+     }
+}
+Output: 
+1) The contract has a vulnerability related to insufficient gas as the contract does not include any gas stipend in functions that send ether, potentially causing the transaction to fail if the gas limit is reached.
+2) There is a vulnerability on ID uniqueness violation as the productCount variable is being used to assign unique IDs to products, but there is no check to ensure that the productCount does not exceed the maximum value causing ID duplication.
+3) The contract is vulnerable to inconsistent state update since the product's owner is directly being changed without proper validation or authorization.
+4) The contract has a business logic flaw as the purchaseProduct function allows anyone to purchase a product by simply paying the specified price without any additional validation or authorization check.

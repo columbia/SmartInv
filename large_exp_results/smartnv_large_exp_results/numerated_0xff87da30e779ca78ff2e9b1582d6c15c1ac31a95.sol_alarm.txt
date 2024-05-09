@@ -1,0 +1,18 @@
+Contract Analysis:
+<\contract\> 
+contract PaymentProcessor {
+         address public receiver;
+         uint public amount;
+
+         function pay(address _receiver, uint _amount) public {
+             receiver = _receiver;
+             amount = _amount;
+             _receiver.transfer(_amount);
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+- reentrancy
+- insufficient gas
+- ether leakage

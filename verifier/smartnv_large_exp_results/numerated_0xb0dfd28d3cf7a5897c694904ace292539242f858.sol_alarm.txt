@@ -1,0 +1,34 @@
+The contract to analyze for potential vulnerabilities is as follows:
+
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+
+    modifier onlyOwner() {
+        require(isOwner[msg.sender], "Not an owner");
+        _;
+    }
+
+    function addOwner(address _newOwner) public onlyOwner {
+        require(isOwner[_newOwner] == false, "Already an owner");
+        owners.push(_newOwner);
+        isOwner[_newOwner] = true;
+    }
+    
+    function removeOwner(address _owner) public onlyOwner {
+        require(isOwner[_owner], "Not an owner");
+        isOwner[_owner] = false;
+    }
+
+    function submitTransaction(address _to, uint _value, bytes memory _data) public onlyOwner {
+        // Function implementation omitted for brevity
+    }
+
+    function executeTransaction(uint _txIndex) public onlyOwner {
+        // Function implementation omitted for brevity
+    }
+}
+
+Output: 
+1) ID uniqueness violation
+2) Incorrect visibility/ownership

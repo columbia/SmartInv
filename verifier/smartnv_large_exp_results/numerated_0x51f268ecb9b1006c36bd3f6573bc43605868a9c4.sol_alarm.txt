@@ -1,0 +1,39 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    
+    function delegate(address to) public {
+        require(to != msg.sender, "Self-delegation is not allowed");
+        require(voters[to].delegate == address(0), "Delegate has already voted");
+        
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+    }
+    
+    function vote(uint256 option) public {
+        require(!voters[msg.sender].voted, "Already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+        totalVotes += voters[msg.sender].weight;
+    }
+
+    function tallyVotes() public view returns (uint256[] memory) {
+        uint256[] memory results;
+
+        for (uint256 i = 0; i < totalVotes; i++) {
+            results[voters[msg.sender].vote]++;
+        }
+
+        return results;
+    }
+}
+<\contract\>

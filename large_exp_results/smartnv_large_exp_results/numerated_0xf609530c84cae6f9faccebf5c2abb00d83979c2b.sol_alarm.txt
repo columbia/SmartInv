@@ -1,0 +1,46 @@
+<\Contract_to_be_analyzed\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+    bool public finalized;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+    
+    function approve() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else if (msg.sender == seller) {
+            sellerApproved = true;
+        } else {
+            arbiterApproved = true;
+        }
+    }
+    
+    function finalize() public {
+        require(buyerApproved || sellerApproved || arbiterApproved, "Not all parties approved");
+        require(!finalized, "Already finalized");
+        
+        if (buyerApproved && sellerApproved) {
+            seller.transfer(price);
+        } else if (buyerApproved && arbiterApproved) {
+            buyer.transfer(price);
+        } else {
+            arbiter.transfer(price);
+        }
+        
+        finalized = true;
+    }
+}
+<\Contract_to_be_analyzed\>

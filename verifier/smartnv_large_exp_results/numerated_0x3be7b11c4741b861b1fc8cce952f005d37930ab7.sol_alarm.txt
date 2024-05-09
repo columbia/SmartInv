@@ -1,0 +1,37 @@
+<\contract\>
+contract TokenSale {
+    IERC20 public token; 
+    address public admin; 
+    address public recipient; 
+    uint public tokenPrice; 
+    uint public tokenAmount; 
+    bool public saleOpen;
+
+    constructor(IERC20 _token, address _recipient, uint _tokenPrice, uint _tokenAmount) {
+        token = _token; 
+        recipient = _recipient; 
+        tokenPrice = _tokenPrice; 
+        tokenAmount = _tokenAmount; 
+        saleOpen = false;
+        admin = msg.sender;
+    }
+
+    function startSale() public {
+        require(msg.sender == admin, "only admin can start sale");
+        saleOpen = true;
+    }
+
+    function buyTokens(uint _quantity) public payable {
+        require(saleOpen, "sale not open"); 
+        require(msg.value == _quantity * tokenPrice, "incorrect payment amount");
+        token.transfer(msg.sender, _quantity);
+        recipient.transfer(msg.value);
+    }
+
+    function endSale() public {
+        require(msg.sender == admin, "only admin can end sale");
+        token.transfer(admin, tokenAmount);
+        saleOpen = false;
+    }
+}
+<\contract\>

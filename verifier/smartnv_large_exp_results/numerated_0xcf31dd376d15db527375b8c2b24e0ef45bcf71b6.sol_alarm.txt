@@ -1,0 +1,31 @@
+<\contract\> 
+contract VotingSystem {
+         struct Voter {
+             uint weight;
+             bool voted;
+             address delegate;
+             uint vote;
+         }
+         mapping(address => Voter) public voters;
+         address public chairperson;
+
+         function delegate(address to) public {
+             Voter storage sender = voters[msg.sender];
+             sender.voted = true;
+             sender.delegate = to;
+             Voter storage delegate = voters[to];
+             if (delegate.voted) {
+                 voters[delegate.delegate].weight += sender.weight;
+             } else {
+                 delegate.weight += sender.weight;
+             }
+         }
+
+         function vote(uint proposal) public {
+             Voter storage sender = voters[msg.sender];
+             require(sender.voted == false, "You already voted.");
+             sender.voted = true;
+             sender.vote = proposal;
+         }
+     }
+<\contract\>

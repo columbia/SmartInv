@@ -1,0 +1,17 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `endExecute` updates `lockedFunds` based on the balance of the contract but does not provide any way to withdraw or use these funds, which could lead to inconsistent states.
+
+2) Incorrect visibility/ownership: The `owner` variable is declared as internal, potentially allowing unauthorized access or modification of the owner state.
+
+3) Integer overflow/underflow: There are several arithmetic operations in the contract, such as `startingBlance = getStartingBalance(proposal.addr);` and `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` that could potentially result in integer overflow or underflow issues.
+
+4) Insufficient gas: The execution of the `endExecute` function relies on the gas of the sender, which might lead to out-of-gas exceptions if the gas provided is not enough to complete the transaction.
+
+5) Business logic flaw: The `endExecute` function checks if `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` which might not be the correct comparison for determining a successful execution.
+
+6) ID uniqueness violation: There is no mechanism in place to ensure uniqueness of proposal IDs or any checks to prevent reusing the same proposal ID.
+
+7) Arithmetic flaw: The arithmetic operation `getPrice() * cAmount * 80 / 100 < dAmount` in the `liquidate` function may have undesired consequences depending on the values of the variables involved.
+
+8) Ether leakage: There seem to be no specific measures implemented to prevent or handle unintentional ether leakage in the contract.

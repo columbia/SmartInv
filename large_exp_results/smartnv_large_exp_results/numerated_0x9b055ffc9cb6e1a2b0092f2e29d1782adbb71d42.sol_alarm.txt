@@ -1,0 +1,25 @@
+The contract below may have potential vulnerabilities:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function placeBid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "You must be the highest bidder to withdraw");
+        msg.sender.transfer(highestBid);
+        highestBid = 0;
+    }
+} 
+
+Identified potential vulnerabilities:
+1) reentrancy
+2) inconsistent state update

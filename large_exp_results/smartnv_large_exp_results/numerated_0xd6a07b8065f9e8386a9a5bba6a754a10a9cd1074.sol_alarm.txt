@@ -1,0 +1,31 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        uint256 votedProposalId;
+    }
+
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+    uint256 public totalProposals;
+
+    function vote(uint256 proposalId) public {
+        require(!voters[msg.sender].hasVoted, "Voter has already voted");
+        require(proposalId < totalProposals, "Invalid proposal ID");
+        
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].votedProposalId = proposalId;
+        proposals[proposalId].votedAmount++;
+    }
+
+    function addProposal() public {
+        totalProposals++;
+        proposals.push(Proposal(totalProposals, 0));
+    }
+
+    function executeProposal(uint256 proposalId) public {
+        require(proposals[proposalId].votedAmount > totalProposals / 2, "Proposal does not have enough votes");
+        // execute proposal logic
+    }
+}
+<\contract\>

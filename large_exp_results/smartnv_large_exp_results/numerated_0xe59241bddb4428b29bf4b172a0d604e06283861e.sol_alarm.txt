@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    uint public tokenPrice;
+    address public tokenAddress;
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor(uint _initialTokenPrice, address _tokenAddress) public {
+        tokenPrice = _initialTokenPrice;
+        tokenAddress = _tokenAddress;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        uint totalCost = _amount * tokenPrice;
+        require(msg.value >= totalCost, "Insufficient payment");
+        
+        ERC20(tokenAddress).transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount;
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set token price");
+        tokenPrice = _newPrice;
+    }
+}
+<\contract_to_analyze\>

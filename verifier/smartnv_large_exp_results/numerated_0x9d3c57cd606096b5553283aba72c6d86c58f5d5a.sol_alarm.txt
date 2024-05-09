@@ -1,0 +1,32 @@
+<\contract_3\> 
+contract SupplyChain {
+     struct Product {
+         uint productId;
+         string productName;
+         address owner;
+         bool isCertified;
+     }
+
+     mapping(uint => Product) public products;
+     uint public productIdCounter;
+
+     function addProduct(string memory _productName) public {
+         Product memory newProduct = Product(productIdCounter, _productName, msg.sender, false);
+         products[productIdCounter] = newProduct;
+         productIdCounter++;
+     }
+
+     function certifyProduct(uint _productId) public {
+         require(msg.sender == products[_productId].owner, "Only the owner can certify the product");
+         products[_productId].isCertified = true;
+     }
+
+     function transferOwnership(uint _productId, address newOwner) public {
+         require(msg.sender == products[_productId].owner, "Only the owner can transfer ownership");
+         products[_productId].owner = newOwner;
+     }
+}
+<\contract_3\> 
+
+Output:
+- incorrect visibility/ownership

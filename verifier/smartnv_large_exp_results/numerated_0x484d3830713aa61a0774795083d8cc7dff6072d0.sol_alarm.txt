@@ -1,0 +1,40 @@
+The contract being analyzed:
+contract Escrow {
+     address public payer;
+     address public recipient;
+     address public arbiter;
+     uint public amount;
+     enum State { Created, Locked, Inactive }
+     State public state;
+
+     function setup(address _recipient, address _arbiter) public {
+         recipient = _recipient;
+         arbiter = _arbiter;
+         state = State.Created;
+     }
+
+     function deposit(address _payer) public payable {
+         require(state == State.Created, "invalid state");
+         require(msg.value > 0, "invalid amount");
+         payer = _payer;
+         amount = msg.value;
+         state = State.Locked;
+     }
+
+     function confirm() public {
+         require(msg.sender == arbiter, "not authorized");
+         require(state == State.Locked, "invalid state");
+         recipient.transfer(amount);
+         state = State.Inactive;
+     }
+
+     function refund() public {
+         require(msg.sender == arbiter, "not authorized");
+         require(state == State.Locked, "invalid state");
+         payer.transfer(amount);
+         state = State.Inactive;
+     }
+}
+
+Output:
+- incorrect visibility/ownership

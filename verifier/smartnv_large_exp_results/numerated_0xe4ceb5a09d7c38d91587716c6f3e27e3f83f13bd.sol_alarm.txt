@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function addOwner(address newOwner) public {
+        owners.push(newOwner);
+    }
+
+    function removeOwner(address ownerToRemove) public {
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == ownerToRemove) {
+                delete owners[i];
+            }
+        }
+    }
+}
+
+The potential vulnerabilities in the MultiSigWallet contract:
+- ID uniqueness violation: Using the delete operation in the removeOwner function could lead to ID uniqueness violations as it does not actually remove the owner from the owners array, just sets the element to zero.
+- Inconsistent state update: The removeOwner function may lead to inconsistent state update as it deletes an element from the owners array without adjusting the array length properly.
+- Incorrect visibility/ownership: Some functions may have incorrect visibility, such as adding or removing owners without proper access control mechanisms in place.

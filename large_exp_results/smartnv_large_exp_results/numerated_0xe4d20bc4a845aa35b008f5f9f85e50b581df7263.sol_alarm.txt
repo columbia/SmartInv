@@ -1,0 +1,32 @@
+Contract analysis:
+<\contract_3\>
+contract Lottery {
+     mapping(address => uint) public ticketBalance;
+     address[] public participants;
+     address public winner;
+
+     function buyTicket(uint amount) public {
+           require(amount > 0, "Amount must be greater than 0");
+           ticketBalance[msg.sender] += amount;
+           participants.push(msg.sender);
+     }
+
+     function selectWinner() public {
+           require(participants.length > 0, "No participants in the lottery");
+           uint index = random() % participants.length;
+           winner = participants[index];
+           // Transfer all ticket balances to winner
+           for (uint i = 0; i < participants.length; i++) {
+                 // Transfer ticket balance to winner
+           }
+     }
+
+     function random() private view returns (uint) {
+           return uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % participants.length;
+     }
+}
+<\contract_3\>
+
+Output:
+- atomicity violation
+- inconsistent state update

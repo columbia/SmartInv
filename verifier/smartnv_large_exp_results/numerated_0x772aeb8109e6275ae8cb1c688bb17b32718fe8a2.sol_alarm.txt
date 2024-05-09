@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    mapping(address => uint256) public balances;
+    mapping(address => bool) public whitelist;
+    address public owner;
+    uint256 public tokenPrice;
+    uint256 public totalTokensSold;
+    uint256 public totalTokensAvailable;
+    
+    constructor(uint256 _tokenPrice, uint256 _totalTokens) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokensAvailable = _totalTokens;
+    }
+    
+    function buyTokens(uint256 _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent");
+        require(totalTokensAvailable >= _numTokens, "Not enough tokens available");
+        require(whitelist[msg.sender], "Address not whitelisted");
+        
+        balances[msg.sender] += _numTokens;
+        totalTokensSold += _numTokens;
+        totalTokensAvailable -= _numTokens;
+    }
+    
+    function addToWhitelist(address _address) public {
+        require(msg.sender == owner, "Only owner can whitelist addresses");
+        
+        whitelist[_address] = true;
+    }
+}
+<\contract_to_analyze\>

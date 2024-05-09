@@ -1,0 +1,19 @@
+<\analyzed_contract\>
+contract TokenSwap {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     address public owner;
+     
+     constructor(address _tokenA, address _tokenB) {
+         tokenA = IERC20(_tokenA);
+         tokenB = IERC20(_tokenB);
+         owner = msg.sender;
+     }
+
+     function swap(uint amount) public {
+         require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance of tokenA");
+         tokenA.transferFrom(msg.sender, address(this), amount);
+         tokenB.transfer(msg.sender, amount);
+     }
+}
+<\analyzed_contract\>

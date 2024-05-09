@@ -1,0 +1,28 @@
+<\contract_to_analyze\> 
+contract Lottery {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0, "Please enter a valid amount");
+        balance += msg.value;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "You are not the owner");
+        require(balance > 0, "No balance to pick winner");
+        uint winnerAmount = balance / 2;
+        balance -= winnerAmount;
+        payable(msg.sender).transfer(winnerAmount);
+    }
+
+    function endLottery() public {
+        require(msg.sender == owner, "You are not the owner");
+        selfdestruct(payable(owner));
+    }
+}
+<\contract_to_analyze\> 

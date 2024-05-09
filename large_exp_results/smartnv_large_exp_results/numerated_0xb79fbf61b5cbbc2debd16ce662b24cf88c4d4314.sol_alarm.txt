@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+     mapping (address => uint) public balances;
+     uint public transactionCount;
+     address[] public owners;
+
+     function submitTransaction(address to, uint value, bytes data) public returns (uint transactionId) {
+          transactionId = transactionCount;
+          transactionCount += 1;
+
+          balances[msg.sender] -= value;
+          balances[to] += value;
+
+          _submitTransaction(transactionId, to, value, data);
+
+      }
+      function executeTransaction(uint transactionId) public {
+           require(isConfirmed(transactionId), "transaction has not been confirmed");
+           Transaction storage transaction = transactions[transactionId];
+           require(transaction.executed == false, "transaction has already been executed");
+
+           transaction.executed = true;
+
+           (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+           require(success, "transaction execution failed");
+       }
+}

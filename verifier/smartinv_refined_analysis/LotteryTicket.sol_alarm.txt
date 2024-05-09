@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function without proper synchronization or locking mechanisms, which may lead to inconsistent state updates.
+
+2) Atomicity violation: The update of `proposal.votedAmount` in the `execute` function is not performed atomically, which can result in unexpected behavior if multiple transactions try to update it simultaneously.
+
+3) Cross bridge inconsistency: There is no explicit check or mechanism to ensure that the `votingToken.transferFrom` operation in the `execute` function is correctly synchronized with the rest of the contract state, potentially leading to inconsistencies across different components of the contract.
+
+4) ID uniqueness violation: The `startingBalanceList` mapping uses `proposal.addr` as a key, but there is no guarantee that `proposal.addr` values are unique, which could lead to overriding existing data or incorrect state management.

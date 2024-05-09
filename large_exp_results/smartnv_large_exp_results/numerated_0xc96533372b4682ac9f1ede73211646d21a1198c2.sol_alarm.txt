@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         address public beneficiary;
+
+         constructor(address _token, address _beneficiary) {
+             token = IERC20(_token);
+             owner = msg.sender;
+             beneficiary = _beneficiary;
+         }
+
+         function buyTokens(uint amount) public {
+             token.transferFrom(msg.sender, beneficiary, amount);
+         }
+
+         function withdrawTokens() public {
+             require(msg.sender == owner, "only owner can withdraw tokens");
+             token.transfer(owner, token.balanceOf(address(this)));
+         }
+}
+<\contract_to_analyze\>

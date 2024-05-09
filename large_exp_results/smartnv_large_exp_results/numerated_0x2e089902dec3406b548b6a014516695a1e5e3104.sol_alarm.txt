@@ -1,0 +1,22 @@
+The contract listed below does not contain any vulnerabilities.
+
+contract DEX {
+  address public owner;
+  mapping(address => uint) public balances;
+
+  constructor() {
+      owner = msg.sender;
+  }
+  
+  function deposit() external payable {
+      balances[msg.sender] += msg.value;
+  }
+  
+  function withdraw(uint amount) external {
+      require(balances[msg.sender] >= amount, "Insufficient balance");
+      balances[msg.sender] -= amount;
+      payable(msg.sender).transfer(amount);
+  }
+} 
+
+Output: healthy

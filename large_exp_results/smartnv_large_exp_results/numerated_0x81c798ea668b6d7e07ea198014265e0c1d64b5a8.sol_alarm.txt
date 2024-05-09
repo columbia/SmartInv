@@ -1,0 +1,20 @@
+The contract to be analyzed:
+
+contract SimpleContract {
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+    
+    function mint(uint amount) public {
+        totalSupply += amount;
+        balances[msg.sender] += amount;
+    }
+    
+    function transfer(address recipient, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+}
+
+Output: healthy

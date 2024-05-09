@@ -1,0 +1,43 @@
+The contract to be analyzed for potential vulnerabilities:
+
+contract Lottery {
+    address public owner;
+    uint public ticketPrice;
+    uint public totalTickets;
+    mapping(address => uint) public ticketsBought;
+    
+    constructor() {
+        owner = msg.sender;
+        ticketPrice = 1 ether;
+        totalTickets = 0;
+    }
+    
+    function buyTicket() public payable {
+        require(msg.value >= ticketPrice, "Insufficient payment for ticket");
+        ticketsBought[msg.sender] += 1;
+        totalTickets += 1;
+    }
+    
+    function drawWinner() public {
+        require(msg.sender == owner, "Only the owner can draw the winner");
+        require(totalTickets > 0, "No tickets bought yet");
+        
+        uint winningTicket = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets;
+        address winner;
+        for (uint i = 0; i < totalTickets; i++) {
+            if (ticketsBought[address(i)] == winningTicket) {
+                winner = address(i);
+                break;
+            }
+        }
+        
+        payable(winner).transfer(totalTickets * ticketPrice);
+        totalTickets = 0;
+    }
+}
+
+Output: 
+1) Inconsistent state update: The implementation of drawWinner function could potentially lead to an inconsistent state update due to the way the winning ticket is calculated and the loop that identifies the winner.
+2) Incorrect visibility/ownership: The drawWinner function allows only the owner to draw the winner, but the owner variable is public, which could lead to visibility issues if the owner requires stricter access control.
+3) Ether leakage: The transfer of funds to the winner in drawWinner function is susceptible to potential ether leakage if the transfer fails, leaving the funds in the contract.
+4) Integer overflow/underflow: There is a possibility for integer overflow/underflow in the calculations involving totalTickets and ticket prices, which could affect the functionality of the contract.

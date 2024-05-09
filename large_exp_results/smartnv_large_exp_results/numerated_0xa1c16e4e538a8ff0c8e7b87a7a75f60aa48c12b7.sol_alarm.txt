@@ -1,0 +1,23 @@
+<\contract\>
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public votes;
+
+    function vote(uint256 amount) external {
+        totalVotes += amount;
+        votes[msg.sender] += amount;
+    }
+
+    function redeemVotes(uint256 amount) external {
+        require(votes[msg.sender] >= amount, "Insufficient votes to redeem");
+        totalVotes -= amount;
+        votes[msg.sender] -= amount;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the given contract are:
+- Insufficient gas: The contract does not have any checks for gas consumption, which may lead to out-of-gas errors during execution.
+- Inconsistent state update: The totalVotes and individual votes are updated separately without ensuring atomicity, which can lead to inconsistent states.
+- Integer overflow/underflow: There is a potential for integer overflow in the totalVotes variable if the amount of votes exceeds the maximum uint256 value.
+- Incorrect visibility/ownership: The visibility of totalVotes and votes mapping is public, potentially exposing sensitive data to external parties.

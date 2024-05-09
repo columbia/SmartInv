@@ -1,0 +1,32 @@
+The contract to analyze:
+
+contract MyContract {
+    address public owner;
+    mapping(uint => address) public userMapping;
+    uint public totalUsers;
+
+    constructor() {
+        owner = msg.sender;
+        totalUsers = 0;
+    }
+
+    function addUser(address _user) public {
+        require(msg.sender == owner, "Only owner can add users");
+        userMapping[totalUsers] = _user;
+        totalUsers++;
+    }
+
+    function deleteUser(uint _index) public {
+        require(msg.sender == owner, "Only owner can delete users");
+        require(_index < totalUsers, "Invalid index");
+
+        // Shift elements to fill the gap
+        for (uint i = _index; i < totalUsers-1; i++) {
+            userMapping[i] = userMapping[i+1];
+        }
+        totalUsers--;
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership

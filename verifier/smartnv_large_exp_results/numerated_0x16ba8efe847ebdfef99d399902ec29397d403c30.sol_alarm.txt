@@ -1,0 +1,32 @@
+<\contract_3\>
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint256) public contributions;
+    mapping(address => bool) public whitelist;
+    uint256 public totalRaised;
+    uint256 public tokenPrice;
+    uint256 public totalTokens;
+
+    constructor(uint256 _tokenPrice, uint256 _totalTokens) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function addToWhitelist(address _addr) public {
+        require(msg.sender == owner, "Only owner can add to whitelist");
+        whitelist[_addr] = true;
+    }
+
+    function buyTokens() public payable {
+        require(whitelist[msg.sender], "Address not whitelisted");
+        require(msg.value >= tokenPrice, "Insufficient payment");
+
+        uint256 tokensBought = msg.value / tokenPrice;
+        require(totalRaised + msg.value <= totalTokens * tokenPrice, "Not enough tokens left");
+        
+        contributions[msg.sender] += tokensBought;
+        totalRaised += msg.value;
+    }
+}
+<\contract_3\>

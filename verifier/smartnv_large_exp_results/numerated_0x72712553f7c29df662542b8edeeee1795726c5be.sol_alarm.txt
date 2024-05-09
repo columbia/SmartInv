@@ -1,0 +1,37 @@
+The contract provided for analysis is:
+
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        uint256 voteIndex;
+        uint256 weight;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public votes;
+
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint256 index) public {
+        require(voters[msg.sender].voted == false, "Already voted");
+        require(index < 5, "Invalid vote index");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].voteIndex = index;
+        votes[index] += voters[msg.sender].weight;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+
+Output:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

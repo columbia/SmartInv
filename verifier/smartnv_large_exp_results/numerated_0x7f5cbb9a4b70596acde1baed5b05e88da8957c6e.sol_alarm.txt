@@ -1,0 +1,24 @@
+Contract:
+
+contract SwapTokens {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         address public owner;
+         mapping(address => uint) public balances;
+
+         function swap(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             tokenA.transferFrom(msg.sender, owner, amount);
+             tokenB.transferFrom(owner, msg.sender, amount);
+             balances[msg.sender] -= amount;
+          }
+}
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership: The `owner` variable is public, which exposes the contract owner's address to the public. This could potentially be a security risk if the owner's address is meant to be kept private.
+
+2) Insufficient gas: The swap function executes multiple external calls, which could lead to running out of gas during execution if the gas limit is exceeded. This could result in the transaction failing to complete successfully.
+
+3) Inconsistent state update: The balances of tokens for users are updated manually in the mapping, which could lead to inconsistencies or errors if not properly handled.
+
+Overall, the contract is healthy when it comes to vulnerabilities.

@@ -1,0 +1,32 @@
+Contract:
+
+```solidity
+contract Lottery {
+    mapping(address => uint) public tickets;
+    address public winner;
+
+    function buyTickets(uint _numTickets) public payable {
+        require(msg.value == _numTickets * 0.1 ether, "Incorrect payment amount");
+        tickets[msg.sender] += _numTickets;
+    }
+
+    function drawWinner() public {
+        require(winner == address(0), "A winner has already been drawn");
+        // Pseudorandom selection of winner
+        winner = address(uint(keccak256(abi.encodePacked(blockhash(block.number - 1), block.coinbase, block.timestamp))) % (msg.sender.balance / msg.value);
+        payable(winner).transfer(this.balance);
+    }
+
+    function claimPrize() public {
+        require(msg.sender == winner, "You are not the winner");
+        uint prizeAmount = tickets[winner] * 0.2 ether;
+        payable(winner).transfer(prizeAmount);
+        tickets[winner] = 0;
+    }
+}
+```
+
+Potential Vulnerabilities: 
+1) integer overflow/underflow
+2) inconsistent state update
+3) ether leakage

@@ -1,0 +1,11 @@
+<\contract\>
+contract CrossBridge {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+    
+    function swap(uint amount, address to) external {
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(to, amount);
+    }
+}
+<\contract\>

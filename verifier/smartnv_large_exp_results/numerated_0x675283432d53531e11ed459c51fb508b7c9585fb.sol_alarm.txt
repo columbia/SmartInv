@@ -1,0 +1,67 @@
+<b>contract:</b> 
+
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    address public manager;
+    mapping(address => Voter) public voters;
+    mapping(address => uint) public voteCount;
+    uint public totalVotes;
+
+    constructor() public {
+        manager = msg.sender;
+    }
+
+    function giveRightToVote(address voter) public {
+        require(msg.sender == manager, "You are not authorized to give voting rights.");
+        require(!voters[voter].voted, "Voter has already voted.");
+        require(voters[voter].weight == 0, "Voter already has voting rights.");
+        
+        voters[voter].weight = 1;
+        totalVotes++;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You have already voted.");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Delegation loop detected.");
+        }
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = to;
+
+        if (voters[to].voted) {
+            voteCount[voters[to].vote]++;
+        }
+    }
+
+    function vote(uint option) public {
+        require(!voters[msg.sender].voted, "You have already voted.");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+        voteCount[option]++;
+    }
+
+    function winningOption() public view returns(uint) {
+        uint winningOption = 0;
+        for (uint i = 1; i <= totalVotes; i++) {
+            if (voteCount[i] > voteCount[winningOption]) {
+                winningOption = i;
+            }
+        }
+
+        return winningOption;
+    }
+}
+</b>
+
+Output:
+1) ID uniqueness violation

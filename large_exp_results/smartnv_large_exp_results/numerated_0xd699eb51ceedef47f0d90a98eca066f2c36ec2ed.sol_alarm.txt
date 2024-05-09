@@ -1,0 +1,21 @@
+The contract below contains potential vulnerabilities:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == owner, "Only owner can reset votes");
+        totalVotes = 0;
+    }
+}
+
+Potential vulnerabilities:
+1) Privilege escalation: The resetVotes function allows the owner to reset the totalVotes, potentially giving them undue influence over the voting system.
+2) Incorrect visibility/ownership: The 'owner' variable is mentioned in the resetVotes function but not defined in the contract, which can lead to ownership issues.

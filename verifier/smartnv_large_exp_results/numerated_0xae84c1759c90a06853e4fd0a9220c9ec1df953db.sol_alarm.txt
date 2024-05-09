@@ -1,0 +1,17 @@
+The contract being analyzed:
+
+contract Exchange {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     mapping(address => uint) public balance;
+
+     function trade(uint amountA, uint amountB) public {
+         require(balance[msg.sender] >= amountA, "insufficient balance");
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transfer(msg.sender, amountB);
+         balance[msg.sender] -= amountA;
+     }
+}
+
+Potential vulnerabilities in the contract:
+- incorrect visibility/ownership

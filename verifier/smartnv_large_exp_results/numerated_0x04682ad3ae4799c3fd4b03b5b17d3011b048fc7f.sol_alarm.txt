@@ -1,0 +1,38 @@
+contract VotingSystem {
+    struct Voter {
+        uint256 votedProposalId;
+        bool hasVoted;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public proposalVotes;
+    uint256 public totalProposals;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function createProposal(uint256 proposalId) public {
+        require(!voters[msg.sender].hasVoted, "You have already voted");
+        require(proposalId > 0 && proposalId <= totalProposals + 1, "Invalid proposal Id");
+        
+        totalProposals++;
+    }
+
+    function vote(uint256 proposalId) public {
+        require(!voters[msg.sender].hasVoted, "You have already voted");
+        require(proposalId > 0 && proposalId <= totalProposals, "Invalid proposal Id");
+        
+        proposalVotes[proposalId]++;
+        voters[msg.sender].votedProposalId = proposalId;
+        voters[msg.sender].hasVoted = true;
+    }
+
+    function executeProposal(uint256 proposalId) public {
+        require(msg.sender == admin, "Only admin can execute proposals");
+        require(proposalVotes[proposalId] > totalProposals / 2, "Not enough votes to pass the proposal");
+        
+        // Execute the proposal
+    }
+}

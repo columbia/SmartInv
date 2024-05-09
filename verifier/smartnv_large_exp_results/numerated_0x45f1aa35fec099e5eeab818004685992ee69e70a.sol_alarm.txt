@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract PurchaseContract {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public isPaid;
+
+    constructor(address _seller, uint _price) {
+        seller = _seller;
+        price = _price;
+    }
+
+    function pay() public payable {
+        require(msg.value == price, "Incorrect payment amount");
+        require(!isPaid, "Already paid");
+
+        seller.transfer(msg.value);
+        buyer = msg.sender;
+        isPaid = true;
+    }
+
+    function cancel() public {
+        require(msg.sender == buyer, "Only buyer can cancel");
+        
+        seller.transfer(address(this).balance);
+        isPaid = false;
+        buyer = address(0);
+    }
+}
+<\contract_to_analyze\>

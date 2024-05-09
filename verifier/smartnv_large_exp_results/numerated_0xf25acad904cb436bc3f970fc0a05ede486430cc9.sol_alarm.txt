@@ -1,0 +1,26 @@
+<\contract\> 
+contract SubscriptionService {
+    mapping(address => uint) public subscriptions;
+    uint public subscriptionPrice = 1 ether;
+
+    function subscribe() public payable {
+        require(msg.value == subscriptionPrice, "Incorrect subscription amount");
+        subscriptions[msg.sender]++;
+    }
+
+    function cancelSubscription() public {
+        require(subscriptions[msg.sender] > 0, "No subscription to cancel");
+        subscriptions[msg.sender]--;
+        payable(msg.sender).transfer(subscriptionPrice);
+    }
+
+    function setSubscriptionPrice(uint _price) public {
+        subscriptionPrice = _price;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Arithmetic flaw: The subscriptionPrice is defined as 1 ether, which could result in an arithmetic flaw if the setSubscriptionPrice function is used to set a price that is not a whole number.
+- Insufficient gas: The subscribe function requires a specific amount of ether (subscriptionPrice) to be sent along with the transaction. If the user does not provide enough gas to cover this cost, the transaction may fail.
+- Incorrect visibility/ownership: The subscriptions mapping is set to public, exposing all user subscription data to anyone who interacts with the contract. This could pose privacy concerns and potential security risks.

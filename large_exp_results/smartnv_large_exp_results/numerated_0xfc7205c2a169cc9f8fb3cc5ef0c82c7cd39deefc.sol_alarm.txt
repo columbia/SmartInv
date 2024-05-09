@@ -1,0 +1,21 @@
+The contract to be analyzed:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) external {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        address previousBidder = highestBidder;
+        uint previousBid = highestBid;
+        highestBidder = msg.sender;
+        highestBid = amount;
+        if(previousBid > 0) {
+            previousBidder.transfer(previousBid);
+        }
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) reentrancy
+2) inconsistent state update

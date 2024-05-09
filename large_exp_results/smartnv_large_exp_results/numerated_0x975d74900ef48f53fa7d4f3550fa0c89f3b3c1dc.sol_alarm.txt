@@ -1,0 +1,26 @@
+<\contract\>
+contract Market {
+         IERC20 public token;
+         address public owner;
+         mapping(address => uint) public balances;
+
+         function buy(uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             uint price = amount * calculatePrice();
+             require(token.balanceOf(msg.sender) >= price, "Not enough funds to buy");
+             balances[msg.sender] += amount;
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function sell(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance to sell");
+             uint price = amount * calculatePrice();
+             balances[msg.sender] -= amount;
+             token.transfer(msg.sender, price);
+         }
+
+         function calculatePrice() public view returns (uint) {
+             return token.balanceOf(address(this)) / (balances[msg.sender] + 1);
+         }
+     }
+<\contract\>

@@ -1,0 +1,18 @@
+<\analyzed_contract\>
+contract TokenSwap {
+    IERC20 public token1;
+    IERC20 public token2;
+
+    function swap(uint amount1, uint amount2) public {
+        require(token1.balanceOf(msg.sender) >= amount1, "Insufficient balance of token1");
+        require(token2.balanceOf(msg.sender) >= amount2, "Insufficient balance of token2");
+
+        token1.transferFrom(msg.sender, address(this), amount1);
+        token2.transfer(msg.sender, amount2);
+    }
+}
+Potential vulnerabilities:
+1) Inconsistent state update: There might be a risk of inconsistent state update if the transfers fail after the balance check, leaving the contract in an inconsistent state.
+2) Integer overflow/underflow: There is a possibility of integer overflow/underflow when handling the token amounts during the swap process.
+3) Insufficient gas: If the token transfers require more gas than available, the swap function may fail, leading to insufficient gas vulnerability.
+4) Incorrect visibility/ownership: The visibility of the token1 and token2 variables might expose sensitive information to unauthorized parties, potentially leading to security risks.

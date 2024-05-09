@@ -1,0 +1,1 @@
+a set of instructions written in a specific programming language that can be understood and executed by a computer. It is used to create software applications, websites, and other digital products.

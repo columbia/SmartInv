@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    address public admin;
+    mapping(address => uint) public votes;
+    bool public votingActive;
+
+    constructor() public {
+        admin = msg.sender;
+        votingActive = true;
+    }
+
+    function vote(uint amount) public {
+        require(votingActive, "Voting is not active");
+        votes[msg.sender] += amount;
+    }
+
+    function endVoting() public {
+        require(msg.sender == admin, "Only admin can end voting");
+        votingActive = false;
+    }
+
+    function getTotalVotes(address user) public view returns(uint) {
+        return votes[user];
+    }
+}
+<\contract_to_analyze\>

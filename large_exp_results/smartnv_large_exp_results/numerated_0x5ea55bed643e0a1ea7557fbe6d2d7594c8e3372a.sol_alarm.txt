@@ -1,0 +1,21 @@
+<\contract\>
+contract VotingSystem {
+   mapping(address => uint) public votes;
+   address public winner;
+
+   function vote(uint _amount) public {
+       votes[msg.sender] += _amount;
+   }
+
+   function decideWinner() public {
+       require(winner == address(0), "Winner has already been decided");
+       uint maxVotes = 0;
+       for (uint i = 0; i < votes.length; i++) {
+           if (votes[i] > maxVotes) {
+               maxVotes = votes[i];
+               winner = msg.sender;
+           }
+       }
+   }
+}
+<\contract\>

@@ -1,0 +1,33 @@
+Your contract:
+
+contract Escrow {
+         uint public escrowBalance;
+         address public buyer;
+         address public seller;
+         
+         constructor(address _buyer, address _seller) {
+             buyer = _buyer;
+             seller = _seller;
+         }
+         
+         function deposit(uint amount) public {
+             require(msg.sender == buyer, "Only buyer can deposit");
+             escrowBalance += amount;
+         }
+         
+         function release() public {
+             require(msg.sender == buyer, "Only buyer can release funds");
+             escrowBalance = 0;
+         }
+         
+         function withdraw() public {
+             require(msg.sender == seller, "Only seller can withdraw funds");
+             escrowBalance = 0;
+         }
+     }
+
+Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership
+- Inconsistent state update
+
+Output: incorrect visibility/ownership, inconsistent state update.

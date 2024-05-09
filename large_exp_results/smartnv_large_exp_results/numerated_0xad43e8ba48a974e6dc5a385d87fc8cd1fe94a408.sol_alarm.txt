@@ -1,0 +1,21 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `execute` function updates the `votedAmount` field of the `proposal` struct without ensuring that the contract's state is updated atomically. This can lead to inconsistent state if multiple transactions try to update the `votedAmount` simultaneously.
+
+2) Incorrect visibility/ownership: The `votingToken` variable is declared as an internal variable, which means that it can only be accessed within the contract or contracts that inherit from it. Depending on the intended use case, this might pose a vulnerability.
+
+3) Insufficient gas: The `endExecute` function has a calculation that might require a significant amount of gas to execute, which can lead to out-of-gas errors and transaction failures.
+
+4) Integer overflow/underflow: There is potential for integer overflow in the `calculatePrice` function if the values returned by `USDC.balanceOf(address(pair))` or `WETH.balanceOf(address(pair))` are larger than what can be stored in a uint type variable. This can lead to unexpected behavior.
+
+5) ID uniqueness violation: There are no checks in place to ensure the uniqueness of identifiers used within the contract, which could potentially lead to conflicts or inconsistencies in the data.
+
+6) Privilege escalation: The `startExecute` function allows any caller to set `proposal` data, which could potentially escalate privileges or manipulate the state of the contract in unintended ways.
+
+7) Business logic flaw: The `endExecute` function uses a condition that checks if the locked funds are greater than half the total supply of the `votingToken` to determine execution success. This logic may not align with the intended business rules and could lead to unexpected outcomes.
+
+8) Ether leakage: The contract does not handle Ether transactions explicitly, which could result in Ether being trapped in the contract or lost unintentionally.
+
+9) Cross-bridge inconsistency: The contract interacts with external contracts such as `votingToken` without validating the integrity or consistency of the data received from these contracts, potentially leading to discrepancies or vulnerabilities.
+
+10) Atomicity violation: The `execute` function involves multiple state changes that are not wrapped in a single atomic operation, which can lead to inconsistencies if one of the operations fails or if multiple transactions are processed concurrently.

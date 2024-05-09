@@ -1,0 +1,30 @@
+<\contract\> 
+contract Crowdsale {
+         address public owner;
+         IERC20 public token;
+         uint public rate; 
+         uint public totalTokens;
+         uint public soldTokens;
+         mapping(address => uint) public balances;
+
+         constructor(address _token, uint _rate, uint _totalTokens) {
+             owner = msg.sender;
+             token = IERC20(_token);
+             rate = _rate;
+             totalTokens = _totalTokens;
+             soldTokens = 0;
+         }
+
+         function buyTokens(uint tokensToBuy) external payable {
+             uint cost = tokensToBuy * rate;
+             require(msg.value >= cost, "Not enough ether sent");
+             require(soldTokens + tokensToBuy <= totalTokens, "Not enough tokens available");
+             soldTokens += tokensToBuy;
+             balances[msg.sender] += tokensToBuy;
+             token.transfer(msg.sender, tokensToBuy);
+         }
+} 
+
+Output:
+1) atomicity violation
+2) insufficient gas

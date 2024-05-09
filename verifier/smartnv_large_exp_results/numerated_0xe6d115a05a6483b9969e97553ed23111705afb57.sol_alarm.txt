@@ -1,0 +1,76 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    mapping(address => Voter) public voters;
+
+    address public chairperson;
+
+    modifier onlyChairperson() {
+        require(msg.sender == chairperson, "Only chairperson can call this function");
+        _;
+    }
+
+    constructor() {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted");
+        require(to != msg.sender, "Self-delegation is disallowed");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found a loop in delegation");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+        if (delegate_.voted) {
+            voters[delegate_.vote].weight += sender.weight;
+        } else {
+            delegate_.weight += sender.weight;
+        }
+    }
+
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "Has no right to vote");
+        require(!sender.voted, "Already voted");
+
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+
+    function winningProposal() public view onlyChairperson returns (uint winningProposal_) {
+        uint winningVoteCount = 0;
+        for (uint p = 0; p < proposals.length; p++) {
+            if (proposals[p].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[p].voteCount;
+                winningProposal_ = p;
+            }
+        }
+    }
+}
+
+In this contract, the potential vulnerabilities are:
+
+1) Inconsistent state update: The delegate function allows for delegation, but the logic for updating the state of delegates and weights may lead to inconsistent states or manipulation.
+
+2) Privilege escalation: The modifier onlyChairperson restricts certain functions to the chairperson, but there could be potential ways for privilege escalation if not implemented correctly.
+
+3) Business logic flaw: The voting and delegate functions have complex logic that could potentially have flaws or edge cases that are not handled properly.
+
+4) ID uniqueness violation: The contract does not enforce unique voter identities, which could lead to issues with multiple votes or delegate loops.
+
+5) Incorrect visibility/ownership: The visibility of certain variables and functions may not be properly defined, leading to potential security risks or unexpected behavior.
+
+Therefore, the contract contains potential vulnerabilities related to inconsistent state update, privilege escalation, business logic flaw, ID uniqueness violation, and incorrect visibility/ownership.

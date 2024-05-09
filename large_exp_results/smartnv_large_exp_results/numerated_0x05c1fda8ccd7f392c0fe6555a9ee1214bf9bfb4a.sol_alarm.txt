@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract TokenMarket {
+     address public owner;
+     IERC20 public token;
+     uint public price;
+
+     constructor(address _token, uint _price) {
+            owner = msg.sender;
+            token = IERC20(_token);
+            price = _price;
+     }
+
+     function buyTokens(uint _amount) public {
+            require(token.balanceOf(address(this)) >= _amount * price, "insufficient token balance");
+            token.transfer(msg.sender, _amount);
+     }
+
+     function setPrice(uint _newPrice) public {
+            require(msg.sender == owner, "only owner can set price");
+            price = _newPrice;
+     }
+}
+
+Output: 
+1) privilege escalation
+2) inconsistent state update

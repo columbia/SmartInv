@@ -1,0 +1,26 @@
+<\contract\>
+contract Crowdsale {
+    address public owner;
+    address public token;
+    uint public price;
+    
+    constructor(address _token, uint _price) {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+    }
+    
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        
+        ERC20(token).transfer(msg.sender, amount);
+    }
+}
+<\contract\> 
+
+Vulnerabilities:
+1) Price manipulation: The price of tokens is set by the owner and not dynamically calculated based on factors such as demand or supply, which could potentially allow the owner to manipulate the price.
+
+2) Incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to everyone. This can lead to potential security risks if the owner's address is targeted by attackers.
+
+3) Insufficient gas: The buyTokens function does not specify the gas required for the transaction, which could lead to out-of-gas errors if the transaction requires more gas than available.

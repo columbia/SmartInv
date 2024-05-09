@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract StoreData {
+    mapping(uint256 => string) data;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function store(uint256 _id, string memory _info) public {
+        require(msg.sender == owner, "Only owner can store data");
+        data[_id] = _info;
+    }
+
+    function getData(uint256 _id) public view returns (string memory) {
+        return data[_id];
+    }
+
+    function updateOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can update owner");
+        owner = _newOwner;
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

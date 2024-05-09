@@ -1,0 +1,43 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+
+    function delegate(address to) public {
+        require(msg.sender != to, "cannot delegate to yourself");
+        require(voters[to].delegate != msg.sender, "circular delegation is not allowed");
+
+        if (voters[to].voted) {
+            voters[msg.sender].weight += voters[to].weight;
+        } else {
+            voters[to].weight += 1;
+        }
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "already voted");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+
+    function winningProposal() public {
+        uint256 winningVoteCount = 0;
+        for (uint256 p = 0; p < proposal.length; p++) {
+            if (proposal[p].voteCount > winningVoteCount) {
+                winningVoteCount = proposal[p].voteCount;
+                winningProposal = p;
+            }
+        }
+    }
+}
+<\analyzed_contract\>

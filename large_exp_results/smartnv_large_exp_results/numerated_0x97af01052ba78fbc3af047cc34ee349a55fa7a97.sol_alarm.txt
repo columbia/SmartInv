@@ -1,0 +1,31 @@
+The contract provided:
+
+contract TokenSale {
+    IERC20 public token;
+    address public admin;
+    mapping(address => bool) public whitelist;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        admin = msg.sender;
+    }
+
+    function addToWhitelist(address _user) external {
+        require(msg.sender == admin, "only admin can add to whitelist");
+        whitelist[_user] = true;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(whitelist[msg.sender], "user not whitelisted");
+        token.transfer(msg.sender, _amount);
+    }
+
+    function setAdmin(address _newAdmin) external {
+        require(msg.sender == admin, "only admin can set new admin");
+        admin = _newAdmin;
+    }
+}
+
+Output:
+- privilege escalation
+- inconsistent state update

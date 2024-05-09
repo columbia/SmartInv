@@ -1,0 +1,20 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "sender is not authorized");
+        seller.transfer(amount);
+    }
+}
+<\contract\>

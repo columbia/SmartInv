@@ -1,0 +1,29 @@
+<\contract\> 
+contract TransferContract {
+
+    mapping(address => uint) public balances;
+
+    function transfer(address _to, uint _value) public {
+        require(balances[msg.sender] >= _value, "Insufficient balance");
+        
+        balances[msg.sender] -= _value;
+        balances[_to] += _value;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit value must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        
+        balances[msg.sender] -= _amount;
+        msg.sender.transfer(_amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Insufficient gas for the execution of functions.
+2) Lack of proper validation and handling of integer underflow in the withdraw function.

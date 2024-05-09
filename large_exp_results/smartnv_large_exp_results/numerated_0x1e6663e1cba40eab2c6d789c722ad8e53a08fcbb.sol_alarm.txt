@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract Publication {
+     mapping(uint => address) public authors;
+     mapping(address => uint) public authorIds;
+     uint public totalAuthors;
+
+     function addAuthor(address _author) public {
+         require(authorIds[_author] == 0, "author already exists");
+         totalAuthors++;
+         authors[totalAuthors] = _author;
+         authorIds[_author] = totalAuthors;
+     }
+
+     function removeAuthor(address _author) public {
+         require(authorIds[_author] != 0, "author does not exist");
+         uint authorId = authorIds[_author];
+         delete authors[authorId];
+         delete authorIds[_author];
+         totalAuthors--;
+     }
+}
+ 
+Based on the analysis of the provided contract, the potential vulnerabilities identified are:
+
+1) ID uniqueness violation
+2) Inconsistent state update
+
+Therefore, the potential vulnerabilities in the contract "Publication" are ID uniqueness violation and inconsistent state update.

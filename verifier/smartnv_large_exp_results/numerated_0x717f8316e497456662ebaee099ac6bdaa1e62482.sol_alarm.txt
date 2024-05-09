@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+     uint public price;
+
+     constructor(address _token, uint _price) {
+         owner = msg.sender;
+         token = IERC20(_token);
+         price = _price;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(token.balanceOf(owner) >= _amount * price, "Insufficient token balance for sale");
+         token.transferFrom(owner, msg.sender, _amount * price);
+     }
+
+     function withdrawTokens(uint _amount) public {
+         require(msg.sender == owner, "Only owner can withdraw tokens");
+         token.transfer(owner, _amount);
+     }
+
+     function setPrice(uint _newPrice) public {
+         require(msg.sender == owner, "Only owner can set price");
+         price = _newPrice;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities identified in the contract are:
+1) Privilege escalation in the setPrice function, where anyone who is not the owner can still call the function and change the price.
+2) Integer overflow/underflow in the buyTokens function when calculating the total token amount to transfer. This could lead to incorrect token transfers or unexpected behavior.
+3) Incorrect visibility/ownership in the withdrawTokens function where the requirement for only the owner to withdraw tokens is implemented, but the function is public, allowing anyone to call it and potentially withdraw tokens.

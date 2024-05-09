@@ -1,0 +1,33 @@
+The contract that needs to be analyzed for potential vulnerabilities is:
+
+```solidity
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint amount) public {
+        votes[msg.sender] += amount;
+    }
+
+    function changeOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+
+    function withdrawVotes(address recipient, uint amount) public onlyOwner {
+        require(votes[msg.sender] >= amount, "Not enough votes to withdraw");
+        votes[msg.sender] -= amount;
+        // Send tokens or do something with the votes
+    }
+}
+```
+
+This code snippet contains the potential vulnerabilities of ID uniqueness violation and incorrect visibility/ownership.

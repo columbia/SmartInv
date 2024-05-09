@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract AdminToken {
+     address public admin; 
+     uint public totalSupply; 
+     mapping(address => uint) public balances;
+
+     constructor() {
+         admin = msg.sender;
+         totalSupply = 1000000;
+         balances[msg.sender] = totalSupply;
+     }
+
+     function mint(address recipient, uint amount) public {
+         require(msg.sender == admin, "only admin can mint tokens");
+         balances[recipient] += amount;
+         totalSupply += amount;
+     }
+
+     function transfer(address to, uint amount) public {
+         require(balances[msg.sender] >= amount, "insufficient balance");
+         balances[msg.sender] -= amount;
+         balances[to] += amount;
+     }
+}
+
+Output: 
+1) healthy

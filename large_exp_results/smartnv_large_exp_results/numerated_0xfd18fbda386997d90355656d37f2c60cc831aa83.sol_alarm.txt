@@ -1,0 +1,34 @@
+<\the_contract\>
+contract Marketplace {
+         IERC20 public token;
+         mapping(address => uint) public balances;
+         uint public totalSupply;
+
+         function deposit(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+             balances[msg.sender] += amount;
+             totalSupply += amount;
+         }
+
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             token.transfer(msg.sender, amount);
+             balances[msg.sender] -= amount;
+             totalSupply -= amount;
+         }
+
+         function buy(uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient token balance");
+             token.transferFrom(msg.sender, address(this), amount);
+             balances[msg.sender] += amount;
+             totalSupply += amount;
+         }
+
+         function sell(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             token.transfer(msg.sender, amount);
+             balances[msg.sender] -= amount;
+             totalSupply -= amount;
+         }
+}
+<\the_contract\>

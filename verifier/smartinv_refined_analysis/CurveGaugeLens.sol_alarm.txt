@@ -1,0 +1,5 @@
+Potential Vulnerabilities in the Contract:
+1) Inconsistent state update: The 'proposal.votedAmount' is incremented in the 'execute' function, but it is not persisted anywhere in the contract state.
+2) Atomicity violation: The 'execute' function involves multiple state changes (transferFrom, incrementing 'proposal.votedAmount'), but there is no mechanism to ensure that these changes occur atomically, leading to potential inconsistencies.
+3) Cross bridge inconsistency: The 'proposal.addr' is used as a parameter for 'votingToken.transferFrom' in the 'execute' function, but the actual balance of 'proposal.addr' is only retrieved and stored in 'startingBalanceList' in the 'startExecute' function, potentially leading to inconsistencies.
+4) ID uniqueness violation: The 'proposal' struct does not have any unique identifier associated with each proposal, which could lead to confusion or manipulation if multiple proposals are created.

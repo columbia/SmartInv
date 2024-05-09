@@ -1,0 +1,32 @@
+<\contract\> 
+contract EscrowContract {
+         IERC20 public token;
+         address public seller;
+         address public buyer;
+         uint public amount;
+
+         constructor(address _token, address _seller, address _buyer, uint _amount) {
+             token = IERC20(_token);
+             seller = _seller;
+             buyer = _buyer;
+             amount = _amount;
+         }
+
+         function deposit() external {
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function release() external {
+             require(msg.sender == seller, "Only the seller can release funds");
+             token.transfer(buyer, amount);
+         }
+
+         function refund() external {
+             require(msg.sender == buyer, "Only the buyer can request a refund");
+             token.transfer(seller, amount);
+         }
+     }
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership - the release and refund functions only have address verification but no access control modifiers like onlyOwner, which can lead to anyone besides the intended user performing these actions.

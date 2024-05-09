@@ -1,0 +1,10 @@
+<\contract\> 
+contract PaymentProcessor {
+     address public owner;
+     mapping(uint => uint) public payments;
+     
+     function processPayment(uint orderId, uint amount) public {
+         require(msg.sender == owner, "Only owner can process payments");
+         payments[orderId] += amount;
+     }
+}

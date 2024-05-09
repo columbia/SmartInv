@@ -1,0 +1,31 @@
+Contract to analyze:
+
+contract VotingSystem {
+    mapping(address => uint8) public votes;
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Sender is not the owner");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint8 _value) public {
+        votes[msg.sender] = _value;
+    }
+
+    function changeOwner(address _newOwner) public onlyOwner {
+        owner = _newOwner;
+    }
+
+    function getVote(address _voter) public view returns (uint8) {
+        return votes[_voter];
+    }
+}
+
+Output: 
+- privilege escalation (changing owner)
+- incorrect visibility/ownership (votes should not be publicly accessible)

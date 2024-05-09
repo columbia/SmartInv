@@ -1,0 +1,25 @@
+<\contract\>
+contract Crowdsale {
+    address public owner;
+    uint public startTime;
+    uint public endTime;
+    uint public tokenPrice;
+
+    mapping(address => uint) public balances;
+
+    constructor(uint _startTime, uint _endTime, uint _tokenPrice) public {
+        owner = msg.sender;
+        startTime = _startTime;
+        endTime = _endTime;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(block.timestamp >= startTime && block.timestamp <= endTime, "Crowdsale is not active");
+        uint totalCost = _amount * tokenPrice;
+        require(msg.value >= totalCost, "Insufficient funds sent");
+
+        balances[msg.sender] += _amount;
+    }
+}
+<\contract\>

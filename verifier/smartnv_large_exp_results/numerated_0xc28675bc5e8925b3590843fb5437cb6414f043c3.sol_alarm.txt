@@ -1,0 +1,11 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function `startExecute` updates the state variable `proposal` without resetting it, potentially allowing multiple proposals to be initiated simultaneously.
+
+2) ID uniqueness violation: The `lockedFunds` variable is not uniquely identified per proposal, potentially leading to confusion or conflicts with other proposals.
+
+3) Incorrect visibility/ownership: The contract does not specify the visibility level of the `proposal` struct and `votingToken` variable, which can lead to unintended access or manipulation by external contracts.
+
+4) Insufficient gas: The `endExecute` function may fail to execute completely if the gas limit is reached due to potentially high gas costs of the `require` statements and operations within the function.
+
+Overall, the contract may be vulnerable to inconsistent state updates, ID uniqueness violations, incorrect visibility/ownership, and insufficient gas.

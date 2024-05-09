@@ -1,0 +1,55 @@
+The contract provided for analysis: 
+
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    struct Proposal {
+        uint voteCount;
+    }
+
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+    address public chairperson;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+
+        if (delegate_.voted) {
+            proposals[delegate_.vote].voteCount += sender.weight;
+        } else {
+            delegate_.weight += sender.weight;
+        }
+    }
+
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+        proposals[proposal].voteCount += sender.weight;
+    }
+} 
+
+Based on the contract provided for analysis, the potential vulnerabilities are:
+
+1) Inconsistent state update: The state of the voter's weight is updated in the delegate function based on the delegate's vote status, which can lead to inconsistent state updates if not handled carefully. 
+
+2) Incorrect visibility/ownership: The visibility of functions and variables in the contract may expose sensitive information or allow unauthorized access, potentially leading to security vulnerabilities. 
+
+3) Insufficient gas: The contract's operations may require more gas than available, leading to incomplete execution and potential vulnerabilities. 
+
+Therefore, the identified potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and insufficient gas.

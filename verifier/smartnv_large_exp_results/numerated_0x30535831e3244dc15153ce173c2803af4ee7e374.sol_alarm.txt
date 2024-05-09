@@ -1,0 +1,39 @@
+<\contract_to_analyze\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public amount;
+     enum State { Created, Locked, Released, Inactive }
+     State public state;
+     
+     constructor(address _buyer, address _seller, address _arbiter) {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+     }
+
+     // Buyer initiates the escrow and locks the funds
+     function initEscrow() public payable {
+         require(msg.sender == buyer);
+         amount = msg.value;
+         state = State.Locked;
+     }
+
+     // Seller can release the funds once the product is delivered
+     function releaseFunds() public {
+         require(msg.sender == seller);
+         require(state == State.Locked);
+         seller.transfer(amount);
+         state = State.Released;
+     }
+
+     // Arbitrator can refund the funds to the buyer
+     function refundBuyer() public {
+         require(msg.sender == arbiter);
+         require(state == State.Locked);
+         buyer.transfer(amount);
+         state = State.Inactive;
+     }
+}
+<\contract_to_analyze\>

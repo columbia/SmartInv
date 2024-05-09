@@ -1,0 +1,30 @@
+Contract to analyze:
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+    
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+    
+    function buyTokens(uint amount) public {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        IERC20(token).transfer(msg.sender, amount);
+    }
+    
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = _price;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+} 
+
+Output:
+- No vulnerabilities in the provided contract. "healthy"

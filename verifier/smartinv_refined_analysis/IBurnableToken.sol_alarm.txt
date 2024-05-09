@@ -1,0 +1,22 @@
+The contract to analyze:
+
+contract CrossBridge {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     address public tokenARecipient;
+     address public tokenBRecipient;
+
+     function crossBridge(uint amount, address recipient) external {
+          require(msg.sender == tokenARecipient || msg.sender == tokenBRecipient, "Unauthorized");  
+          if(msg.sender == tokenARecipient) {
+               tokenA.transfer(recipient, amount);
+          } else {
+               tokenB.transfer(recipient, amount);
+          }
+     }
+}
+
+Potential vulnerabilities in the contract:
+1) privilege escalation
+2) inconsistent state update
+3) cross bridge inconsistency

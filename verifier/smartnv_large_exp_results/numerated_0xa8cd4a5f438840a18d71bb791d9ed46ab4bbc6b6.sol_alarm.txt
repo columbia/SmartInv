@@ -1,0 +1,29 @@
+The contract provided for analysis: 
+
+contract Escrow {
+    address private buyer;
+    address private seller;
+    uint private amount;
+
+    function createEscrow(address _seller) public payable {
+        require(msg.value > 0, "Amount should be greater than 0");
+        seller = _seller;
+        buyer = msg.sender;
+        amount = msg.value;
+    }
+
+    function releaseAmountToSeller() public {
+        require(msg.sender == buyer, "Only buyer can release funds");
+        seller.transfer(amount);
+    }
+
+    function refundAmountToBuyer() public {
+        require(msg.sender == seller, "Only seller can initiate refund");
+        buyer.transfer(amount);
+    }
+}
+
+Output: 
+1) Incorrect visibility/ownership
+2) Atomicity violation
+3) Insufficient gas

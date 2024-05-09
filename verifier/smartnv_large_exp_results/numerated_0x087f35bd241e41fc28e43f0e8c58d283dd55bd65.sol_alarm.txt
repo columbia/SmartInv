@@ -1,0 +1,38 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    address public chairperson;
+    mapping(address => Voter) public voters;
+    uint public winningProposal;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+
+        if (delegate_.voted) {
+            winningProposal += delegate_.vote;
+        }
+    }
+
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+}
+<\contract\>

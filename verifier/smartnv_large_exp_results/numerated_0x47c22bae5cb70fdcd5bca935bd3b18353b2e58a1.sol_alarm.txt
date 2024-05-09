@@ -1,0 +1,6 @@
+This contract may have the following potential vulnerabilities:
+1) inconsistent state update: The function execute() updates the state of the proposal by incrementing proposal.votedAmount. However, this update could lead to inconsistent state if multiple users try to execute the function at the same time.
+2) insufficient gas: The endExecute() function checks for a condition where the execution failed based on the ratio of locked funds in the contract to the total token supply. If this condition is not met, the execution will fail, potentially locking funds in the contract due to insufficient gas to complete the execution.
+3) incorrect visibility/ownership: The internal variable proposal is accessed and modified externally in the startExecute(), execute(), and endExecute() functions, which could potentially lead to incorrect visibility or unauthorized changes to the proposal state. 
+
+Overall, the contract may be vulnerable to inconsistent state updates, insufficient gas issues, and incorrect visibility/ownership concerns.

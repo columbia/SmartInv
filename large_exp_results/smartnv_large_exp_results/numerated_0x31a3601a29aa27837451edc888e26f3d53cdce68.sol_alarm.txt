@@ -1,0 +1,25 @@
+contract PaymentContract {
+    address public owner;
+    uint public totalPrice;
+    bool public isPaid;
+
+    constructor(uint _totalPrice) {
+        owner = msg.sender;
+        totalPrice = _totalPrice;
+        isPaid = false;
+    }
+
+    function pay() public payable {
+        require(msg.value >= totalPrice, "Insufficient payment");
+        isPaid = true;
+        // Send the payment to the owner
+        payable(owner).transfer(msg.value);
+    }
+
+    function refund() public {
+        require(isPaid, "Payment not received");
+        isPaid = false;
+        // Refund the payment to the sender
+        payable(msg.sender).transfer(totalPrice);
+    }
+}

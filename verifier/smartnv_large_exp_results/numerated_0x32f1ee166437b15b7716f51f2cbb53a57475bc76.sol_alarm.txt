@@ -1,0 +1,37 @@
+Contract:
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public price;
+    uint public releaseTime;
+    bool public sellerApproved;
+    bool public buyerApproved;
+
+    constructor(address _seller, address _buyer, uint _price, uint _releaseTime) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+        releaseTime = _releaseTime;
+    }
+
+    function confirmPayment() public payable {
+        require(msg.sender == buyer, "Only buyer can confirm payment");
+        require(msg.value == price, "Incorrect payment amount");
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller && releaseTime <= block.timestamp, "Only seller can release funds after release time");
+        require(sellerApproved && buyerApproved, "Both parties must approve of the transaction");
+        payable(seller).transfer(address(this).balance);
+    }
+
+    function approveTransaction() public {
+        if (msg.sender == seller) {
+            sellerApproved = true;
+        } else if (msg.sender == buyer) {
+            buyerApproved = true;
+        }
+    }
+}
+Output: 
+- The contract is healthy.

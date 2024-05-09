@@ -1,0 +1,22 @@
+<\contract\>
+contract Escrow {
+    address public owner;
+    uint public amount;
+
+    constructor() {
+        owner = msg.sender;
+        amount = 0;
+    }
+
+    function deposit(uint _amount) public {
+        require(msg.sender == owner, "Sender is not the owner");
+        amount += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(msg.sender == owner, "Sender is not the owner");
+        require(amount >= _amount, "Insufficient funds");
+        amount -= _amount;
+    }
+}
+<\contract\>

@@ -1,0 +1,31 @@
+Contract to analyze:
+contract Marketplace {
+    address public owner;
+    uint public totalItems;
+    mapping(uint => Item) public items;
+    
+    struct Item {
+        uint itemId;
+        string itemName;
+        uint price;
+        bool available;
+    }
+    
+    constructor() {
+        owner = msg.sender;
+        totalItems = 0;
+    }
+    
+    function addItem(string memory name, uint price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        totalItems++;
+        items[totalItems] = Item(totalItems, name, price, true);
+    }
+    
+    function purchaseItem(uint itemId) public payable {
+        require(items[itemId].available, "Item not available");
+        require(msg.value >= items[itemId].price, "Insufficient funds");
+        items[itemId].available = false;
+        payable(owner).transfer(items[itemId].price);
+    }
+}

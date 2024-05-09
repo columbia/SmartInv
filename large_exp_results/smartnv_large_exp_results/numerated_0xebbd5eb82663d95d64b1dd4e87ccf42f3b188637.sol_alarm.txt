@@ -1,0 +1,24 @@
+<\contract\>
+contract TradeHelper {
+     struct Trade {
+          address trader;
+          uint256 amount;
+          uint256 price;
+          bool executed;
+         }
+     mapping (uint256 => Trade) public trades;
+     uint256 public tradeCount;
+
+     function executeTrade(uint256 _amount, uint256 _price) public {
+          require(_amount > 0, "Amount must be greater than 0");
+          require(_price > 0, "Price must be greater than 0");
+          trades[tradeCount] = Trade(msg.sender, _amount, _price, true);
+          tradeCount++;
+     }
+
+     function cancelTrade(uint256 _tradeId) public {
+          require(trades[_tradeId].trader == msg.sender, "Only the trader can cancel the trade");
+          trades[_tradeId].executed = false;
+     }
+}
+<\contract\>

@@ -1,0 +1,23 @@
+<\provided_contract\> 
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint256 => bool) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function processPayment(uint256 paymentId) public {
+        require(msg.sender == owner, "Only owner can process payments");
+        payments[paymentId] = true;
+    }
+
+    function getPaymentStatus(uint256 paymentId) public view returns (bool) {
+        return payments[paymentId];
+    }
+}
+<\provided_contract\> 
+
+The potential vulnerabilities in the provided contract are:
+1) incorrect visibility/ownership
+2) privilege escalation

@@ -1,0 +1,18 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit");
+        amount += msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == payee, "Only payee can withdraw");
+        payee.transfer(amount);
+        amount = 0;
+    }
+}
+<\contract\>

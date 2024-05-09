@@ -1,0 +1,27 @@
+<\contract\> 
+contract Lottery {
+    uint public totalTickets;
+    mapping(address => uint) public ticketsPerAddress;
+    address public winner;
+
+    function buyTicket() public payable {
+        require(msg.value == 1 ether, "Ticket price must be 1 ether");
+        totalTickets++;
+        ticketsPerAddress[msg.sender]++;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        uint winningTicket = uint(keccak256(abi.encodePacked(blockhash(block.number - 1)))) % totalTickets;
+        for (uint i = 0; i < totalTickets; i++) {
+            if (ticketsPerAddress[msg.sender] == winningTicket) {
+                winner = msg.sender;
+                payable(msg.sender).transfer(address(this).balance);
+            }
+        }
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the given contract are:
+1) incorrect visibility/ownership in the drawWinner function as it only checks for owner but doesn't define owner anywhere in the contract.

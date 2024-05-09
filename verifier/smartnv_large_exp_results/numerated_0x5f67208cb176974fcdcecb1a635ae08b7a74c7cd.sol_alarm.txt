@@ -1,0 +1,35 @@
+<\contract\>
+contract SupplyChain {
+    address public owner;
+    mapping(uint => bool) public itemsReceived;
+    mapping(uint => uint) public itemPrices;
+    uint public totalItems;
+
+    constructor() {
+        owner = msg.sender;
+        totalItems = 0;
+    }
+
+    function addItem(uint itemId, uint price) public {
+        require(msg.sender == owner, "Only the owner can add items");
+        itemPrices[itemId] = price;
+        totalItems++;
+    }
+
+    function receiveItem(uint itemId) public {
+        require(itemPrices[itemId] > 0, "Item price is not set");
+        itemsReceived[itemId] = true;
+    }
+
+    function payForItem(uint itemId) public payable {
+        require(itemPrices[itemId] > 0, "Item price is not set");
+        require(itemsReceived[itemId], "Item has not been received yet");
+        require(msg.value >= itemPrices[itemId], "Insufficient funds");
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        owner.transfer(address(this).balance);
+    }
+}
+<\contract\>

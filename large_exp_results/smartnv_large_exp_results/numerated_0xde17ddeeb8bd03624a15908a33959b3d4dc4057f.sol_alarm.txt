@@ -1,0 +1,24 @@
+<\example_3\>
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid(uint amount) public {
+         require(amount > highestBid, "bid not high enough");
+         if (highestBidder != address(0)) {
+             highestBidder.transfer(highestBid);
+         }
+         highestBidder = msg.sender;
+         highestBid = amount;
+     }
+
+     function finalize() public {
+         highestBidder.transfer(highestBid * 2);
+         highestBidder = address(0);
+         highestBid = 0;
+     }
+}
+<\example_3\> 
+
+The potential vulnerability in the <\example_3\> contract is:
+- Reentrancy vulnerability in the finalize function, where external calls are done before updating state variables.

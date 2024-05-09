@@ -1,0 +1,36 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public buyerApproval;
+    bool public sellerApproval;
+    bool public arbiterApproval;
+    
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = msg.value;
+        buyerApproval = false;
+        sellerApproval = false;
+        arbiterApproval = false;
+    }
+    
+    function approve() public {
+        if (msg.sender == buyer) {
+            buyerApproval = true;
+        } else if (msg.sender == seller) {
+            sellerApproval = true;
+        } else if (msg.sender == arbiter) {
+            arbiterApproval = true;
+        }
+    }
+    
+    function releaseFunds() public {
+        require(buyerApproval && sellerApproval || arbiterApproval, "Funds cannot be released yet");
+        (bool success, ) = seller.call{value: escrowAmount}("");
+        require(success, "Failed to send funds to the seller");
+    }
+}

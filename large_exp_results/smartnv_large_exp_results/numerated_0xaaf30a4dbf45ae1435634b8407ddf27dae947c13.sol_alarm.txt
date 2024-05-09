@@ -1,0 +1,38 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public funds;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+    }
+
+    function depositFunds() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        funds += msg.value;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can release funds");
+        address payable _seller = payable(seller);
+        _seller.transfer(funds);
+        funds = 0;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Only seller or arbiter can refund funds");
+        address payable _buyer = payable(buyer);
+        _buyer.transfer(funds);
+        funds = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect ownership checks in depositFunds(), releaseFunds(), and refundFunds(), which can lead to privilege escalation.
+2) Lack of validation or checks for edge cases, leading to potential business logic flaws.
+3) The use of address.transfer() without ensuring proper gas estimation, which can lead to insufficient gas vulnerabilities.

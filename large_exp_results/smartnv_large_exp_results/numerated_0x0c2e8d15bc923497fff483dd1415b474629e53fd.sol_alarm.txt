@@ -1,0 +1,36 @@
+Contract to be analyzed:
+
+contract SupplyChain {
+    address public owner;
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        bool isPurchased;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        productCount = 0;
+    }
+
+    function addProduct(string memory _name, uint _price) public {
+        require(msg.sender == owner, "Only owner can add products");
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, false);
+    }
+
+    function purchaseProduct(uint _productId) public payable {
+        require(_productId <= productCount && !products[_productId].isPurchased, "Invalid product id or product is already purchased");
+        require(msg.value >= products[_productId].price, "Not enough Ether sent");
+
+        products[_productId].isPurchased = true;
+        owner.transfer(products[_productId].price);
+    }
+}
+
+Output:
+healthy

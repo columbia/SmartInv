@@ -1,0 +1,24 @@
+<\contract\>
+contract Bank {
+    mapping(address => uint) balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function getBalance() public view returns (uint) {
+        return balances[msg.sender];
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow: There is a potential for integer underflow in the withdraw function if the amount to be withdrawn exceeds the current balance of the user.
+2) Insufficient gas: The withdraw function relies on the user having enough gas to complete the transfer, which may not always be the case.
+3) Incorrect visibility/ownership: The balances mapping is public, which exposes user balances to all other contracts and external actors.

@@ -1,0 +1,25 @@
+Contract being analyzed:
+
+contract Escrow {
+    address public beneficiary;
+    address public depositor;
+    uint public depositedAmount;
+
+    function deposit(address _beneficiary) public payable {
+        require(msg.value > 0, "Amount should be greater than 0");
+        depositor = msg.sender;
+        beneficiary = _beneficiary;
+        depositedAmount = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == beneficiary, "Only beneficiary can withdraw");
+        payable(beneficiary).transfer(depositedAmount);
+        depositedAmount = 0;
+    }
+}
+
+Potential vulnerabilities in the Escrow contract:
+1) Incorrect ownership/visibility: The `withdraw` function allows anyone to withdraw the deposited amount as long as they set themselves as the beneficiary. This could be a privilege escalation vulnerability.
+2) Insufficient gas: If the `withdraw` function does not have enough gas to complete the transfer, it could result in a failure to execute the function completely, leaving the deposited amount in limbo.
+3) Inconsistent state update: There is no check to ensure that the deposited amount is not withdrawn more than once, potentially leading to double withdrawal.

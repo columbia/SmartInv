@@ -1,0 +1,25 @@
+Contract:
+
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid amount must be higher than the current highest bid");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "Only the owner can end the auction");
+        selfdestruct(owner);
+    }
+}
+```
+
+Potential vulnerabilities:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

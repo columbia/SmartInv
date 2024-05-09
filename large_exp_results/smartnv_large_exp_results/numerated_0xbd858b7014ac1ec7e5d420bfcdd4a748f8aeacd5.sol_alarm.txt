@@ -1,0 +1,29 @@
+The contract you have provided for analysis is:
+
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid amount must be higher than current highest bid");
+        require(address(msg.sender).balance >= amount, "Insufficient balance to bid");
+        
+        address refundAddress = highestBidder;
+        uint refundAmount = highestBid;
+        highestBidder = msg.sender;
+        highestBid = amount;
+        
+        refund(refundAddress, refundAmount);
+    }
+
+    function refund(address recipient, uint amount) private {
+        payable(recipient).transfer(amount);
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+
+1) Insufficient gas
+2) Incorrect visibility/ownership

@@ -1,0 +1,27 @@
+<\contract\>
+contract SupplyChain {
+     mapping(uint256 => address) public products;
+     mapping(uint256 => uint256) public productPrices;
+     uint256 public totalProducts;
+
+     function addProduct(uint256 productId, uint256 price) public {
+            products[productId] = msg.sender;
+            productPrices[productId] = price;
+            totalProducts++;
+     }
+
+     function buyProduct(uint256 productId) public payable {
+            address seller = products[productId];
+            uint256 price = productPrices[productId];
+            require(msg.value >= price, "Insufficient funds sent");
+
+            (bool success, ) = payable(seller).call{value: price}("");
+            require(success, "Transaction failed");
+     }
+
+     function withdrawFunds() public {
+            address payable _owner = payable(msg.sender);
+            _owner.transfer(address(this).balance);
+     }
+}
+<\contract\>

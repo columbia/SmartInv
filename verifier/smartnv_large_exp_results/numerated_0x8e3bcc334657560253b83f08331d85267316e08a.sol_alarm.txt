@@ -1,0 +1,22 @@
+Contract analysis:
+
+<\contract\> 
+contract PaymentProcessor {
+    uint256 public totalPayments;
+
+    function processPayment(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        totalPayments += amount;
+    }
+
+    function withdrawPayment() external {
+        msg.sender.transfer(totalPayments);
+        totalPayments = 0;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Integer overflow/underflow in totalPayments variable
+- Ether leakage in withdrawPayment function due to transferring totalPayments directly to msg.sender without checking
+- Insufficient gas in withdrawPayment function for transferring totalPayments directly to msg.sender

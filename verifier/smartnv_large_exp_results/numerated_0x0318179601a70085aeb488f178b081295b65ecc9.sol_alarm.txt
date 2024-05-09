@@ -1,0 +1,47 @@
+<\contract\> 
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    bool public sellerApproved;
+    bool public buyerApproved;
+    bool public arbiterApproved;
+
+    constructor(address _seller, address _buyer, address _arbiter, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function deposit() external payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == price, "Incorrect deposit amount");
+    }
+
+    function approve(bool _sellerApproved, bool _buyerApproved, bool _arbiterApproved) external {
+        require(msg.sender == seller || msg.sender == buyer || msg.sender == arbiter, "Only parties can approve");
+        sellerApproved = _sellerApproved;
+        buyerApproved = _buyerApproved;
+        arbiterApproved = _arbiterApproved;
+    }
+
+    function releaseFunds() external {
+        require(sellerApproved && buyerApproved || arbiterApproved, "Cannot release funds yet");
+        payable(seller).transfer(price);
+    }
+
+    function refundBuyer() external {
+        require(!sellerApproved && buyerApproved, "Cannot refund buyer");
+        payable(buyer).transfer(price);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the Escrow contract are:
+
+1) Inconsistent state update: The state variables sellerApproved, buyerApproved, and arbiterApproved can be manipulated in unexpected ways by the parties involved.
+2) Incorrect visibility/ownership: The approve function allows any party to change the approval status, which could lead to unauthorized changes in state.
+3) Atomicity violation: The releaseFunds function may not atomically release the funds to the seller, potentially leaving the contract in an inconsistent state.
+4) Insufficient gas: Transferring funds in the releaseFunds and refundBuyer functions may run out of gas and cause the transactions to revert.

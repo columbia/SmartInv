@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract PurchaseOrder {
+     struct Order {
+          uint orderID;
+          address buyer;
+          address seller;
+          uint quantity;
+          uint price;
+          bool paid;
+     }
+
+     mapping(uint => Order) public orders;
+     
+     function createOrder(uint _orderID, address _seller, uint _quantity, uint _price) public {
+          Order memory newOrder;
+          newOrder.orderID = _orderID;
+          newOrder.buyer = msg.sender;
+          newOrder.seller = _seller;
+          newOrder.quantity = _quantity;
+          newOrder.price = _price;
+          newOrder.paid = false;
+          orders[_orderID] = newOrder;
+     }
+
+    function payOrder(uint _orderID) public payable {
+          require(orders[_orderID].buyer == msg.sender, "Only the buyer can pay for the order");
+          require(msg.value == orders[_orderID].price * orders[_orderID].quantity, "Incorrect payment amount");
+          orders[_orderID].paid = true;
+          payable(orders[_orderID].seller).transfer(msg.value);
+     }
+} 
+
+Output:
+1) inconsistent state update
+2) integer overflow/underflow

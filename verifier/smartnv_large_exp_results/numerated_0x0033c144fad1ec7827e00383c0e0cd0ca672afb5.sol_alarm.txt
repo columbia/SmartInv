@@ -1,0 +1,38 @@
+<\The_contract_to_be_analyzed\> 
+contract Escrow {
+     address public payer;
+     address public payee;
+     address public arbiter;
+     uint public deposit;
+     bool public payerApproved;
+     bool public payeeApproved;
+
+     function depositToEscrow() public payable {
+         require(msg.sender == payer, "Only payer can deposit funds");
+         require(msg.value > 0, "Deposit value cannot be zero");
+         deposit += msg.value;
+     }
+
+     function approvePayment() public {
+         if(msg.sender == payer) {
+             payerApproved = true;
+         } else if(msg.sender == payee) {
+             payeeApproved = true;
+         }
+     }
+
+     function releaseToPayee() public {
+         require(payerApproved && payeeApproved, "Payment not approved by both parties");
+         payee.transfer(deposit);
+     }
+
+     function refundToPayer() public {
+         require(address(this).balance >= deposit, "Insufficient balance for refund");
+         require(!payerApproved || !payeeApproved, "Payment already approved by both parties");
+         payer.transfer(deposit);
+     }
+}
+ 
+Output:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

@@ -1,0 +1,32 @@
+<\contract\> 
+contract TokenSale {
+     IERC20 public token; 
+     address public owner;
+     address public recipient;
+     uint public tokenPrice;
+     uint public totalTokens;
+
+     constructor(IERC20 _token, address _recipient, uint _tokenPrice, uint _totalTokens) {
+          token = _token;
+          owner = msg.sender;
+          recipient = _recipient;
+          tokenPrice = _tokenPrice;
+          totalTokens = _totalTokens;
+     }
+
+     function buyTokens(uint tokensToBuy) external payable {
+          require(msg.value == tokensToBuy * tokenPrice, "Incorrect payment amount");
+          require(token.balanceOf(address(this)) >= tokensToBuy, "Not enough tokens available");
+          token.transfer(msg.sender, tokensToBuy);
+     }
+
+     function withdrawFunds() external {
+          require(msg.sender == owner, "Unauthorized access");
+          payable(recipient).transfer(address(this).balance);
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract include:
+1) privilege escalation - The 'withdrawFunds' function only checks if the caller is the owner, but does not verify if the owner calling this function is the original deployer of the contract.
+2) incorrect visibility/ownership - The 'owner' variable is public, which exposes the ownership status to anyone. It's better to keep ownership status private and allow access control through functions.

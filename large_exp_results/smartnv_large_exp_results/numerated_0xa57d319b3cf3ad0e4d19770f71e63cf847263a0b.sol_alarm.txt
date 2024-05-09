@@ -1,0 +1,19 @@
+Contract exampleContract {
+         uint public totalSupply;
+         mapping(address => uint) public balances;
+
+         function transfer(address to, uint amount) public {
+             require(balances[msg.sender] >= amount);
+             balances[msg.sender] -= amount;
+             balances[to] += amount;
+         }
+
+         function mint(uint amount) public {
+             totalSupply += amount;
+             balances[msg.sender] += amount;
+         }
+}
+The potential vulnerabilities in the exampleContract are:
+- Inconsistent state update: The transfer function does not properly update the balance of the recipient when transferring tokens, which can lead to an inconsistent state.
+- Integer underflow: The transfer function does not check for integer underflow when subtracting the transferred amount from the sender's balance, which can result in unexpected behavior.
+- Insufficient gas: The mint function increases the total supply and updates the sender's balance without considering the gas limit, potentially causing out-of-gas exceptions.

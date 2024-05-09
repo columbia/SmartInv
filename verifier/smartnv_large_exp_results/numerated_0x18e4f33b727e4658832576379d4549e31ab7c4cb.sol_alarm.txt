@@ -1,0 +1,21 @@
+<\contract\>
+contract Auction {
+         struct Bid {
+             address bidder;
+             uint amount;
+         }
+         mapping(uint => Bid) public bids;
+         uint public currentBid;
+
+         function placeBid(uint _amount) public {
+             require(_amount > currentBid, "Bid amount must be higher than current bid");
+             bids[currentBid] = Bid(msg.sender, _amount);
+             currentBid = _amount;
+         }
+
+         function endAuction() public {
+             require(currentBid > 0, "No bids have been placed");
+             // Perform actions for ending the auction
+         }
+     }
+<\contract\>

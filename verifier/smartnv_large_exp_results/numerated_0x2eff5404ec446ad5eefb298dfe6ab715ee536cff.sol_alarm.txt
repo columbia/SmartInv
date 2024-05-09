@@ -1,0 +1,18 @@
+<\contract\>
+contract PaymentChannel {
+    mapping(address => uint256) public balances;
+
+    function openChannel(address _recipient) external {
+        balances[_recipient] = 0;
+    }
+
+    function deposit(address _recipient, uint256 _amount) external {
+        balances[_recipient] += _amount;
+    }
+
+    function withdraw(address _recipient, uint256 _amount) external {
+        require(balances[_recipient] >= _amount, "Insufficient balance");
+        balances[_recipient] -= _amount;
+    }
+}
+<\contract\>

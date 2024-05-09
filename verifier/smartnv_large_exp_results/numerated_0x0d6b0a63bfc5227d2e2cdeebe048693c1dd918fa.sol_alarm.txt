@@ -1,0 +1,26 @@
+<\analyzed_contract\> 
+contract PaymentContract {
+    uint public totalAmount;
+    mapping(address => uint) public userBalances;
+
+    function deposit() public payable {
+        totalAmount += msg.value;
+        userBalances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(userBalances[msg.sender] >= amount, "Insufficient balance");
+        totalAmount -= amount;
+        userBalances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function updateAmount(uint amount) public {
+        totalAmount = amount;
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+1) atomicity violation
+2) integer overflow/underflow

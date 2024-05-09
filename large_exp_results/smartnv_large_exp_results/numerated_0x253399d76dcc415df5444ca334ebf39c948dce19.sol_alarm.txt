@@ -1,0 +1,23 @@
+<\contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+
+     function buyTokens(uint amount) public {
+         uint totalPrice = amount * tokenPrice;
+         token.transfer(msg.sender, amount);
+         token.transfer(owner, totalPrice);
+     }
+
+     function setTokenPrice(uint price) public {
+         require(msg.sender == owner, "only owner can set token price");
+         tokenPrice = price;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Incorrect visibility/ownership: The setTokenPrice function relies solely on msg.sender for authentication, which may lead to privilege escalation if the owner's account is compromised.
+2) Price manipulation: The buyTokens function calculates the totalPrice based on user-provided amount and tokenPrice, which may lead to price manipulation attacks by manipulating the amount parameter.
+3) Insufficient gas: The buyTokens function transfers tokens to the buyer before transferring the totalPrice to the owner, which may lead to out-of-gas issues if the totalPrice transfer fails after tokens have already been transferred.

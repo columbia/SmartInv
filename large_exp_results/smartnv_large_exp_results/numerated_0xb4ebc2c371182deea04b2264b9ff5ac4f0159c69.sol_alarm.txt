@@ -1,0 +1,26 @@
+Given the contract below, I have identified the following potential vulnerabilities:
+
+1) incorrect visibility/ownership
+
+contract ExampleContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Unauthorized access");
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Unauthorized access");
+        balance -= amount;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+- incorrect visibility/ownership

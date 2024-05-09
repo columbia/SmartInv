@@ -1,0 +1,20 @@
+contract PaymentContract {
+     address public owner;
+     uint public totalBalance;
+     
+     constructor() {
+         owner = msg.sender;
+         totalBalance = 0;
+     }
+     
+     function deposit() payable public {
+         totalBalance += msg.value;
+     }
+     
+     function withdraw(uint amount) public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         require(amount <= totalBalance, "Insufficient funds");
+         totalBalance -= amount;
+         payable(msg.sender).transfer(amount);
+     }
+ }

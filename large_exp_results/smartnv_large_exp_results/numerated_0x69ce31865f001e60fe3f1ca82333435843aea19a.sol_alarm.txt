@@ -1,0 +1,49 @@
+The contract to analyze:
+
+contract VotingSystem {
+     struct Voter {
+         bool voted; 
+         uint vote; 
+      }
+     mapping(address => Voter) public voters;
+     uint256 public totalVotes;
+     address public owner;
+     uint256 public winningOption;
+
+     function vote(uint _option) public {
+          require(voters[msg.sender].voted == false, "Already voted");
+          require(_option == 1 || _option == 2 || _option == 3, "Invalid option");
+          voters[msg.sender].vote = _option;
+          voters[msg.sender].voted = true;
+          totalVotes++;
+      }
+
+     function endVoting() public {
+          require(msg.sender == owner, "Not owner");
+          require(totalVotes > 0, "No votes casted");
+          uint256 option1Votes;
+          uint256 option2Votes;
+          uint256 option3Votes;
+          for (uint i = 0; i < totalVotes; i++) {
+              if (voters[address(i)].vote == 1) {
+                  option1Votes++;
+              } else if (voters[address(i)].vote == 2) {
+                  option2Votes++;
+              } else {
+                  option3Votes++;
+              }
+          }
+          if (option1Votes > option2Votes && option1Votes > option3Votes) {
+              winningOption = 1;
+          } else if (option2Votes > option1Votes && option2Votes > option3Votes) {
+              winningOption = 2;
+          } else {
+              winningOption = 3;
+          }
+      }
+}
+Output:
+1) business logic flaw
+2) inconsistent state update
+3) ID uniqueness violation
+4) incorrect visibility/ownership

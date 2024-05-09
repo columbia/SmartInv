@@ -1,0 +1,30 @@
+Contract:
+```solidity
+contract PaymentContract {
+    uint public totalAmount;
+    mapping(address => uint) public balances;
+    
+    function deposit() public payable {
+        require(msg.value > 0, "No deposit amount provided");
+        
+        balances[msg.sender] += msg.value;
+        totalAmount += msg.value;
+    }
+    
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        totalAmount -= amount;
+        
+        payable(msg.sender).transfer(amount);
+    }
+}
+```
+
+Potential Vulnerabilities:
+1) Arithmetic flaw: The contract does not have proper checks for integer overflow/underflow in the totalAmount calculation and balance updates.
+2) Insufficient gas: Gas costs for transactions may exceed the limit, causing transactions to fail or behave unexpectedly.
+3) Incorrect visibility/ownership: The contract does not specify visibility explicitly for totalAmount, leaving it as public which can potentially expose sensitive information.
+4) Cross bridge inconsistency: The contract involves transferring funds, making it susceptible to potential inconsistencies between different chains or external contracts.
+5) Ether leakage: The contract may have vulnerabilities leading to losing ether unintentionally or without proper authorization.

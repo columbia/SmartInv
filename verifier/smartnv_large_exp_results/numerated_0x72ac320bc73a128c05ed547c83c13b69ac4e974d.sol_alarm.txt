@@ -1,0 +1,24 @@
+<\contract_3\>
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public tokenPrice;
+    
+    constructor(uint _tokenPrice) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens() public payable {
+        require(msg.value >= tokenPrice, "Insufficient funds to buy tokens");
+        uint tokensBought = msg.value / tokenPrice;
+        balances[msg.sender] += tokensBought;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        uint amount = address(this).balance;
+        payable(owner).transfer(amount);
+    }
+}
+<\contract_3\>

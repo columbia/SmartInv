@@ -1,0 +1,27 @@
+Contract to analyze:
+contract Subscription {
+     address public owner;
+     mapping(address => bool) public subscribers;
+     uint public subscriptionFee;
+     
+     constructor(uint _fee) {
+         owner = msg.sender;
+         subscriptionFee = _fee;
+     }
+
+     function subscribe() external payable {
+         require(msg.value == subscriptionFee, "Incorrect subscription fee");
+         subscribers[msg.sender] = true;
+     }
+
+     function unsubscribe() external {
+         subscribers[msg.sender] = false;
+     }
+
+     function withdrawFees() external {
+         require(msg.sender == owner, "Only owner can withdraw fees");
+         payable(owner).transfer(address(this).balance);
+     }
+}
+Output: 
+healthy

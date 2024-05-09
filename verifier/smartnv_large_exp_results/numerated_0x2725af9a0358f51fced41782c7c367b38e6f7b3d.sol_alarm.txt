@@ -1,0 +1,34 @@
+<strong>Contract:</strong> 
+
+```solidity
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint256) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function processPayment() public payable {
+        uint256 paymentAmount = msg.value;
+        payments[msg.sender] += paymentAmount;
+    }
+    
+    function withdrawPayment() public {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        uint256 paymentAmount = payments[msg.sender];
+        require(paymentAmount > 0, "No payments to withdraw");
+        payments[msg.sender] = 0;
+        payable(msg.sender).transfer(paymentAmount);
+    }
+    
+    function updateOwner(address newOwner) public {
+        owner = newOwner;
+    }
+}
+```
+
+<strong>Potential Vulnerabilities:</strong> 
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

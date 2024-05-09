@@ -1,0 +1,61 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    struct Proposal {
+        address proposer;
+        uint voteCount;
+    }
+    
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+    address public chairperson;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        require(to != msg.sender, "Self-delegation is disallowed.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+
+        if (delegate_.voted) {
+            proposals[delegate_.vote].vote += sender.weight;
+        } else {
+            delegate_.weight += sender.weight;
+        }
+    }
+
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Has no right to vote.");
+        require(!sender.voted, "Already voted.");
+
+        sender.voted = true;
+        sender.vote = proposal;
+
+        proposals[proposal].voteCount += sender.weight;
+    }
+
+    function winningProposal() public view returns (uint winningProposal_) {
+        uint winningVoteCount = 0;
+        for (uint p = 0; p < proposals.length; p++) {
+            if (proposals[p].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[p].voteCount;
+                winningProposal_ = p;
+            }
+        }
+    }
+}
+<\contract\>

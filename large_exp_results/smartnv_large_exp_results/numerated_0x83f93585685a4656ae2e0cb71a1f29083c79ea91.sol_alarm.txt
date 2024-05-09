@@ -1,0 +1,7 @@
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without properly handling the state and ensuring consistency with respect to the previous state.
+
+2) Insufficient gas: The `endExecute` function performs a calculation to check `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which can potentially require more gas than available in a single transaction.
+
+3) Incorrect visibility/ownership: The state variables `votingToken` and `lockedFunds` are declared as internal which may lead to incorrect visibility and ownership control.

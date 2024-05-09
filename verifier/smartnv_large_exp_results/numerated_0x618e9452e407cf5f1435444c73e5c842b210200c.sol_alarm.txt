@@ -1,0 +1,29 @@
+The contract for analysis is:
+
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        uint quantity;
+        address supplier;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public nextProductId = 1;
+    
+    function addProduct(uint _quantity) external {
+        products[nextProductId] = Product(nextProductId, _quantity, msg.sender);
+        nextProductId++;
+    }
+    
+    function updateProductQuantity(uint _productId, uint _newQuantity) external {
+        products[_productId].quantity = _newQuantity;
+    }
+    
+    function deleteProduct(uint _productId) external {
+        delete products[_productId];
+    }
+}
+
+Output: 
+- ID uniqueness violation
+- Incorrect visibility/ownership

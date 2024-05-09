@@ -1,0 +1,19 @@
+<\contract\>
+contract TokenSwap {
+      IERC20 public tokenA;
+      IERC20 public tokenB;
+      uint public exchangeRate;
+      
+      constructor(address _tokenA, address _tokenB) {
+          tokenA = IERC20(_tokenA);
+          tokenB = IERC20(_tokenB);
+          exchangeRate = 1;
+      }
+      
+      function swap(uint amount) public {
+          uint tokenBAmount = amount * exchangeRate;
+          tokenA.transferFrom(msg.sender, address(this), amount);
+          tokenB.transfer(msg.sender, tokenBAmount);
+      }
+}
+<\contract\>

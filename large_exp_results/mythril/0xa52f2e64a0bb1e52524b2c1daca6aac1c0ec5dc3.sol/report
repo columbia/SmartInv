@@ -1,0 +1,24 @@
+mythril.ethereum.util [ERROR]: Encountered a decode error.
+ stdout:
+ stderr: b''
+mythril.interfaces.cli [ERROR]: Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/mythril/interfaces/cli.py", line 975, in parse_args_and_execute
+    address = load_code(disassembler, args)
+  File "/usr/local/lib/python3.10/site-packages/mythril/interfaces/cli.py", line 726, in load_code
+    address, _ = disassembler.load_from_solidity(
+  File "/usr/local/lib/python3.10/site-packages/mythril/mythril/mythril_disassembler.py", line 282, in load_from_solidity
+    self.sigs.import_solidity_file(
+  File "/usr/local/lib/python3.10/site-packages/mythril/support/signatures.py", line 245, in import_solidity_file
+    solc_json = get_solc_json(file_path, solc_binary, solc_settings_json)
+  File "/usr/local/lib/python3.10/site-packages/mythril/ethereum/util.py", line 102, in get_solc_json
+    raise e
+  File "/usr/local/lib/python3.10/site-packages/mythril/ethereum/util.py", line 99, in get_solc_json
+    result = json.loads(out)
+  File "/usr/local/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/usr/local/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/local/lib/python3.10/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+

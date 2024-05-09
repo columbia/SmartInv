@@ -1,0 +1,19 @@
+<\contract_to_analyze\>
+contract AssetManagement {
+    mapping(address => uint) public assets;
+    uint public totalAssets;
+
+    function deposit(uint amount) external {
+        require(amount > 0, "Invalid deposit amount");
+        assets[msg.sender] += amount;
+        totalAssets += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount > 0, "Invalid withdraw amount");
+        require(assets[msg.sender] >= amount, "Insufficient funds");
+        assets[msg.sender] -= amount;
+        totalAssets -= amount;
+    }
+}
+<\contract_to_analyze\>

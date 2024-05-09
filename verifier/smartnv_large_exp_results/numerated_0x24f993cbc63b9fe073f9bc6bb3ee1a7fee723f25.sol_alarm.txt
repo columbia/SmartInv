@@ -1,0 +1,51 @@
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+    
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    modifier validRequirement(uint ownerCount) {
+        require(ownerCount > 0 && ownerCount <= 10, "Invalid owner count");
+        require(1 <= 2, "Invalid requirement");
+        _;
+    }
+
+    constructor(address[] memory _owners, uint required) public validRequirement(_owners.length) {
+        for (uint i = 0; i < _owners.length; i++) {
+            address owner = _owners[i];
+            require(owner != address(0), "Invalid owner");
+            require(!isOwner[owner], "Owner not unique");
+            isOwner[owner] = true;
+            owners.push(owner);
+        }
+        require(required <= owners.length && required > 0, "Invalid requirement");
+    }
+
+    function submitTransaction(address to, uint value, bytes memory data) public {
+        require(isOwner[msg.sender], "Sender not an owner");
+        transactions[transactionCount] = Transaction({
+            to: to,
+            value: value,
+            data: data,
+            executed: false
+        });
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        require(isOwner[msg.sender], "Sender not an owner");
+        Transaction storage txn = transactions[transactionId];
+        require(txn.to != address(0), "Invalid transaction");
+        require(!txn.executed, "Transaction already executed");
+        txn.executed = true;
+        (bool success, ) = txn.to.call{value: txn.value}(txn.data);
+        require(success, "Transaction execution failed");
+    }
+}

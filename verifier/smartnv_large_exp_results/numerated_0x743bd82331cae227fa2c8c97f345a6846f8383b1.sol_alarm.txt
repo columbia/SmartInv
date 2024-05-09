@@ -1,0 +1,30 @@
+The contract to analyze:
+contract VotingSystem {
+     struct Voter {
+               uint weight;
+               bool voted;
+               address delegate;
+               uint vote;
+          }
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     uint[] public proposals;
+
+     function delegate(address to) public {
+               Voter storage sender = voters[msg.sender];
+               sender.voted = true;
+               voters[to].weight += sender.weight;
+          }
+
+     function vote(uint proposal) public {
+               Voter storage sender = voters[msg.sender];
+               require(!sender.voted, "Already voted.");
+               sender.voted = true;
+               sender.vote = proposal;
+               proposals[proposal] += sender.weight;
+          }
+} 
+
+Output:
+1) business logic flaw
+2) inconsistent state update

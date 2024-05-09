@@ -1,0 +1,28 @@
+The contract to analyze is as follows:
+
+```solidity
+contract Payment {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint amount) public {
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow in the `deposit` function.
+2) Insufficient gas in the `withdraw` function.
+3) Inconsistent state update in the `withdraw` function.

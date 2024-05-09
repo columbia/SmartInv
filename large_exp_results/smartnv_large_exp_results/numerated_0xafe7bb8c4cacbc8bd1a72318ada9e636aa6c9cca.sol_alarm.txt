@@ -1,0 +1,20 @@
+<\contract\>
+contract PaymentContract {
+    uint256 public totalPayments;
+    mapping(address => uint256) public payments;
+
+    function makePayment() public payable {
+        require(msg.value > 0, "Payment amount must be greater than 0");
+        payments[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdrawPayment() public {
+        require(payments[msg.sender] > 0, "No payments to withdraw");
+        uint256 amount = payments[msg.sender];
+        payments[msg.sender] = 0;
+        totalPayments -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\>

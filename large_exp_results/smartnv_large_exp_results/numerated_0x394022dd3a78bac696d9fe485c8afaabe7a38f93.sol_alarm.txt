@@ -1,0 +1,24 @@
+<\analyzed_contract\>
+contract TokenExchange {
+         address public token1;
+         address public token2;
+         uint public exchangeRate;
+         mapping(address => uint) public balances;
+
+         function deposit(uint amount, address token) public {
+             require(amount > 0, "Invalid amount");
+             require(token == token1 || token == token2, "Invalid token");
+             balances[msg.sender] += amount;
+         }
+
+         function exchange(uint amount, address fromToken, address toToken) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             require(fromToken == token1 && toToken == token2, "Invalid exchange pair");
+             balances[msg.sender] -= amount;
+             balances[msg.sender] += amount * exchangeRate;
+         }
+}
+
+Output:
+1) business logic flaw
+2) inconsistent state update

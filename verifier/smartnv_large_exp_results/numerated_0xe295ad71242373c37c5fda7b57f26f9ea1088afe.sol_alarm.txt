@@ -1,0 +1,19 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+    
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        require(msg.value + address(this).balance < _amount * price, "Insufficient balance to buy tokens");
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+}
+<\contract_to_be_analyzed\>

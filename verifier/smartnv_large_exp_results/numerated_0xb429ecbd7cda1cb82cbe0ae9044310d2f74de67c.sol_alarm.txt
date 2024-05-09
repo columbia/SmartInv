@@ -1,0 +1,17 @@
+contract VotingSystem {
+    mapping(address => uint) public voteCount;
+    uint public totalVotes;
+
+    function vote() public {
+        totalVotes++;
+        voteCount[msg.sender]++;
+    }
+
+    function viewTotalVotes() public view returns (uint) {
+        return totalVotes;
+    }
+
+    function viewUserVote(address user) public view returns (uint) {
+        return voteCount[user];
+    }
+}

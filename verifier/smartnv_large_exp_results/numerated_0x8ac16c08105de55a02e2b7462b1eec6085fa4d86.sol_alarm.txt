@@ -1,0 +1,26 @@
+contract Marketplace {
+         IERC20 public token;
+         address public owner;
+         mapping(address => uint) public balances;
+
+         constructor(address _token) {
+             token = IERC20(_token);
+             owner = msg.sender;
+         }
+
+         function buy(uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             balances[msg.sender] += amount;
+             token.transferFrom(msg.sender, owner, amount);
+         }
+
+         function withdraw() public {
+             require(balances[msg.sender] > 0, "No balance to withdraw");
+             uint amount = balances[msg.sender];
+             balances[msg.sender] = 0;
+             token.transfer(msg.sender, amount);
+         }
+    } 
+
+Output:
+- insufficient gas

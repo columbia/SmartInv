@@ -1,0 +1,40 @@
+The contract below contains the following potential vulnerabilities:
+
+1) Incorrect visibility/ownership
+2) Inconsistent state update
+3) Insufficient gas
+4) Arithmetic flaw
+
+<\contract_to_analyze\>
+contract TokenSale {
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public tokenBalance;
+
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount * tokenPrice <= msg.value, "Insufficient funds provided");
+        require(totalTokens >= amount, "Not enough tokens available");
+        
+        totalTokens -= amount;
+        tokenBalance[msg.sender] += amount;
+        
+        owner.transfer(msg.value);
+    }
+
+    function setTokenPrice(uint newPrice) public {
+        require(msg.sender == owner, "Only the owner can set the token price");
+        tokenPrice = newPrice;
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only the owner can end the sale");
+        selfdestruct(owner);
+    }
+}
+<\contract_to_analyze\>

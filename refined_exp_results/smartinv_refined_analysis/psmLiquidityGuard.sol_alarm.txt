@@ -1,0 +1,15 @@
+The contract that needs analysis for potential vulnerabilities is as follows:
+
+contract ExchangeTokens {
+     IERC20 public WETH;
+     IERC20 public USDC;
+     function  calculatePrice() public payable returns (uint) {
+         
+        return (USDC.balanceOf(address(pair)) /
+         WETH.balanceOf(address(pair)));
+  }
+}
+
+Potential vulnerabilities in the given contract are:
+1) Price manipulation: The calculatePrice function is susceptible to price manipulation by manipulating the balance of tokens in the pair contract.
+2) Inconsistent state update: There is a possibility of inconsistent state update in the contract due to the calculation of price based on the balances of tokens in the pair contract.

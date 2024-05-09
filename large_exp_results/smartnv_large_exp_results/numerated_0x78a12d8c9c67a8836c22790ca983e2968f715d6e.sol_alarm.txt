@@ -1,0 +1,37 @@
+<\contract_3\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, AWAITING_CONFIRMATION, COMPLETE}
+    State public currentState;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function makePayment() public payable {
+        require(msg.value > 0, "Payment must be greater than 0");
+        require(msg.sender == buyer, "Only the buyer can make a payment");
+        require(currentState == State.AWAITING_PAYMENT, "Invalid state for payment");
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm delivery");
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state for delivery confirmation");
+        if (msg.sender == arbiter) {
+            // arbiter is the one confirming the delivery
+            currentState = State.AWAITING_CONFIRMATION;
+        } else {
+            currentState = State.COMPLETE;
+            // release funds to seller
+            payable(seller).transfer(address(this).balance);
+        }
+    }
+}
+<\contract_3\>

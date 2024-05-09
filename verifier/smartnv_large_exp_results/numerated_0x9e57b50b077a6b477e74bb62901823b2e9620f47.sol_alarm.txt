@@ -1,0 +1,26 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public amount;
+     bool public buyerOk;
+     bool public sellerOk;
+
+     function Escrow(address _seller, address _arbiter) public {
+         buyer = msg.sender;
+         seller = _seller;
+         arbiter = _arbiter;
+     }
+
+     function accept() public {
+         require(msg.sender == arbiter);
+         buyerOk = true;
+     }
+
+     function finalize() public {
+         require(msg.sender == arbiter);
+         seller.transfer(amount);
+     }
+}
+<\contract\>

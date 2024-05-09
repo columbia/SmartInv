@@ -1,0 +1,49 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 endTime;
+        uint256 totalVotes;
+        address creator;
+    }
+
+    address public admin;
+    mapping(uint256 => Proposal) public proposals;
+    uint256 public totalProposals;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function createProposal(uint256 _startTime, uint256 _endTime) public {
+        require(msg.sender != address(0), "Invalid address");
+        require(_endTime > _startTime, "End time must be after start time");
+        
+        totalProposals++;
+        proposals[totalProposals].startTime = _startTime;
+        proposals[totalProposals].endTime = _endTime;
+        proposals[totalProposals].creator = msg.sender;
+    }
+
+    function vote(uint256 _proposalId) public {
+        require(_proposalId <= totalProposals, "Invalid proposal ID");
+        require(block.timestamp >= proposals[_proposalId].startTime, "Voting has not started yet");
+        require(block.timestamp <= proposals[_proposalId].endTime, "Voting has ended");
+        
+        proposals[_proposalId].totalVotes++;
+    }
+
+    function endProposal(uint256 _proposalId) public {
+        require(msg.sender == admin, "Only admin can end a proposal");
+        require(_proposalId <= totalProposals, "Invalid proposal ID");
+        
+        // Perform actions based on the total number of votes
+        // For demonstration purposes, this is simplified
+        if (proposals[_proposalId].totalVotes > totalProposals / 2) {
+            // Execute proposal
+        } else {
+            // Revert proposal
+        }
+    }
+}
+<\analyzed_contract\>

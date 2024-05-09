@@ -1,0 +1,17 @@
+contract VotingSystem {
+    struct Vote {
+        address voter;
+        uint256 amount;
+        bool inFavor;
+    }
+
+    mapping(uint256 => Vote) public votes;
+    mapping(address => bool) public hasVoted;
+
+    function vote(uint256 proposalId, bool decision) external {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        
+        votes[proposalId] = Vote(msg.sender, 1, decision);
+    }
+}

@@ -1,0 +1,22 @@
+<\your_contract\>
+contract TokenSwap {
+        IERC20 public tokenA;
+        IERC20 public tokenB;
+        address public owner;
+        uint public price;
+
+        constructor(address _tokenA, address _tokenB, uint _price) public {
+            tokenA = IERC20(_tokenA);
+            tokenB = IERC20(_tokenB);
+            price = _price;
+            owner = msg.sender;
+        }
+
+        function swap(uint amount) public {
+            require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance of tokenA");
+            require(tokenB.balanceOf(owner) >= amount * price, "Insufficient balance of tokenB to swap");
+            tokenA.transferFrom(msg.sender, owner, amount);
+            tokenB.transfer(msg.sender, amount * price);
+        }
+}
+<\your_contract\>

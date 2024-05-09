@@ -1,0 +1,32 @@
+<\analyzed_contract\>
+contract Lottery {
+    address public owner;
+    uint public totalParticipants;
+    mapping(address => bool) public participants;
+    
+    constructor() public {
+        owner = msg.sender;
+        totalParticipants = 0;
+    }
+    
+    function participate() public {
+        require(msg.sender != owner, "Owner cannot participate");
+        require(!participants[msg.sender], "You already participated");
+        
+        participants[msg.sender] = true;
+        totalParticipants++;
+    }
+    
+    function pickWinner() public {
+        require(msg.sender == owner, "Only owner can pick winner");
+        require(totalParticipants > 0, "No participants to pick from");
+        
+        address winner = _randomParticipant();
+        // send prize to winner
+    }
+    
+    function _randomParticipant() private view returns (address) {
+        // logic to randomly select a participant
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,21 @@
+Contract analyzed:
+
+contract Voting {
+
+    mapping(address => bool) public hasVoted;
+    uint256 public totalVotes;
+
+    function vote() public {
+        require(hasVoted[msg.sender] == false, "You have already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function getVoteCount() public view returns (uint256) {
+        return totalVotes;
+    }
+}
+
+Potential vulnerabilities:
+- ID uniqueness violation: There is no check for the uniqueness of voters' addresses, allowing the same address to vote multiple times.
+- Incorrect visibility/ownership: The state variable totalVotes is public, which exposes the total number of votes to everyone, potentially leading to manipulation.

@@ -1,0 +1,19 @@
+The contract contains the following potential vulnerabilities:
+
+1) Inconsistent state update:
+   - In the function startExecute(), the startingBlance variable is being updated but not being used afterward. This inconsistency can lead to unexpected behavior.
+
+2) Incorrect visibility/ownership:
+   - The contract TimelockController claims to implement the interface IERC20 but does not actually implement the required functions, potentially leading to incorrect visibility or ownership over the contract.
+
+3) Insufficient gas:
+   - The function endExecute() includes a require statement that checks if the balance of the contract multiplied by 2 exceeds the total token supply. This calculation might consume excessive gas and could potentially run out of gas before the condition is fully evaluated.
+
+4) Atomicity violation:
+   - In the function execute(), multiple state changes are happening sequentially without any mechanism to ensure atomicity. If any of those state changes fail, the contract could end up in an inconsistent state.
+
+5) ID uniqueness violation:
+   - The contract does not have any mechanism to ensure the uniqueness of IDs for proposals, which could lead to conflicts or unexpected behavior when querying or updating proposals.
+
+6) Arithmetic flaw:
+   - In the function liquidate() of the ExchangeTokens contract, there is a calculation involving multiplication and division that might lead to arithmetic flaws like overflow or underflow if not handled properly.

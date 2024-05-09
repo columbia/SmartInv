@@ -1,0 +1,35 @@
+Given the contract you are asking to analyze:
+
+contract NonFungibleToken is IERC721 {
+         mapping(uint256 => address) public tokenOwners;
+         mapping(address => uint256) public ownedTokensCount;
+         uint256 public tokenCount;
+
+         function mint(address to, uint256 tokenId) public {
+             require(tokenOwners[tokenId] == address(0), "token already exists");
+             tokenOwners[tokenId] = to;
+             ownedTokensCount[to]++;
+             tokenCount++;
+         }
+
+         function transfer(address from, address to, uint256 tokenId) public {
+             require(tokenOwners[tokenId] == from, "sender does not own the token");
+             tokenOwners[tokenId] = to;
+             ownedTokensCount[from]--;
+             ownedTokensCount[to]++;
+         }
+
+         function burn(uint256 tokenId) public {
+             require(tokenOwners[tokenId] != address(0), "token does not exist");
+             address owner = tokenOwners[tokenId];
+             tokenOwners[tokenId] = address(0);
+             ownedTokensCount[owner]--;
+             tokenCount--;
+         }
+     }
+
+Potential vulnerabilities in the NonFungibleToken contract include:
+- ID uniqueness violation: There is a possibility of token ID collision if not properly checked.
+- Inconsistent state update: In the transfer function, the state updates may lead to incorrect token ownership counts if the operations are not atomic.
+- Insufficient gas: The functions mint, transfer, and burn could potentially run out of gas if operating on a large number of tokens.
+- Incorrect visibility/ownership: Access control and visibility modifiers are not explicitly defined, leaving room for unauthorized access to critical functions.

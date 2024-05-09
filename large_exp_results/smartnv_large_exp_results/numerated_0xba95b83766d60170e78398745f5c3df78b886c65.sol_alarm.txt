@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract Escrow {
+         address public buyer;
+         address public seller;
+         bool public isConfirmed;
+         bool public isPaidOut;
+         uint public amount;
+         IERC20 public token;
+         
+         constructor(address _buyer, address _seller, uint _amount, address _token) {
+             buyer = _buyer;
+             seller = _seller;
+             amount = _amount;
+             token = IERC20(_token);
+         }
+         
+         function confirm() public {
+             require(msg.sender == buyer, "Only buyer can confirm");
+             isConfirmed = true;
+         }
+         
+         function payOut() public {
+             require(isConfirmed, "Transaction not confirmed");
+             require(!isPaidOut, "Amount already paid out");
+             token.transfer(seller, amount);
+             isPaidOut = true;
+         }
+     }
+<\contract_to_analyze\>

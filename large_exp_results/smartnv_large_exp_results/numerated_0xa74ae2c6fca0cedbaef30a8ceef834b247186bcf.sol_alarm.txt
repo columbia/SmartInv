@@ -1,0 +1,23 @@
+The contract provided for analysis:
+
+contract TokenBank {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+The potential vulnerabilities in the TokenBank contract are:
+
+1) Reentrancy
+2) Integer Underflow/Overflow
+3) Insufficient Gas
+
+Please note that the contract does not contain the mentioned vulnerabilities and is considered healthy.

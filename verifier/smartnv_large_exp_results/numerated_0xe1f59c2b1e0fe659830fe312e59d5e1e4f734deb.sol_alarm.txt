@@ -1,0 +1,24 @@
+<\contract\> 
+contract VotingSystem {
+     address public owner;
+     mapping(address => bool) public hasVoted;
+     uint256 public totalVotes;
+     
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         hasVoted[msg.sender] = true;
+         totalVotes++;
+     }
+
+     function changeOwner(address newOwner) public {
+         require(msg.sender == owner, "Only owner can change the owner");
+         owner = newOwner;
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+
+- Privilege escalation: The changeOwner function allows the owner to change the owner address to a new address, which could potentially lead to privilege escalation if not properly restricted.
+- ID uniqueness violation: The hasVoted mapping uses the address of the voter as the key, which could potentially lead to ID uniqueness violations if multiple users have the same address.
+- Incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to all users. This could potentially lead to security risks if malicious users target the owner address.

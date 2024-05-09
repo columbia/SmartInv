@@ -1,0 +1,33 @@
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    enum State { Created, Locked, Inactive }
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this.");
+        _;
+    }
+
+    function EscrowContract(address _buyer, address _seller, address _arbiter, uint _price) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        state = State.Created;
+    }
+
+    function confirmPayment() public onlyBuyer {
+        require(msg.value == price, "Incorrect payment amount.");
+        state = State.Locked;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized to confirm receipt.");
+        require(state == State.Locked, "Contract not in locked state.");
+        seller.transfer(price);
+        state = State.Inactive;
+    }
+}

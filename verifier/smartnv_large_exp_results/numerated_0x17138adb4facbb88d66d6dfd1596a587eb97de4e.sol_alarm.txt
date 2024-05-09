@@ -1,0 +1,35 @@
+The contract provided for analysis is:
+
+```solidity
+contract SupplyChain {
+    struct Product {
+        uint256 id;
+        string name;
+        uint256 price;
+        address owner;
+    }
+    
+    mapping(uint256 => Product) public products;
+    
+    function addProduct(uint256 _id, string memory _name, uint256 _price) public {
+        products[_id] = Product(_id, _name, _price, msg.sender);
+    }
+    
+    function updateProductPrice(uint256 _id, uint256 _newPrice) public {
+        require(products[_id].owner == msg.sender, "You are not the owner of this product");
+        
+        products[_id].price = _newPrice;
+    }
+
+    function purchaseProduct(uint256 _id) public payable {
+        require(msg.value >= products[_id].price, "Insufficient funds to purchase the product");
+        
+        address payable owner = payable(products[_id].owner);
+        owner.transfer(msg.value);
+    }
+}
+```
+
+Potential vulnerabilities in the `SupplyChain` contract:
+1) Incorrect visibility/ownership - Lack of access control in `updateProductPrice` function.
+2) Inconsistent state update - Lack of state update consistency check in the `purchaseProduct` function.

@@ -1,0 +1,28 @@
+Contract being analyzed: 
+
+contract Escrow {
+    address public owner;
+    uint public amount;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint _amount) public {
+        require(balances[msg.sender] + _amount >= balances[msg.sender], "Overflow error");
+        balances[msg.sender] += _amount;
+        amount += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        amount -= _amount;
+        msg.sender.transfer(_amount);
+    }
+}
+
+Output:
+1) integer overflow/underflow
+2) insufficient gas

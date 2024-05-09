@@ -1,0 +1,17 @@
+The contract provided for analysis is:
+
+contract Xchange {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function trade(uint amountA, uint amountB) external {
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transfer(msg.sender, amountB);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The contract does not handle the possibility of one transfer succeeding while the other fails, leading to an inconsistent state if one transfer is completed and the other fails.
+2) Incorrect visibility/ownership: The functions in the contract are externally accessible, which may lead to unauthorized access to sensitive functions or data by external parties. 
+
+The contract marked as healthy.

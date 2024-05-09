@@ -1,0 +1,32 @@
+<\contract\> 
+contract Escrow {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         enum State { Initial, Confirmed, Disputed, Resolved, Refunded }
+         State public state;
+
+         constructor(address _seller, address _arbiter) {
+             seller = _seller;
+             arbiter = _arbiter;
+         }
+         
+         function confirmPurchase() public {
+             require(msg.sender == buyer, "Only buyer can confirm");
+             require(state == State.Initial, "Purchase already confirmed");
+             state = State.Confirmed;
+         }
+
+         function disputePurchase() public {
+             require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can dispute");
+             require(state == State.Confirmed, "Purchase not confirmed yet");
+             state = State.Disputed;
+         }
+
+         function refundPayment() public {
+             require(msg.sender == arbiter, "Only arbiter can refund");
+             require(state == State.Disputed, "Purchase not disputed");
+             state = State.Refunded;
+         }
+}
+<\contract\>

@@ -1,0 +1,37 @@
+<\analyzed_contract\> 
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+     uint public tokenPrice;
+     uint public tokenSupply;
+
+     constructor(address _token, uint _price, uint _supply) {
+         owner = msg.sender;
+         token = IERC20(_token);
+         tokenPrice = _price;
+         tokenSupply = _supply;
+     }
+
+     function buyTokens(uint _amount) public {
+         uint cost = _amount * tokenPrice;
+         require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+         require(tokenSupply >= _amount, "Insufficient token supply");
+         token.transfer(msg.sender, _amount);
+         tokenSupply -= _amount;
+     }
+
+     function setTokenPrice(uint _newPrice) public {
+         require(msg.sender == owner, "Only owner can set price");
+         tokenPrice = _newPrice;
+     }
+
+     function withdrawTokens(address _recipient, uint _amount) public {
+         require(msg.sender == owner, "Only owner can withdraw");
+         token.transfer(_recipient, _amount);
+     }
+}
+<\analyzed_contract\> 
+
+Potential vulnerabilities in the analyzed contract:
+1) incorrect visibility/ownership: The `withdrawTokens` function does not have a visibility modifier, making it public by default, which could potentially allow unauthorized users to call this function and withdraw tokens. Consider adding an appropriate visibility modifier to restrict access.
+2) atomicty violation: The `tokenSupply` is updated directly in the `buyTokens` function without proper synchronization mechanisms, which may lead to race conditions and inconsistent state updates. Consider implementing appropriate locking mechanisms to ensure atomicity of state updates in a concurrent environment.

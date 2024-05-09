@@ -1,0 +1,26 @@
+Contract to be analyzed:
+<\example_3\>
+contract Crowdsale {
+         address public owner;
+         IERC20 public token;
+         uint public rate;
+         
+         constructor(address _owner, IERC20 _token, uint _rate) {
+             owner = _owner;
+             token = _token;
+             rate = _rate;
+         }
+         
+         function buyTokens(uint amount) public {
+             uint cost = amount * rate;
+             require(token.balanceOf(msg.sender) >= cost, "insufficient balance");
+             token.transferFrom(msg.sender, address(this), cost);
+             token.transfer(msg.sender, amount);
+         }
+}
+<\example_3\> 
+
+Output:
+- Business logic flaw: The calculation of cost in the buyTokens function may lead to incorrect token transfer amounts due to the multiplication of amount and rate.
+- Incorrect visibility/ownership: The owner variable and constructor in the Crowdsale contract are public, potentially exposing sensitive information.
+- Inconsistent state update: The transfer of tokens in the buyTokens function may lead to inconsistencies in the contract state if the token transfers fail for any reason.

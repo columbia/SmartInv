@@ -1,0 +1,100 @@
+<\analyzed_contract\> 
+contract MultiSigWallet {
+     address[] public owners;
+     uint public required;
+     mapping(address => bool) public isOwner;
+     mapping(uint => mapping(address => bool)) public confirmations;
+     uint public transactionCount;
+     mapping(uint => Transaction) public transactions;
+     uint constant public CALL = 0;
+     uint constant public DELEGATECALL = 1;
+     
+     struct Transaction {
+         address destination;
+         uint value;
+         bytes data;
+         bool executed;
+     }
+
+     event Deposit(address indexed sender, uint value);
+     event SubmitTransaction(uint indexed txIndex, address indexed owner, address destination, uint value, bytes data);
+     event ConfirmTransaction(uint indexed txIndex, address indexed owner);
+     event ExecuteTransaction(uint indexed txIndex, address indexed owner);
+     event RevokeConfirmation(uint indexed txIndex, address indexed owner);
+     
+     modifier onlyOwner {
+         require(isOwner[msg.sender], "Not an owner");
+         _;
+     }
+     
+     modifier txExists(uint _txIndex) {
+         require(_txIndex < transactionCount, "Transaction does not exist");
+         _;
+     }
+     
+     modifier notExecuted(uint _txIndex) {
+         require(!transactions[_txIndex].executed, "Transaction already executed");
+         _;
+     }
+     
+     constructor(address[] memory _owners, uint _required) {
+         require(_owners.length > 0, "Owners required");
+         require(_required > 0 && _required <= _owners.length, "Invalid number of required confirmations");
+         for (uint i = 0; i < _owners.length; i++) {
+             address owner = _owners[i];
+             require(owner != address(0), "Invalid owner");
+             require(!isOwner[owner], "Owner not unique");
+             isOwner[owner] = true;
+             owners.push(owner);
+         }
+         required = _required;
+     }
+     
+     function deposit() public payable {
+         emit Deposit(msg.sender, msg.value);
+     }
+     
+     function submitTransaction(address _destination, uint _value, bytes memory _data) public onlyOwner {
+         uint txIndex = transactionCount;
+         transactions[txIndex] = Transaction({
+             destination: _destination,
+             value: _value,
+             data: _data,
+             executed: false
+         });
+         transactionCount++;
+         emit SubmitTransaction(txIndex, msg.sender, _destination, _value, _data);
+     }
+     
+     function confirmTransaction(uint _txIndex) public onlyOwner txExists(_txIndex) notExecuted(_txIndex) {
+         confirmations[_txIndex][msg.sender] = true;
+         emit ConfirmTransaction(_txIndex, msg.sender);
+     }
+     
+     function executeTransaction(uint _txIndex) public txExists(_txIndex) notExecuted(_txIndex) {
+         require(isConfirmed(_txIndex), "Transaction not confirmed");
+         Transaction storage transaction = transactions[_txIndex];
+         transaction.executed = true;
+         (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+         require(success, "Transaction execution failed");
+         emit ExecuteTransaction(_txIndex, msg.sender);
+     }
+     
+     function isConfirmed(uint _txIndex) public view returns (bool) {
+         uint count = 0;
+         for (uint i = 0; i < owners.length; i++) {
+             if (confirmations[_txIndex][owners[i]]) {
+                 count++;
+             }
+             if (count == required) {
+                 return true;
+             }
+         }
+         return false;
+     }
+} 
+
+Potential vulnerabilities:
+7) ID uniqueness violation: The contract does not enforce uniqueness when adding owners, which could lead to issues if multiple owners share the same address.
+12) Ether leakage: The `executeTransaction` function does not handle the case where the transaction fails after transferring ether, which could result in ether being leaked.
+14) Incorrect visibility/ownership: The visibility of some functions and variables may not be appropriate, potentially allowing unauthorized access or manipulation.

@@ -1,0 +1,34 @@
+Contract:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+
+    function vote(uint256 _proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "You have no right to vote");
+        require(!sender.voted, "You already voted.");
+        sender.voted = true;
+        sender.vote = _proposal;
+    }
+
+    function delegate(address _to) public {
+        Voter storage sender = voters[msg.sender];
+        sender.delegate = _to;
+        Voter storage delegate_ = voters[_to];
+        if (delegate_.voted) {
+            // Since the delegate has already voted, directly add the votes to the proposal
+            voters[_to].vote += sender.weight;
+        }
+    }
+}
+
+Potential Vulnerabilities:
+1) Business logic flaw
+2) Inconsistent state update

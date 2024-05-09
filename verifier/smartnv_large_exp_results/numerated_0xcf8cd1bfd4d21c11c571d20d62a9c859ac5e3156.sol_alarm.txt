@@ -1,0 +1,55 @@
+contract VotingSystem {
+     struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate; 
+          uint256 vote; 
+          }
+     address public admin;
+     mapping(address => Voter) public voters;
+
+     function delegate(address to) public {
+          Voter storage sender = voters[msg.sender];
+          sender.delegate = to;
+          sender.weight = 0;
+
+          if (voters[to].voted) {
+              voters[to].vote += sender.weight;
+          }
+     }
+
+     function vote(uint256 proposal) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "Already voted.");
+          sender.voted = true;
+          sender.vote = proposal;
+     }
+
+     function executeProposal(uint256 proposal) public {
+          // Check if the proposal is approved by majority of voters
+          uint256 approvalThreshold = getTotalVotes() / 2;
+          uint256 totalVotes = 0;
+          for (uint256 i = 0; i < voters.length; i++) {
+              if (voters[i].voted && voters[i].vote == proposal) {
+                  totalVotes += voters[i].weight;
+              }
+          }
+          require(totalVotes > approvalThreshold, "Proposal not approved by majority.");
+
+          // Execute the proposal
+          // (code to execute the proposal)
+     }
+
+     function getTotalVotes() public view returns (uint256) {
+          uint256 total = 0;
+          for (uint256 i = 0; i < voters.length; i++) {
+              total += voters[i].weight;
+          }
+          return total;
+     }
+} 
+
+The potential vulnerabilities in the contract are: 
+3) business logic flaw
+7) ID uniqueness violation
+10) arithmetic flaw

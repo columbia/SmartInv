@@ -1,0 +1,20 @@
+<\contract\>
+contract PaymentGateway {
+    address public owner;
+    mapping(uint => bool) public paymentStatus;
+
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function makePayment(uint paymentId) external payable {
+        require(msg.value > 0, "Payment amount must be greater than 0");
+        paymentStatus[paymentId] = true;
+        owner.transfer(msg.value);
+    }
+
+    function getPaymentStatus(uint paymentId) external view returns(bool) {
+        return paymentStatus[paymentId];
+    }
+}
+<\contract\>

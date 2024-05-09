@@ -1,0 +1,36 @@
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    enum Status {Created, Locked, Released, Inactive}
+    Status public status;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        status = Status.Created;
+    }
+
+    function lockFunds() public {
+        require(msg.sender == buyer, "Only buyer can lock funds");
+        require(status == Status.Created, "Funds are already locked or released");
+        status = Status.Locked;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(status == Status.Locked, "Funds are not locked");
+        seller.transfer(price);
+        status = Status.Released;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(status == Status.Locked, "Funds are not locked");
+        buyer.transfer(price);
+        status = Status.Inactive;
+    }
+}

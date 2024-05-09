@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    uint public tokensSold;
+
+    mapping(address => uint) public tokenBalance;
+
+    constructor(uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        tokensSold = 0;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(tokensSold + _numTokens <= totalTokens, "Not enough tokens left");
+        require(msg.value == tokenPrice * _numTokens, "Incorrect payment amount");
+
+        tokenBalance[msg.sender] += _numTokens;
+        tokensSold += _numTokens;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Not the contract owner");
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership: The contract allows anyone to call the `withdraw` function which transfer the contract balance and only checks if the sender is the contract owner after transferring. This could lead to unauthorized withdrawal of funds.

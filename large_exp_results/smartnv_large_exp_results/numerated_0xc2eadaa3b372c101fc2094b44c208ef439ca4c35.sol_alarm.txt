@@ -1,0 +1,48 @@
+Contract to analyze:
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public depositAmount;
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE }
+    State public currentState;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only the buyer can deposit funds.");
+        require(currentState == State.AWAITING_PAYMENT, "Payment has already been made.");
+        depositAmount = msg.value;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Only buyer, seller, or arbiter can confirm delivery.");
+        require(currentState == State.AWAITING_DELIVERY, "Payment not yet made or confirmation already received.");
+        seller.transfer(depositAmount);
+        currentState = State.COMPLETE;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds.");
+        require(currentState == State.AWAITING_DELIVERY, "Payment not yet made or confirmation already received.");
+        seller.transfer(depositAmount);
+        currentState = State.COMPLETE;
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only the arbiter can refund the buyer.");
+        require(currentState == State.AWAITING_DELIVERY, "Payment not yet made or confirmation already received.");
+        buyer.transfer(depositAmount);
+        currentState = State.COMPLETE;
+    }
+} 
+
+Output: 
+- The contract contains potential vulnerability of incorrect visibility/ownership, as there are functions that should only be accessible by specific addresses but do not enforce this properly.
+- The contract also has a business logic flaw in which the arbiter can perform conflicting actions (releaseFunds and refundBuyer) which could lead to misuse.
+- Atomicity violation could occur as certain states change, but multiple functions can interact with these states which could lead to inconsistent behavior.

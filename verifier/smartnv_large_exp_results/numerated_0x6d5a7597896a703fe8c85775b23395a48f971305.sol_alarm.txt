@@ -1,0 +1,45 @@
+Contract Analysis: 
+
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential Vulnerabilities:
+1) Inconsistent state update: The function startExecute() updates the proposal state, but it does not set the sTime correctly, leading to inconsistent state. 
+2) Insufficient gas: Depending on the gas limit set for transactions, the execution of functions like execute() or endExecute() may run out of gas, causing incomplete operations.
+3) ID uniqueness violation: There is no check for uniqueness of proposal identifier, which may lead to conflicts in proposal data if duplicate identifiers are allowed.
+4) Incorrect visibility/ownership: The visibility and ownership control for functions and variables like owner is not specified, which may lead to unauthorized access or control over the contract. 
+
+Overall Assessment: The contract may have vulnerabilities in terms of inconsistent state update, insufficient gas handling, ID uniqueness violation, and incorrect visibility/ownership control.

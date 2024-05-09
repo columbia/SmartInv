@@ -1,0 +1,26 @@
+Contract:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public balances;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than the current highest bid");
+        balances[highestBidder] += highestBid;
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "Highest bidder cannot withdraw funds until the end of the auction");
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output:
+1) potential vulnerability: reentrancy
+2) potential vulnerability: inconsistent state update
+3) potential vulnerability: bid price manipulation

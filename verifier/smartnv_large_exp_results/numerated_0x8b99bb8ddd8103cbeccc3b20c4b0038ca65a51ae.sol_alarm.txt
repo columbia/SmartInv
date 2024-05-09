@@ -1,0 +1,19 @@
+The contract provided for analysis:
+
+contract Exchange {
+    IERC20 public token1;
+    IERC20 public token2;
+    mapping(address => uint) public balances;
+    
+    function trade(uint amount, address user) public {
+        require(balances[msg.sender] >= amount, "Not enough balance");
+        token1.transferFrom(user, msg.sender, amount);
+        token2.transferFrom(msg.sender, user, amount);
+        balances[msg.sender] -= amount;
+        balances[user] += amount;
+    }
+}
+
+Output: 
+1) atomicity violation
+2) integer overflow/underflow

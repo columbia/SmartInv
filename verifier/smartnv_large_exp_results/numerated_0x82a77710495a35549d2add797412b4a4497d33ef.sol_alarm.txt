@@ -1,0 +1,28 @@
+Contract: 
+
+contract Lottery {
+    uint public totalTickets;
+    mapping(address => uint) public tickets;
+
+    function buyTicket(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(amount <= 100, "Cannot buy more than 100 tickets at once");
+        
+        for(uint i = 0; i < amount; i++) {
+            tickets[msg.sender]++;
+            totalTickets++;
+        }
+    }
+
+    function drawWinner() public {
+        require(totalTickets > 0, "No tickets sold yet");
+        
+        uint winningTicket = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets;
+        
+        // Determine and reward the winner based on the winning ticket
+    }
+}
+
+Output:
+- Inconsistent state update: The totalTickets variable is updated without proper synchronization, which may lead to incorrect calculations in the drawWinner function.
+- Insufficient gas: The drawWinner function's computation may require more gas than the block gas limit, leading to potential failures in executing the function.

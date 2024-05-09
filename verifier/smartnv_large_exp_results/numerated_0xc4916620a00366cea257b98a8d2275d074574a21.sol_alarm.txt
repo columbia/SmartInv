@@ -1,0 +1,16 @@
+<\your_contract\> 
+contract VotingSystem {
+         mapping(address => uint) public voteCount;
+         uint public totalVotes;
+
+         function vote(address candidate) public {
+             require(voteCount[msg.sender] == 0, "already voted");
+             voteCount[msg.sender] += 1;
+             totalVotes += 1;
+         }
+         function revokeVote(address candidate) public {
+             require(voteCount[msg.sender] != 0, "have not voted yet");
+             voteCount[msg.sender] -= 1;
+             totalVotes -= 1;
+         }
+  }

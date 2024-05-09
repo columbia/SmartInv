@@ -1,0 +1,40 @@
+<\contract_to_analyze\>
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public tickets;
+    uint public totalTickets;
+    uint public winningTicket;
+    bool public lotteryEnded;
+
+    constructor() {
+        owner = msg.sender;
+        totalTickets = 0;
+        lotteryEnded = false;
+    }
+
+    function buyTickets(uint numTickets) public payable {
+        tickets[msg.sender] += numTickets;
+        totalTickets += numTickets;
+    }
+
+    function endLottery() public {
+        require(msg.sender == owner, "Only owner can end the lottery");
+        require(!lotteryEnded, "Lottery has already ended");
+        
+        winningTicket = generateRandomNumber();
+        lotteryEnded = true;
+    }
+
+    function claimPrize() public {
+        require(lotteryEnded, "Lottery has not ended yet");
+        require(tickets[msg.sender] > 0, "No tickets bought");
+        require(tickets[msg.sender] * 2 == winningTicket, "Incorrect winning ticket");
+
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function generateRandomNumber() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, totalTickets)));
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,1 @@
+a set of instructions written in a programming language that can be executed by a computer to perform specific tasks or operations. It serves as the foundation for software development and is often created and modified by programmers to meet the needs of a particular project or application.

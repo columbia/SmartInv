@@ -1,0 +1,35 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    struct Proposal {
+        address[] recipients;
+        uint256[] amounts;
+        bool executed;
+    }
+
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+
+    function vote(uint256 proposalIndex, uint256 _vote) public {
+        require(voters[msg.sender].weight > 0, "You are not eligible to vote");
+        require(!voters[msg.sender].voted, "You have already voted");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = _vote;
+
+        proposals[proposalIndex].amounts[_vote] += voters[msg.sender].weight;
+    }
+
+    function executeProposal(uint256 proposalIndex) public {
+        require(!proposals[proposalIndex].executed, "Proposal has already been executed");
+
+        // code to execute the proposal
+    }
+}
+<\contract_to_analyze\>

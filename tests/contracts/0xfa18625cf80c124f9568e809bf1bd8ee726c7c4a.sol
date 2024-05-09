@@ -1,0 +1,34 @@
+{{
+  "language": "Solidity",
+  "sources": {
+    "@openzeppelin/contracts/access/Ownable.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.7.0) (access/Ownable.sol)\n\npragma solidity ^0.8.0;\n\nimport \"../utils/Context.sol\";\n\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n *\n * By default, the owner account will be the one that deploys the contract. This\n * can later be changed with {transferOwnership}.\n *\n * This module is used through inheritance. It will make available the modifier\n * `onlyOwner`, which can be applied to your functions to restrict their use to\n * the owner.\n */\nabstract contract Ownable is Context {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /**\n     * @dev Initializes the contract setting the deployer as the initial owner.\n     */\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    /**\n     * @dev Throws if called by any account other than the owner.\n     */\n    modifier onlyOwner() {\n        _checkOwner();\n        _;\n    }\n\n    /**\n     * @dev Returns the address of the current owner.\n     */\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    /**\n     * @dev Throws if the sender is not the owner.\n     */\n    function _checkOwner() internal view virtual {\n        require(owner() == _msgSender(), \"Ownable: caller is not the owner\");\n    }\n\n    /**\n     * @dev Leaves the contract without owner. It will not be possible to call\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\n     *\n     * NOTE: Renouncing ownership will leave the contract without an owner,\n     * thereby removing any functionality that is only available to the owner.\n     */\n    function renounceOwnership() public virtual onlyOwner {\n        _transferOwnership(address(0));\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Can only be called by the current owner.\n     */\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        _transferOwnership(newOwner);\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Internal function without access restriction.\n     */\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n"
+    },
+    "@openzeppelin/contracts/utils/Context.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes calldata) {\n        return msg.data;\n    }\n}\n"
+    },
+    "contracts/Controller.sol": {
+      "content": "//SPDX-License-Identifier: Unlicense\npragma solidity ^0.8.0;\n\nimport \"@openzeppelin/contracts/access/Ownable.sol\";\n\ninterface iCable {\n  function mint(address recipient) external;\n}\n\n/// @title CABLE Controller\n/// @notice https://cable.folia.app\n/// @author @okwme / okw.me, artwork by @joanheemskerk / https://w3b4.net/cable-/\n/// @dev managing the mint and payments\n\ncontract Controller is Ownable {\n  bool public paused;\n  address public cable;\n  address public splitter;\n  uint256 public price = 0.111111111111111111 ether;\n\n  event EthMoved(address indexed to, bool indexed success, bytes returnData);\n\n  constructor(address payable splitter_) {\n    splitter = splitter_;\n  }\n\n  // @dev Throws if called before the cable address is set.\n  modifier initialized() {\n    require(cable != address(0), \"NO CABLE\");\n    require(splitter != address(0), \"NO SPLIT\");\n    _;\n  }\n\n  /// @dev mints cables\n  function mint() public payable initialized {\n    require(!paused, \"PAUSED\");\n    require(msg.value == price, \"WRONG PRICE\");\n    (bool sent, bytes memory data) = splitter.call{value: msg.value}(\"\");\n    emit EthMoved(msg.sender, sent, data);\n    iCable(cable).mint(msg.sender);\n  }\n\n  /// @dev only the owner can set the splitter address\n  function setSplitter(address splitter_) public onlyOwner {\n    splitter = splitter_;\n  }\n\n  /// @dev only the owner can set the cable address\n  function setCable(address cable_) public onlyOwner {\n    cable = cable_;\n  }\n\n  /// @dev only the owner can set the contract paused\n  function setPause(bool paused_) public onlyOwner {\n    paused = paused_;\n  }\n\n  function setPrice(uint256 price_) public onlyOwner {\n    price = price_;\n  }\n\n  /// @dev only the owner can mint without paying\n  function adminMint(address recipient) public initialized onlyOwner {\n    iCable(cable).mint(recipient);\n  }\n\n  /// @dev if mint fails to send eth to splitter, admin can recover\n  // This should not be necessary but Berlin hardfork broke split before so this\n  // is extra precaution. Also allows recovery if users accidentally send eth\n  // straight to the contract.\n  function recoverUnsuccessfulMintPayment(address payable _to) public onlyOwner {\n    (bool sent, bytes memory data) = _to.call{value: address(this).balance}(\"\");\n    emit EthMoved(_to, sent, data);\n  }\n}\n"
+    }
+  },
+  "settings": {
+    "viaIR": false,
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    },
+    "libraries": {}
+  }
+}}

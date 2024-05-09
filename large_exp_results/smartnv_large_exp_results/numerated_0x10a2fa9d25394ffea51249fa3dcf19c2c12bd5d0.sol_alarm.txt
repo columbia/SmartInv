@@ -1,0 +1,27 @@
+<\contract\> 
+
+contract PaymentContract {
+    uint public totalPayments;
+    mapping(address => uint) public paymentAmounts;
+
+    function makePayment(address recipient, uint amount) public {
+        require(amount > 0, "Payment amount must be greater than 0");
+        totalPayments += amount;
+        paymentAmounts[recipient] += amount;
+    }
+
+    function withdrawPayment() public {
+        uint amount = paymentAmounts[msg.sender];
+        require(amount > 0, "No payment to withdraw");
+        paymentAmounts[msg.sender] = 0;
+        totalPayments -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow in the totalPayments variable.
+2) Integer overflow/underflow in the paymentAmounts mapping.
+3) Insufficient gas for the withdrawal function, potentially leading to failed withdrawals.
+4) Incorrect visibility of the paymentAmounts mapping, which may lead to unauthorized access to payment information.

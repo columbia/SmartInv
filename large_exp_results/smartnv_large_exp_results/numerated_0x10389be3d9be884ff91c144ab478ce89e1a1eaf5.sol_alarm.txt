@@ -1,0 +1,34 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public isPaid;
+    bool public isReleased;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        isPaid = false;
+        isReleased = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == escrowAmount, "Incorrect amount deposited");
+        isPaid = true;
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(isPaid, "Funds have not been deposited yet");
+        require(!isReleased, "Funds have already been released");
+        
+        seller.transfer(escrowAmount);
+        isReleased = true;
+    }
+}
+<\contract\>

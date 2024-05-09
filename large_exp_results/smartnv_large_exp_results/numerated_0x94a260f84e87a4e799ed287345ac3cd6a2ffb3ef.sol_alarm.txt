@@ -1,0 +1,36 @@
+The contract provided for analysis:
+
+contract Lottery {
+    address public owner;
+    uint public winnerReward;
+    uint public ticketPrice;
+    mapping(address => uint) public tickets;
+
+    constructor(uint _ticketPrice, uint _winnerReward) {
+        owner = msg.sender;
+        ticketPrice = _ticketPrice;
+        winnerReward = _winnerReward;
+    }
+
+    function buyTicket() public payable {
+        require(msg.value >= ticketPrice, "Not enough ether sent to buy ticket");
+        uint numberOfTickets = msg.value / ticketPrice;
+        tickets[msg.sender] += numberOfTickets;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw the winner");
+        // Random logic to pick a winner and reward them
+    }
+
+    function endLottery() public {
+        require(msg.sender == owner, "Only owner can end the lottery");
+        // Logic to distribute remaining funds among participants
+    }
+}
+
+Output:
+- Reentrancy
+- Incorrect visibility/ownership
+
+The contract "Lottery" contains potential vulnerabilities in terms of reentrancy and incorrect visibility/ownership issues.

@@ -1,0 +1,49 @@
+The contract provided for analysis:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address private arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE}
+    State public currentState;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        _;
+    }
+
+    function initiateEscrow(address _seller, address _arbiter) external {
+        require(currentState == State.AWAITING_PAYMENT, "Escrow already initiated");
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmPayment() external onlyBuyer {
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() external onlySeller {
+        currentState = State.COMPLETE;
+    }
+
+    function refundPayment() external onlyArbiter {
+        currentState = State.AWAITING_PAYMENT;
+    }
+}
+
+Output: 
+- Insufficient gas
+- Incorrect visibility/ownership

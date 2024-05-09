@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function `endExecute()` updates the `lockedFunds` variable based on the balance of the contract at that moment. This can lead to inconsistencies if other functions interact with the contract in between, potentially affecting the outcome of the contract's logic.
+2) Incorrect visibility/ownership: The contract does not specify the visibility of the `lockedFunds` variable, which can lead to issues with contract ownership and access control. This lack of visibility control can potentially result in unauthorized manipulation of the variable by other contracts or users.
+3) Insufficient gas: The function `endExecute()` checks the `balanceOf` the contract against the total supply of the token, which may require a significant amount of gas, leading to potential out-of-gas issues if the contract balance is large.

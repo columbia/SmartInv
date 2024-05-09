@@ -1,0 +1,53 @@
+Contract to be analyzed:
+
+Contract Vesting {
+    address public beneficiary;
+    uint256 public cliff;
+    uint256 public start;
+    uint256 public duration;
+    
+    bool public isActive;
+
+    constructor(address _beneficiary, uint256 _cliff, uint256 _start, uint256 _duration) {
+        beneficiary = _beneficiary;
+        cliff = _cliff;
+        start = _start;
+        duration = _duration;
+        isActive = true;
+    }
+
+    function release() public {
+        require(isActive, "Vesting not active");
+        require(block.timestamp >= start + cliff, "Cliff period has not passed");
+        
+        uint256 unreleased = vestedAmount() - claimableAmount();
+        isActive = false;
+
+        // Transfer unreleased tokens to the beneficiary
+        // (Unimplemented logic)
+    }
+
+    function vestedAmount() public view returns (uint256) {
+        uint256 current_time = block.timestamp;
+        if (current_time < start + cliff) {
+            return 0;
+        } else if (current_time >= start + duration) {
+            return totalAmount();
+        } else {
+            return totalAmount() * (current_time - start) / duration;
+        }
+    }
+
+    function claimableAmount() public view returns (uint256) {
+        // Logic to calculate claimable amount (Unimplemented)
+    }
+
+    function totalAmount() public view returns (uint256) {
+        // Logic to calculate total vesting amount (Unimplemented)
+    }
+}
+
+Output:
+- business logic flaw
+- inconsistent state update
+- incorrect visibility/ownership

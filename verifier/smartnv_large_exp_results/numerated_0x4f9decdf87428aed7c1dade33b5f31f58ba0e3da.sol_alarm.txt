@@ -1,0 +1,28 @@
+Contract to analyze: 
+
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+    uint public totalSold;
+
+    constructor(address _token, uint _price) public {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        ERC20(token).transfer(msg.sender, _amount);
+        totalSold += _amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        owner.transfer(address(this).balance);
+    }
+}
+Output: 
+- insufficient gas 
+- incorrect visibility/ownership

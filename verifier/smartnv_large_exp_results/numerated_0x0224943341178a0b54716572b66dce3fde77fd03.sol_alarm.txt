@@ -1,0 +1,22 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+     address public administrator;
+     
+     function vote() public {
+         require(!hasVoted[msg.sender], "You have already voted");
+         hasVoted[msg.sender] = true;
+         totalVotes++;
+     }
+     
+     function changeAdministrator(address newAdmin) public {
+         require(msg.sender == administrator, "Only the administrator can change");
+         administrator = newAdmin;
+     }
+}
+<\analyzed_contract\> 
+
+<\output\> 
+- Incorrect visibility/ownership: The administrator address can be changed by anyone, not just the current administrator, making it vulnerable to privilege escalation.
+- ID uniqueness violation: There is no verification to ensure that the same address cannot vote multiple times, potentially leading to ID uniqueness violation.

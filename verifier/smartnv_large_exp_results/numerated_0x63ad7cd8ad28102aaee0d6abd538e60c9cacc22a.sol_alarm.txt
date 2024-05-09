@@ -1,0 +1,18 @@
+The contract provided for analysis: 
+
+contract StakingPool {
+    address public owner;
+    mapping(address => uint) public stakingBalance;
+
+    function stake(uint _amount) external {
+        require(_amount > 0, "Amount staked must be greater than 0");
+        stakingBalance[msg.sender] += _amount;
+    }
+
+    function unstake(uint _amount) external {
+        require(_amount > 0, "Amount unstaked must be greater than 0");
+        require(stakingBalance[msg.sender] >= _amount, "Insufficient staked amount");
+        stakingBalance[msg.sender] -= _amount;
+    }
+}
+Supply potential vulnerabilities for the given contract.

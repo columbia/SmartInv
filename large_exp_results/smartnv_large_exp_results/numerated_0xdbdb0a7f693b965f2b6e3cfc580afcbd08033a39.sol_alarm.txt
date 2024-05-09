@@ -1,0 +1,47 @@
+<\example_1\>
+<\example_2\>
+Contract:
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    uint public arbiterFee;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _arbiterFee) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        arbiterFee = _arbiterFee;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == escrowAmount, "Incorrect amount deposited");
+    }
+
+    function releasePayment() public {
+        require(msg.sender == arbiter, "Only arbiter can release payment");
+        require(address(this).balance >= escrowAmount + arbiterFee, "Insufficient balance to release payment");
+        seller.transfer(escrowAmount);
+        arbiter.transfer(arbiterFee);
+    }
+
+    function refundPayment() public {
+        require(msg.sender == arbiter, "Only arbiter can refund payment");
+        buyer.transfer(escrowAmount);
+    }
+
+    function setEscrowAmount(uint _amount) public {
+        require(msg.sender == buyer, "Only buyer can set escrow amount");
+        escrowAmount = _amount;
+    }
+
+    function setArbiterFee(uint _fee) public {
+        require(msg.sender == buyer, "Only buyer can set arbiter fee");
+        arbiterFee = _fee;
+    }
+}
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

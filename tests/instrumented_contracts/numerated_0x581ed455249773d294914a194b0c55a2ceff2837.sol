@@ -1,0 +1,36 @@
+1 {{
+2   "language": "Solidity",
+3   "sources": {
+4     "CollectToken.sol": {
+5       "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.8.0;\n\nimport \"Ownable.sol\";\n\ninterface IERC20 {\n    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\n    function balanceOf(address account) external view returns (uint256);\n    function allowance(address owner, address spender) external view returns (uint256);\n}\n\ninterface USDT {\n    function transferFrom(address sender, address recipient, uint256 amount) external;\n}\n\ncontract CollectToken is Ownable{\n\n    address public fundAddress;\n    address public operator;\n    address public usdtAddress;\n\n    constructor(address _fundAddress, address _operator, address _usdtAddress){\n        fundAddress = _fundAddress;\n        operator = _operator;\n        usdtAddress = _usdtAddress;\n    }\n\n    function setFundAddress(address _fundAddress) external onlyOwner {\n        fundAddress = _fundAddress;\n    }\n\n    function setOperator(address _operator) external onlyOwner {\n        operator = _operator;\n    }\n\n    function balanceOfs(address tokenAddress, address[] memory addressList) external view returns (uint256[] memory returnData) {\n        returnData = new uint256[](addressList.length);\n        IERC20 iERC20 = IERC20(tokenAddress);\n\n        for(uint256 i = 0; i < addressList.length; i++) {\n            returnData[i] = iERC20.balanceOf(addressList[i]);\n        }\n    }\n\n    function allowances(address tokenAddress,  address[] memory addressList) external view returns (uint256[] memory returnData) {\n        returnData = new uint256[](addressList.length);\n        IERC20 iERC20 = IERC20(tokenAddress);\n\n        for(uint256 i = 0; i < addressList.length; i++) {\n            returnData[i] = iERC20.allowance(addressList[i], address(this));\n        }\n    }\n\n    function collectionToken(address tokenAddress,  address[] memory addressList, uint256[] memory amountList) external {\n        require(msg.sender == operator);\n\n        IERC20 iERC20 = IERC20(tokenAddress);\n        for(uint256 i = 0; i < addressList.length; i++) {\n            iERC20.transferFrom(addressList[i], fundAddress, amountList[i]);\n        }\n    }\n\n    function collectionUSDT(address[] memory addressList, uint256[] memory amountList) external {\n        require(msg.sender == operator);\n\n        USDT uSDT = USDT(usdtAddress);\n        for(uint256 i = 0; i < addressList.length; i++) {\n            uSDT.transferFrom(addressList[i], fundAddress, amountList[i]);\n        }\n    }\n\n    function sendEth(address[] memory addressList, uint256 amount) external payable {\n        require(msg.sender == operator);\n        require(msg.value == addressList.length * amount);\n\n        for(uint256 i = 0; i < addressList.length; i++) {\n            payable(addressList[i]).send(amount);\n        }\n    }\n\n}\n"
+6     },
+7     "Ownable.sol": {
+8       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.7.0) (access/Ownable.sol)\n\npragma solidity ^0.8.0;\n\nimport \"Context.sol\";\n\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n *\n * By default, the owner account will be the one that deploys the contract. This\n * can later be changed with {transferOwnership}.\n *\n * This module is used through inheritance. It will make available the modifier\n * `onlyOwner`, which can be applied to your functions to restrict their use to\n * the owner.\n */\nabstract contract Ownable is Context {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /**\n     * @dev Initializes the contract setting the deployer as the initial owner.\n     */\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    /**\n     * @dev Throws if called by any account other than the owner.\n     */\n    modifier onlyOwner() {\n        _checkOwner();\n        _;\n    }\n\n    /**\n     * @dev Returns the address of the current owner.\n     */\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    /**\n     * @dev Throws if the sender is not the owner.\n     */\n    function _checkOwner() internal view virtual {\n        require(owner() == _msgSender(), \"Ownable: caller is not the owner\");\n    }\n\n    /**\n     * @dev Leaves the contract without owner. It will not be possible to call\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\n     *\n     * NOTE: Renouncing ownership will leave the contract without an owner,\n     * thereby removing any functionality that is only available to the owner.\n     */\n    function renounceOwnership() public virtual onlyOwner {\n        _transferOwnership(address(0));\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Can only be called by the current owner.\n     */\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        _transferOwnership(newOwner);\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Internal function without access restriction.\n     */\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n"
+9     },
+10     "Context.sol": {
+11       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes calldata) {\n        return msg.data;\n    }\n}\n"
+12     }
+13   },
+14   "settings": {
+15     "evmVersion": "istanbul",
+16     "optimizer": {
+17       "enabled": true,
+18       "runs": 200
+19     },
+20     "libraries": {
+21       "CollectToken.sol": {}
+22     },
+23     "outputSelection": {
+24       "*": {
+25         "*": [
+26           "evm.bytecode",
+27           "evm.deployedBytecode",
+28           "devdoc",
+29           "userdoc",
+30           "metadata",
+31           "abi"
+32         ]
+33       }
+34     }
+35   }
+36 }}

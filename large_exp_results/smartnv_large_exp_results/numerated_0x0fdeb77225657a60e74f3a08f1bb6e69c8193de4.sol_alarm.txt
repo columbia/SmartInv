@@ -1,0 +1,14 @@
+<\example_1\> 
+Potential vulnerabilities: 
+1) Inconsistent state update: The startingBalanceList mapping is updated in the startExecute function, but there is no check to ensure that the proposal.addr is unique, which could lead to unexpected behavior.
+2) Atomicity violation: The update to proposal.votedAmount in the execute function is not done atomically, which could result in inconsistent data if multiple transactions try to modify it concurrently.
+3) Insufficient gas: The endExecute function locks the funds based on the balance of the contract, but if the contract does not have enough gas to complete the transaction, it could result in funds being locked indefinitely.
+
+Overall, the contract has vulnerabilities related to inconsistent state updates, atomicity violations, and insufficient gas.
+
+<\example_2\> 
+Potential vulnerabilities:
+1) Price manipulation: The liquidate function checks if the debt can be liquidated based on a calculation involving the price obtained from the getPrice function, which might be manipulated by external factors, leading to unexpected liquidation behavior.
+2) Incorrect visibility/ownership: The debt and collateral mappings are public, which exposes the sensitive information directly to anyone. It would be better to make them private and provide getter functions if required to access the values.
+
+Overall, the contract has vulnerabilities related to price manipulation and incorrect visibility/ownership.

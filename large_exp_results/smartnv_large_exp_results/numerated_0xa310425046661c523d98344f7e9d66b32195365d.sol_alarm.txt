@@ -1,0 +1,27 @@
+<\contract\>
+contract SubscriptionService {
+     address public owner;
+     mapping(address => bool) public subscribers;
+     uint public subscriptionFee;
+
+     constructor() {
+         owner = msg.sender;
+         subscriptionFee = 1 ether;
+     }
+
+     function subscribe() public payable {
+         require(msg.value == subscriptionFee, "Incorrect subscription fee paid");
+         subscribers[msg.sender] = true;
+     }
+
+     function unsubscribe() public {
+         require(subscribers[msg.sender] == true, "Not a subscriber");
+         subscribers[msg.sender] = false;
+     }
+
+     function withdraw() public {
+         require(msg.sender == owner, "Only owner can withdraw");
+         payable(owner).transfer(address(this).balance);
+     }
+}
+<\contract\>

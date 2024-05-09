@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract PaymentGateway {
+        address public admin;
+        mapping(uint => uint) public payments;
+
+        constructor() {
+            admin = msg.sender;
+        }
+
+        function makePayment(uint invoiceId, uint amount) public {
+            require(msg.sender == admin, "Only admin can make payments");
+            payments[invoiceId] += amount;
+        }
+
+        function withdraw(uint invoiceId) public {
+            require(msg.sender == admin, "Only admin can withdraw funds");
+            uint amount = payments[invoiceId];
+            msg.sender.transfer(amount);
+            payments[invoiceId] = 0;
+        }
+}
+<\contract_to_analyze\>

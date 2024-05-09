@@ -1,0 +1,29 @@
+<\contract\> 
+contract Payment {
+         address public owner;
+         mapping(uint => uint) public payments;
+         uint public totalPayments;
+
+         constructor() {
+             owner = msg.sender;
+             totalPayments = 0;
+         }
+
+         function makePayment(uint paymentAmount) public {
+             require(msg.sender == owner, "You are not the owner");
+             payments[totalPayments] = paymentAmount;
+             totalPayments++;
+         }
+
+         function withdrawAllPayments() public {
+             require(msg.sender == owner, "You are not the owner");
+             for(uint i=0; i<totalPayments; i++) {
+                 msg.sender.transfer(payments[i]);
+                 payments[i] = 0;
+             }
+             totalPayments = 0;
+         }
+} 
+
+Output:
+- healthy

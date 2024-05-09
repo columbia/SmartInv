@@ -1,0 +1,42 @@
+Contract to Analyze:
+
+contract Marketplace {
+     address public admin;
+     mapping(uint => Product) public products;
+     uint public productCount;
+     struct Product {
+         uint id;
+         string name;
+         uint price;
+         address owner;
+     }
+
+     constructor() {
+         admin = msg.sender;
+         productCount = 0;
+     }
+
+     function createProduct(string memory _name, uint _price) public {
+         require(msg.sender != address(0), "Invalid address");
+         productCount++;
+         products[productCount] = Product(productCount, _name, _price, msg.sender);
+     }
+
+     function purchaseProduct(uint _productId) public payable {
+         require(products[_productId].id != 0, "Product does not exist");
+         require(msg.value >= products[_productId].price, "Insufficient funds");
+         address payable productOwner = payable(products[_productId].owner);
+         productOwner.transfer(products[_productId].price);
+         // transfer ownership of the product
+         products[_productId].owner = msg.sender;
+     }
+
+     function withdrawFunds() public {
+         require(msg.sender == admin, "Unauthorized");
+         address payable _admin = payable(admin);
+         _admin.transfer(address(this).balance);
+     }
+
+}
+Output:
+- Potential vulnerability: incorrect visibility/ownership

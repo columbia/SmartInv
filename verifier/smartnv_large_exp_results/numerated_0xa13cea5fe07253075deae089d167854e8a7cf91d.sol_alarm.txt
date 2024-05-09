@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The contract's `liquidate` function updates the `debt` and `collateral` mappings without ensuring that the state updates are consistent or atomic.
+
+2) Arithmetic flaw: The contract's `liquidate` function performs arithmetic operations without explicitly handling potential integer overflow/underflow scenarios, which could lead to unexpected behavior.
+
+3) Insufficient gas: The `liquidate` function could potentially run out of gas during the execution of transferring tokens, resulting in the function not completing successfully.
+
+4) Ether leakage: The contract accepts Ether in the `calculatePrice` function without proper handling or utilization, which could result in unintended Ether leakage.

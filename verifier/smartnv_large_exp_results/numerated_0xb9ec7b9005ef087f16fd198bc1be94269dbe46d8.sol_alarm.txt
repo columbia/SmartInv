@@ -1,0 +1,33 @@
+<\contract_to_analyze\>
+contract Escrow {
+         IERC20 public token;
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public escrowAmount;
+
+         constructor(address _token, address _buyer, address _seller, address _arbiter, uint _amount) {
+             token = IERC20(_token);
+             buyer = _buyer;
+             seller = _seller;
+             arbiter = _arbiter;
+             escrowAmount = _amount;
+         }
+
+         function deposit() public {
+             token.transferFrom(msg.sender, address(this), escrowAmount);
+         }
+
+         function release() public {
+             require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "You are not authorized to release funds");
+             token.transfer(seller, escrowAmount);
+         }
+
+         function refund() public {
+             require(msg.sender == buyer || msg.sender == arbiter, "You are not authorized to refund funds");
+             token.transfer(buyer, escrowAmount);
+         }
+     }
+<\contract_to_analyze\> 
+Output:
+- insufficient gas

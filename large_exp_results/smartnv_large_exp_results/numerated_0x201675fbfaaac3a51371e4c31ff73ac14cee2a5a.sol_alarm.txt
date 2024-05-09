@@ -1,0 +1,21 @@
+contract PaymentGateway {
+    address public owner;
+    mapping(uint => uint) public invoices;
+    uint public totalInvoices;
+
+    constructor() {
+        owner = msg.sender;
+        totalInvoices = 0;
+    }
+
+    function createInvoice(uint invoiceId, uint amount) public {
+        require(msg.sender == owner, "Only owner can create invoices");
+        invoices[invoiceId] = amount;
+        totalInvoices++;
+    }
+
+    function payInvoice(uint invoiceId, uint amount) public {
+        require(amount >= invoices[invoiceId], "Insufficient amount");
+        invoices[invoiceId] -= amount;
+    }
+}

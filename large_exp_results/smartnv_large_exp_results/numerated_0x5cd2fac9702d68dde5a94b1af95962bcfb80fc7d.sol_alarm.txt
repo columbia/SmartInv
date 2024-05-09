@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: In the function startExecute(), the proposal struct is being updated without proper initialization or synchronization, potentially leading to inconsistent state updates.
+
+2) Incorrect visibility/ownership: The contract TimelockController is implementing the IERC20 interface but it does not provide the necessary functions like transfer() or balanceOf(), which may lead to incorrect behavior or ownership issues.
+
+3) Insufficient gas: The function endExecute() performs a potentially heavy operation by checking if lockedFunds can be transferred, but there is no gas stipend mentioned, which could lead to out-of-gas exceptions.
+
+4) Cross-bridge inconsistency: The contract does not handle possible inconsistencies or discrepancies between different blockchain bridges or external sources where token balances are used in calculations.

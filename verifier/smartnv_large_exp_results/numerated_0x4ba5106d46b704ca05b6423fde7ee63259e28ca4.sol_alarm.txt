@@ -1,0 +1,22 @@
+The contract being analyzed:
+
+contract VotingContract {
+    address public owner;
+    mapping(address => uint) public votes;
+
+    function vote(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += amount;
+    }
+
+    function withdrawVotes() public {
+        uint amount = votes[msg.sender];
+        require(amount > 0, "No votes to withdraw");
+        votes[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+The potential vulnerabilities in the VotingContract are:
+1) integer overflow/underflow
+2) insufficient gas

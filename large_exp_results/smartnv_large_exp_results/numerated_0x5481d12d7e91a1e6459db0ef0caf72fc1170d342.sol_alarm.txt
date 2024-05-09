@@ -1,0 +1,36 @@
+<\contract\> 
+contract Escrow {
+      address public buyer;
+      address payable public seller;
+      address public arbiter;
+      uint public productPrice;
+      enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, AWAITING_CONFIRMATION, COMPLETE, REFUNDED}
+      State public currentState;
+
+      constructor(address _buyer, address payable _seller, address _arbiter, uint _productPrice) public {
+          buyer = _buyer;
+          seller = _seller;
+          arbiter = _arbiter;
+          productPrice = _productPrice;
+          currentState = State.AWAITING_PAYMENT;
+      }
+
+      function deposit() public payable {
+          require(msg.sender == buyer && currentState == State.AWAITING_PAYMENT,"invalid state"); 
+          require(msg.value == productPrice, "incorrect deposit amount");
+          currentState = State.AWAITING_DELIVERY;
+      }
+
+      function confirmDelivery() public {
+          require(msg.sender == buyer && currentState == State.AWAITING_DELIVERY, "invalid state");
+          seller.transfer(productPrice);
+          currentState = State.AWAITING_CONFIRMATION;
+      }
+      
+      function refund() public {
+          require(msg.sender == arbiter && currentState == State.AWAITING_CONFIRMATION, "invalid state");
+          if(!buyer.send(productPrice)){
+              currentState = State.REFUNDED;
+          }
+      }
+}

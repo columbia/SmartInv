@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+contract StakingPool {
+    mapping(address => uint) public stakedBalance;
+    mapping(address => uint) public rewardsBalance;
+    address public token;
+
+    function stake(uint amount) external {
+        require(amount > 0, "Cannot stake 0 tokens");
+        stakedBalance[msg.sender] += amount;
+        token.transferFrom(msg.sender, address(this), amount);
+    }
+
+    function unstake(uint amount) external {
+        require(amount > 0, "Cannot unstake 0 tokens");
+        require(stakedBalance[msg.sender] >= amount, "Insufficient staked balance");
+        stakedBalance[msg.sender] -= amount;
+        token.transfer(msg.sender, amount);
+    }
+
+    function claimReward() external {
+        uint reward = calculateReward(msg.sender);
+        rewardsBalance[msg.sender] += reward;
+        rewardsBalance[token] -= reward;
+        token.transfer(msg.sender, reward);
+    }
+
+    function calculateReward(address user) internal view returns(uint) {
+        // calculate reward based on staked amount and duration
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership: The token variable is declared as public, potentially exposing sensitive information about the token contract to all external parties.
+- Insufficient gas: The claimReward function might require significant gas costs if the rewardsBalance[token] value is too high, risking potential out-of-gas errors during execution.

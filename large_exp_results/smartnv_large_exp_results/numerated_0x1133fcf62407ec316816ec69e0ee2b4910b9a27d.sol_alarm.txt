@@ -1,0 +1,16 @@
+The contract provided for analysis:
+
+contract SafeStorage {
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+         balances[msg.sender] += msg.value;
+     }
+     function withdraw(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         payable(msg.sender).transfer(amount);
+     }
+}
+
+Output: healthy

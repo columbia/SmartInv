@@ -1,0 +1,21 @@
+<\contract\>
+contract Vault {
+    address public owner;
+    uint public balance;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit() external payable {
+        balance += msg.value;
+    }
+    
+    function withdraw(uint _amount) external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(_amount <= balance, "Insufficient balance");
+        payable(msg.sender).transfer(_amount);
+        balance -= _amount;
+    }
+}
+<\contract\>

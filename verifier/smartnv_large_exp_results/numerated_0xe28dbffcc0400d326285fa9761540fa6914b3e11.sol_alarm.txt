@@ -1,0 +1,37 @@
+<\contract\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+    mapping(address => uint) public balances;
+
+    constructor(address _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        
+        balances[msg.sender] += _numTokens;
+        totalTokensSold += _numTokens;
+
+        (bool success, ) = token.call(abi.encodeWithSelector(0x095ea7b3, msg.sender, _numTokens));
+        require(success, "Token transfer failed");
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function transferOwnership(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        
+        owner = _newOwner;
+    }
+}
+<\contract\>

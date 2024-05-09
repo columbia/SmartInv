@@ -1,0 +1,22 @@
+<\analyzed_contract\> 
+contract InsuranceContract {
+     address public owner;
+     uint public premium;
+     mapping(address => uint) public insuredAmounts;
+     
+     function setPremium(uint _premium) public {
+         require(msg.sender == owner, "only owner can set premium");
+         premium = _premium;
+     }
+     
+     function buyInsurance(uint _amount) public {
+         require(_amount > 0, "amount must be greater than 0");
+         require(insuredAmounts[msg.sender] == 0, "already insured");
+         insuredAmounts[msg.sender] = _amount;
+         // transfer premium amount to owner
+     }
+     
+     function claimInsurance() public {
+         // process insurance claim
+     }
+}

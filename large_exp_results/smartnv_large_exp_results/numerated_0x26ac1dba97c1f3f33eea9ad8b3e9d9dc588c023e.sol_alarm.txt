@@ -1,0 +1,49 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update in the `execute` function as the votedAmount is incremented without checking for re-entrancy or atomicity violation.
+2) Insufficient gas in the `endExecute` function due to potential gas limit issues if the contract's logic requires a significant amount of gas for execution.
+3) Incorrect visibility/ownership concerns as the ownership of the contract and access control mechanisms are not explicitly defined.
+4) Possible privilege escalation if ownership control is not properly implemented and checked within the functions.
+5) ID uniqueness violation could occur if the same proposal ID is reused without proper validation.
+
+Therefore, the potential vulnerabilities in the provided contract are:
+- Inconsistent state update
+- Insufficient gas
+- Incorrect visibility/ownership
+- Potential privilege escalation
+- ID uniqueness violation

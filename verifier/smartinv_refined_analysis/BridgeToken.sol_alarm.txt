@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Business logic flaw: The function endExecute allows the execution to end even if the votingToken balance in the contract is more than half of the total supply, which may not be the correct way to determine the success of the execution. This can lead to unexpected behavior in the contract.
+
+2) Inconsistent state update: The function execute updates the votedAmount of the proposal without any check on whether the transfer of voting tokens was successful. This can lead to an inconsistent state where the votedAmount is updated even if the transfer fails.
+
+3) Cross bridge inconsistency: The startingBlance is recorded in the startingBalanceList map without any check on the correctness of the balance. This can lead to inconsistencies in the data recorded for each proposal.

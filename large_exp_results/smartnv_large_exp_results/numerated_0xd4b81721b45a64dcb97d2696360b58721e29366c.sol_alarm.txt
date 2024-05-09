@@ -1,0 +1,21 @@
+The contract provided for analysis:
+
+contract P2PExchange {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+
+         mapping(address => uint) public balances;
+
+         function exchange(uint amount, address recipient) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             balances[recipient] += amount;
+         }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: There is a possibility of an inconsistent state update as balances are updated without verifying if the required tokens are transferred successfully.
+2) Incorrect visibility/ownership: The balances mapping is public, allowing anyone to view the balances of addresses which can be a security risk depending on the use case.
+3) Insufficient gas: If the transfer of tokens in the exchange function consumes too much gas, it might lead to insufficient gas errors during execution.
+
+Therefore, the vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and insufficient gas.

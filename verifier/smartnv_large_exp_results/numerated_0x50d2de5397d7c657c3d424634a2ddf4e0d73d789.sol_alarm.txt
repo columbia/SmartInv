@@ -1,0 +1,23 @@
+<\your_contract\>
+contract InsurancePolicy {
+    address public owner;
+    uint public premium;
+    uint public payout;
+    bool public isClaimed;
+
+    constructor(uint _premium, uint _payout) {
+        owner = msg.sender;
+        premium = _premium;
+        payout = _payout;
+        isClaimed = false;
+    }
+
+    function claimInsurance() public {
+        require(msg.sender == owner, "Only the owner can claim insurance");
+        require(!isClaimed, "Insurance already claimed");
+        
+        isClaimed = true;
+        payable(msg.sender).transfer(payout);
+    }
+}
+<\your_contract\>

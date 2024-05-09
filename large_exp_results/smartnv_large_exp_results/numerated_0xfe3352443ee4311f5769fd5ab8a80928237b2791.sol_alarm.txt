@@ -1,0 +1,41 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+   struct Voter {
+       bool voted;
+       address delegate;
+       uint vote;
+   }
+   struct Proposal {
+       uint voteCount;
+   }
+   address public chairperson;
+   mapping(address => Voter) public voters;
+   Proposal[] public proposals;
+
+   function giveRightToVote(address _voter) public {
+       require(msg.sender == chairperson, "Only chairperson can give the right to vote.");
+       require(!voters[_voter].voted, "The voter already voted.");
+       require(voters[_voter].delegate == address(0), "The voter already delegated.");
+       voters[_voter].voted = false;
+   }
+   
+   function delegate(address _to) public {
+       require(!voters[msg.sender].voted, "You already voted.");
+       require(_to != msg.sender, "Self-delegation is disallowed.");
+       address to = _to;
+       while (voters[to].delegate != address(0)) {
+           to = voters[to].delegate;
+           require(to != msg.sender, "Found loop in delegation.");
+       }
+       voters[msg.sender].voted = true;
+       voters[msg.sender].delegate = to;
+   }
+
+   function vote(uint _proposal) public {
+       require(voters[msg.sender].voted == false, "You already voted.");
+       voters[msg.sender].voted = true;
+       voters[msg.sender].vote = _proposal;
+       proposals[_proposal].voteCount += 1;
+   }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,49 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+
+        if (delegate_.voted) {
+            winningProposal += delegate_.weight;
+        } else {
+            delegate_.weight += 1;
+        }
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.voted == false, "Already voted.");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+        winningProposal += sender.weight;
+    }
+
+    function winningProposal() public view returns (uint256) {
+        uint256 winningProposal = 0;
+        // Calculate the winning proposal based on the highest number of votes
+        return winningProposal;
+    }
+}
+<\contract_to_analyze\>

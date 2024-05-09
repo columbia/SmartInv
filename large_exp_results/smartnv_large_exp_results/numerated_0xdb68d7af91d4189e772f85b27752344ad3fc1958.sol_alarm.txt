@@ -1,0 +1,16 @@
+The contract being analyzed:
+
+contract Crowdsale {
+    mapping(address => uint256) public contributions;
+    uint256 public totalContributions;
+
+    function contribute() public payable {
+        require(msg.value > 0, "Contribution amount must be greater than 0");
+        contributions[msg.sender] += msg.value;
+        totalContributions += msg.value;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Integer overflow/underflow: The 'totalContributions' variable could potentially overflow if the total contributions exceed the maximum value that can be stored in a uint256 variable.
+3) Business logic flaw: There is no limit or cap on the contributions that can be made, which could lead to issues if contributors unintentionally or maliciously contribute excessively.

@@ -1,0 +1,44 @@
+The contract to analyze for potential vulnerabilities is:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+    State public currentState;
+
+    mapping(address => uint) public balances;
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can deposit funds.");
+        balances[msg.sender] += msg.value;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == buyer, "Only buyer can release funds.");
+        require(currentState == State.AWAITING_DELIVERY, "Funds cannot be released before delivery.");
+        balances[seller] += balances[buyer];
+        balances[buyer] = 0;
+        currentState = State.COMPLETE;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Only seller or arbiter can refund funds.");
+        require(currentState == State.AWAITING_DELIVERY, "Funds cannot be refunded before delivery.");
+        balances[buyer] += balances[buyer];
+        balances[buyer] = 0;
+        currentState = State.REFUNDED;
+    }
+}
+
+Potential vulnerabilities in the Escrow contract:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

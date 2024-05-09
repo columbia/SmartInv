@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal` struct is being updated in the `startExecute` and `execute` functions without proper synchronization, which can lead to inconsistent state.
+
+2) Incorrect visibility/ownership: The `owner` variable is declared as `internal` which may not provide the intended level of access control.
+
+3) Insufficient gas: Depending on the gas limit set for transactions calling the `execute` function, the transfer operation `votingToken.transferFrom(proposal.addr, address(this), amount);` may fail due to insufficient gas.
+
+4) Integer overflow/underflow: There is a potential for integer overflow in the expression `startBalance * 100 / 80` inside the `liquidate` function.
+
+5) Business logic flaw: The condition `getPrice() * cAmount * 80 / 100 < dAmount` in the `liquidate` function may have a business logic flaw depending on the context and intended behavior.

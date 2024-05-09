@@ -1,0 +1,19 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public payer;
+    address public recipient;
+    uint public amount;
+
+    function deposit(address _recipient) public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        recipient = _recipient;
+        amount = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == recipient, "Only recipient can withdraw funds");
+        msg.sender.transfer(amount);
+        amount = 0;
+    }
+}
+<\contract_to_analyze\>

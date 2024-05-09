@@ -1,0 +1,28 @@
+The contract to analyze for potential vulnerabilities is:
+
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function updatePrice(uint _newPrice) public {
+        require(msg.sender == owner, "You are not the owner");
+        price = _newPrice;
+    }
+}
+
+The potential vulnerabilities in the TokenSale contract are:
+- incorrect visibility/ownership in the updatePrice function
+
+Therefore, the identified potential vulnerability in the TokenSale contract is incorrect visibility/ownership.

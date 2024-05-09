@@ -1,0 +1,31 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public value;
+     bool public fundsDisbursed;
+
+     constructor(address _buyer, address _seller, address _arbiter, uint _value) {
+          buyer = _buyer;
+          seller = _seller;
+          arbiter = _arbiter;
+          value = _value;
+          fundsDisbursed = false;
+     }
+
+     function releaseFundsToSeller() public {
+          require(msg.sender == arbiter, "only arbiter can release funds");
+          require(fundsDisbursed == false, "funds already disbursed");
+          seller.transfer(value);
+          fundsDisbursed = true;
+     }
+
+     function refundBuyer() public {
+          require(msg.sender == arbiter, "only arbiter can refund buyer");
+          require(fundsDisbursed == false, "funds already disbursed");
+          buyer.transfer(value);
+          fundsDisbursed = true;
+     }
+}
+<\contract\>

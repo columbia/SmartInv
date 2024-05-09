@@ -1,0 +1,38 @@
+<\contract_to_analyze\>
+contract Marketplace {
+     address public owner;
+     uint public itemCount;
+     mapping(uint => Item) public items;
+     
+     struct Item {
+         uint itemId;
+         string itemName;
+         uint price;
+         address seller;
+         bool sold;
+     }
+     
+     constructor() {
+         owner = msg.sender;
+         itemCount = 0;
+     }
+     
+     function addItem(string memory _name, uint _price) public {
+         itemCount++;
+         items[itemCount] = Item(itemCount, _name, _price, msg.sender, false);
+     }
+     
+     function buyItem(uint _itemId) public payable {
+         Item storage item = items[_itemId];
+         require(item.itemId != 0, "Item does not exist");
+         require(!item.sold, "Item already sold");
+         require(msg.value >= item.price, "Insufficient funds");
+         
+         address seller = item.seller;
+         (bool success, ) = seller.call{value: item.price}("");
+         require(success, "Transfer failed");
+         
+         item.sold = true;
+     }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,12 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `votedAmount` is updated in the `execute` function, but there is no check to prevent multiple executions of the same proposal, leading to possible inconsistencies in the state.
+
+2) Incorrect visibility/ownership: The `votingToken` variable is declared as `internal`, which may not be the intended visibility for this variable. Review if it should be `public` or if additional access control mechanisms are needed.
+
+3) Insufficient gas: The `endExecute` function performs a potentially costly operation by checking if `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which may require large amounts of gas and could lead to out-of-gas exceptions.
+
+Therefore, the potential vulnerabilities in the contract are:
+- Inconsistent state update
+- Incorrect visibility/ownership
+- Insufficient gas

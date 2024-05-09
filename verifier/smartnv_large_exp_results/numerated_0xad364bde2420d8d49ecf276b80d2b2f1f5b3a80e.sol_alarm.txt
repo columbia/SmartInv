@@ -1,0 +1,18 @@
+<\contract\>
+contract PaymentProcessor {
+    mapping(address => uint256) public payments;
+
+    function pay() public payable {
+        require(msg.value > 0, "Payment amount must be greater than 0");
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdraw() public {
+        uint256 amount = payments[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        msg.sender.transfer(amount);
+        payments[msg.sender] = 0;
+    }
+}
+
+<\contract\>

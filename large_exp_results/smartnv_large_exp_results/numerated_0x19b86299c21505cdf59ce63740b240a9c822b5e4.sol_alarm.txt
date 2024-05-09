@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `execute` function updates the `votedAmount` in the `Proposal` struct directly, which can lead to inconsistent state if multiple transactions try to update it at the same time.
+
+2) Incorrect visibility/ownership: The `startExecute` function does not specify the visibility of `proposal`, `startingBlance`, and `startingBalanceList`, which can lead to potential issues with contract ownership and visibility.
+
+3) Insufficient gas: The `endExecute` function calculates `lockedFunds` based on the balance of the contract address, which might require significant gas costs depending on the size of the balance.
+
+Therefore, the contract contains potential vulnerabilities related to inconsistent state update, incorrect visibility/ownership, and insufficient gas.

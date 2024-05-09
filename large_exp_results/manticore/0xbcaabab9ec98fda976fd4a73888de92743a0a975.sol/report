@@ -1,0 +1,35 @@
+2024-05-07 02:39:16,857: [75959] m.main:[34mINFO:[0m Registered plugins: IntrospectionAPIPlugin, <class 'manticore.ethereum.plugins.SkipRevertBasicBlocks'>, <class 'manticore.ethereum.plugins.FilterFunctions'>
+2024-05-07 02:39:16,857: [75959] m.main:[34mINFO:[0m Beginning analysis
+2024-05-07 02:39:16,863: [75959] m.e.manticore:[34mINFO:[0m Starting symbolic create contract
+2024-05-07 02:39:17,594: [75959] m.e.manticore:[34mINFO:[0m Failed to build contract None Errors : Invalid solc compilation 0xbcaabab9ec98fda976fd4a73888de92743a0a975.sol:1:1: Error: Expected import directive or contract definition.
+{"Ownable.sol":{"content":"// SPDX-License-Identifier: No License (None)\r\npragma solidity ^0.6.9;\r\n\r\n/**\r\n * @title Ownable\r\n * @dev The Ownable contract has an owner address, and provides basic authorization control\r\n * functions, this simplifies the implementation of \"user permissions\".\r\n *\r\n * Source https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-solidity/v2.1.3/contracts/ownership/Ownable.sol\r\n * This contract is copied here and renamed from the original to avoid clashes in the compiled artifacts\r\n * when the user imports a zos-lib contract (that transitively causes this contract to be compiled and added to the\r\n * build/artifacts folder) as well as the vanilla Ownable implementation from an openzeppelin version.\r\n */\r\ncontract Ownable {\r\n    address private _owner;\r\n\r\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\r\n\r\n    /**\r\n     * @dev The Ownable constructor sets the original `owner` of the contract to the sender\r\n     * account.\r\n     */\r\n    constructor () internal {\r\n        _owner = msg.sender;\r\n        emit OwnershipTransferred(address(0), _owner);\r\n    }\r\n\r\n    /**\r\n     * @return the address of the owner.\r\n     */\r\n    function owner() public view returns (address) {\r\n        return _owner;\r\n    }\r\n\r\n    /**\r\n     * @dev Throws if called by any account other than the owner.\r\n     */\r\n    modifier onlyOwner() {\r\n        require(isOwner(),\"Not Owner\");\r\n        _;\r\n    }\r\n\r\n    /**\r\n     * @return true if `msg.sender` is the owner of the contract.\r\n     */\r\n    function isOwner() public view returns (bool) {\r\n        return msg.sender == _owner;\r\n    }\r\n\r\n    /**\r\n     * @dev Allows the current owner to relinquish control of the contract.\r\n     * @notice Renouncing to ownership will leave the contract without an owner.\r\n     * It will not be possible to call the functions with the `onlyOwner`\r\n     * modifier anymore.\r\n     */\r\n    function renounceOwnership() public onlyOwner {\r\n        emit OwnershipTransferred(_owner, address(0));\r\n        _owner = address(0);\r\n    }\r\n\r\n    /**\r\n     * @dev Allows the current owner to transfer control of the contract to a newOwner.\r\n     * @param newOwner The address to transfer ownership to.\r\n     */\r\n    function transferOwnership(address newOwner) public onlyOwner {\r\n        _transferOwnership(newOwner);\r\n    }\r\n\r\n    /**\r\n     * @dev Transfers control of the contract to a newOwner.\r\n     * @param newOwner The address to transfer ownership to.\r\n     */\r\n    function _transferOwnership(address newOwner) internal {\r\n        require(newOwner != address(0),\"Zero address not allowed\");\r\n        emit OwnershipTransferred(_owner, newOwner);\r\n        _owner = newOwner;\r\n    }\r\n}"},"RequestJNTR.sol":{"content":"// SPDX-License-Identifier: No License (None)\r\npragma solidity ^0.6.9;\r\n\r\nimport \"./Ownable.sol\";\r\n\r\ncontract RequestJNTR is Ownable {\r\n    mapping(address =\u003e uint256) public paidETH; // user =\u003e isReceived\r\n    uint256 public fee;\r\n    address payable public system;  // system address mey change fee amount and receive fee\r\n    event TokenRequest(address indexed user, uint256 amount);\r\n\r\n    modifier onlySystem() {\r\n        require(msg.sender == system, \"Caller is not the system\");\r\n        _;\r\n    }\r\n\r\n    constructor (address payable _system, uint256 _fee) public {\r\n        system = _system;\r\n        fee = _fee;\r\n    }\r\n\r\n    function setFee(uint256 _fee) external onlySystem returns(bool) {\r\n        fee = _fee;\r\n        return true;\r\n    }\r\n\r\n    function setSystem(address payable _system) external onlyOwner returns(bool) {\r\n        system = _system;\r\n        return true;\r\n    }\r\n\r\n    function tokenRequest() public payable {\r\n        require(fee \u003c= msg.value, \"Not enough value\");\r\n        require(paidETH[msg.sender] == 0, \"You already requested tokens\");\r\n        paidETH[msg.sender] = msg.value;\r\n        system.transfer(msg.value);\r\n        emit TokenRequest(msg.sender, msg.value);\r\n    }\r\n}"}}
+^
+
+. Solidity failed to generate bytecode for your contract. Check if all the abstract functions are implemented. 
+WARNING:manticore.core.manticore:Manticore is only supported on Linux. Proceed at your own risk!
+Traceback (most recent call last):
+  File "/Users/sallywang/opt/miniconda3/bin/manticore", line 8, in <module>
+    sys.exit(main())
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/__main__.py", line 43, in main
+    ethereum_main(args, logger)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/ethereum/cli.py", line 145, in ethereum_main
+    m.finalize(only_alive_states=args.only_alive_testcases)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/core/manticore.py", line 177, in newFunction
+    return func(self, *args, **kw)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/ethereum/manticore.py", line 1779, in finalize
+    proc.start()
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/process.py", line 121, in start
+    self._popen = self._Popen(self)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/context.py", line 224, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/context.py", line 284, in _Popen
+    return Popen(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/popen_spawn_posix.py", line 32, in __init__
+    super().__init__(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/popen_fork.py", line 19, in __init__
+    self._launch(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/popen_spawn_posix.py", line 47, in _launch
+    reduction.dump(process_obj, fp)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/reduction.py", line 60, in dump
+    ForkingPickler(file, protocol).dump(obj)
+AttributeError: Can't pickle local object 'ManticoreEVM.finalize.<locals>.worker_finalize'

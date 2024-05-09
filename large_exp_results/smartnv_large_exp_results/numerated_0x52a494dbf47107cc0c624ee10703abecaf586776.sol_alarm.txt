@@ -1,0 +1,12 @@
+<\example_1\> 
+1) atomicity violation: the updates to proposal.votedAmount in the execute function are not done atomically, which could lead to inconsistent data state.
+2) inconsistent state update: the proposal struct is updated in startExecute and execute functions but not consistently updated in a safe and predictable manner.
+3) incorrect visibility/ownership: the owner variable is declared as internal, which may lead to ownership-related vulnerabilities if not handled properly.
+
+<\example_2\> 
+1) price manipulation: the liquidate function relies on the getPrice function, which may not always provide accurate or reliable pricing information, opening up the possibility for price manipulation vulnerabilities. 
+2) integer overflow/underflow: there may be potential for integer overflow or underflow in the calculation of amounts in the liquidate function, depending on the values of cAmount and dAmount.
+3) insufficient gas: if the liquidate function requires substantial gas for execution, there may be concerns around gas limits and potential for running out of gas during the function execution.
+4) incorrect visibility/ownership: the debt and collateral mappings are declared as public, potentially exposing sensitive information to external actors. 
+
+Therefore, the identified potential vulnerabilities in the contract are atomicity violation, inconsistent state update, incorrect visibility/ownership, price manipulation, integer overflow/underflow, insufficient gas.

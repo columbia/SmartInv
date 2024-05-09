@@ -1,0 +1,18 @@
+contract ExampleContract {
+         IERC20 public token;
+         address public owner;
+
+         function transferOwnership(address newOwner) public {
+             require(msg.sender == owner, "You are not the owner");
+             owner = newOwner;
+         }
+
+         function deposit(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function withdraw(uint amount) public {
+             require(token.balanceOf(address(this)) >= amount, "Not enough balance");
+             token.transfer(msg.sender, amount);
+         }
+}

@@ -1,0 +1,34 @@
+<\contract\> 
+contract PaymentChannel {
+    address public sender;
+    address public receiver;
+    uint public deposit;
+
+    constructor(address _receiver) {
+        sender = msg.sender;
+        receiver = _receiver;
+    }
+
+    function openChannel(uint _deposit) public {
+        require(msg.sender == sender, "Only sender can open the channel");
+        deposit = _deposit;
+    }
+
+    function closeChannel(uint amount) public {
+        require(msg.sender == sender || msg.sender == receiver, "Only sender or receiver can close the channel");
+        require(amount <= deposit, "Amount exceeds deposit");
+        deposit -= amount;
+        if (msg.sender == sender) {
+            payable(receiver).transfer(amount);
+        } else {
+            payable(sender).transfer(amount);
+        }
+    }
+
+    function withdrawDeposit() public {
+        require(msg.sender == sender, "Only sender can withdraw the deposit");
+        payable(sender).transfer(deposit);
+        deposit = 0;
+    }
+}
+<\contract\>

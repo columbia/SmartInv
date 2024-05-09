@@ -1,0 +1,31 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public buyerConfirmed;
+    bool public sellerConfirmed;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorized");
+        
+        if (msg.sender == buyer) {
+            buyerConfirmed = true;
+        } else {
+            sellerConfirmed = true;
+        }
+        
+        if (buyerConfirmed && sellerConfirmed) {
+            address _this = address(this);
+            seller.transfer(price * 2);
+            buyer.transfer(price);
+        }
+    }
+}
+<\contract\>

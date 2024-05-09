@@ -1,0 +1,223 @@
+1 pragma solidity ^0.4.16;
+2 
+3 contract owned {
+4     address public owner;
+5 
+6     constructor() public {
+7         owner = msg.sender;
+8     }
+9 
+10     modifier onlyOwner {
+11         require(msg.sender == owner);
+12         _;
+13     }
+14 
+15     function transferOwnership(address newOwner) onlyOwner public {
+16         owner = newOwner;
+17     }
+18 }
+19 
+20 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; }
+21 
+22 contract TokenERC20 is owned {
+23     // Public variables of the token
+24     string public name;
+25     string public symbol;
+26     uint8 public decimals = 18;
+27     // 18 decimals is the strongly suggested default, avoid changing it
+28     uint256 public totalSupply;
+29 
+30     bool public send_allowed = false;
+31 
+32     // This creates an array with all balances
+33     mapping (address => uint256) public balanceOf;
+34     mapping (address => mapping (address => uint256)) public allowance;
+35 
+36     // This generates a public event on the blockchain that will notify clients
+37     event Transfer(address indexed from, address indexed to, uint256 value);
+38 
+39     // This notifies clients about the amount burnt
+40     event Burn(address indexed from, uint256 value);
+41 
+42     /**
+43      * Constrctor function
+44      *
+45      * Initializes contract with initial supply tokens to the creator of the contract
+46      */
+47     constructor(
+48         uint256 initialSupply,
+49         string tokenName,
+50         string tokenSymbol
+51     ) public {
+52         totalSupply = initialSupply * 10 ** uint256(decimals);  // Update total supply with the decimal amount
+53         balanceOf[msg.sender] = totalSupply;                // Give the creator all initial tokens
+54         name = tokenName;                                   // Set the name for display purposes
+55         symbol = tokenSymbol;                               // Set the symbol for display purposes
+56     }
+57 
+58     /**
+59      * Internal transfer, only can be called by this contract
+60      */
+61     function _transfer(address _from, address _to, uint _value) internal {
+62         // Prevent transfer to 0x0 address. Use burn() instead
+63         require(_to != 0x0);
+64         // Check if the sender has enough
+65         require(balanceOf[_from] >= _value);
+66         // Check for overflows
+67         require(balanceOf[_to] + _value > balanceOf[_to]);
+68         // Save this for an assertion in the future
+69         uint previousBalances = balanceOf[_from] + balanceOf[_to];
+70         // Subtract from the sender
+71         balanceOf[_from] -= _value;
+72         // Add the same to the recipient
+73         balanceOf[_to] += _value;
+74         emit Transfer(_from, _to, _value);
+75         // Asserts are used to use static analysis to find bugs in your code. They should never fail
+76         assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
+77     }
+78 
+79     /**
+80      * Transfer tokens
+81      *
+82      * Send `_value` tokens to `_to` from your account
+83      *
+84      * @param _to The address of the recipient
+85      * @param _value the amount to send
+86      */
+87     function transfer(address _to, uint256 _value) public {
+88         require(msg.sender == owner || send_allowed == true); 
+89         _transfer(msg.sender, _to, _value);
+90     }
+91     
+92     function setSendAllow(bool send_allow) onlyOwner public {
+93         send_allowed = send_allow;
+94     }
+95 
+96     /**
+97      * Transfer tokens from other address
+98      *
+99      * Send `_value` tokens to `_to` in behalf of `_from`
+100      *
+101      * @param _from The address of the sender
+102      * @param _to The address of the recipient
+103      * @param _value the amount to send
+104      */
+105     function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+106         require(msg.sender == owner || send_allowed == true); 
+107         require(_value <= allowance[_from][msg.sender]);     // Check allowance
+108         allowance[_from][msg.sender] -= _value;
+109         _transfer(_from, _to, _value);
+110         return true;
+111     }
+112 
+113     /**
+114      * Set allowance for other address
+115      *
+116      * Allows `_spender` to spend no more than `_value` tokens in your behalf
+117      *
+118      * @param _spender The address authorized to spend
+119      * @param _value the max amount they can spend
+120      */
+121     function approve(address _spender, uint256 _value) public
+122         returns (bool success) {
+123         allowance[msg.sender][_spender] = _value;
+124         return true;
+125     }
+126 
+127     /**
+128      * Set allowance for other address and notify
+129      *
+130      * Allows `_spender` to spend no more than `_value` tokens in your behalf, and then ping the contract about it
+131      *
+132      * @param _spender The address authorized to spend
+133      * @param _value the max amount they can spend
+134      * @param _extraData some extra information to send to the approved contract
+135      */
+136     function approveAndCall(address _spender, uint256 _value, bytes _extraData)
+137         public
+138         returns (bool success) {
+139         tokenRecipient spender = tokenRecipient(_spender);
+140         if (approve(_spender, _value)) {
+141             spender.receiveApproval(msg.sender, _value, this, _extraData);
+142             return true;
+143         }
+144     }
+145 
+146     /**
+147      * Destroy tokens
+148      *
+149      * Remove `_value` tokens from the system irreversibly
+150      *
+151      * @param _value the amount of money to burn
+152      */
+153     function burn(uint256 _value) public returns (bool success) {
+154         require(balanceOf[msg.sender] >= _value);   // Check if the sender has enough
+155         balanceOf[msg.sender] -= _value;            // Subtract from the sender
+156         totalSupply -= _value;                      // Updates totalSupply
+157         emit Burn(msg.sender, _value);
+158         return true;
+159     }
+160 
+161     /**
+162      * Destroy tokens from other account
+163      *
+164      * Remove `_value` tokens from the system irreversibly on behalf of `_from`.
+165      *
+166      * @param _from the address of the sender
+167      * @param _value the amount of money to burn
+168      */
+169     function burnFrom(address _from, uint256 _value) public returns (bool success) {
+170         require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+171         require(_value <= allowance[_from][msg.sender]);    // Check allowance
+172         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
+173         allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
+174         totalSupply -= _value;                              // Update totalSupply
+175         emit Burn(_from, _value);
+176         return true;
+177     }
+178 }
+179 
+180 contract PAXPAGO is TokenERC20 {
+181     
+182     mapping (address => bool) public frozenAccount;
+183 
+184     /* This generates a public event on the blockchain that will notify clients */
+185     event FrozenFunds(address target, bool frozen);
+186 
+187     /* Initializes contract with initial supply tokens to the creator of the contract */
+188     constructor(
+189         uint256 initialSupply,
+190         string tokenName,
+191         string tokenSymbol
+192     ) TokenERC20(initialSupply, tokenName, tokenSymbol) public {}
+193 
+194     /* Internal transfer, only can be called by this contract */
+195     function _transfer(address _from, address _to, uint _value) internal {
+196         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
+197         require (balanceOf[_from] >= _value);               // Check if the sender has enough
+198         require (balanceOf[_to] + _value >= balanceOf[_to]); // Check for overflows
+199         require(!frozenAccount[_from]);                     // Check if sender is frozen
+200         require(!frozenAccount[_to]);                       // Check if recipient is frozen
+201         balanceOf[_from] -= _value;                         // Subtract from the sender
+202         balanceOf[_to] += _value;                           // Add the same to the recipient
+203         emit Transfer(_from, _to, _value);
+204     }
+205 
+206     /// @notice Create `mintedAmount` tokens and send it to `target`
+207     /// @param target Address to receive the tokens
+208     /// @param mintedAmount the amount of tokens it will receive
+209     function mintToken(address target, uint256 mintedAmount) onlyOwner public {
+210         balanceOf[target] += mintedAmount;
+211         totalSupply += mintedAmount;
+212         emit Transfer(0, this, mintedAmount);
+213         emit Transfer(this, target, mintedAmount);
+214     }
+215 
+216     /// @notice `freeze? Prevent | Allow` `target` from sending & receiving tokens
+217     /// @param target Address to be frozen
+218     /// @param freeze either to freeze it or not
+219     function freezeAccount(address target, bool freeze) onlyOwner public {
+220         frozenAccount[target] = freeze;
+221         emit FrozenFunds(target, freeze);
+222     }
+223 }

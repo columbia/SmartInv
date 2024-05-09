@@ -1,0 +1,25 @@
+<\contract\> 
+contract VestingContract {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public amount;
+    bool public released;
+
+    constructor(address _beneficiary, uint _releaseTime, uint _amount) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+        amount = _amount;
+        released = false;
+    }
+
+    function release() external {
+        require(msg.sender == beneficiary, "only beneficiary can release");
+        require(releaseTime <= block.timestamp, "release time not reached");
+        require(!released, "amount already released");
+        
+        // Send the amount to the beneficiary
+        payable(beneficiary).transfer(amount);
+        released = true;
+    }
+}
+<\contract\>

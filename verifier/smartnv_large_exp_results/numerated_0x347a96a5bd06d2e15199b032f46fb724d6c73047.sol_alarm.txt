@@ -1,0 +1,22 @@
+<\analyzed_contract\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid amount must be higher than the current highest bid");
+        highestBidder.transfer(highestBid); 
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "Only the owner can end the auction");
+        highestBidder.transfer(highestBid);
+        owner.transfer(highestBid);
+    }
+}
+Potential Vulnerabilities:
+1) Privilege escalation: There is no verification mechanism to ensure that only the owner can end the auction, making it vulnerable to privilege escalation attacks.
+2) Inconsistent state update: The contract updates the highestBidder before transferring the funds, potentially leading to incorrect state updates if the transfer fails.
+3) Incorrect visibility/ownership: The owner variable is used without being defined in the contract, potentially leading to incorrect ownership verification.

@@ -1,0 +1,30 @@
+<\contract\>
+contract VotingSystem {
+    address public owner;
+    mapping(address => uint) public voteCount;
+    bool public votingOpen;
+
+    constructor() {
+        owner = msg.sender;
+        votingOpen = true;
+    }
+
+    function vote(bool inFavor) public {
+        require(votingOpen, "Voting is closed");
+        if (inFavor) {
+            voteCount[msg.sender]++;
+        } else {
+            voteCount[msg.sender]--;
+        }
+    }
+
+    function closeVoting() public {
+        require(msg.sender == owner, "Only owner can close voting");
+        votingOpen = false;
+    }
+
+    function getVoteCount(address voter) public view returns (uint) {
+        return voteCount[voter];
+    }
+}
+<\contract\>

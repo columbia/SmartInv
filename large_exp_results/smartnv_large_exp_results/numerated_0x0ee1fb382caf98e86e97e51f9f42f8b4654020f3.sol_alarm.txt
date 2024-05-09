@@ -1,0 +1,40 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public admin;
+
+    constructor() public {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(msg.sender != admin, "admin cannot delegate");
+        require(!voters[msg.sender].voted, "Voter already voted");
+        
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+
+    function executeVote(address voter) public {
+        require(msg.sender == admin, "Only admin can execute vote");
+        require(!voters[voter].voted, "Voter already voted");
+        
+        voters[voter].voted = true;
+    }
+}
+<\contract_to_analyze\>

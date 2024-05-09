@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The contract does not specify visibility for the owner variable, making it publicly accessible.
+2) Inconsistent state update: The execution of the execute function updates the proposal's votedAmount without proper checks, potentially leading to inconsistent states.
+3) Insufficient gas: The endExecute function may require a large amount of gas if the votingToken balance is high, leading to potential out-of-gas errors.
+4) Integer overflow/underflow: There is a possibility of integer overflow in the calculation within the liquidate function when multiplying getprice(), cAmount, and 80.
+5) Atomicity violation: The liquidate function's logic for transferring USDC and WETH tokens is not atomic, which could result in unexpected behavior in case of failure during one of the transfers.

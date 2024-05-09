@@ -1,0 +1,11 @@
+contract PaymentContract {
+    uint public totalPayments;
+    mapping(address => uint) public payments;
+
+    function makePayment(address _to, uint _amount) public {
+        require(_amount > 0, "Payment amount must be greater than 0");
+        
+        payments[_to] += _amount;
+        totalPayments += _amount;
+    }
+}

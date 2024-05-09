@@ -1,0 +1,26 @@
+<\contract\>
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint256) public voteCount;
+    
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(bool choice) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        if (choice) {
+            voteCount[msg.sender]++;
+        } else {
+            voteCount[msg.sender]--;
+        }
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can call this function");
+        admin = newAdmin;
+    }
+}
+<\contract\>

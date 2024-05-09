@@ -1,0 +1,19 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function getVoteCount() public view returns (uint) {
+        return totalVotes;
+    }
+}
+<\contract\>
+
+Potential Vulnerabilities:
+- ID uniqueness violation: There is a potential vulnerability in the contract where a user can potentially vote multiple times by manipulating their address or generating multiple addresses to bypass the check for whether they have already voted. This would violate the uniqueness of voter IDs and potentially impact the integrity of the voting system.

@@ -1,0 +1,46 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    modifier validRequirement(uint ownerCount) {
+        require(ownerCount > 0 && ownerCount <= 10, "Invalid owner count");
+        _;
+    }
+
+    function addOwner(address owner) public validRequirement(owners.length + 1) {
+        owners.push(owner);
+        isOwner[owner] = true;
+    }
+
+    function removeOwner(address owner) public {
+        require(isOwner[owner], "Not an owner");
+        isOwner[owner] = false;
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == owner) {
+                delete owners[i];
+            }
+        }
+    }
+
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        uint transactionId = transactionCount++;
+        transactions[transactionId] = Transaction(destination, value, data, false);
+    }
+
+    function executeTransaction(uint transactionId) public {
+        require(transactions[transactionId].executed == false, "Transaction already executed");
+        // Execute transaction logic
+        transactions[transactionId].executed = true;
+    }
+}
+<\contract_to_analyze\>

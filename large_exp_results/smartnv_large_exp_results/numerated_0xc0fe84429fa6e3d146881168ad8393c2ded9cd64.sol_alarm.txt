@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract SecureVault {
+    address public owner;
+    uint public balance;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+Output:
+- potential vulnerability:  incorrect visibility/ownership
+- potential vulnerability: integer overflow/underflow

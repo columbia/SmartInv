@@ -1,0 +1,22 @@
+<\contract\> 
+contract TokenSwap {
+         mapping(address => uint) public userTokens;
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         
+         function swapTokens(uint amountA, uint amountB) public {
+             require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance for tokenA");
+             require(tokenB.balanceOf(msg.sender) >= amountB, "Insufficient balance for tokenB");
+             
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transferFrom(msg.sender, address(this), amountB);
+             
+             userTokens[msg.sender] += amountA + amountB;
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The public visibility of userTokens allows any external party to view the token balances of all users, which can be a privacy concern.
+- Insufficient gas: If the token balances of the users become too large, the gas required for functions like swapTokens may exceed the gas limit, leading to transaction failures.
+- Atomicity violation: The addition of amountA and amountB to userTokens[msg.sender] is not done atomically, which could lead to inconsistencies if multiple transactions modify the balance simultaneously.

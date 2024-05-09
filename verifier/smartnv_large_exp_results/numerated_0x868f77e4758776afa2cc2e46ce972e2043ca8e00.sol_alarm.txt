@@ -1,0 +1,6 @@
+potential vulnerabilities in the given contract:
+1) inconsistent state update: The function execute() updates the state variable proposal.votedAmount without properly checking if the proposal is still active, which can lead to inconsistent data.
+
+2) integer overflow/underflow: The calculation in the liquidate() function can potentially result in integer overflow if the values involved are large, leading to unexpected behavior.
+
+3) incorrect visibility/ownership: The visibility of the WETH and USDC variables in ExchangeTokens is public, which exposes them to potential manipulation by external contracts. Consider changing the visibility to private and implementing getter functions if needed.

@@ -1,0 +1,28 @@
+Contract analyzed:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    mapping(address => bool) public voted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!voted[msg.sender], "Already voted");
+        votes[msg.sender] = 1;
+        voted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function unvote() public {
+        require(voted[msg.sender], "Hasn't voted yet");
+        votes[msg.sender] = 0;
+        voted[msg.sender] = false;
+        totalVotes--;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        return totalVotes;
+    }
+}
+
+Output: 
+- insufficient gas

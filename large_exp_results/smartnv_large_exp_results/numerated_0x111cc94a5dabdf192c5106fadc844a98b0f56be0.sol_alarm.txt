@@ -1,0 +1,32 @@
+Contract to be analyzed:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public releasedToSeller;
+    bool public releasedToBuyer;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function releaseToSeller() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Unauthorized");
+        require(releasedToSeller == false, "Already released to seller");
+        releasedToSeller = true;
+    }
+
+    function releaseToBuyer() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        require(releasedToBuyer == false, "Already released to buyer");
+        releasedToBuyer = true;
+    }
+}
+
+Output: 
+healthy

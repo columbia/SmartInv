@@ -1,0 +1,35 @@
+Contract to be analyzed for potential vulnerabilities:
+
+contract TokenSale {
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice, uint _totalTokens) {
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect amount sent");
+        require(totalTokens >= _amount, "Not enough tokens available");
+        
+        balances[msg.sender] += _amount;
+        totalTokens -= _amount;
+    }
+
+    function withdrawTokens() public {
+        uint tokensToWithdraw = balances[msg.sender];
+        balances[msg.sender] = 0;
+        // transfer tokens to caller
+    }
+
+    function updateTokenPrice(uint _newPrice) public {
+        tokenPrice = _newPrice;
+    }
+}
+
+Output: 
+- Reentrancy vulnerability: The function withdrawTokens allows an external contract to call this function and potentially re-enter the contract before the tokens are transferred, leading to unexpected behavior.
+- Integer underflow: The subtraction in the buyTokens function (totalTokens -= _amount) can potentially lead to an integer underflow if _amount is greater than totalTokens, causing unexpected behavior.
+- Potential price manipulation: Depending on the use case, the updateTokenPrice function could lead to price manipulation if not implemented securely.

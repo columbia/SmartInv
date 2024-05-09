@@ -1,0 +1,38 @@
+The contract provided for analysis: 
+
+contract ETHInsurance {
+         address public owner;
+         uint public insuranceAmount;
+         uint public totalPayout;
+         mapping(address => bool) public isInsured;
+         mapping(address => uint) public payoutAmounts;
+
+         constructor(uint _insuranceAmount) {
+            owner = msg.sender;
+            insuranceAmount = _insuranceAmount;
+            totalPayout = 0;
+         }
+
+        function purchaseInsurance() public payable {
+            require(msg.value == insuranceAmount, "Incorrect insurance amount");
+            isInsured[msg.sender] = true;
+        }
+
+        function requestPayout() public {
+            require(isInsured[msg.sender], "Not insured");
+            uint payoutAmount = payoutAmounts[msg.sender];
+            require(payoutAmount > 0, "No payout amount available");
+
+            totalPayout += payoutAmount;
+            payoutAmounts[msg.sender] = 0;
+            msg.sender.transfer(payoutAmount);
+        }
+
+        function updatePayoutAmount(uint _newAmount) public {
+            payoutAmounts[msg.sender] = _newAmount;
+        }
+}
+
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

@@ -1,0 +1,32 @@
+Contract you are going to analyze:
+
+contract Marketplace {
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address seller;
+        bool sold;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function addProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+    }
+
+    function buyProduct(uint _id) public payable {
+        require(products[_id].id != 0, "Product does not exist");
+        require(!products[_id].sold, "Product has already been sold");
+        require(msg.value == products[_id].price, "Incorrect payment amount");
+
+        products[_id].sold = true;
+        products[_id].seller.transfer(msg.value);
+    }
+}
+
+Output:
+- Inconsistent state update
+- Integer overflow/underflow

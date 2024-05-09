@@ -1,0 +1,31 @@
+<\contract\> 
+contract TokenSwap {
+         address public token1;
+         address public token2;
+         address public owner;
+         uint public exchangeRate;
+         mapping (address => uint) public balances;
+
+         constructor(address _token1, address _token2, uint _initialRate) {
+             token1 = _token1;
+             token2 = _token2;
+             owner = msg.sender;
+             exchangeRate = _initialRate;
+         }
+         
+         function swapTokens(address _from, address _to, uint _amount) public {
+             require(msg.sender == owner, "You are not the owner");
+             require(balances[_from] >= _amount, "Insufficient balance");
+             
+             uint amountToReceive = _amount * exchangeRate;
+             
+             // Transfer tokens
+             // Update balances
+         }
+         
+         function updateExchangeRate(uint _newRate) public {
+             require(msg.sender == owner, "You are not the owner");
+             exchangeRate = _newRate;
+         }
+     }
+<\contract\>

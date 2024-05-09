@@ -1,0 +1,36 @@
+<\Contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public value;
+    enum State {Created, Locked, Released, Inactive}
+    State public state;
+
+    constructor() {
+        arbiter = msg.sender;
+        state = State.Created;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorized");
+        require(state == State.Created, "Contract already active");
+        value = msg.value;
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Unauthorized");
+        require(state == State.Locked, "Contract not in locked state");
+        seller.transfer(value);
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Unauthorized");
+        require(state == State.Locked, "Contract not in locked state");
+        buyer.transfer(value);
+        state = State.Inactive;
+    }
+}
+<\Contract\>

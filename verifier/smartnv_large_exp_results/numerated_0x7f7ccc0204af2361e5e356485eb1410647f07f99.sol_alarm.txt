@@ -1,0 +1,45 @@
+Contract to be analyzed:
+<\example_3\>
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    uint public amount;
+
+    enum State {Created, Locked, Released, Inactive}
+    State public state;
+
+    modifier onlyPayer() {
+        require(msg.sender == payer, "Only payer can call this function");
+        _;
+    }
+
+    modifier inState(State _state) {
+        require(state == _state, "Invalid state for this operation");
+        _;
+    }
+
+    constructor(address _payer, address _recipient, address _arbiter, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        arbiter = _arbiter;
+        amount = _amount;
+        state = State.Created;
+    }
+
+    function deposit() public payable onlyPayer inState(State.Created) {
+        require(msg.value == amount, "Incorrect amount deposited");
+        state = State.Locked;
+    }
+
+    function release() public onlyPayer inState(State.Locked) {
+        recipient.transfer(amount);
+        state = State.Released;
+    }
+
+    function refund() public onlyPayer inState(State.Locked) {
+        payer.transfer(amount);
+        state = State.Inactive;
+    }
+}
+<\example_3\>

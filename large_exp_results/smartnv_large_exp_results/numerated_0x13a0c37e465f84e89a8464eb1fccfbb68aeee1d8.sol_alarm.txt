@@ -1,0 +1,52 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+    }
+
+    function approve(uint _option) public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "You are not allowed to approve");
+        require(_option == 1 || _option == 2, "Invalid option");
+
+        if (_option == 1) {
+            if (msg.sender == buyer) {
+                buyerApproved = true;
+            } else if (msg.sender == seller) {
+                sellerApproved = true;
+            } else {
+                arbiterApproved = true;
+            }
+        } else {
+            if (msg.sender == buyer) {
+                buyerApproved = false;
+            } else if (msg.sender == seller) {
+                sellerApproved = false;
+            } else {
+                arbiterApproved = false;
+            }
+        }
+
+        if (buyerApproved && sellerApproved) {
+            address payable _seller = payable(seller);
+            _seller.transfer(escrowAmount);
+        } else if (buyerApproved && arbiterApproved) {
+            address payable _arbiter = payable(arbiter);
+            _arbiter.transfer(escrowAmount);
+        } else if (sellerApproved && arbiterApproved) {
+            address payable _buyer = payable(buyer);
+            _buyer.transfer(escrowAmount);
+        }
+    }
+}
+<\contract\>

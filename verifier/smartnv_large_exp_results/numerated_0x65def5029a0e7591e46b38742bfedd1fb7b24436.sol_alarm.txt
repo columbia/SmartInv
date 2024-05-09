@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+- Incorrect visibility: The `debt` and `collateral` mappings are declared as public, which allows anyone to read the debt and collateral amounts of any user. This could lead to privacy concerns or exploitation of sensitive information.
+
+- Atomicity violation: The `liquidate` function transfers USDC and WETH tokens in separate steps, which could result in a potential reentrancy attack if the user exploits this inconsistency.
+
+- Arithmetic flaw: The `calculatePrice` function divides the balances of USDC and WETH in the Uniswap pair to calculate the price. If the balances are manipulated or the division results in unexpected values, it could lead to incorrect price calculation.

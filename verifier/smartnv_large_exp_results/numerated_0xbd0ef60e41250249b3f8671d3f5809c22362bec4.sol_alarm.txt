@@ -1,0 +1,28 @@
+<\contract\> 
+contract PensionPlan {
+    address public owner;
+    mapping(address => uint) public beneficiaries;
+    uint public totalPension;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addBeneficiary(address _beneficiary, uint _pensionAmount) public {
+        require(msg.sender == owner, "Only owner can add beneficiaries");
+        beneficiaries[_beneficiary] = _pensionAmount;
+        totalPension += _pensionAmount;
+    }
+
+    function payPension(address _beneficiary) public {
+        require(beneficiaries[_beneficiary] > 0, "Invalid beneficiary");
+        uint pensionAmount = beneficiaries[_beneficiary];
+        require(totalPension >= pensionAmount, "Insufficient funds");
+        totalPension -= pensionAmount;
+        // Transfer pension amount to beneficiary
+        _beneficiary.transfer(pensionAmount);
+    }
+}
+<\contract\> 
+Business logic flaw
+Insufficient gas

@@ -1,0 +1,5 @@
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The variables `debt`, `collateral`, `WETH`, `USDC`, and `pair` are declared as public, making them accessible to all external contracts, which may not be desired.
+2) Inconsistent state update: The `liquidate` function updates the state variables `debt` and `collateral` without proper checks, potentially leading to inconsistent data.
+3) Arithmetic flaw: The calculation in the `liquidate` function may be subject to arithmetic flaws, especially in the division of `getPrice()` * `cAmount` * 80 / 100 compared to `dAmount`.
+4) Insufficient gas: The `calculatePrice` function requires `payable` without actually performing any payment, which may lead to unnecessary gas fees for the users.

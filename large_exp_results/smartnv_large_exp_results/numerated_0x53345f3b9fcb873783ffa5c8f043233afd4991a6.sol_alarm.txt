@@ -1,0 +1,27 @@
+<\contract_to_be_analyzed\>
+contract ExampleContract {
+    mapping(address => uint) balances;
+    address owner;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+
+    function setOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+<\contract_to_be_analyzed\>

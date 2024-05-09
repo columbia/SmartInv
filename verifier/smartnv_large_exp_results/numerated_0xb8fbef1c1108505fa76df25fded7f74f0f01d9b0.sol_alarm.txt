@@ -1,0 +1,31 @@
+<\contract_to_be_analyzed\>
+contract ConsignorMarket is IERC20 {
+     IERC20 public token;
+     address public owner;
+     uint public totalSupply;
+     mapping(address => uint) public balanceOf;
+     
+     constructor(address _token) {
+           token = IERC20(_token);
+           owner = msg.sender;
+      }
+
+     function deposit(uint _amount) external {
+           require(token.transferFrom(msg.sender, address(this), _amount), "transfer failed");
+           balanceOf[msg.sender] += _amount;
+           totalSupply += _amount;
+      }
+
+     function withdraw(uint _amount) external {
+           require(balanceOf[msg.sender] >= _amount, "insufficient balance");
+           balanceOf[msg.sender] -= _amount;
+           totalSupply -= _amount;
+           require(token.transfer(msg.sender, _amount), "transfer failed");
+      }
+
+     function setOwner(address _newOwner) external {
+           require(msg.sender == owner, "only the owner can change owner");
+           owner = _newOwner;
+      }
+}
+<\contract_to_be_analyzed\>

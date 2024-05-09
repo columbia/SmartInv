@@ -1,0 +1,25 @@
+The contract to analyze for potential vulnerabilities:
+
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => uint) public userVotes;
+
+    function vote(uint amount) public {
+        require(amount > 0, "Amount must be greater than zero");
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function redeemVotes() public {
+        uint userVoteBalance = userVotes[msg.sender];
+        require(userVoteBalance > 0, "No votes to redeem");
+
+        // Redeem user's votes
+        totalVotes -= userVoteBalance;
+        userVotes[msg.sender] = 0;
+    }
+}
+
+Output: 
+1) inconsistent state update
+2) integer overflow/underflow

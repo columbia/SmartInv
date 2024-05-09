@@ -1,0 +1,50 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        _;
+    }
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.AWAITING_PAYMENT;
+    }
+
+    function makePayment() public payable onlyBuyer {
+        require(state == State.AWAITING_PAYMENT, "Payment already made");
+        state = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public onlyBuyer {
+        require(state == State.AWAITING_DELIVERY, "Cannot confirm delivery at this state");
+        seller.transfer(address(this).balance);
+        state = State.COMPLETE;
+    }
+
+    function refundPayment() public onlySeller {
+        require(state == State.AWAITING_DELIVERY, "Cannot refund payment at this state");
+        buyer.transfer(address(this).balance);
+        state = State.REFUNDED;
+    }
+} 
+
+<\contract\>

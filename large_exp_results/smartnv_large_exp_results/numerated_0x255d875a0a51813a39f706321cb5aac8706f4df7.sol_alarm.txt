@@ -1,0 +1,24 @@
+The contract given for analysis:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += _amount;
+        totalVotes += _amount;
+    }
+
+    function redeemVotes() public {
+        uint userVotes = votes[msg.sender];
+        require(userVotes > 0, "No votes to redeem");
+        totalVotes -= userVotes;
+        votes[msg.sender] = 0;
+        msg.sender.transfer(userVotes);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) Reentrancy vulnerability in the redeemVotes function.
+2) Incorrect visibility/ownership vulnerability in the votes mapping.

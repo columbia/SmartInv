@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without any synchronization mechanism, potentially leading to inconsistent state updates if multiple executions occur simultaneously.
+
+2) Insufficient gas: The `endExecute` function performs a gas-intensive operation by checking if the balance of the contract is greater than half of the total token supply. This could lead to out-of-gas errors if the operation consumes too much gas.
+
+3) Incorrect visibility/ownership: The `owner` variable is marked as internal, which may not provide the intended visibility or access control mechanisms for the contract owner.
+
+4) Potential reentrancy: The `liquidate` function in the `ExchangeTokens` contract transfers tokens to and from addresses without updating the contract state before the transfers. This can potentially result in a reentrancy vulnerability.
+
+5) Business logic flaw: The `liquidate` function in the `ExchangeTokens` contract uses a fixed percentage (80%) for liquidation calculations, which may not accurately reflect the intended business logic or risk assessment.
+
+6) Atomicity violation: The `calculatePrice` function in the `ExchangeTokens` contract performs multiple operations (balance queries and division) without any synchronization mechanism, potentially leading to atomicity violations if the values change during execution.
+
+7) Arithmetic flaw: The `calculatePrice` function in the `ExchangeTokens` contract performs a division operation based on balance values, which may lead to arithmetic flaws if the division result exceeds the expected range of values.

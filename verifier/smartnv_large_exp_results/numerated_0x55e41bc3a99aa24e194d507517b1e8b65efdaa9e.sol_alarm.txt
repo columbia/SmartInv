@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function `endExecute()` updates `lockedFunds` based on the balance of the contract, which may not accurately represent the locked funds due to potential token burns or transfers.
+
+2) Incorrect visibility/ownership: The `votingToken` variable is declared as internal, which may expose potential vulnerabilities related to visibility and access control.
+
+3) Insufficient gas: The `execute()` function performs multiple state changes and token transfers, which may require significant gas to execute, potentially leading to out-of-gas errors.
+
+4) Business logic flaw: The condition in the `liquidate()` function checking if the user's funds can be liquidated based on a fixed percentage of collateral and debt may not accurately assess the liquidation risk, potentially leading to improper liquidations.

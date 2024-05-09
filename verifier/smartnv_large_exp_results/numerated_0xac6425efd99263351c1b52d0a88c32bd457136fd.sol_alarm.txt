@@ -1,0 +1,31 @@
+Contract to analyze:
+
+contract PurchaseContract {
+        address public seller;
+        address public buyer;
+        uint public price;
+        uint public quantity;
+
+        constructor(address _seller, uint _price, uint _quantity) {
+            seller = _seller;
+            price = _price;
+            quantity = _quantity;
+        }
+
+        function buy() public payable {
+            require(msg.sender != seller, "Seller cannot buy their own product");
+            require(msg.value == price * quantity, "Incorrect payment amount");
+            seller.transfer(msg.value);
+            buyer = msg.sender;
+        }
+
+        function cancel() public {
+            require(msg.sender == seller, "Only seller can cancel the transaction");
+            selfdestruct(payable(msg.sender));
+        }
+}
+
+Output: 
+1) atomicity violation
+3) business logic flaw
+8) reentrancy

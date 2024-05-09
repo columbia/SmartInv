@@ -1,0 +1,22 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    address public owner;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+<\contract\> 
+
+<\output\>
+potential vulnerabilities:
+- privilege escalation

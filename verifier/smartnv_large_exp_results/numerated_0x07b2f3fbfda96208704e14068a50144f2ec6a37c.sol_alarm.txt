@@ -1,0 +1,15 @@
+<\contract\> 
+contract Voting {
+    uint256 public totalVotes;
+    mapping(address => bool) public hasVoted;
+    
+    function vote() external {
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) ID uniqueness violation: There is no check to ensure that an address can only vote once, leading to the possibility of multiple votes from the same address.
+2) Inconsistent state update: The totalVotes variable is updated without any restrictions, allowing for potential manipulation of the total vote count.

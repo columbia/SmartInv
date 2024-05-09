@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract Escrow {
+         IERC20 public token;
+         address public seller;
+         address public buyer;
+         address public arbiter;
+         uint public amount;
+
+         constructor(IERC20 _token, address _seller, address _buyer, address _arbiter, uint _amount){
+             token = _token;
+             seller = _seller;
+             buyer = _buyer;
+             arbiter = _arbiter;
+             amount = _amount;
+         }
+
+         function deposit() external {
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function release() external {
+             require(msg.sender == seller || msg.sender == buyer || msg.sender == arbiter, "Not authorized");
+             token.transfer(seller, amount);
+         }
+
+         function refund() external {
+             require(msg.sender == seller || msg.sender == buyer || msg.sender == arbiter, "Not authorized");
+             token.transfer(buyer, amount);
+         }
+}
+Output:
+1) healthy

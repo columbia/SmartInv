@@ -1,0 +1,37 @@
+<\Your Contract\>
+contract Lottery {
+    address public manager;
+    address[] public players;
+
+    constructor() {
+        manager = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Minimum entry fee is 0.01 ether");
+        players.push(msg.sender);
+    }
+
+    function pickWinner() public {
+        require(msg.sender == manager, "Only the manager can pick a winner");
+        require(players.length > 0, "No players in the lottery");
+
+        uint index = random() % players.length;
+        address winner = players[index];
+        payable(winner).transfer(address(this).balance);
+
+        players = new address[](0);
+    }
+
+    function getPlayers() public view returns (address[] memory) {
+        return players;
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+}
+Potential Vulnerabilities:
+- incorrect visibility/ownership: The pickWinner() function allows only the manager to pick a winner, but it does not restrict the manager from also participating as a player, potentially leading to a conflict of interest or unfair advantage.
+- insufficient gas: The transfer of funds to the winner in the pickWinner() function may fail if the contract does not have enough gas to complete the transaction, leaving the funds locked in the contract.
+- integer overflow/underflow: There is a risk of integer overflow in the random() function depending on the number of players and the result of the hash function, potentially leading to unpredictable behavior.

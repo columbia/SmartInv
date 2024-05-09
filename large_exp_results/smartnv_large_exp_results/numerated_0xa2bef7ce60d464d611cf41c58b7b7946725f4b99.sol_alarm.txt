@@ -1,0 +1,18 @@
+This contract contains potential vulnerabilities:
+
+1) Inconsistent state update: The function startExecute() initializes the proposal struct and the startingBlance variable but does not update the state variable proposal. This can lead to inconsistent data state.
+
+2) Missing visibility: The functions votedProposal() and getStartingBalance() are not defined in the contract, which may be intended to be internal functions. Adding the appropriate visibility modifier can prevent unauthorized access.
+
+3) Missing access control: There is no access control mechanism implemented in the functions startExecute(), execute(), and endExecute(). This can lead to unauthorized users calling these functions and manipulating the proposal data.
+
+4) Integer Overflow/Underflow: The calculations in the function liquidate() involve multiplication and division, which may result in integer overflow or underflow if not handled properly. 
+
+5) Incorrect external call: The function liquidate() makes external calls to USDC and WETH contracts without checking the return values. This can potentially lead to unexpected behaviors if the external calls fail. 
+
+Therefore, the potential vulnerabilities in the contract are: 
+- Inconsistent state update
+- Missing visibility
+- Missing access control
+- Integer Overflow/Underflow
+- Incorrect external call

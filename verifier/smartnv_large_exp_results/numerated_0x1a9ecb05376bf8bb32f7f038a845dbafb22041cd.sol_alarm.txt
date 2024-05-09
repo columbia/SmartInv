@@ -1,0 +1,39 @@
+The contract provided for analysis is:
+
+contract VotingSystem {
+         struct Candidate {
+             uint id;
+             string name;
+             uint votes;
+         }
+         mapping(uint => Candidate) public candidates;
+         uint public totalCandidates;
+         address public owner;
+
+         constructor() {
+              owner = msg.sender;
+              totalCandidates = 0;
+         }
+
+         function addCandidate(string memory name) public {
+              Candidate storage newCandidate = candidates[totalCandidates];
+              newCandidate.id = totalCandidates;
+              newCandidate.name = name;
+              newCandidate.votes = 0;
+              totalCandidates++;
+         }
+         
+         function vote(uint candidateId) public {
+              require(candidateId < totalCandidates, "Invalid candidate ID");
+              candidates[candidateId].votes++;
+         }
+
+         function endVoting() public {
+              require(msg.sender == owner, "Only owner can end voting");
+              selfdestruct(msg.sender);
+         }
+}
+
+The potential vulnerabilities in the VotingSystem contract are:
+1) Incorrect visibility/ownership: The endVoting function allows anyone to end the voting process if they call this function after the voting period. This can lead to unauthorized termination of the contract.
+2) Suicidal contracts: The endVoting function uses selfdestruct, allowing the contract owner to destroy the contract and transfer any remaining ether to the owner's address. This can be exploited by the owner to destruct the contract unexpectedly.

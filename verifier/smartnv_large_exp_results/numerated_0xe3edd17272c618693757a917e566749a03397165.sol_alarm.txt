@@ -1,0 +1,42 @@
+<\contract\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address public owner;
+     IERC20 public votingToken;
+     mapping(address => uint256) public startingBalanceList;
+     Proposal public proposal;
+
+     function startVoting() external {
+          require(proposal.startTime == 0, "voting already started");
+          proposal = Proposal(block.timestamp, 0, msg.sender);
+          startingBalanceList[msg.sender] = getStartingBalance(msg.sender); 
+     }
+
+     function vote(uint256 amount) external {
+          require(proposal.startTime != 0, "voting has not started yet");
+          require(block.timestamp < proposal.startTime + 24 hours, "voting period ended");
+          require(votingToken.balanceOf(msg.sender) >= amount, "insufficient voting tokens");
+          votingToken.transferFrom(msg.sender, address(this), amount);
+          proposal.votedAmount += amount; 
+     }
+
+     function endVoting() external {
+          require(proposal.startTime != 0, "voting has not started yet");
+          require(block.timestamp >= proposal.startTime + 24 hours, "voting period not ended yet");
+          
+          if (proposal.votedAmount > votingToken.totalSupply() / 2) {
+               // execute proposal
+          } else {
+               // reject proposal
+          }
+     }
+
+     function getStartingBalance(address addr) internal view returns(uint256) {
+          // retrieve user's starting balance
+     }
+}
+<\contract\>

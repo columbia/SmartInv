@@ -1,0 +1,28 @@
+<\contract\> 
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => bool) public voted;
+    
+    function vote() public {
+        require(!voted[msg.sender], "Already voted");
+        totalVotes++;
+        voted[msg.sender] = true;
+    }
+    
+    function doubleVote() public {
+        require(!voted[msg.sender], "Already voted");
+        totalVotes += 2;
+        voted[msg.sender] = true;
+    }
+    
+    function resetVotes() public {
+        require(voted[msg.sender], "Not voted yet");
+        totalVotes--;
+        voted[msg.sender] = false;
+    }
+}
+<\contract\> 
+
+Output:
+1) ID uniqueness violation
+2) Inconsistent state update

@@ -1,0 +1,20 @@
+<\contract_to_be_analyzed\>
+contract PaymentProcessor {
+    address owner;
+    uint public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        totalPayments += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract_to_be_analyzed\>

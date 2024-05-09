@@ -1,0 +1,40 @@
+The contract to analyze for potential vulnerabilities is as follows:
+
+```solidity
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => address) public tokenIdToOwner;
+    mapping(uint256 => uint256) public tokenIdToPrice;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyToken(uint256 tokenId) public payable {
+        require(tokenIdToOwner[tokenId] != address(0), "Token not owned");
+        require(tokenIdToPrice[tokenId] <= msg.value, "Insufficient funds");
+        
+        address previousOwner = tokenIdToOwner[tokenId];
+        address newOwner = msg.sender;
+        uint256 price = tokenIdToPrice[tokenId];
+
+        tokenIdToOwner[tokenId] = newOwner;
+        
+        payable(previousOwner).transfer(price);
+        
+        if (msg.value > price) {
+            payable(newOwner).transfer(msg.value - price);
+        }
+    }
+
+    function setTokenPrice(uint256 tokenId, uint256 price) public {
+        require(msg.sender == tokenIdToOwner[tokenId], "Not token owner");
+        tokenIdToPrice[tokenId] = price;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Reentrancy
+3) Incorrect visibility/ownership

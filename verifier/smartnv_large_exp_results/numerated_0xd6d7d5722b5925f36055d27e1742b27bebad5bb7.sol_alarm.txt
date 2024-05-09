@@ -1,0 +1,23 @@
+<\contract\>
+contract Crowdsale {
+    address public owner;
+    uint public rate;
+    mapping(address => uint) public balances;
+
+    constructor(uint _rate) public {
+        owner = msg.sender;
+        rate = _rate;
+    }
+
+    function buyTokens() public payable {
+        uint tokens = msg.value * rate;
+        balances[msg.sender] += tokens;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        uint amount = address(this).balance;
+        owner.transfer(amount);
+    }
+}
+<\contract\>

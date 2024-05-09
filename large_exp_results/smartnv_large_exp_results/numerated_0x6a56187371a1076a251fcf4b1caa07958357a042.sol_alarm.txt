@@ -1,0 +1,26 @@
+The contract provided for analysis is:
+
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function invest() public payable {
+        require(msg.value > 0, "Invalid investment amount");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        payable(msg.sender).transfer(amount);
+    }
+}
+
+output: 
+reentrancy.
+incorrect visibility/ownership.

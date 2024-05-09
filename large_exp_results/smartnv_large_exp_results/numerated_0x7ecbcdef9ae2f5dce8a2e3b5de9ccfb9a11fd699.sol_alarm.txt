@@ -1,0 +1,40 @@
+<\contract\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    uint256 public totalShares;
+    mapping(address => uint256) public released;
+    IERC20 public token;
+
+    constructor(address[] memory _payees, uint256[] memory _shares, IERC20 _token) {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        require(_payees.length > 0, "No payees provided");
+
+        for (uint256 i = 0; i < _payees.length; i++) {
+            payees.push(_payees[i]);
+            shares.push(_shares[i]);
+            totalShares += _shares[i];
+        }
+
+        token = _token;
+    }
+
+    function release(address payable _payee) public {
+        require(released[_payee] < shares[getPayeeIndex(_payee)], "Payment already released");
+
+        uint256 totalReceived = token.balanceOf(address(this)) + released[_payee];
+        uint256 amount = totalReceived * shares[getPayeeIndex(_payee)] / totalShares - released[_payee];
+        released[_payee] += amount;
+        token.transfer(_payee, amount);
+    }
+
+    function getPayeeIndex(address _payee) internal view returns (uint256) {
+        for (uint256 i = 0; i < payees.length; i++) {
+            if (payees[i] == _payee) {
+                return i;
+            }
+        }
+        revert("Payee not found");
+    }
+}
+<\contract\>

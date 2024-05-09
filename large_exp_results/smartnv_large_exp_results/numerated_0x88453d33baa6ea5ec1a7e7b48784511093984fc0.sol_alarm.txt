@@ -1,0 +1,24 @@
+<\contract\>
+contract Insurance {
+    address public owner;
+    uint public policyID;
+    mapping(uint => address) public policyHolders;
+    
+    constructor() {
+        owner = msg.sender;
+        policyID = 1;
+    }
+    
+    function buyPolicy() public payable {
+        require(msg.value >= 1 ether, "Insufficient funds to buy policy");
+        policyHolders[policyID] = msg.sender;
+        policyID++;
+        owner.transfer(msg.value);
+    }
+    
+    function claimPolicy(uint _policyID) public {
+        require(msg.sender == policyHolders[_policyID], "You are not the policy holder");
+        // Process policy claim
+    }
+}
+<\contract\>

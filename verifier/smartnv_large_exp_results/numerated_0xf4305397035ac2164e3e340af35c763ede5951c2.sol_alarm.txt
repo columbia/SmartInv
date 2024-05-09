@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     uint public totalTokens;
+     uint public remainingTokens;
+     uint public tokenPrice;
+     address public owner;
+     
+     constructor(uint _totalTokens, uint _tokenPrice) public {
+         totalTokens = _totalTokens;
+         remainingTokens = _totalTokens;
+         tokenPrice = _tokenPrice;
+         owner = msg.sender;
+     }
+     
+     function buyTokens(uint amount) public payable {
+         require(remainingTokens >= amount, "Not enough tokens left");
+         require(msg.value == amount * tokenPrice, "Incorrect payment amount");
+         
+         remainingTokens -= amount;
+         // Transfer tokens to buyer 
+     }
+     
+     function endSale() public {
+         require(msg.sender == owner, "Only owner can end the sale");
+         // Transfer remaining tokens back to owner 
+         // Transfer remaining Ether in the contract to the owner 
+     }
+}
+<\contract_to_analyze\>

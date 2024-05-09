@@ -1,0 +1,6 @@
+This contract contains the following potential vulnerabilities:
+
+1) inconsistent state update: The updating of the `proposal.votedAmount` and calling `votedProposal` in the `execute` function may lead to inconsistent state if the updates are not properly synchronized.
+2) atomicity violation: The operations in the `execute` function involving `votingToken.transferFrom` and updating `proposal.votedAmount` are not atomic and may lead to atomicity violations.
+3) ID uniqueness violation: There is no mechanism in place to ensure uniqueness of proposals or addresses assigned, which may lead to ID uniqueness violations.
+4) incorrect visibility/ownership: The visibility of `owner` and `votingToken` is internal, which may not provide the intended access control mechanisms.

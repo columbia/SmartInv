@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract HealthInsurance {
+    address public owner;
+    // map customer address to their policy ID
+    mapping(address => uint) public policyID;
+    
+    constructor {
+        owner = msg.sender;
+    }
+    
+    function purchasePolicy(uint _policyID) external payable {
+        policyID[msg.sender] = _policyID;
+        // accept payment
+        owner.transfer(msg.value);
+    }
+    
+    function claimInsurance() external {
+        // process insurance claim
+        require(policyID[msg.sender] != 0, "No policy purchased");
+        // transfer insurance amount
+        msg.sender.transfer(1 ether);
+    }
+}
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

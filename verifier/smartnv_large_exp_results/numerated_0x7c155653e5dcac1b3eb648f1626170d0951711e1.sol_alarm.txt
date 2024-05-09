@@ -1,0 +1,39 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate; 
+          uint256 vote; 
+          }
+     address public owner;
+     uint256 public totalVotes;
+     mapping(address => Voter) public voters;
+
+    function delegate(address to) public {
+          require(!voters[msg.sender].voted, "Already voted."); 
+          require(to != msg.sender, "Self-delegation is not allowed."); 
+          require(voters[to].delegate != msg.sender, "Circular delegation is not allowed."); 
+
+          voters[msg.sender].voted = true; 
+          voters[msg.sender].delegate = to; 
+
+        }
+
+    function vote(uint256 proposal) public {
+          Voter storage sender = voters[msg.sender]; 
+          require(sender.weight > 0, "Cannot vote."); 
+          require(!sender.voted, "Already voted."); 
+
+          sender.voted = true; 
+          sender.vote = proposal; 
+          totalVotes += sender.weight; 
+
+        }
+        
+    function tallyVotes() internal {
+          // Logic to count votes and determine the winning proposal
+        }
+
+}
+<\contract_to_analyze\>

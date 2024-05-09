@@ -1,0 +1,53 @@
+Contract:
+contract VotingSystem {
+     struct Voter {
+          uint256 weight; 
+          bool voted; 
+          uint vote;
+     }
+     mapping(address => Voter) public voters;
+     address public winningProposal;
+     uint256 public winningVoteCount;
+     bool public votingEnded = false;
+     address public chairperson;
+
+     modifier onlyChairperson {
+          require(msg.sender == chairperson, "Only chairperson can call this function");
+          _;
+     }
+
+     modifier onlyVoter {
+          require(voters[msg.sender].weight > 0, "Only voters can call this function");
+          _;
+     }
+
+     function delegate(address to) public onlyVoter {
+          require(!voters[msg.sender].voted, "You have already voted");
+          require(to != msg.sender, "Self-delegation is disallowed");
+          voters[msg.sender].voted = true;
+          voters[to].weight += voters[msg.sender].weight;
+          voters[msg.sender].weight = 0;
+     }
+
+     function vote(uint proposal) public onlyVoter {
+          require(!voters[msg.sender].voted, "You have already voted");
+          voters[msg.sender].voted = true;
+          voters[msg.sender].vote = proposal;
+     }
+
+     function countVotes() public onlyChairperson {
+          require(!votingEnded, "Voting has ended");
+          for (uint i = 0; i < voters.length; i++) {
+               if (voters[i].voted) {
+                    winningVoteCount += voters[i].weight;
+                    if (winningVoteCount > voters[winningProposal].weight) {
+                         winningProposal = voters[i].vote;
+                    }
+               }
+          }
+          votingEnded = true;
+     }
+}
+
+Output:
+- There is no vulnerability identified in this contract.

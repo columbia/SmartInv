@@ -1,0 +1,30 @@
+<\analyzed_contract\> 
+contract TokenSale {
+    address public admin;
+    uint public tokenPrice;
+    IERC20 public token;
+
+    constructor(uint _tokenPrice, address _tokenAddress) public {
+        admin = msg.sender;
+        tokenPrice = _tokenPrice;
+        token = IERC20(_tokenAddress);
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        uint totalCost = _numTokens * tokenPrice;
+        require(msg.value >= totalCost, "Insufficient funds sent");
+
+        token.transfer(msg.sender, _numTokens);
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == admin, "Only admin can set token price");
+
+        tokenPrice = _newPrice;
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the analyzed contract are:
+2) price manipulation
+4) inconsistent state update

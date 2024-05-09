@@ -1,0 +1,22 @@
+The contract to analyze:
+
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+
+    function deposit(address _payee) public payable {
+        require(msg.sender == payer, "Only payer can deposit");
+        payee = _payee;
+        amount = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == payee, "Only payee can withdraw");
+        payee.transfer(amount);
+        amount = 0;
+    }
+}
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership

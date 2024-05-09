@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    address public owner;
+    mapping(address => uint) public votes;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function vote(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += amount;
+    }
+    
+    function getTotalVotes() public view returns(uint) {
+        uint total = 0;
+        for (uint i = 0; i < address.length; i++) {
+            total += votes[addresses[i]];
+        }
+        return total;
+    }
+}
+<\contract_to_analyze\>

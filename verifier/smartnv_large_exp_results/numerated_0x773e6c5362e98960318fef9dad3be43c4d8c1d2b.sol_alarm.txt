@@ -1,0 +1,23 @@
+<\your_contract\>
+contract Escrow {
+     address internal owner;
+     address payable public beneficiary;
+     bool public completed;
+
+    function deposit() public payable {
+          require(msg.sender == owner, "only owner can deposit");
+          require(msg.value > 0, "deposit amount must be greater than 0");
+    }
+
+     function withdraw() public {
+          require(msg.sender == owner, "only owner can withdraw");
+          require(completed == true, "withdrawal can only be done after completion");
+          beneficiary.transfer(address(this).balance);
+     }
+
+    function complete() public {
+          require(msg.sender == owner, "only owner can complete");
+          completed = true;
+     }
+}
+<\your_contract\>

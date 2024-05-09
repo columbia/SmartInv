@@ -1,0 +1,28 @@
+<\contract\> 
+contract TokenSale {
+     address public seller;
+     IERC20 public token;
+     uint public price;
+     mapping(address => uint) public balances;
+
+     function buyTokens(uint amount) public {
+         uint cost = amount * price;
+         require(token.balanceOf(msg.sender) >= cost, "insufficient balance");
+         token.transferFrom(msg.sender, seller, cost);
+         balances[msg.sender] += amount;
+     }
+
+     function withdraw() public {
+         uint amount = balances[msg.sender];
+         require(amount > 0, "no tokens to withdraw");
+         balances[msg.sender] = 0;
+         token.transfer(msg.sender, amount * price);
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Price manipulation: The price of tokens is set by the seller, which can potentially be manipulated to overcharge buyers.
+2) Incorrect visibility/ownership: The "seller" address is public, which can expose sensitive information about the seller's identity or ownership.
+3) Integer overflow/underflow: There is a risk of integer overflow in the calculation of cost in the buyTokens function if the amount is very large.
+4) Insufficient gas: If the contract balance runs low on gas, it may not be able to execute transactions properly, leading to unexpected behavior or failures.

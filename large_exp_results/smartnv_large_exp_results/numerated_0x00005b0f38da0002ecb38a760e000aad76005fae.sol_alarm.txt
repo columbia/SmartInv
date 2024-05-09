@@ -1,0 +1,22 @@
+<\contract\> 
+contract PaymentProcessor {
+     mapping(uint => uint) public payments;
+     uint public totalPayments;
+
+     function pay(uint _paymentId, uint _amount) public {
+         payments[_paymentId] += _amount;
+         totalPayments += _amount;
+     }
+
+     function withdraw(uint _paymentId) public {
+         uint amount = payments[_paymentId];
+         require(amount > 0, "No payment to withdraw");
+         totalPayments -= amount;
+         payments[_paymentId] = 0;
+     }
+
+     function getPayment(uint _paymentId) public view returns (uint) {
+         return payments[_paymentId];
+     }
+}
+<\contract\>

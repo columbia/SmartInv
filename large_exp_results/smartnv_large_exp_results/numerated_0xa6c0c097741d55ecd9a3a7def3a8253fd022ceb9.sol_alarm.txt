@@ -1,0 +1,20 @@
+contract MultiSigWallet {
+     mapping(address => uint256) public balance;
+     mapping(address => uint256) public withdrawAmount;
+
+     function deposit() public payable {
+          balance[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint256 amount) public {
+          require(balance[msg.sender] >= amount, "Insufficient balance");
+          balance[msg.sender] -= amount;
+          withdrawAmount[msg.sender] += amount;
+          (bool success, ) = msg.sender.call{value: amount}("");
+          require(success, "Transfer failed");
+     }
+} 
+
+Potential vulnerabilities:
+4) inconsistent state update
+8) reentrancy

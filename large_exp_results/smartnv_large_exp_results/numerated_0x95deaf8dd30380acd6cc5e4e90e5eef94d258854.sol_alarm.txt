@@ -1,0 +1,41 @@
+Contract to be analyzed:
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public funds;
+  
+    constructor(address _seller, address _buyer, address _arbiter) public {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+    }
+
+    function depositFunds() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value > 0, "Funds should be greater than 0");
+        funds += msg.value;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(funds > 0, "No funds to release");
+        
+        seller.transfer(funds);
+        funds = 0;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        
+        buyer.transfer(funds);
+        funds = 0;
+    }
+}
+
+Output:
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The releaseFunds() and refundFunds() functions can be called by anyone, not just the arbiter, leading to unauthorized fund release or refund.
+- Insufficient gas: The contract does not specify any gas limit which could potentially lead to out-of-gas errors.
+- ID uniqueness violation: There are no checks for unique IDs for seller, buyer, and arbiter, which could lead to unauthorized access if these addresses are manipulated.

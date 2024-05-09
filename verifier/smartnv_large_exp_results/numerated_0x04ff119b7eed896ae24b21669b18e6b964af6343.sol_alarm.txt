@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+     struct Voter {
+          uint256 voteCount;
+          bool hasVoted;
+     }
+
+     mapping(address => Voter) public voters;
+     address[] public candidateList;
+
+     function vote(uint256 candidateIndex) public {
+          require(!voters[msg.sender].hasVoted, "Already voted");
+          voters[msg.sender].hasVoted = true;
+          voters[msg.sender].voteCount++;
+     }
+
+     function addCandidate(address candidate) public {
+          candidateList.push(candidate);
+     }
+
+     function getCandidateList() public view returns (address[] memory) {
+          return candidateList;
+     }
+}
+
+Output: 
+Healthy.

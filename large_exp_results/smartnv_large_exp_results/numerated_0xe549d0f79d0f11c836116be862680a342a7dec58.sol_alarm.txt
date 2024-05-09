@@ -1,0 +1,21 @@
+The contract provided for analysis is: 
+
+contract StakingContract {
+     IERC20 public token;
+     mapping(address => uint) public stakedBalance;
+
+     function stake(uint amount) public {
+        token.transferFrom(msg.sender, address(this), amount);
+        stakedBalance[msg.sender] += amount;
+     }
+
+     function unstake(uint amount) public {
+        require(stakedBalance[msg.sender] >= amount, "Insufficient balance");
+        token.transfer(msg.sender, amount);
+        stakedBalance[msg.sender] -= amount;
+     }
+}
+
+Based on the analysis of the provided contract, the potential vulnerabilities are:
+1) Integer overflow/underflow
+2) Inconsistent state update

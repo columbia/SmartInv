@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The execute function in the contract updates the votedAmount of the proposal without checking if the caller has the authority to do so, potentially leading to unauthorized state changes.
+2) Incorrect visibility/ownership: The owner variable is declared as internal, which could potentially lead to accessibility issues if not properly controlled.
+3) Insufficient gas: The endExecute function checks for a condition that involves querying the balance of the contract which might consume excessive gas and lead to an out-of-gas error.
+4) Business logic flaw: The endExecute function checks if the balance of the contract is more than twice the total supply of the votingToken, this business logic might not be correctly implemented.

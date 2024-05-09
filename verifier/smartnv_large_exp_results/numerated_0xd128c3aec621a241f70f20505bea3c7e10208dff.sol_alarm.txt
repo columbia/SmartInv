@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract Escrow {
+         IERC20 public token;
+         address public seller;
+         address public buyer;
+         uint public amount;
+
+         constructor(address _token, address _seller, address _buyer, uint _amount) {
+             token = IERC20(_token);
+             seller = _seller;
+             buyer = _buyer;
+             amount = _amount;
+         }
+         
+         function deposit() public {
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function release() public {
+             require(msg.sender == buyer, "Only buyer can release funds");
+             token.transfer(seller, amount);
+         }
+
+         function refund() public {
+             require(msg.sender == seller, "Only seller can refund");
+             token.transfer(buyer, amount);
+         }
+     }
+
+Output:
+- incorrect visibility/ownership (release and refund functions should have proper access control)

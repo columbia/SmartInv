@@ -1,0 +1,31 @@
+<\analyzed_contract\>
+contract Marketplace {
+    mapping(uint => address) public itemIdToOwner;
+    mapping(address => uint) public ownerItemCount;
+    mapping(uint => uint) public itemPrice;
+
+    function purchaseItem(uint itemId) public payable {
+        require(itemIdToOwner[itemId] != msg.sender, "You already own this item");
+        require(msg.value >= itemPrice[itemId], "Insufficient funds provided");
+
+        address previousOwner = itemIdToOwner[itemId];
+        uint totalPrice = itemPrice[itemId];
+        uint commission = totalPrice * 5 / 100;
+
+        address payable contractAddress = address(this);
+        contractAddress.transfer(commission);
+        
+        address payable seller = payable(previousOwner);
+        seller.transfer(totalPrice - commission);
+
+        itemIdToOwner[itemId] = msg.sender;
+        ownerItemCount[msg.sender]++;
+    }
+
+    function changeItemPrice(uint itemId, uint newPrice) public {
+        require(msg.sender == itemIdToOwner[itemId], "You are not the owner of this item");
+
+        itemPrice[itemId] = newPrice;
+    }
+}
+<\analyzed_contract\>

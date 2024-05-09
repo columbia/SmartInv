@@ -1,0 +1,41 @@
+<\contract\> 
+contract Lottery {
+     address public owner;
+     address[] public players;
+     mapping(address => bool) public hasPlayed;
+     uint public ticketPrice = 1 ether;
+     uint public pot;
+     
+     constructor() {
+         owner = msg.sender;
+     }
+     
+     function enter() public payable {
+         require(msg.value == ticketPrice, "Incorrect ticket price");
+         require(!hasPlayed[msg.sender], "You already played");
+         players.push(msg.sender);
+         hasPlayed[msg.sender] = true;
+         pot += msg.value;
+     }
+     
+     function pickWinner() public {
+         require(msg.sender == owner, "Only owner can pick winner");
+         require(players.length > 0, "No players entered");
+         uint winnerIndex = random() % players.length;
+         address winner = players[winnerIndex];
+         address payable winnerPayable = payable(winner);
+         winnerPayable.transfer(pot);
+         delete players;
+         pot = 0;
+     }
+     
+     function random() private view returns (uint) {
+         return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+     }
+}
+<\contract\> 
+
+<\output\>
+The potential vulnerabilities in the contract Lottery are:
+1) privilege escalation
+2) inconsistent state update

@@ -1,0 +1,26 @@
+<\contract_to_analyze\> 
+contract PaymentChannel {
+     address public sender;
+     address public recipient;
+     uint public expiration;
+     uint public amount;
+
+     constructor(address _recipient, uint _expiration) payable {
+          sender = msg.sender;
+          recipient = _recipient;
+          expiration = _expiration;
+          amount = msg.value;
+     }
+
+     function close() public {
+          require(msg.sender == sender, "only sender can close the channel");
+          require(block.timestamp > expiration, "channel has not expired yet");
+          selfdestruct(payable(recipient));
+     }
+} 
+
+<\contract_to_analyze\>
+ 
+1) privilege escalation
+2) inconsistent state update 
+3) ether leakage

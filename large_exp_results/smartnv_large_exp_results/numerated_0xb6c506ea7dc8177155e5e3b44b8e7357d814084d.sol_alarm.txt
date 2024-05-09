@@ -1,0 +1,29 @@
+<\contract\> 
+contract MultiSigWallet {
+     uint public transactionCount;
+     mapping(uint => Transaction) public transactions;
+     
+     struct Transaction {
+          address payable to;
+          uint value;
+          bytes data;
+          bool executed;
+     }
+     
+     function submitTransaction(address payable _to, uint _value, bytes memory _data) public {
+          transactions[transactionCount] = Transaction(_to, _value, _data, false);
+          transactionCount++;
+     }
+     
+     function executeTransaction(uint _txIndex) public {
+          Transaction storage transaction = transactions[_txIndex];
+          require(!transaction.executed, "transaction already executed");
+          (bool success, ) = transaction.to.call{value: transaction.value} (transaction.data);
+          require(success, "transaction execution failed");
+          transaction.executed = true;
+     }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

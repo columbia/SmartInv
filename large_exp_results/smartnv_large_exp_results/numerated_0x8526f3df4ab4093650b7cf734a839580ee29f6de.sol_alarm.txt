@@ -1,0 +1,19 @@
+<\contract\> 
+contract AtomicSwapper {
+    mapping(bytes32 => bool) public swaps;
+
+    function initiateSwap(bytes32 secretHash) public {
+        require(!swaps[secretHash], "Swap already initiated");
+        swaps[secretHash] = true;
+    }
+
+    function redeem(bytes32 secret) public {
+        bytes32 hash = keccak256(abi.encodePacked(secret));
+        require(swaps[hash], "No swap initiated for this secret");
+        swaps[hash] = false;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the AtomicSwapper contract are:
+5) atomicity violation

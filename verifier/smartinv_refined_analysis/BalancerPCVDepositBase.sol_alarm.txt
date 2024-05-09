@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is being updated in the `execute` function without proper synchronization or checks, which may lead to inconsistent state updates.
+
+2) Atomicity violation: Multiple state changes are happening in the `startExecute` and `execute` functions without proper atomicity checks, which could result in unexpected behavior if one of the actions fails to execute.
+
+3) Cross bridge inconsistency: The `calculatePrice` function in the `ExchangeTokens` contract accesses the `pair` variable without it being defined in the contract, potentially leading to cross bridge inconsistency if the `pair` variable is defined outside the contract in a different context.
+
+4) ID uniqueness violation: There is a lack of validation for uniqueness of IDs in the contract, which may lead to conflicts or errors if multiple instances try to operate on the same ID without proper checks.

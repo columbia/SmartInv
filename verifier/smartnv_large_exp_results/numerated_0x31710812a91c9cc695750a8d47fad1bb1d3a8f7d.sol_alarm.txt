@@ -1,0 +1,29 @@
+The contract you are going to analyze is:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public {
+        uint cost = _numTokens * tokenPrice;
+        require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+        token.transferFrom(msg.sender, owner, cost);
+        totalTokensSold += _numTokens;
+    }
+
+    function changeTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can change price");
+        tokenPrice = _newPrice;
+    }
+}
+
+Output:
+- Incorrect visibility/ownership

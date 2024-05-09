@@ -1,0 +1,23 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated directly in the `execute` function without proper synchronization mechanisms, potentially leading to inconsistent state.
+
+2) Incorrect visibility/ownership: The `proposal` struct is not declared as `public`, `internal` or `private`, which might lead to accessibility issues.
+
+3) Insufficient gas: The `execute` function could potentially run out of gas if the `votingToken.transferFrom` or `votedProposal` consume too much gas, causing the transaction to revert.
+
+4) ID uniqueness violation: There is no check for uniqueness of proposal IDs, which could lead to overwrite or collision issues.
+
+5) Reentrancy: The contract is susceptible to reentrancy attacks as external functions like `execute` interact with external contracts without following reentrancy guard best practices.
+
+6) Atomicity violation: The functions `execute` and `endExecute` do multiple state changes without being wrapped in a single transaction, leaving room for potential atomicity violations.
+
+7) Cross bridge inconsistency: Interactions with external contracts like `votingToken` could lead to inconsistency if multiple transactions are concurrently modifying state.
+
+8) Integer overflow/underflow: The contract lacks proper overflow/underflow checks when handling amounts and balances, leaving it vulnerable to arithmetic issues.
+
+9) Business logic flaw: The business logic around proposals, locks, and executions is complex and might contain flaws that could be exploited by malicious actors.
+
+10) Ether leakage: The contract does not handle Ether transactions, but if Ether is sent to this contract accidentally, it can lead to Ether leakage.
+
+11) Arithmetic flaw: The arithmetic operations in the contract, such as calculating the starting balance or checking the balance for execution, might have arithmetic flaws that could lead to unexpected results.

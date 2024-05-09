@@ -1,0 +1,21 @@
+<\contract\>
+contract PaymentProcessor {
+     uint public totalPayments;
+     mapping(address => uint) public payments;
+
+     function makePayment() public payable {
+         require(msg.value > 0, "Payment amount must be greater than 0");
+         totalPayments += msg.value;
+         payments[msg.sender] += msg.value;
+     }
+
+     function withdrawPayment() public {
+         uint payment = payments[msg.sender];
+         require(payment > 0, "No payments to withdraw");
+         (bool success, ) = msg.sender.call{value: payment}("");
+         require(success, "Withdrawal failed");
+         totalPayments -= payment;
+         payments[msg.sender] = 0;
+     }
+}
+<\contract\>

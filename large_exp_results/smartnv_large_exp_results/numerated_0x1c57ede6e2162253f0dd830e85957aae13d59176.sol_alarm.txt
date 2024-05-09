@@ -1,0 +1,21 @@
+<\contract\> 
+contract Vesting {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public amountReleased;
+    uint public totalAmount;
+
+    constructor(address _beneficiary, uint _releaseTime, uint _totalAmount) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+        totalAmount = _totalAmount;
+    }
+
+    function release() public {
+        require(block.timestamp >= releaseTime, "Release time not reached yet");
+        uint amount = totalAmount - amountReleased;
+        amountReleased += amount;
+        payable(beneficiary).transfer(amount);
+    }
+}
+<\contract\>

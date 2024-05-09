@@ -1,0 +1,30 @@
+<\your_contract\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    mapping(address => uint) public tokensPurchased;
+
+    constructor(address _token, uint _tokenPrice) {
+        token = _token;
+        tokenPrice = _tokenPrice;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        require(tokensPurchased[msg.sender] + _amount <= 10, "Cannot purchase more than 10 tokens");
+        
+        uint totalCost = _amount * tokenPrice;
+        require(totalCost == msg.value, "Incorrect ETH amount sent for tokens");
+
+        totalTokensSold += _amount;
+        tokensPurchased[msg.sender] += _amount;
+
+        (bool success, ) = address(token).call(abi.encodeWithSignature("transfer(address,uint256)", msg.sender, _amount));
+        require(success, "Token transfer failed");
+    }
+}
+<\your_contract\>

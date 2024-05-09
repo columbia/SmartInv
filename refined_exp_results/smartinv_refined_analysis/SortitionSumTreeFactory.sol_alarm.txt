@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `execute` function updates the `proposal` struct and the `proposal.votedAmount` without ensuring that the state changes are atomic. This could lead to inconsistencies in the contract state if multiple transactions are trying to update the same proposal simultaneously.
+
+2) Atomicity violation: The `execute` function does not use any locking mechanisms to ensure that the operations within the function are executed atomically. This could potentially result in race conditions and unexpected behavior.
+
+3) Cross bridge inconsistency: The `execute` function transfers tokens from `proposal.addr` to the contract address without properly verifying and handling the consistency between different blockchain networks or sidechains. This could lead to an inconsistency in token balances.
+
+4) ID uniqueness violation: The contract does not have a mechanism to ensure the uniqueness of proposal IDs. This could potentially result in conflicts if two proposals end up with the same ID.
+
+5) Business logic flaw: The `endExecute` function checks for a condition where the balance of locked funds should be higher than half of the total voting token supply to consider execution successful. This logic may not be sufficient to ensure the correctness of the execution process.

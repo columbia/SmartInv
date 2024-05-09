@@ -1,0 +1,24 @@
+<\contract\>
+contract MyContract {
+   mapping(address => bool) public approvedUsers;
+   uint public totalTokens;
+   address public tokenAddress;
+   
+   function addApprovedUser(address _user) public {
+       require(msg.sender == owner, "Only owner can add approved users");
+       approvedUsers[_user] = true;
+   }
+   
+   function mintTokens(uint _amount) public {
+       require(approvedUsers[msg.sender], "User is not approved");
+       totalTokens += _amount;
+       require(tokenAddress.transfer(msg.sender, _amount), "Token transfer failed");
+   }
+   
+   function withdrawTokens(address _recipient, uint _amount) public {
+       require(approvedUsers[msg.sender], "User is not approved");
+       totalTokens -= _amount;
+       require(tokenAddress.transfer(_recipient, _amount), "Token transfer failed");
+   }
+}
+<\contract\>

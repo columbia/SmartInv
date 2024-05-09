@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility/ownership: The WETH and USDC tokens in the contract are declared as public, which may expose sensitive data to external parties. Consider changing the visibility to internal or private, and ensure that ownership of these tokens is properly managed.
+
+2) Cross bridge inconsistency: The contract involves transferring tokens (USDC and WETH) between different parties, which could lead to inconsistencies or discrepancies in the token balances if the transfers are not properly managed. Ensure that all token transfers are handled securely to prevent such inconsistencies.
+
+3) Inconsistent state update: The debt and collateral mappings are updated in the liquidate function without proper validation or checks, which could lead to inconsistent or incorrect state updates. Make sure to implement proper validation and checks before updating state variables.
+
+4) Arithmetic flaw: The calculatePrice function calculates a price based on token balances, but it may have arithmetic flaws or precision errors if the calculations involve large numbers or decimals. Double-check the arithmetic calculations to ensure accuracy and prevent potential vulnerabilities.
+
+5) Ether leakage: There are no explicit checks or validations to prevent ether leakage in the contract. Ensure that all ether transfers are carefully managed, and implement checks to prevent unexpected ether leaks or loss.
+
+6) Insufficient gas: The contract may require significant gas to execute certain functions, especially if they involve complex calculations or token transfers. Make sure to account for sufficient gas limits in all functions to avoid out-of-gas errors or failed transactions.

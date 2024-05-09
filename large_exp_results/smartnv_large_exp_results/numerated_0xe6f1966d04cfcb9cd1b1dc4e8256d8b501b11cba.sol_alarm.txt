@@ -1,0 +1,19 @@
+contract TokenTransfer {
+     IERC20 public token;
+     address public owner;
+
+     constructor(address _token) {
+         token = IERC20(_token);
+         owner = msg.sender;
+     }
+
+     function transfer(address _recipient, uint _amount) public {
+         require(msg.sender == owner, "Only owner can transfer");
+         token.transfer(_recipient, _amount);
+     }
+
+     function changeOwner(address _newOwner) public {
+         require(msg.sender == owner, "Only owner can change owner");
+         owner = _newOwner;
+     }
+}

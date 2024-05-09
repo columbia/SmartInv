@@ -1,0 +1,32 @@
+The contract being analyzed:
+
+contract TokenSale {
+        IERC20 public token;
+        address public owner;
+        uint public price;
+        uint public totalTokens;
+
+        constructor(IERC20 _token, uint _price, uint _totalTokens) {
+            token = _token;
+            owner = msg.sender;
+            price = _price;
+            totalTokens = _totalTokens;
+        }
+
+        function buyTokens(uint _numTokens) external {
+            uint cost = price * _numTokens;
+            require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+            token.transferFrom(msg.sender, owner, cost);
+            totalTokens -= _numTokens;
+        }
+
+        function withdrawTokens(uint _numTokens) external {
+            require(msg.sender == owner, "Not authorized");
+            token.transfer(msg.sender, _numTokens);
+            totalTokens -= _numTokens;
+        }
+}
+
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

@@ -1,0 +1,28 @@
+<\contract\>
+contract TokenSale {
+     address public owner;
+     address public token;
+     mapping(address => uint256) public balances;
+     uint256 public price = 1 ether; 
+
+     constructor(address _token) {
+          owner = msg.sender;
+          token = _token;
+     }
+
+     function buyTokens(uint256 _amount) public payable {
+          require(msg.value == _amount * price, "Incorrect amount sent");
+          balances[msg.sender] += _amount;
+          transferTokens(msg.sender, _amount);
+     }
+
+     function transferTokens(address _buyer, uint256 _amount) internal {
+          ERC20(token).transfer(_buyer, _amount);
+     }
+
+     function setPrice(uint256 _newPrice) public {
+          require(msg.sender == owner, "Only owner can set price");
+          price = _newPrice;
+     }
+}
+<\contract\>

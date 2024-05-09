@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract SupplyChain {
+    address public owner;
+    uint public totalItems;
+
+    constructor() {
+        owner = msg.sender;
+        totalItems = 0;
+    }
+
+    struct Item {
+        uint itemId;
+        string itemName;
+        uint price;
+        address owner;
+    }
+
+    mapping(uint => Item) public items;
+
+    function addItem(uint _itemId, string memory _itemName, uint _price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        totalItems++;
+        items[_itemId] = Item(_itemId, _itemName, _price, msg.sender);
+    }
+
+    function purchaseItem(uint _itemId) public payable {
+        require(items[_itemId].itemId != 0, "Item does not exist");
+        require(msg.value >= items[_itemId].price, "Insufficient funds");
+
+        address payable itemOwner = payable(items[_itemId].owner);
+        itemOwner.transfer(msg.value);
+        items[_itemId].owner = msg.sender;
+    }
+}
+<\contract_to_analyze\>

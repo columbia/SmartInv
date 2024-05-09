@@ -1,0 +1,30 @@
+Contract being analyzed: 
+
+contract Vesting {
+    address public beneficiary;
+    uint public cliff;
+    uint public start;
+    uint public duration;
+    uint public released;
+    mapping(address => uint) public vestedAmount;
+
+    constructor(address _beneficiary, uint _cliff, uint _start, uint _duration) public {
+        beneficiary = _beneficiary;
+        cliff = _cliff;
+        start = _start;
+        duration = _duration;
+    }
+
+    function release() public {
+        require(block.timestamp >= start + cliff, "Cliff period has not passed");
+        uint releasable = vestedAmount[msg.sender] - released;
+        require(releasable > 0, "No funds to release");
+        require(block.timestamp >= start + duration, "Vesting duration has not ended");
+        released = released + releasable;
+        // Transfer funds to beneficiary
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

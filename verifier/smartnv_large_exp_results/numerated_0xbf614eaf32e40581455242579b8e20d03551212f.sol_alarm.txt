@@ -1,0 +1,29 @@
+<\contract\> 
+contract MultiSignatureWallet {
+    address[] public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    function submitTransaction(address destination, uint value, bytes data) public {
+        uint transactionId = transactionCount;
+        transactions[transactionId] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        Transaction storage transaction = transactions[transactionId];
+        require(transaction.executed == false, "transaction already executed");
+        // execute transaction logic
+        transaction.executed = true;
+    }
+} 
+
+Output:
+- Incorrect visibility/ownership

@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+     address[] public owners;
+     uint public numConfirmationsRequired;
+     
+     struct Transaction {
+          address to;
+          uint value;
+          bytes data;
+          bool executed;
+          uint numConfirmations;
+      }
+
+     mapping(uint => Transaction) public transactions;
+     mapping(uint => mapping(address => bool)) public confirmations;
+
+    function executeTransaction(uint transactionId) public {
+           Transaction storage transaction = transactions[transactionId];
+           require(transaction.executed == false,"transaction already executed");
+           require(transaction.numConfirmations >= numConfirmationsRequired,"transaction not confirmed");
+           (bool success,) = transaction.to.call{value: transaction.value}(transaction.data);
+           require(success, "transaction execution failed");
+           transaction.executed = true;
+    }
+ }

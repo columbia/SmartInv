@@ -1,0 +1,15 @@
+<\contract\>
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid() public payable {
+             require(msg.value > highestBid, "bid too low");
+             if (highestBid != 0) {
+                 payable(highestBidder).transfer(highestBid); 
+            }
+             highestBidder = msg.sender;
+             highestBid = msg.value;
+         }
+}
+<\contract\>

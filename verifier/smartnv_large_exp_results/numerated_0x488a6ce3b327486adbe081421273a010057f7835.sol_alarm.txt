@@ -1,0 +1,35 @@
+<\analyzed_contract\>
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    bool public releasedToSeller;
+    bool public releasedToBuyer;
+    
+    constructor(address _seller, address _buyer, address _arbiter, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+    }
+    
+    function releaseToSeller() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(releasedToSeller == false && releasedToBuyer == true, "Funds already released");
+        
+        seller.transfer(price);
+        releasedToSeller = true;
+    }
+    
+    function releaseToBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(releasedToBuyer == false && releasedToSeller == true, "Funds already released");
+        
+        buyer.transfer(price);
+        releasedToBuyer = true;
+    }
+} 
+
+Output:
+1) incorrect visibility/ownership

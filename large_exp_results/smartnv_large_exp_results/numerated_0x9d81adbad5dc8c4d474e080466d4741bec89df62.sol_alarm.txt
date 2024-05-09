@@ -1,0 +1,24 @@
+Contract to analyze: 
+
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid(uint amount) public {
+          require(amount > highestBid, "bid not high enough");
+          highestBidder.transfer(highestBid); 
+          highestBidder = msg.sender; 
+          highestBid = amount; 
+     }
+
+     function withdraw() public {
+          require(msg.sender == highestBidder, "only highest bidder can withdraw");
+          msg.sender.transfer(highestBid); 
+          highestBid = 0; 
+     }
+}
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The `bid` function allows any user to become the highest bidder regardless of their authorization or role.
+- Atomicity violation: The `bid` function does not ensure that the transfer of funds and updates to the highestBidder and highestBid variables are done atomically, which could lead to inconsistent state updates.
+- Ether leakage: The `withdraw` function allows anyone to withdraw the funds designated for the highest bidder without proper authorization or checks.

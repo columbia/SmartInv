@@ -1,0 +1,30 @@
+The contract provided is:
+
+```
+contract SmartContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only owner can deposit");
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        require(balance >= amount, "Insufficient balance");
+        balance -= amount;
+    }
+}
+```
+
+Potential vulnerabilities in the SmartContract:
+1) Incorrect visibility/ownership: The `owner` variable is public, which exposes the owner address to everyone. It should be made private.
+2) Privilege escalation: The deposit and withdraw functions only check if the caller is the owner, which could potentially allow unauthorized access to the contract's functions.
+3) Inconsistent state update: The `balance` variable is not updated atomically, which could lead to inconsistent state if multiple transactions modify the balance concurrently.
+4) Insufficient gas: The contract does not specify a gas limit for transactions, which could result in transactions running out of gas and reverting unexpectedly.

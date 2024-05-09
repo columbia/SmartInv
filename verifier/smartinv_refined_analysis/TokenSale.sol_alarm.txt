@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+contract CrossBridge {
+     struct Bridge {
+        address fromToken;
+        address toToken;
+        uint256 amount;
+        bool processed;
+     }
+
+    mapping(uint256 => Bridge) bridges;
+    uint256 public bridgeCount;
+
+    function createBridge(address _fromToken, address _toToken, uint256 _amount) public {
+        bridges[bridgeCount] = Bridge(_fromToken, _toToken, _amount, false);
+        bridgeCount++;
+    }
+
+    function processBridge(uint256 _bridgeId) public {
+        require(!bridges[_bridgeId].processed, "Bridge already processed");
+        
+        // Code for processing bridge transfer
+        
+        bridges[_bridgeId].processed = true;
+    }
+}
+
+Output: 
+1) inconsistent state update
+2) atomicity violation

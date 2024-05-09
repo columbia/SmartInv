@@ -1,0 +1,34 @@
+Contract:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        sender.delegate = to;
+        sender.weight = 0;
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+
+    function giveRightToVote(address voter) public {
+        voters[voter].weight = 1;
+    }
+}
+
+Potential vulnerabilities:
+- Insufficient gas
+- Inconsistent state update
+- Privilege escalation

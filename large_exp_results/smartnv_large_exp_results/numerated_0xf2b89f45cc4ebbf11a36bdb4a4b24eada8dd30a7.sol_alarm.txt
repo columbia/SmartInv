@@ -1,0 +1,21 @@
+The contract to analyze:
+
+contract PaymentGateway {
+    uint public totalAmount;
+    address public owner;
+
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only the owner can deposit funds");
+        totalAmount += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(totalAmount >= amount, "Insufficient funds");
+        totalAmount -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the PaymentGateway contract:
+1) incorrect visibility/ownership

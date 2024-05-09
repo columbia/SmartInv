@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract PaymentContract {
+    address public owner;
+    mapping(uint => uint) payments;
+    uint public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint paymentId, uint amount) external {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[paymentId] = amount;
+        totalPayments += amount;
+    }
+
+    function withdrawPayment(uint paymentId) external {
+        require(payments[paymentId] > 0, "Payment does not exist");
+        require(totalPayments >= payments[paymentId], "Insufficient funds for withdrawal");
+        totalPayments -= payments[paymentId];
+        payments[paymentId] = 0;
+    }
+}
+<\contract_to_analyze\>

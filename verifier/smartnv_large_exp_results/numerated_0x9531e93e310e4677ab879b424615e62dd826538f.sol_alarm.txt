@@ -1,0 +1,21 @@
+Contract to Analyze:
+contract Marketplace {
+     IERC20 public token; 
+     mapping(address => uint) public balances; 
+     mapping(address => bool) public isAdmin; 
+
+     function addToBalance(address user, uint amount) public {
+          require(isAdmin[msg.sender], "only admins can perform this action");
+          balances[user] += amount; 
+     }
+
+     function withdrawBalance() public {
+          require(balances[msg.sender] > 0, "insufficient balance");
+          uint amount = balances[msg.sender];
+          balances[msg.sender] = 0;
+          token.transfer(msg.sender, amount);
+     }
+}
+Potential Vulnerabilities: 
+1) privilege escalation
+2) inconsistent state update

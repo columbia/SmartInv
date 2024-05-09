@@ -1,0 +1,59 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+          uint256 weight;
+          bool voted;
+          address delegate;
+          uint256 vote;
+     }
+     struct Proposal {
+          uint256 voteCount;
+     }
+    
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+     address public chairperson;
+
+     modifier onlyChairperson {
+          require(msg.sender == chairperson, "Only chairperson can call this function");
+          _;
+     }
+
+     function submitProposal() public {
+          uint256 id = proposals.length;
+          proposals.push(Proposal(0));
+     }
+    
+     function delegate(address to) public {
+          address sender = msg.sender;
+          require(!voters[sender].voted, "You have already voted.");
+          require(to != sender, "Self-delegation is disallowed.");
+          while (voters[to].delegate != address(0)) {
+               to = voters[to].delegate;
+               require(to != sender, "Found delegate loop.");
+          }
+          voters[sender].voted = true;
+          voters[sender].delegate = to;
+          Voter storage delegateTo = voters[to];
+
+          if (delegateTo.voted) {
+               proposals[delegateTo.vote].voteCount += voters[sender].weight;
+          } else {
+               delegateTo.weight += voters[sender].weight;
+          }
+     }
+
+     function vote(uint proposalId) public {
+          address sender = msg.sender;
+          Voter storage senderVote = voters[sender];
+          require(!senderVote.voted, "Already voted.");
+          senderVote.voted = true;
+          senderVote.vote = proposalId;
+          proposals[proposalId].voteCount += senderVote.weight;
+     }
+
+     function endVoting() public onlyChairperson {
+          // logic to calculate winning proposal
+     }
+}
+<\contract\>

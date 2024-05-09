@@ -1,0 +1,31 @@
+The contract to analyze for potential vulnerabilities:
+
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public quorum;
+    mapping(bytes32 => bool) public transactions;
+
+    function createTransaction(address to, uint value, bytes memory data) public {
+        bytes32 txHash = keccak256(abi.encodePacked(to, value, data));
+        transactions[txHash] = true;
+    }
+
+    function confirmTransaction(bytes32 txHash) public {
+        require(isOwner[msg.sender], "not an owner");
+        require(transactions[txHash], "transaction not found");
+    }
+
+    function addOwner(address owner) public {
+        require(!isOwner[owner], "already an owner");
+        owners.push(owner);
+        isOwner[owner] = true;
+        quorum = owners.length / 2 + 1;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation: The createTransaction function does not ensure the uniqueness of transaction IDs, which could lead to false confirmations or other issues.
+2) Incorrect visibility/ownership: The confirmTransaction function relies on the assumption that only owners can confirm transactions, which may not be correctly enforced.
+3) Insufficient gas: The function addOwner adds a new owner without checking gas availability, which could result in failed transactions due to out-of-gas errors.
+4) Business logic flaw: The quorum calculation in the addOwner function may lead to incorrect quorum requirements, affecting the secure operation of the multi-signature wallet.

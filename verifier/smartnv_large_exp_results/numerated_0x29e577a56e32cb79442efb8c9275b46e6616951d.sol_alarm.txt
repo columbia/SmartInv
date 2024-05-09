@@ -1,0 +1,26 @@
+<\contract\> 
+contract VotingSystem {
+         mapping(address => uint) public votes;
+         address public winningProposal;
+         uint public winningVotes;
+
+         function vote(address proposal) public {
+             require(votes[msg.sender] == 0, "voter has already voted");
+             votes[msg.sender] = proposal;
+         }
+
+         function tally() public {
+             for (uint i = 0; i < votes.length; i++) {
+                 if (votes[i] > winningVotes) {
+                     winningVotes = votes[i];
+                     winningProposal = i;
+                 }
+             }
+         }
+}
+<\contract\> 
+
+Outputs:
+1) business logic flaw
+2) inconsistent state update
+3) integer overflow/underflow

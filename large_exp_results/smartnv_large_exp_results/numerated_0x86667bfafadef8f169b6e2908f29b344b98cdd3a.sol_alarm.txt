@@ -1,0 +1,38 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproved;
+     bool public sellerApproved;
+     uint public escrowAmount;
+
+     constructor(address _seller, address _arbiter) {
+          buyer = msg.sender;
+          seller = _seller;
+          arbiter = _arbiter;
+     }
+
+     function deposit() public payable {
+          require(msg.sender == buyer, "Only buyer can deposit");
+          escrowAmount += msg.value;
+     }
+
+     function approve() public {
+          if (msg.sender == seller) {
+              sellerApproved = true;
+          } else if (msg.sender == buyer) {
+              buyerApproved = true;
+          } 
+          if (sellerApproved && buyerApproved){
+              release();
+          }
+     }
+
+     function release() private {
+          require(arbiter == msg.sender, "Only arbiter can release funds");
+          payable(seller).transfer(escrowAmount);
+     }
+
+}
+<\contract\>

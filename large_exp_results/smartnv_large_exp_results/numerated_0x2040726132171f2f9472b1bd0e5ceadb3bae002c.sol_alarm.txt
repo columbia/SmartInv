@@ -1,0 +1,33 @@
+The contract provided for analysis is:
+
+```solidity
+contract VotingSystem {
+    address public owner;
+    uint public totalVotes;
+
+    mapping(address => uint) public userVotes;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    function vote() public {
+        totalVotes++;
+        userVotes[msg.sender]++;
+    }
+
+    function changeOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+
+    function resetVotes(address user) public onlyOwner {
+        totalVotes -= userVotes[user];
+        userVotes[user] = 0;
+    }
+}
+```
+
+Output:
+- `privilege escalation`
+- `incorrect visibility/ownership`

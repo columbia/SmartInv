@@ -1,0 +1,36 @@
+<\contract\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public price;
+     bool public released;
+     bool public refunded;
+
+     constructor(address _buyer, address _seller, uint _price) {
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+         released = false;
+         refunded = false;
+     }
+
+     function release() public {
+         require(msg.sender == buyer, "Only buyer can release funds");
+         require(released == false, "Funds already released");
+         released = true;
+         // transfer fund to seller
+     }
+
+     function refund() public {
+         require(msg.sender == seller, "Only seller can refund");
+         require(refunded == false, "Funds already refunded");
+         refunded = true;
+         // refund fund to buyer
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership for the release() function, as anyone can call it which may not be intended.
+2) Inconsistent state update with the released and refunded flags, as both can be set to true independently, leading to unexpected behavior.
+3) Business logic flaw as there is no actual transfer of funds happening in the release() and refund() functions, leaving the funds in limbo.

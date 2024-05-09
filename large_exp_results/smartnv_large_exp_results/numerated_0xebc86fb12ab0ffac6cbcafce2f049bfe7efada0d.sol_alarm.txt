@@ -1,0 +1,26 @@
+<\contract\>
+contract PaymentContract {
+    address public payer;
+    address public payee;
+    uint public amount;
+
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+    }
+
+    function makePayment() public {
+        require(msg.sender == payer, "Only payer can make payment");
+        payee.transfer(amount);
+    }
+
+    function updateAmount(uint _newAmount) public {
+        amount = _newAmount;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The `makePayment` function should have appropriate access control to ensure that only the payer can initiate the payment. Without proper access control, anyone can potentially trigger the payment.
+- Atomicity violation: If the `updateAmount` function is called between the check of the `require` statement and the actual transfer of funds in the `makePayment` function, it can lead to an atomicity violation where the payment is made with an incorrect amount.

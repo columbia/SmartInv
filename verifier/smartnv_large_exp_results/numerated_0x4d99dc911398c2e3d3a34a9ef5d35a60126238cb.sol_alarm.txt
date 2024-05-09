@@ -1,0 +1,18 @@
+<\contract\>
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swapTokens(uint amountA, uint amountB) public {
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+
+        tokenA.transfer(msg.sender, amountB);
+        tokenB.transfer(msg.sender, amountA);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the "TokenSwap" contract are:
+1) Inconsistent state update: The tokens are transferred before the corresponding tokens are received in the function "swapTokens". This could lead to an inconsistent state if the transfer fails halfway.
+2) Atomicity violation: The swapping of tokens is not done atomically, which could lead to a situation where one token is transferred but the other is not, leaving the contract and the user in an undesired state.

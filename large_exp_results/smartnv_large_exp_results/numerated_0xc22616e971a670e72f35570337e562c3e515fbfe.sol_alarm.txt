@@ -1,0 +1,33 @@
+Contract to be analyzed:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    function initiate(address _seller) public payable {
+        require(msg.value > 0, "Amount must be greater than 0");
+        require(_seller != address(0), "Invalid seller address");
+        buyer = msg.sender;
+        seller = _seller;
+        amount = msg.value;
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        address payable _seller = address(uint160(seller));
+        _seller.transfer(amount);
+        amount = 0;
+    }
+
+    function cancel() public {
+        require(msg.sender == buyer, "Only buyer can cancel transaction");
+        address payable _buyer = address(uint160(buyer));
+        _buyer.transfer(amount);
+        amount = 0;
+    }
+}
+
+Output: 
+- insufficient gas
+- incorrect visibility/ownership

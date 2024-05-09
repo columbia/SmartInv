@@ -1,0 +1,20 @@
+<\your_contract_here\>
+contract TokenSwap {
+         IERC20 public token1;
+         IERC20 public token2;
+         address public owner;
+         
+         function swapTokens(uint amount1, uint amount2) public {
+             require(token1.balanceOf(msg.sender) >= amount1, "Insufficient balance for token1");
+             require(token2.balanceOf(msg.sender) >= amount2, "Insufficient balance for token2");
+             
+             token1.transferFrom(msg.sender, address(this), amount1);
+             token2.transferFrom(msg.sender, address(this), amount2);
+             
+             token1.transfer(msg.sender, amount2);
+             token2.transfer(msg.sender, amount1);
+         }
+}
+The potential vulnerabilities in the contract are: 
+1) Inconsistent state update: The transfer of tokens happens before updating the sender's balance, which can lead to an inconsistent state if the token transfer fails after transferring the other token. 
+2) Atomicity violation: The swapping of tokens is not done atomically, meaning if one token transfer fails, the other token transfer will still go through, resulting in an incomplete swap operation.

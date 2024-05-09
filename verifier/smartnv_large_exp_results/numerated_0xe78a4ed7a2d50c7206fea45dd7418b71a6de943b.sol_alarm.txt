@@ -1,0 +1,20 @@
+<\analyzed_contract\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint _amount) public {
+        require(_amount > highestBid, "Bid amount must be higher than current highest bid");
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = _amount;
+    }
+
+    function withdrawBid() public {
+        require(msg.sender == highestBidder, "You are not the highest bidder");
+        msg.sender.transfer(highestBid);
+        highestBid = 0;
+    }
+}</\analyzed_contract\>

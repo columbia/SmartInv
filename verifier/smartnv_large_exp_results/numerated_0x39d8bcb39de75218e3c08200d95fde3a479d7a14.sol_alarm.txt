@@ -1,0 +1,29 @@
+The contract to analyze for potential vulnerabilities is:
+
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributions;
+    uint public totalContributions;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function contribute() public payable {
+        contributions[msg.sender] += msg.value;
+        totalContributions += msg.value;
+    }
+    
+    function withdrawFunds() public {
+        require(msg.sender == owner, "only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+The potential vulnerabilities in the Crowdsale contract are:
+- Incorrect visibility/ownership (withdrawFunds can be accessed by anyone)
+- Insufficient gas (possible gas limit issues when withdrawing funds)
+
+Therefore, the vulnerabilities in the Crowdsale contract are:
+- incorrect visibility/ownership
+- insufficient gas

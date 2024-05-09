@@ -1,0 +1,29 @@
+<\analyzed_contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) payable {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+
+    function approve(bool _isBuyer) public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        if (_isBuyer) {
+            buyerApproved = true;
+        } else {
+            sellerApproved = true;
+        }
+        if (buyerApproved && sellerApproved) {
+            seller.transfer(amount);
+        }
+    }
+}
+<\analyzed_contract\>

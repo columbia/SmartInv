@@ -1,0 +1,45 @@
+<\contract\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproval;
+     bool public sellerApproval;
+     bool public arbiterApproval;
+     uint public amount;
+     enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE }
+     State public currentState;
+
+     constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         amount = _amount;
+         currentState = State.AWAITING_PAYMENT;
+     }
+
+     function confirmPayment() public {
+         require(msg.sender == buyer, "only buyer can confirm payment");
+         require(currentState == State.AWAITING_PAYMENT, "payment has already been confirmed");
+         currentState = State.AWAITING_DELIVERY;
+     }
+
+     function confirmDelivery() public {
+         require(msg.sender == buyer || msg.sender == arbiter, "only buyer or arbiter can confirm delivery");
+         require(currentState == State.AWAITING_DELIVERY, "delivery confirmation has already been done");
+         currentState = State.COMPLETE;
+     }
+
+     function refund() public {
+         require(msg.sender == seller, "only seller can request refund");
+         require(currentState == State.AWAITING_DELIVERY, "refund cannot be processed at this stage");
+         seller.transfer(amount);
+         currentState = State.COMPLETE;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership in functions.
+2) Inconsistent state update in functions.
+3) Cross bridge inconsistency among multiple parties in functions.

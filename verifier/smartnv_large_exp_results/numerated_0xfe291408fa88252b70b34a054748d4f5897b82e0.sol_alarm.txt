@@ -1,0 +1,22 @@
+<\analyzed_contract\> 
+contract PaymentProcessor {
+    uint public totalPayments;
+    mapping(address => uint) public payments;
+
+    function makePayment() public payable {
+        totalPayments += msg.value;
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdrawPayment() public {
+        uint payment = payments[msg.sender];
+        require(payment > 0, "No payments to withdraw");
+        msg.sender.transfer(payment);
+        totalPayments -= payment;
+        payments[msg.sender] = 0;
+    }
+}
+<\analyzed_contract\> 
+
+<\output\> 
+insufficient gas

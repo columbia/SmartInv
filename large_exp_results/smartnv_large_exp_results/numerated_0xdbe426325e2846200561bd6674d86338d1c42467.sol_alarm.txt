@@ -1,0 +1,36 @@
+<\contract_to_analyze\>
+contract Lottery {
+    mapping(address => uint) public participantTickets;
+    address[] public participants;
+
+    function buyTicket(uint ticketCount) public {
+        require(ticketCount > 0, "Ticket count must be greater than 0");
+        uint ticketPrice = 0.1 ether;
+        uint totalPrice = ticketPrice * ticketCount;
+        require(msg.value >= totalPrice, "Insufficient funds sent to buy tickets");
+
+        for (uint i = 0; i < ticketCount; i++) {
+            participants.push(msg.sender);
+            participantTickets[msg.sender]++;
+        }
+
+        if(msg.value > totalPrice) {
+            msg.sender.transfer(msg.value - totalPrice);
+        }
+    }
+
+    function selectWinner() public {
+        require(msg.sender == owner, "Only owner can select winner");
+        
+        uint index = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % participants.length;
+        address winner = participants[index];
+        
+        // Transfer balance to winner
+        uint balance = address(this).balance;
+        participantTickets[winner] = 0;
+        participants = new address[](0);
+        
+        winner.transfer(balance);
+    }
+}
+<\contract_to_analyze\>

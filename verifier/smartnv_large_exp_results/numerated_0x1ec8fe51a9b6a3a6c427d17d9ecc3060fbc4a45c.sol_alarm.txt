@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract Marketplace {
+         IERC20 public token;
+         mapping(uint => uint) public productPrices;
+         mapping(address => uint) public userBalances;
+
+         function buyProduct(uint productId) public {
+             uint price = productPrices[productId];
+             require(userBalances[msg.sender] >= price, "insufficient funds");
+             token.transferFrom(msg.sender, address(this), price);
+             userBalances[msg.sender] -= price;
+         }
+
+         function addProduct(uint productId, uint price) public {
+             require(productPrices[productId] == 0, "product already exists");
+             productPrices[productId] = price;
+         }
+
+         function withdrawFunds(uint amount) public {
+             require(userBalances[msg.sender] >= amount, "insufficient funds");
+             token.transfer(msg.sender, amount);
+             userBalances[msg.sender] -= amount;
+         }
+}
+<\contract_to_analyze\>

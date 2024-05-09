@@ -1,0 +1,40 @@
+<\analyzed_contract\>
+contract Escrow {
+     mapping(address => uint) public deposits;
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+     State public currentState;
+     
+     constructor(address _buyer, address _seller, address _arbiter) public {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         currentState = State.AWAITING_PAYMENT;
+     }
+     
+     function deposit() public payable {
+         require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can deposit");
+         deposits[msg.sender] += msg.value;
+     }
+     
+     function confirmPayment() public {
+         require(msg.sender == buyer, "Only buyer can confirm payment");
+         require(deposits[buyer] == address(this).balance, "Deposit amount does not equal contract balance");
+         currentState = State.AWAITING_DELIVERY;
+     }
+     
+     function confirmDelivery() public {
+         require(msg.sender == buyer, "Only buyer can confirm delivery");
+         currentState = State.COMPLETE;
+         deposits[seller] += address(this).balance;
+     }
+     
+     function refundPayment() public {
+         require(msg.sender == seller, "Only seller can issue refund");
+         currentState = State.REFUNDED;
+         deposits[buyer] = 0;
+         address(buyer).transfer(address(this).balance);
+     }
+}

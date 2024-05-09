@@ -1,0 +1,28 @@
+The contract to be analyzed:
+
+contract SupplyChain {
+    uint public totalSupply;
+    address public owner;
+
+    constructor(uint _totalSupply) {
+        totalSupply = _totalSupply;
+        owner = msg.sender;
+    }
+
+    function updateTotalSupply(uint _newSupply) public {
+        require(msg.sender == owner, "Only the owner can update the total supply");
+        totalSupply = _newSupply;
+    }
+
+    function increaseSupply(uint _amount) public {
+        totalSupply += _amount;
+    }
+
+    function decreaseSupply(uint _amount) public {
+        totalSupply -= _amount;
+    }
+}
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership: The owner of the contract is set in the constructor and checked in the updateTotalSupply function, but the owner variable is set as public, which allows anyone to access and change the owner address.
+2) Integer overflow/underflow: The increaseSupply and decreaseSupply functions do not have any checks for potential integer overflow or underflow when modifying the totalSupply variable.

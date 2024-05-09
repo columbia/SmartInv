@@ -1,0 +1,36 @@
+The contract provided for analysis is:
+
+```solidity
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    mapping(address => bool) public hasVoted;
+
+    function vote(uint _numTokens) public {
+        require(!hasVoted[msg.sender], "You have already voted.");
+        votes[msg.sender] = _numTokens;
+        hasVoted[msg.sender] = true;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        uint total = 0;
+        for (uint i = 0; i < msg.sender.balance; i++) {
+            total += votes[msg.sender];
+        }
+        return total;
+    }
+}
+```
+
+The potential vulnerability in the contract are:
+1) Integer overflow/underflow: The loop in the `getTotalVotes` function could result in an integer overflow if `msg.sender.balance` is very large.
+2) Incorrect visibility/ownership: The visibility of the `votes` and `hasVoted` mappings are public, which exposes sensitive data to anyone.
+3) Inconsistent state update: The `hasVoted` mapping is not updated in the `vote` function before updating the `votes` mapping, potentially leading to inconsistent state.
+4) Atomicity violation: The `vote` function is not atomic, meaning that multiple transactions could modify the state of `hasVoted` and `votes` simultaneously.
+5) Insufficient gas: The loop in the `getTotalVotes` function could consume too much gas, causing the function to fail in case of high values of `msg.sender.balance`.
+
+Therefore, the potential vulnerabilities in the contract are: 
+- Integer overflow/underflow
+- Incorrect visibility/ownership
+- Inconsistent state update
+- Atomicity violation
+- Insufficient gas

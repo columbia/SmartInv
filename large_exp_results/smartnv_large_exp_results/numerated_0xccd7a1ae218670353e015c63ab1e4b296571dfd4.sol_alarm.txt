@@ -1,0 +1,41 @@
+The contract provided for analysis is:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The contract lacks updating the 'proposal' state in the 'endExecute' function, leading to possible inconsistency in the state of the contract.
+2) Incorrect visibility/ownership: The visibility and ownership of certain functions and variables are not specified, which can lead to issues related to access control and ownership.
+3) Business logic flaw: There may be potential issues with the business logic of the contract, especially in how proposals are handled and executed.
+4) Privilege escalation: The contract may be vulnerable to privilege escalation attacks, as there are certain operations that are not properly restricted to specific roles or users.

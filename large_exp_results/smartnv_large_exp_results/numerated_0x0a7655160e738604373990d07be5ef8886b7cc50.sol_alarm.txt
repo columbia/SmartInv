@@ -1,0 +1,44 @@
+<\contract\> 
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public arbiterFee;
+    uint public amount;
+    enum State { Created, Locked, Inactive }
+    State public state;
+
+    constructor(address _seller, address _buyer, address _arbiter) public {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(state == State.Created, "Escrow is not in the Created state");
+        amount += msg.value;
+    }
+
+    function confirmPurchase() public {
+        require(state == State.Created, "Escrow is not in the Created state");
+        require(msg.sender == buyer, "Only buyer can confirm purchase");
+        state = State.Locked;
+    }
+
+    function refundBuyer() public {
+        require(state == State.Locked, "Escrow is not in the Locked state");
+        require(msg.sender == arbiter, "Only arbiter can initiate a refund");
+        buyer.transfer(amount);
+        state = State.Inactive;
+    }
+
+    function releaseFunds() public {
+        require(state == State.Locked, "Escrow is not in the Locked state");
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        seller.transfer(amount - arbiterFee);
+        arbiter.transfer(arbiterFee);
+        state = State.Inactive;
+    }
+}
+<\contract\>

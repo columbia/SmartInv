@@ -1,0 +1,30 @@
+Contract to analyze:
+
+contract Ecommerce {
+    address public owner;
+    uint public productPrice;
+    mapping(address => uint) public purchases;
+
+    constructor() {
+        owner = msg.sender;
+        productPrice = 100; // 100 ethers for the product
+    }
+
+    function buyProduct() public payable {
+        require(msg.value >= productPrice, "Insufficient payment");
+        purchases[msg.sender] += 1;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Potential vulnerabilities:
+- integer overflow/underflow: The purchase count stored in the mapping can potentially overflow if too many purchases are made.
+- inconsistent state update: The productPrice is fixed and not updated, leading to potential inconsistencies if the price changes.
+- incorrect visibility/ownership: The withdrawFunds function only checks for the owner address but doesn't restrict access to unauthorized parties. 
+
+Output:
+integer overflow/underflow, inconsistent state update, incorrect visibility/ownership

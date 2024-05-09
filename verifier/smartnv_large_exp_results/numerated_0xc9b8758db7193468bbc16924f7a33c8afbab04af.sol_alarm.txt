@@ -1,0 +1,53 @@
+The contract provided for analysis:
+contract MultiSigWallet {
+    address[] owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) transactions;
+    mapping(uint => mapping(address => bool)) approvals;
+    
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    constructor(address[] memory _owners) {
+        owners = _owners;
+    }
+
+    function submitTransaction(address _to, uint _value, bytes memory _data) public {
+        uint transactionId = transactionCount++;
+        transactions[transactionId] = Transaction(_to, _value, _data, false);
+        approvals[transactionId][msg.sender] = true;
+    }
+
+    function approveTransaction(uint _transactionId) public {
+        require(approvals[_transactionId][msg.sender] == false, "Transaction already approved");
+        approvals[_transactionId][msg.sender] = true;
+    }
+
+    function executeTransaction(uint _transactionId) public {
+        require(transactions[_transactionId].executed == false, "Transaction already executed");
+        require(isApproved(_transactionId), "Transaction not approved by all owners");
+
+        Transaction storage transaction = transactions[_transactionId];
+        transaction.executed = true;
+        (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+    }
+
+    function isApproved(uint _transactionId) private view returns (bool) {
+        uint approvalsCount;
+        for (uint i = 0; i < owners.length; i++) {
+            if (approvals[_transactionId][owners[i]] == true) {
+                approvalsCount++;
+            }
+        }
+        return approvalsCount == owners.length;
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+1) Inconsistent state update
+2) Integer overflow/underflow

@@ -1,0 +1,34 @@
+<\contract\>
+contract Marketplace {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public productId;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyProduct(uint _productId, uint _price) public payable {
+        require(balances[msg.sender] >= _price, "Insufficient balance");
+        require(productId == _productId, "Invalid product ID");
+        
+        balances[msg.sender] -= _price;
+        balances[owner] += _price;
+    }
+
+    function addBalance(address _address, uint _amount) public {
+        require(msg.sender == owner, "Only owner allowed");
+        
+        balances[_address] += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+
+        (bool success, ) = msg.sender.call{value: _amount}("");
+        require(success, "Transfer failed");
+        
+        balances[msg.sender] -= _amount;
+    }
+}
+<\contract\>

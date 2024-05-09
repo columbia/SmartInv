@@ -1,0 +1,30 @@
+<\contract_3\> 
+contract PaymentSplitter {
+        address [] internal payees;
+        uint256 [] internal shares;
+  
+        function release() public {
+          require(payees.length > 0, "No payees");
+  
+          uint256 totalAmount = address(this).balance;
+  
+          for (uint256 i = 0; i < payees.length; i++) {
+             address payable payee = payable(payees[i]);
+             uint256 amount = totalAmount * shares[i] / 100;
+             payee.transfer(amount);
+          }
+        }
+  
+        function addPayee(address _payee, uint256 _share) external {
+          require(msg.sender == owner, "Not owner");
+          require(_payee != address(0), "Invalid address");
+          require(_share > 0, "Invalid share");
+  
+          payees.push(_payee);
+          shares.push(_share);
+        }
+}
+<\contract_3\> 
+
+The potential vulnerabilities identified in contract_3:
+- Incorrect visibility/ownership in the addPayee function.

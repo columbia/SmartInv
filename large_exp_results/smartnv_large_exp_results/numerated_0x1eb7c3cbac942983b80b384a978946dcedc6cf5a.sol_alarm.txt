@@ -1,0 +1,33 @@
+The contract below may have potential vulnerabilities:
+
+<\contract\>
+contract TokenSale {
+   address public admin;
+   IERC20 public token;
+   uint public tokenPrice;
+   uint public totalTokens;
+   mapping(address => uint) public balances;
+   
+   constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+       admin = msg.sender;
+       token = _token;
+       tokenPrice = _tokenPrice;
+       totalTokens = _totalTokens;
+   }
+   
+   function buyTokens(uint _numberOfTokens) public {
+       require(_numberOfTokens * tokenPrice <= balances[msg.sender], "Insufficient balance for purchase");
+       require(_numberOfTokens <= totalTokens, "Not enough tokens available for purchase");
+       
+       uint cost = _numberOfTokens * tokenPrice;
+       balances[msg.sender] -= cost;
+       totalTokens -= _numberOfTokens;
+       token.transfer(msg.sender, _numberOfTokens);
+   }
+   
+   function depositTokens(uint _amount) public {
+       balances[msg.sender] += _amount;
+       token.transferFrom(msg.sender, address(this), _amount);
+   }
+}
+<\contract\>

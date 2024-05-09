@@ -1,0 +1,33 @@
+<\Contract\> 
+contract Crowdsale {
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice) public {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        uint totalPrice = _amount * tokenPrice;
+        require(msg.value >= totalPrice, "Insufficient funds");
+
+        balances[msg.sender] += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        msg.sender.transfer(_amount * tokenPrice);
+    }
+
+    function changePrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can change price");
+        tokenPrice = _newPrice;
+    }
+}
+<\Contract\> 
+
+Output: 
+- incorrect visibility/ownership

@@ -1,0 +1,31 @@
+<\contract_to_analyze\>
+contract Lottery {
+    mapping(address => uint) public tickets;
+    uint public ticketPrice;
+    address public winner;
+
+    function buyTicket() public payable {
+        require(msg.value == ticketPrice, "Incorrect ticket price");
+        tickets[msg.sender]++;
+    }
+
+    function selectWinner() public {
+        require(msg.sender == owner, "Only owner can select winner");
+        uint index = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % GetNumberOfPlayers();
+        winner = GetPlayerAtIndex(index);
+        payWinner();
+    }
+
+    function payWinner() internal {
+        winner.transfer(address(this).balance);
+    }
+
+    function GetNumberOfPlayers() public view returns (uint) {
+        return address(this).balance / ticketPrice;
+    }
+
+    function GetPlayerAtIndex(uint index) public view returns (address) {
+        // implementation to return player address at given index
+    }
+}
+<\contract_to_analyze\>

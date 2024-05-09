@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) external payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        ERC20Token(tokenAddress).transfer(msg.sender, _amount);
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,16 @@
+The contract provided for analysis:
+
+contract CrossBridge {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swap(uint amount, address recipient) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(recipient, amount);
+    }
+}
+
+Potential vulnerabilities in the CrossBridge contract:
+1) Inconsistent state update
+2) Atomicity violation

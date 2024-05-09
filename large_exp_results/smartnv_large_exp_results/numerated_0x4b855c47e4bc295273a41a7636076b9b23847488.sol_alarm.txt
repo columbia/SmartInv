@@ -1,0 +1,29 @@
+Contract:
+
+```solidity
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if(highestBidder != address(0)){
+            highestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        msg.sender.transfer(highestBid);
+        highestBid = 0;
+        highestBidder = address(0);
+    }
+}
+```
+
+Output: 
+- Integer overflow/underflow: The contract does not handle potential overflow or underflow when dealing with bids. An attacker could manipulate the bid amount to cause an overflow or underflow.
+- Atomicity violation: The operations in the `bid()` function are not atomic, allowing for potential reentrancy attacks where an attacker can manipulate the state between operations.
+- Incorrect visibility/ownership: The `highestBid` and `highestBidder` variables are public, exposing internal state to all users, which could lead to unexpected behavior or manipulation.

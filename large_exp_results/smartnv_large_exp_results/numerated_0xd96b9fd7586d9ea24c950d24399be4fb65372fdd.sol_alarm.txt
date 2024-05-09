@@ -1,0 +1,27 @@
+<\contract\>
+contract Escrow {
+         uint public id;
+         address public seller;
+         address public buyer;
+         uint public amount;
+         bool public sellerApproval;
+         bool public buyerApproval;
+
+         constructor(uint _id, address _seller, address _buyer, uint _amount) public {
+             id = _id;
+             seller = _seller;
+             buyer = _buyer;
+             amount = _amount;
+         }
+
+         function approveSeller() public {
+             require(msg.sender == seller, "Only seller can approve");
+             sellerApproval = true;
+         }
+
+         function approveBuyer() public {
+             require(msg.sender == buyer, "Only buyer can approve");
+             buyerApproval = true;
+         }
+}
+<\contract\>

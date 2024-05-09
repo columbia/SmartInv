@@ -1,0 +1,39 @@
+1 {{
+2   "language": "Solidity",
+3   "settings": {
+4     "evmVersion": "istanbul",
+5     "libraries": {},
+6     "metadata": {
+7       "bytecodeHash": "ipfs",
+8       "useLiteralContent": true
+9     },
+10     "optimizer": {
+11       "enabled": true,
+12       "runs": 10
+13     },
+14     "remappings": [],
+15     "outputSelection": {
+16       "*": {
+17         "*": [
+18           "evm.bytecode",
+19           "evm.deployedBytecode",
+20           "devdoc",
+21           "userdoc",
+22           "metadata",
+23           "abi"
+24         ]
+25       }
+26     }
+27   },
+28   "sources": {
+29     "contracts/vendor/proxy/EIP173Proxy.sol": {
+30       "content": "// SPDX-License-Identifier: GPL-3.0\npragma solidity 0.8.4;\n\nimport \"./Proxy.sol\";\n\ninterface ERC165 {\n    function supportsInterface(bytes4 id) external view returns (bool);\n}\n\n///@notice Proxy implementing EIP173 for ownership management\ncontract EIP173Proxy is Proxy {\n    // ////////////////////////// EVENTS ///////////////////////////////////////////////////////////////////////\n\n    event ProxyAdminTransferred(\n        address indexed previousAdmin,\n        address indexed newAdmin\n    );\n\n    // /////////////////////// CONSTRUCTOR //////////////////////////////////////////////////////////////////////\n\n    constructor(\n        address implementationAddress,\n        address adminAddress,\n        bytes memory data\n    ) payable {\n        _setImplementation(implementationAddress, data);\n        _setProxyAdmin(adminAddress);\n    }\n\n    // ///////////////////// EXTERNAL ///////////////////////////////////////////////////////////////////////////\n\n    function proxyAdmin() external view returns (address) {\n        return _proxyAdmin();\n    }\n\n    function supportsInterface(bytes4 id) external view returns (bool) {\n        if (id == 0x01ffc9a7 || id == 0x7f5828d0) {\n            return true;\n        }\n        if (id == 0xFFFFFFFF) {\n            return false;\n        }\n\n        ERC165 implementation;\n        // solhint-disable-next-line security/no-inline-assembly\n        assembly {\n            implementation := sload(\n                0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc\n            )\n        }\n\n        // Technically this is not standard compliant as ERC-165 require 30,000 gas which that call cannot ensure\n        // because it is itself inside `supportsInterface` that might only get 30,000 gas.\n        // In practise this is unlikely to be an issue.\n        try implementation.supportsInterface(id) returns (bool support) {\n            return support;\n        } catch {\n            return false;\n        }\n    }\n\n    function transferProxyAdmin(address newAdmin) external onlyProxyAdmin {\n        _setProxyAdmin(newAdmin);\n    }\n\n    function upgradeTo(address newImplementation) external onlyProxyAdmin {\n        _setImplementation(newImplementation, \"\");\n    }\n\n    function upgradeToAndCall(address newImplementation, bytes calldata data)\n        external\n        payable\n        onlyProxyAdmin\n    {\n        _setImplementation(newImplementation, data);\n    }\n\n    // /////////////////////// MODIFIERS ////////////////////////////////////////////////////////////////////////\n\n    modifier onlyProxyAdmin() {\n        require(msg.sender == _proxyAdmin(), \"NOT_AUTHORIZED\");\n        _;\n    }\n\n    // ///////////////////////// INTERNAL //////////////////////////////////////////////////////////////////////\n\n    function _proxyAdmin() internal view returns (address adminAddress) {\n        // solhint-disable-next-line security/no-inline-assembly\n        assembly {\n            adminAddress := sload(\n                0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103\n            )\n        }\n    }\n\n    function _setProxyAdmin(address newAdmin) internal {\n        address previousAdmin = _proxyAdmin();\n        // solhint-disable-next-line security/no-inline-assembly\n        assembly {\n            sstore(\n                0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103,\n                newAdmin\n            )\n        }\n        emit ProxyAdminTransferred(previousAdmin, newAdmin);\n    }\n}\n"
+31     },
+32     "contracts/vendor/proxy/EIP173ProxyWithReceive.sol": {
+33       "content": "// SPDX-License-Identifier: GPL-3.0\npragma solidity 0.8.4;\n\nimport \"./EIP173Proxy.sol\";\n\n///@notice Proxy implementing EIP173 for ownership management that accept ETH via receive\ncontract EIP173ProxyWithReceive is EIP173Proxy {\n    constructor(\n        address implementationAddress,\n        address ownerAddress,\n        bytes memory data\n    ) payable EIP173Proxy(implementationAddress, ownerAddress, data) {}\n\n    receive() external payable override {}\n}\n"
+34     },
+35     "contracts/vendor/proxy/Proxy.sol": {
+36       "content": "// SPDX-License-Identifier: GPL-3.0\npragma solidity 0.8.4;\n\n// EIP-1967\nabstract contract Proxy {\n    // /////////////////////// EVENTS ///////////////////////////////////////////////////////////////////////////\n\n    event ProxyImplementationUpdated(\n        address indexed previousImplementation,\n        address indexed newImplementation\n    );\n\n    // ///////////////////// EXTERNAL ///////////////////////////////////////////////////////////////////////////\n\n    // prettier-ignore\n    receive() external payable virtual {\n        revert(\"ETHER_REJECTED\"); // explicit reject by default\n    }\n\n    fallback() external payable {\n        _fallback();\n    }\n\n    // ///////////////////////// INTERNAL //////////////////////////////////////////////////////////////////////\n\n    function _fallback() internal {\n        // solhint-disable-next-line security/no-inline-assembly\n        assembly {\n            let implementationAddress := sload(\n                0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc\n            )\n            calldatacopy(0x0, 0x0, calldatasize())\n            let success := delegatecall(\n                gas(),\n                implementationAddress,\n                0x0,\n                calldatasize(),\n                0,\n                0\n            )\n            let retSz := returndatasize()\n            returndatacopy(0, 0, retSz)\n            switch success\n                case 0 {\n                    revert(0, retSz)\n                }\n                default {\n                    return(0, retSz)\n                }\n        }\n    }\n\n    function _setImplementation(address newImplementation, bytes memory data)\n        internal\n    {\n        address previousImplementation;\n        // solhint-disable-next-line security/no-inline-assembly\n        assembly {\n            previousImplementation := sload(\n                0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc\n            )\n        }\n\n        // solhint-disable-next-line security/no-inline-assembly\n        assembly {\n            sstore(\n                0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc,\n                newImplementation\n            )\n        }\n\n        emit ProxyImplementationUpdated(\n            previousImplementation,\n            newImplementation\n        );\n\n        if (data.length > 0) {\n            (bool success, ) = newImplementation.delegatecall(data);\n            if (!success) {\n                assembly {\n                    // This assembly ensure the revert contains the exact string data\n                    let returnDataSize := returndatasize()\n                    returndatacopy(0, 0, returnDataSize)\n                    revert(0, returnDataSize)\n                }\n            }\n        }\n    }\n}\n"
+37     }
+38   }
+39 }}

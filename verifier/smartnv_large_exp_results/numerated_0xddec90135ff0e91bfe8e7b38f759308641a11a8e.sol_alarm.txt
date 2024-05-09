@@ -1,0 +1,33 @@
+The contract to analyze:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(token.balanceOf(address(this)) >= _amount * tokenPrice, "Not enough tokens in the contract");
+        uint cost = _amount * tokenPrice;
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += cost;
+    }
+
+    function withdraw() external {
+        require(balances[msg.sender] > 0, "No balance to withdraw");
+        uint amount = balances[msg.sender];
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] = 0;
+    }
+}
+
+Potential vulnerabilities in the TokenSale contract:
+- Inconsistent state update: There is a potential issue with the updating of balances in the buyTokens function where the cost variable is incrementing balances[msg.sender] instead of _amount.
+- Insufficient gas: The buyTokens function could potentially have gas issues if the token transfer requires more gas than available when buying tokens.
+- Incorrect visibility/ownership: The owner variable is publicly accessible, which may not be desired depending on the contract's logic and security requirements.

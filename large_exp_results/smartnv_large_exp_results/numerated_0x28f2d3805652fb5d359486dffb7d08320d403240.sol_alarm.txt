@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) external {
+        token.transferFrom(msg.sender, address(this), _amount);
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdrawTokens() external {
+        require(msg.sender == owner, "only owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The `owner` variable is public, which means anyone can access and modify it. This can lead to unauthorized access to certain functions or data within the contract.
+
+2) Insufficient gas: The `buyTokens` function transfers tokens from the caller to the contract and then transfers the same amount back to the caller. This can lead to out-of-gas errors if the caller does not have enough gas to cover both transfers.
+
+3) Inconsistent state update: There is a potential inconsistency issue in the contract, where the `withdrawTokens` function allows only the owner to withdraw tokens. However, the `owner` is publicly accessible and can be modified by anyone.

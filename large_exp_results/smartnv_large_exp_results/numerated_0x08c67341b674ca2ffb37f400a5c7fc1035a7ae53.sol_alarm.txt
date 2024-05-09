@@ -1,0 +1,60 @@
+<\contract_to_be_analyzed\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    address public chairperson;
+    mapping(address => Voter) public voters;
+    
+    constructor() public {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+    }
+    
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You already voted");
+        
+        voters[msg.sender].delegate = to;
+        Voter storage delegateTo = voters[to];
+        
+        if (delegateTo.voted) {
+            voters[msg.sender].vote = delegateTo.vote;
+        } else {
+            voters[delegateTo.delegate].weight++;
+        }
+    }
+    
+    function vote(uint option) public {
+        require(voters[msg.sender].weight > 0, "You are not authorized to vote");
+        require(!voters[msg.sender].voted, "You already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+    }
+    
+    function winningOption() public view returns (uint winningOption) {
+        uint[] memory votes;
+        for (uint i = 0; i < 3; i++) {
+            uint voteCount = 0;
+            for (uint j = 0; j < voters.length; j++) {
+                if (voters[j].vote == i) {
+                    voteCount += voters[j].weight;
+                }
+            }
+            votes[i] = voteCount;
+        }
+        
+        if (votes[0] > votes[1] && votes[0] > votes[2]) {
+            winningOption = 0;
+        } else if (votes[1] > votes[0] && votes[1] > votes[2]) {
+            winningOption = 1;
+        } else {
+            winningOption = 2;
+        }
+    }
+}
+<\contract_to_be_analyzed\>

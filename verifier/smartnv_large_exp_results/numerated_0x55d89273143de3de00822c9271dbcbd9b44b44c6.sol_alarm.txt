@@ -1,0 +1,27 @@
+<\the_contract\>
+contract Marketplace {
+         address public owner;
+         mapping(address => uint) public balances;
+         uint public productCount;
+
+         constructor() {
+              owner = msg.sender;
+              productCount = 0;
+         }
+
+         function addProduct(uint _price) public {
+              productCount++;
+              balances[msg.sender] += _price;
+         }
+
+         function buyProduct(address _seller) public payable {
+              require(balances[_seller] <= msg.value, "Insufficient funds");
+              balances[_seller] -= msg.value;
+              msg.sender.transfer(msg.value);
+         }
+
+}
+<\the_contract\> 
+Output:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

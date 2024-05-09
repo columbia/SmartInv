@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract InsurancePlatform {
+    mapping(address => uint) public policyHolders;
+    mapping(address => bool) public isInsured;
+
+    function issuePolicy(uint amount) public {
+        require(!isInsured[msg.sender], "Already insured");
+        uint premium = amount * 0.1;
+        require(policyHolders[msg.sender] == 0, "Already have a policy");
+        policyHolders[msg.sender] = premium;
+        isInsured[msg.sender] = true;
+    }
+
+    function claimInsurance() public {
+        require(isInsured[msg.sender], "Not insured");
+        uint payout = policyHolders[msg.sender] * 2;
+        msg.sender.transfer(payout);
+        policyHolders[msg.sender] = 0;
+        isInsured[msg.sender] = false;
+    }
+}
+<\contract_to_analyze\>

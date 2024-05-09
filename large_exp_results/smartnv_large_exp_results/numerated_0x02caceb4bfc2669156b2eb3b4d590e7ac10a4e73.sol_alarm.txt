@@ -1,0 +1,28 @@
+<\contract\> 
+contract Marketplace {
+         mapping(uint => address) public items;
+         mapping(address => uint) public balances;
+
+         function buyItem(uint itemId, uint price) public {
+             address seller = items[itemId];
+             require(seller != address(0), "Item does not exist");
+             require(balances[msg.sender] >= price, "Insufficient balance");
+
+             // Transfer funds
+             balances[msg.sender] -= price;
+             balances[seller] += price;
+             items[itemId] = address(0);
+         }
+
+         function addItem(uint itemId, address seller) public {
+             require(items[itemId] == address(0), "Item already exists");
+             items[itemId] = seller;
+         }
+
+         function withdrawFunds() public {
+             uint amount = balances[msg.sender];
+             balances[msg.sender] = 0;
+             payable(msg.sender).transfer(amount);
+         }
+     }
+<\contract\> 

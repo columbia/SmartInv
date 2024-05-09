@@ -1,0 +1,40 @@
+<\contract\> 
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    mapping(uint => mapping(address => bool)) public isConfirmed;
+    mapping(uint => bool) public executed;
+    uint public transactionCount;
+    
+    constructor(address[] memory _owners) public {
+        owners = _owners;
+        for (uint i = 0; i < owners.length; i++) {
+            isOwner[owners[i]] = true;
+        }
+    }
+
+    function submitTransaction(address destination, uint value, bytes memory data) public returns (uint) {
+        uint transactionId = transactionCount;
+        transactionCount++;
+        isConfirmed[transactionId][msg.sender] = true;
+        TransactionSubmitted(transactionId, msg.sender, destination, value, data);
+        return transactionId;
+    }
+
+    function confirmTransaction(uint transactionId) public {
+        require(isOwner[msg.sender], "not an owner");
+        require(isConfirmed[transactionId][msg.sender] == false, "transaction already confirmed");
+        isConfirmed[transactionId][msg.sender] = true;
+    }
+    
+    function executeTransaction(uint transactionId) public {
+        require(executed[transactionId] == false, "transaction already executed");
+        require(isConfirmed[transactionId][msg.sender], "not confirmed by all owners");
+        
+        // execute transaction
+        
+        executed[transactionId] = true;
+    }
+      
+    event TransactionSubmitted(uint transactionId, address owner, address destination, uint value, bytes data);
+}

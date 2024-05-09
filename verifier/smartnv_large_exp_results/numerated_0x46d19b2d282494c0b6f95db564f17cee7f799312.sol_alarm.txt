@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+    mapping(address => uint) public balances;
+    mapping(address => bool) public isOwner;
+    address[] public owners;
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+    
+    function addOwner(address newOwner) public {
+        require(isOwner[msg.sender], "Only owners can add new owners");
+        isOwner[newOwner] = true;
+        owners.push(newOwner);
+    }
+}
+<\contract_to_analyze\>

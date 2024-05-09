@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract TokenMarket {
+    IERC20 public token;
+    address public owner;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        token.transferFrom(msg.sender, address(this), amount);
+        token.transfer(owner, amount * 2);
+    }
+
+    function sellTokens(uint amount) public {
+        require(token.balanceOf(msg.sender) >= amount, "insufficient balance");
+        token.transfer(msg.sender, amount);
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "only owner can call this function");
+        owner = newOwner;
+    }
+}
+
+Output: 
+1) potential vulnerability: price manipulation
+2) potential vulnerability: consistent state update
+3) potential vulnerability: reentrancy

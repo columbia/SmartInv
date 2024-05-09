@@ -1,0 +1,41 @@
+<\contract\> 
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public tokenPrice;
+    IERC20 public token;
+
+    constructor(uint _tokenPrice, address _tokenAddress) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        token = IERC20(_tokenAddress);
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), totalCost);
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(msg.sender == owner, "Unauthorized");
+        token.transfer(owner, _amount);
+    }
+
+    function updateTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Unauthorized");
+        tokenPrice = _newPrice;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract TokenSale are:
+
+1) Incorrect visibility/ownership: The owner variable is made public, which can potentially lead to unauthorized access and manipulation of the owner address.
+2) Integer overflow/underflow: There is a risk of integer overflow in the calculation of totalCost in the buyTokens function if _amount is too large.
+3) Insufficient gas: If the contract does not have enough gas to execute the functions like transferFrom and transfer, it may result in a failed transaction and unexpected behavior.
+4) Price manipulation: The updateTokenPrice function allows the owner to change the tokenPrice, potentially leading to price manipulation.
+5) Atomicity violation: The buyTokens function performs multiple operations that are not atomic (token.transferFrom and token.transfer), which can lead to inconsistent states if one operation fails.
+6) Incorrect visibility: The balances mapping is public, exposing user balances publicly, which can potentially be a privacy concern.

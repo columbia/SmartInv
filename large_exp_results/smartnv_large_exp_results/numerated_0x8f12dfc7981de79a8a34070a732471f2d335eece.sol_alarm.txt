@@ -1,0 +1,48 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.Created;
+    }
+
+    function deposit() public payable onlyBuyer {
+        require(state == State.Created, "Cannot deposit in current state");
+        amount = msg.value;
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(state == State.Locked, "Cannot release in current state");
+        if (msg.sender == buyer || msg.sender == seller || msg.sender == arbiter) {
+            address payable to = address(uint160(seller));
+            to.transfer(amount);
+            state = State.Released;
+        }
+    }
+
+    function refund() public onlyBuyer {
+        require(state == State.Locked, "Cannot refund in current state");
+        address payable to = address(uint160(buyer));
+        to.transfer(amount);
+        state = State.Inactive;
+    }
+}
+<\contract\> 
+
+Potential Vulnerabilities:
+- Insufficient gas: The contract may run out of gas when executing transactions due to transferring Ether without considering the gas limit.
+- Incorrect visibility/ownership: The visibility of functions and state variables should be carefully reviewed to ensure that only the intended parties can access or modify them.

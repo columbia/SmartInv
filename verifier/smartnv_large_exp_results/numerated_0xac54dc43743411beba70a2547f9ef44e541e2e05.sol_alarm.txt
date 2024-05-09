@@ -1,0 +1,30 @@
+<\contract\> 
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public price;
+    bool public locked;
+    
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == price, "Incorrect amount sent");
+        locked = true;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == seller, "Only seller can withdraw funds");
+        require(locked == true, "Funds not locked");
+        payable(seller).transfer(price);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the Escrow contract are:
+1) Incorrect visibility/ownership: The deposit and withdraw functions only check the sender's address but do not utilize the 'msg.sender' correctly to check the ownership. This can potentially lead to privilege escalation.
+2) Inconsistent state update: The 'locked' state is being updated without proper synchronization mechanisms, which could lead to inconsistent state updates in certain scenarios.

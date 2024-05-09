@@ -1,0 +1,29 @@
+The contract you provided is:
+
+<\example_3\> 
+contract PaymentContract {
+     mapping(address => uint) public payments;
+     address public owner;
+
+     function makePayment(address recipient, uint amount) public {
+         require(msg.sender == owner, "Only owner can make payment");
+         uint balance = payments[msg.sender];
+         require(balance >= amount, "Insufficient balance");
+         payments[msg.sender] -= amount;
+         payments[recipient] += amount;
+     }
+
+     function withdraw() public {
+         uint balance = payments[msg.sender];
+         require(balance > 0, "No funds to withdraw");
+         payments[msg.sender] = 0;
+         msg.sender.transfer(balance);
+     }
+}
+<\example_3\>
+
+The potential vulnerabilities in the contract <\example_3\> are:
+
+1) privilege escalation 
+2) inconsistent state update
+3) incorrect visibility/ownership

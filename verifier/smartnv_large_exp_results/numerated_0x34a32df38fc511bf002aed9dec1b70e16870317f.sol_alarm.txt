@@ -1,0 +1,32 @@
+<\contract\> 
+contract TokenSale {
+     uint public price;
+     address public owner;
+     IERC20 public token;
+
+     constructor(address _tokenAddress) public {
+         owner = msg.sender;
+         token = IERC20(_tokenAddress);
+         price = 1 ether;
+     }
+
+     function setPrice(uint _price) public {
+         require(msg.sender == owner, "Only owner can set price");
+         price = _price;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * price, "Incorrect payment amount");
+         token.transfer(msg.sender, _amount);
+     }
+
+     function withdrawFunds() public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         owner.transfer(address(this).balance);
+     }
+}
+<\contract\> 
+
+Output:
+- atomicity violation
+- incorrect visibility/ownership

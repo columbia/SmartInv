@@ -1,0 +1,52 @@
+<\contract\> 
+contract Escrow {
+     address public buyer; 
+     address public seller; 
+     address public arbiter; 
+     uint public amount; 
+     enum State { Created, Locked, Released, Inactive }
+     State public state; 
+     modifier onlyBuyer() {
+          require (msg.sender == buyer, "Only buyer can call this function");
+          _; 
+          }
+     modifier onlySeller() {
+          require (msg.sender == seller, "Only seller can call this function");
+          _; 
+          }
+     modifier inState(State _state) {
+          require (state == _state, "Invalid state");
+          _; 
+          }
+
+     constructor(address _buyer, address _seller, address _arbiter, uint _amount) public {
+          buyer = _buyer;
+          seller = _seller;
+          arbiter = _arbiter;
+          amount = _amount;
+          state = State.Created;
+          }
+
+     function confirmPurchase() public onlyBuyer inState(State.Created) {
+          state = State.Locked;
+          }
+
+     function confirmReceived() public onlyBuyer inState(State.Locked) {
+          state = State.Released;
+          seller.transfer(amount);
+          }
+
+     function refundSeller() public onlySeller inState(State.Released) {
+          seller.transfer(amount);
+          state = State.Inactive;
+          }
+
+     function releaseFunds() public onlySeller inState(State.Locked) {
+          state = State.Released;
+          buyer.transfer(amount);
+          }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract mentioned are:
+1) No specific vulnerabilities were detected in the contract. Hence, the output will be "healthy".

@@ -1,0 +1,21 @@
+<\contract\>
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         address public admin;
+
+         function swapTokens(uint amount) public {
+             require(tokenA.balanceOf(msg.sender) >= amount, "insufficient balance");
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             tokenB.transfer(msg.sender, amount);
+         }
+
+         function setAdmin(address _admin) public {
+             require(msg.sender == admin, "only admin can call this function");
+             admin = _admin;
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership - The admin variable is set to public and can be manipulated by any user calling the setAdmin function. This can lead to unauthorized changes to the admin address.

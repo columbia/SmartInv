@@ -1,0 +1,24 @@
+Contract ExampleContract {
+     address public owner;
+     uint public balance;
+
+     function deposit() public payable {
+         balance += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(amount <= balance, "Insufficient balance");
+         balance -= amount;
+         msg.sender.transfer(amount);
+     }
+
+     function transferOwnership(address newOwner) public {
+         require(msg.sender == owner, "Only owner can transfer ownership");
+         owner = newOwner;
+     }
+}
+
+Potential vulnerabilities:
+1) Reentrancy
+2) Inconsistent state update
+3) Incorrect visibility/ownership

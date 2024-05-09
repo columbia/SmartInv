@@ -1,0 +1,24 @@
+<\contract\>
+contract TokenSale {
+    uint public totalSupply;
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor(uint _totalSupply) {
+        totalSupply = _totalSupply;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0 && amount <= totalSupply, "Invalid token amount");
+        balances[msg.sender] += amount;
+        totalSupply -= amount;
+    }
+
+    function transferTokens(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\>

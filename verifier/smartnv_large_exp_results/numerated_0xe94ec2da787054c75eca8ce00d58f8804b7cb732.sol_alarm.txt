@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public owner;
+    uint public price;
+    mapping(address => uint) public balances;
+
+    constructor() public {
+        owner = msg.sender;
+        price = 1 ether;
+    }
+
+    function buyTokens() public payable {
+        require(msg.value >= price, "Insufficient funds sent");
+        uint amount = msg.value / price;
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function setPrice(uint newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = newPrice;
+    }
+}
+<\contract_to_analyze\>

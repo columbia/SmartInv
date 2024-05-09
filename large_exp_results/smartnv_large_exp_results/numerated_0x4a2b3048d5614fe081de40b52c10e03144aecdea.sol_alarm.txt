@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract Payment {
+    mapping(address => uint) balances;
+    address owner;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function updateOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can update owner");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>
+
+Potential vulnerabilities in contract Payment:
+1) privilege escalation
+2) incorrect visibility/ownership

@@ -1,0 +1,28 @@
+<\contract\>
+contract SmartVault {
+      IERC20 public token; 
+      address public owner; 
+      uint256 public totalBalance; 
+
+      function deposit(uint256 amount) external {
+          token.transferFrom(msg.sender, address(this), amount); 
+          totalBalance += amount; 
+      }
+
+      function withdraw(uint256 amount) external {
+          require(amount <= totalBalance, "insufficient balance");
+          token.transfer(msg.sender, amount); 
+          totalBalance -= amount; 
+      }
+
+      function transferOwnership(address newOwner) external {
+          require(msg.sender == owner, "only owner can transfer ownership");
+          owner = newOwner; 
+      }
+
+      function setToken(IERC20 _token) external {
+          require(msg.sender == owner, "only owner can set token"); 
+          token = _token; 
+      }
+}
+<\contract\>

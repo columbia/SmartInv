@@ -1,0 +1,23 @@
+<\contract\>
+contract PurchaseContract {
+    address public buyer;
+    address public seller;
+    uint public price;
+
+    constructor(address _seller, uint _price) public {
+        buyer = msg.sender;
+        seller = _seller;
+        price = _price;
+    }
+
+    function purchase() public payable {
+        require(msg.value == price, "Incorrect payment amount");
+        seller.transfer(msg.value);
+    }
+
+    function cancel() public {
+        require(msg.sender == seller, "Unauthorized access");
+        selfdestruct(msg.sender);
+    }
+}
+<\contract\>

@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function `liquidate` updates the `debt` and `collateral` mappings without checking if the user actually has sufficient funds to cover the update.
+2) Arithmetic flaw: The calculation `getPrice() * cAmount * 80 / 100` in the `liquidate` function could potentially result in integer overflow or underflow if the values are not properly checked.
+3) Insufficient gas: The `calculatePrice` function returns a value but does not provide any gas stipend. If the gas available is not enough for the operation, it may fail or lead to unexpected behavior.

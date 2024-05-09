@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= totalCost, "Insufficient balance to buy tokens");
+        
+        token.transferFrom(msg.sender, owner, totalCost);
+        token.transfer(msg.sender, _amount);
+    }
+    
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set token price");
+        tokenPrice = _newPrice;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,28 @@
+<\analyzed_contract\>
+contract InsuranceClaim {
+     uint public claimAmount;
+     address public insurer;
+     address public claimant;
+     bool public isClaimed;
+
+     function fileClaim(address _insurer, uint _claimAmount) external {
+         require(!isClaimed, "claim already filed"); 
+         claimAmount = _claimAmount;
+         insurer = _insurer;
+         claimant = msg.sender;
+         isClaimed = true;
+     }
+
+     function approveClaim() external {
+         require(msg.sender == insurer, "only insurer can approve claim");
+         require(isClaimed, "no claim filed yet");
+         // Perform approval logic
+     }
+
+     function rejectClaim() external {
+         require(msg.sender == insurer, "only insurer can reject claim");
+         require(isClaimed, "no claim filed yet");
+         // Perform rejection logic
+     }
+}
+<\analyzed_contract\>

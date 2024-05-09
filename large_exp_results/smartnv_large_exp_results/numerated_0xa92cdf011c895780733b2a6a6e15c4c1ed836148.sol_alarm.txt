@@ -1,0 +1,18 @@
+<\contract_to_be_analyzed\>
+contract Escrow {
+         mapping(address => uint) public balances;
+
+         function deposit() public payable {
+             balances[msg.sender] += msg.value;
+         }
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             msg.sender.transfer(amount);
+             balances[msg.sender] -= amount;
+         }
+}
+<\contract_to_be_analyzed\> 
+
+The potential vulnerabilities in the contract are:
+1) integer overflow/underflow in the function withdraw.
+2) insufficient gas for the operations in the function withdraw.

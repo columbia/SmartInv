@@ -1,0 +1,35 @@
+Contract:
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    
+    constructor(address[] memory _owners) {
+        for (uint i = 0; i < _owners.length; i++) {
+            owners.push(_owners[i]);
+            isOwner[_owners[i]] = true;
+        }
+    }
+
+    function addOwner(address newOwner) public {
+        require(isOwner[msg.sender], "Permission denied");
+        owners.push(newOwner);
+        isOwner[newOwner] = true;
+    }
+
+    function removeOwner(address owner) public {
+        require(isOwner[msg.sender], "Permission denied");
+        require(owners.length > 1, "Cannot remove the last owner");
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == owner) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                isOwner[owner] = false;
+                break;
+            }
+        }
+    }
+} 
+
+Output:
+- ID uniqueness violation
+- Incorrect visibility/ownership

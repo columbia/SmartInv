@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+     mapping(address => uint) public votes;
+     address public winningProposal; 
+     uint public winningVotes;
+
+     function vote(uint proposal) public {
+         require(proposal > 0, "invalid proposal number");
+         votes[msg.sender] = proposal;
+     }
+     
+     function tallyVotes() public {
+         for(uint i = 0; i < votes.length; i++) {
+             if(votes[i] > winningVotes) {
+                 winningVotes = votes[i];
+                 winningProposal = msg.sender;
+             }
+         }
+     }
+
+     function getWinner() public view returns (address) {
+         return winningProposal;
+     }
+}
+<\contract\>

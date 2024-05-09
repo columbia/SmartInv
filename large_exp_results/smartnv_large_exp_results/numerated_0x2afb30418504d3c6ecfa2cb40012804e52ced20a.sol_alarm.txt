@@ -1,0 +1,25 @@
+Contract being analyzed:
+
+contract TokenSale {
+        IERC20 public token;
+        address public owner;
+        uint public tokenPrice;
+
+        constructor(IERC20 _token, uint _tokenPrice) public {
+            token = _token;
+            owner = msg.sender;
+            tokenPrice = _tokenPrice;
+        }
+
+        function buyTokens(uint _amount) public {
+            require(_amount > 0, "Amount must be greater than 0");
+            uint totalPrice = _amount * tokenPrice;
+            token.transfer(msg.sender, _amount);
+            token.transfer(owner, totalPrice);
+        }
+}
+
+Potential vulnerabilities in the contract:
+1) Arithmetic flaw: The multiplication in the calculation of totalPrice might lead to integer overflow if the _amount is a very large value.
+2) Incorrect visibility/ownership: The owner variable is declared as public, which exposes it to potential manipulation by external actors.
+3) Insufficient gas: If the buyTokens function consumes a high amount of gas, it may not have enough gas to complete all the necessary transactions within a single block.

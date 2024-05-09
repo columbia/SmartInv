@@ -1,0 +1,47 @@
+Contract to analyze:
+<\example_3\>
+contract VotingSystem {
+     struct Voter {
+          address voterAddress;
+          bool hasVoted;
+          uint votedProposalId;
+          uint voteTimestamp;
+     }
+     
+     mapping(address => Voter) public voters;
+     mapping(uint => uint) public proposalVotes;
+     uint public totalProposals;
+
+     function vote(uint proposalId) public {
+          require(!voters[msg.sender].hasVoted, "Voter has already voted");
+          require(proposalId <= totalProposals, "Invalid proposal Id");
+          
+          voters[msg.sender].hasVoted = true;
+          voters[msg.sender].votedProposalId = proposalId;
+          voters[msg.sender].voteTimestamp = block.timestamp;
+          
+          proposalVotes[proposalId]++;
+     }
+
+     function createProposal() public {
+          totalProposals++;
+     }
+
+     function getWinnerProposal() public view returns (uint) {
+          uint maxVotes = 0;
+          uint winningProposalId;
+          for (uint i = 1; i <= totalProposals; i++) {
+               if (proposalVotes[i] > maxVotes) {
+                    maxVotes = proposalVotes[i];
+                    winningProposalId = i;
+               }
+          }
+          return winningProposalId;
+     }
+}
+<\example_3\>
+
+Output:
+- Incorrect visibility/ownership: The state variables "voters" and "proposalVotes" are public, potentially exposing sensitive information.
+- ID uniqueness violation: There is no check to ensure the uniqueness of proposal IDs, which may lead to conflicts or data integrity issues.
+- Inconsistent state update: The state variable "totalProposals" can be updated by anyone, allowing for a potential inconsistency in proposal management.

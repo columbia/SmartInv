@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function, but there is no check to ensure that the same proposal cannot be executed multiple times, potentially leading to inconsistent voting amounts.
+
+2) Incorrect visibility/ownership: The `lockedFunds` variable is accessed in the `endExecute` function without specifying the visibility (public, private, internal, etc), which can lead to issues in code readability and potentially other vulnerabilities related to visibility.
+
+3) Insufficient gas: The `endExecute` function checks if the execution failed by comparing the balance of the contract with twice the total supply of the token. However, this operation may require a significant amount of gas if the token supply is large, potentially leading to out-of-gas errors.
+
+4) Business logic flaw: The logic of executing a proposal based on a time limit of 24 hours can potentially be manipulated by an attacker to keep a proposal open indefinitely, leading to misuse of the contract functionality.

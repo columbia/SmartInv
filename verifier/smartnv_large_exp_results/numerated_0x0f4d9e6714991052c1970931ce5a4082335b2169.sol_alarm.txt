@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 endTime; 
+          address proposer; 
+          uint256 votes; 
+     }
+     
+     mapping(uint256 => Proposal) public proposals;
+     uint256 public totalProposals;
+     
+     function createProposal(uint256 _startTime, uint256 _endTime) external {
+          require(_startTime < _endTime, "Invalid proposal times");
+          totalProposals++;
+          proposals[totalProposals] = Proposal(_startTime, _endTime, msg.sender, 0);
+     }
+     
+     function vote(uint256 _proposalId) external {
+          require(proposals[_proposalId].startTime < block.timestamp, "Voting has not started");
+          require(proposals[_proposalId].endTime > block.timestamp, "Voting has ended");
+          proposals[_proposalId].votes++;
+     }
+}
+<\contract\>

@@ -1,0 +1,35 @@
+This is the contract you are going to analyze:
+
+contract TokenSale {
+    ERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(address _token, uint _price) {
+        token = ERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= _amount, "Not enough tokens");
+        require(token.allowance(msg.sender, address(this)) >= totalCost, "Not enough allowance");
+        token.transferFrom(msg.sender, owner, totalCost);
+        token.transfer(msg.sender, _amount);
+    }
+
+    function setPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        tokenPrice = _newPrice;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        token.transfer(owner, token.balanceOf(address(this));
+    }
+}
+
+Output: 
+1) atomicity violation
+2) incorrect visibility/ownership

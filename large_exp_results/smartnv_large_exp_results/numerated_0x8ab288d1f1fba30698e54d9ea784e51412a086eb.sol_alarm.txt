@@ -1,0 +1,24 @@
+The contract to be analyzed:
+
+```solidity
+contract PaymentProcessor {
+    uint public totalPayments;
+    mapping(address => uint) public payments;
+
+    function processPayment() external payable {
+        totalPayments += msg.value;
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdrawPayments() external {
+        require(payments[msg.sender] > 0, "No funds to withdraw");
+        uint amount = payments[msg.sender];
+        payments[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+```
+
+The potential vulnerabilities in the contract are: 
+- integer overflow/underflow in `totalPayments += msg.value`
+- insufficient gas in `msg.sender.transfer(amount)`

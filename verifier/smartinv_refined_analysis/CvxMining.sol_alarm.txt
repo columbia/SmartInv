@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) inconsistent state update: The function startExecute() updates the state variable proposal, but does not update the sTime parameter to a non-zero value. This could lead to inconsistencies in the state of the contract.
+
+2) atomicity violation: The execute() function performs multiple state changes without utilizing any locking mechanism to ensure atomicity. This could lead to race conditions and inconsistent contract states.
+
+3) ID uniqueness violation: The contract does not seem to have any mechanism in place to ensure the uniqueness of proposal IDs. This could lead to conflicts or unintended behavior when multiple proposals share the same ID.
+
+4) business logic flaw: The endExecute() function checks if the execution has ended based on a time comparison, which could be manipulated by malicious actors to delay or prematurely end the execution process.
+
+5) cross-bridge inconsistency: There seems to be a potential for inconsistency between the data stored in the contract and the external systems it interacts with, such as the votingToken balance compared to its total supply, which could lead to issues in the contract's operation.

@@ -1,0 +1,26 @@
+The contract to analyze:
+
+contract VotingSystem {
+    mapping(address => uint) public numberOfVotes;
+    uint public totalVotes;
+
+    function vote() public {
+        numberOfVotes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function changeVote(address user, uint newNumberOfVotes) public {
+        require(newNumberOfVotes >= 0, "Number of votes cannot be negative");
+        totalVotes = totalVotes - numberOfVotes[user] + newNumberOfVotes;
+        numberOfVotes[user] = newNumberOfVotes;
+    }
+
+    function getTotalVotes() public view returns(uint) {
+        return totalVotes;
+    }
+}
+
+Output: 
+1) Inconsistent state update
+2) Integer overflow/underflow
+3) Arithmetic flaw

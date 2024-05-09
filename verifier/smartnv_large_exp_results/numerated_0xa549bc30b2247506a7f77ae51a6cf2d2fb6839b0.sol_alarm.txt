@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Integer overflow: There is a risk of integer overflow in the `calculatePrice()` function when calculating the price, as the division result might exceed the maximum value of uint.
+2) Inconsistent state update: The `liquidate()` function updates the collateral and debt mappings, but there is no explicit check or verification done before updating these values, which can lead to inconsistent state updates.
+3) Incorrect visibility/ownership: The visibility of the `debt` and `collateral` mappings is set to public, which exposes sensitive information to all external parties. It is recommended to restrict access to these mappings using proper access control mechanisms.
+4) Insufficient gas: The `calculatePrice()` function returns a uint value without specifying gas limits or handling potential gas exhaustion scenarios, leaving the contract vulnerable to out-of-gas errors.

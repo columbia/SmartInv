@@ -1,0 +1,33 @@
+The contract to be analyzed for potential vulnerabilities:
+
+contract VotingSystem {
+         struct Voter {
+             uint votingPower;
+             bool hasVoted;
+         }
+         mapping(address => Voter) public voters;
+         mapping(address => bool) public voted;
+         
+         uint public totalVotes;
+         
+         function vote() public {
+             require(voters[msg.sender].votingPower > 0, "You have no voting power");
+             require(!voters[msg.sender].hasVoted, "You have already voted");
+             
+             voters[msg.sender].hasVoted = true;
+             totalVotes++;
+         }
+         
+         function delegate(address to) public {
+             require(to != msg.sender, "Self-delegation is not allowed");
+             require(voters[to].votingPower > 0, "Delegatee has no voting power");
+             require(!voters[msg.sender].hasVoted, "You have already voted");
+             
+             voters[msg.sender].hasVoted = true;
+             totalVotes++;
+         }
+}
+
+Output: 
+1) The contract contains inconsistencies in state updates. 
+2) The contract lacks checks for voter uniqueness, potentially leading to ID uniqueness violation.

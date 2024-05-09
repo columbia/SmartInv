@@ -1,0 +1,9 @@
+The contract potentially contains the following vulnerabilities:
+
+1) privilege escalation: The contract allows functions to be executed based on the value of `proposal.sTime` without adequately verifying the sender's authorization.
+
+2) inconsistent state update: The `votedAmount` in the `execute` function is updated without considering potential race conditions leading to inconsistent state updates.
+
+3) atomicity violation: The `execute` function includes multiple state-changing operations that should ideally be executed atomically to prevent unexpected behavior.
+
+4) integer overflow/underflow: There is a potential for integer overflow in the `calculatePrice` function if the division result exceeds the maximum value that can be represented, leading to incorrect calculations.

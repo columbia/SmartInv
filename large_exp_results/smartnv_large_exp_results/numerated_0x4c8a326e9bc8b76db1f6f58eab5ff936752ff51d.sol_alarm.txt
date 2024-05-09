@@ -1,0 +1,16 @@
+Contract: 
+contract PaymentGateway {
+     address public owner;
+     mapping(uint => uint) public payments;
+     
+     function makePayment(uint _paymentId, uint _amount) public {
+          require(msg.sender == owner, "only owner can make payments");
+          payments[_paymentId] = _amount;
+     }
+     
+     function getPaymentAmount(uint _paymentId) public view returns (uint) {
+          return payments[_paymentId];
+     }
+}
+Potential vulnerabilities:
+- Incorrect visibility/ownership

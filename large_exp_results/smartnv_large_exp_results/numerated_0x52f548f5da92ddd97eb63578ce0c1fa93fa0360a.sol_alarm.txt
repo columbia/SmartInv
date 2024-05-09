@@ -1,0 +1,47 @@
+The contract below has the following potential vulnerabilities:
+
+<\contract_3\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime;
+          uint256 votedAmount;
+          address proposer;
+     }
+
+     address internal owner;
+     mapping(address => uint256) startingBalanceList;
+     Proposal public proposal;
+     IERC20 public votingToken;
+
+     function startVoting() external {
+          uint256 startingBalance;
+          require(proposal.startTime == 0, "voting in progress");
+          proposal = Proposal(block.timestamp, 0, msg.sender);
+          startingBalance = getStartingBalance(proposal.proposer);
+          startingBalanceList[proposal.proposer] = startingBalance;
+     }
+
+     function vote(uint256 amount) external {
+          require(proposal.startTime != 0, "no active proposal");
+          require(proposal.startTime + 24 > block.timestamp, "voting period over");
+          require(proposal.votedAmount == 0, "already voted");
+          votingToken.transferFrom(msg.sender, address(this), amount);
+          proposal.votedAmount += amount;
+     }
+
+     function endVoting() external {
+          require(proposal.startTime != 0, "no active proposal");
+          require(proposal.startTime + 24 < block.timestamp, "voting period not over");
+          require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "voting failed");
+          startingBalanceList[proposal.proposer] += proposal.votedAmount;
+     }
+
+     function getStartingBalance(address proposer) internal returns(uint256) {
+          // implementation details omitted
+     }
+}
+<\contract_3\>
+
+The potential vulnerabilities found in the contract are:
+1) privilege escalation
+2) inconsistent state update

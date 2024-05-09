@@ -1,0 +1,32 @@
+<\contract\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= totalCost, "Insufficient funds");
+        token.transferFrom(msg.sender, owner, totalCost);
+        token.transfer(msg.sender, _amount);
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can update token price");
+        tokenPrice = _newPrice;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership: The setTokenPrice function does not specify the visibility of the function, making it publicly accessible. This may lead to unauthorized parties changing the token price.
+2) inconsistent state update: The buyTokens function transfers tokens before updating the sender's balance, which could lead to an inconsistent state if the transfer fails after transferring tokens to the owner.
+3) integer overflow/underflow: The totalCost calculation in the buyTokens function could potentially result in an integer overflow if the input values are large.
+4) ether leakage: The contract does not handle Ether transactions, which could allow unintended Ether transfers.
+5) insufficient gas: The buyTokens function may fail if the sender does not provide enough gas for the transfers to be completed.

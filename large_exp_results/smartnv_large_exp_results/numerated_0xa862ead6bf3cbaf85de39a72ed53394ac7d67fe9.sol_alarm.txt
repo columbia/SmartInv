@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Insufficient gas: The function calculatePrice() does not specify a gas limit for the operation, which could potentially lead to out-of-gas errors.
+2) Incorrect visibility/ownership: The visibility of the debt and collateral mappings is public, potentially exposing sensitive information about users' debt and collateral positions.
+3) Inconsistent state update: The liquidate() function updates the debt and collateral mappings but does not enforce any consistency checks between the two, which could lead to inconsistent state data.
+4) Arithmetic flaw: The calculation in the liquidate() function uses integer arithmetic, which could be vulnerable to overflow or underflow issues depending on the values provided.
+5) Price manipulation: The calculatePrice() function calculates the price based on the balances of the USDC and WETH tokens in the Uniswap pair, which could be subject to manipulation if an attacker controls a significant portion of the liquidity pool.

@@ -1,0 +1,23 @@
+Contract:
+contract DecentralizedExchange {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     address public owner;
+
+     function swap(uint amount, address recipient) external {
+          require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+          tokenA.transferFrom(msg.sender, address(this), amount);
+          tokenB.transfer(recipient, amount);
+     }
+
+     function setOwner(address newOwner) external {
+          require(msg.sender == owner, "Only owner can change owner");
+          owner = newOwner;
+     }
+}
+
+Potential Vulnerabilities:
+1) Incorrect visibility/ownership (setOwner function allows anyone to change the owner if they have the current owner's address).
+2) Insufficient gas (potential gas issues if the swapping operation requires excessive gas).
+3) ID uniqueness violation (no unique identifier for tokens, which could lead to confusion or conflicts).
+4) Inconsistent state update (changing the owner might not update all relevant variables, leading to inconsistencies).

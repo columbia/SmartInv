@@ -1,0 +1,40 @@
+Example contract:
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    uint public tokensSold;
+
+    mapping(address => uint) public tokenBalances;
+
+    constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public {
+        require(_numTokens > 0, "Number of tokens must be greater than 0");
+        require(tokensSold + _numTokens <= totalTokens, "Not enough tokens left for sale");
+        
+        uint totalPrice = tokenPrice * _numTokens;
+        
+        token.transferFrom(msg.sender, address(this), totalPrice);
+        token.transfer(msg.sender, _numTokens);
+        
+        tokenBalances[msg.sender] += _numTokens;
+        tokensSold += _numTokens;
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only the owner can end the sale");
+        
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+
+Output:
+- sucidal contracts
+- inconsistent state update

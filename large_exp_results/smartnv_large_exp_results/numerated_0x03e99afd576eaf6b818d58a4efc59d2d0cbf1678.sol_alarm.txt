@@ -1,0 +1,13 @@
+<\contract\>
+contract TokenSwapper {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    
+    function swap(uint amount) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance for tokenA");
+        
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+<\contract\>

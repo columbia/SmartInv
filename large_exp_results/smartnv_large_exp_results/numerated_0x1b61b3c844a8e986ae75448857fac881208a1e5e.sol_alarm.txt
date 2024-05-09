@@ -1,0 +1,28 @@
+Contract: 
+
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+     mapping(address => uint) public pendingReturns;
+
+     function bid() public payable {
+         require(msg.value > highestBid, "Bid not high enough");
+         if (highestBidder != address(0)) {
+             pendingReturns[highestBidder] += highestBid;
+         }
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+
+     function withdraw() public {
+         uint amount = pendingReturns[msg.sender];
+         pendingReturns[msg.sender] = 0;
+         msg.sender.transfer(amount);
+     }
+}
+
+Potential vulnerabilities:
+1) Integer overflow/underflow: The bid function doesn't have protection against integer overflow/underflow when calculating the highestBid.
+2) Insufficient gas: The withdraw function transfers funds to the user, which could run out of gas and prevent the transfer from completing.
+3) Inconsistent state update: The bid function updates the highestBidder and highestBid variables before updating the pendingReturns mapping, which could lead to inconsistent state if an error occurs during the pendingReturns update.
+4) Incorrect visibility/ownership: The pendingReturns mapping is set to public, which exposes user balances publicly and may not be intended for public access.

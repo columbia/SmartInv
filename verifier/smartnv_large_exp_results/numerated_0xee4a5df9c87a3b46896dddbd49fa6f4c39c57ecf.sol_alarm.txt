@@ -1,0 +1,42 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+          address addr;
+          uint256 votedProposalId;
+          bool hasVoted;
+          }
+     struct Proposal {
+          uint256 id;
+          address creator;
+          uint256 voteCount;
+          bool executed;
+          }
+     
+     mapping(uint256 => Proposal) public proposals;
+     mapping(address => Voter) public voters;
+     uint256 public totalProposals;
+     address public admin;
+     
+     function createProposal() external {
+          require(admin == msg.sender, "only admin can create a proposal");
+          proposals[totalProposals] = Proposal(totalProposals, msg.sender, 0, false);
+          totalProposals++;
+     }
+     
+     function vote(uint256 proposalId) external {
+          require(proposalId < totalProposals, "invalid proposal id");
+          require(!voters[msg.sender].hasVoted, "voter has already voted");
+          proposals[proposalId].voteCount++;
+          voters[msg.sender] = Voter(msg.sender, proposalId, true);
+     }
+     
+     function executeProposal(uint256 proposalId) external {
+          require(admin == msg.sender, "only admin can execute a proposal");
+          require(proposalId < totalProposals, "invalid proposal id");
+          require(!proposals[proposalId].executed, "proposal has already been executed");
+          
+          // execute proposal logic
+          proposals[proposalId].executed = true;
+     }
+}
+<\contract\>

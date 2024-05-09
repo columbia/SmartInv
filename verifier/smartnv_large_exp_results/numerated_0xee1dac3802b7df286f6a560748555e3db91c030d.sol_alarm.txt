@@ -1,0 +1,12 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update:
+   - The usage of `lockedFunds` in the `endExecute` function is not clearly defined and could potentially lead to inconsistent state updates.
+
+2) Atomicity violation:
+   - There is a lack of atomic operations when updating the `proposal.votedAmount` variable in the `execute` function, which can lead to race conditions and inconsistent results.
+
+3) Insufficient gas:
+   - There is a possibility of running out of gas during the execution of the `endExecute` function, especially when the `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply())` condition is close to not being met.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, atomicity violation, and insufficient gas.

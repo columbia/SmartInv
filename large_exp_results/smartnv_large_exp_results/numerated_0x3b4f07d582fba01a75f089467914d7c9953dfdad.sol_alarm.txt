@@ -1,0 +1,37 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        buyerApproved = false;
+        sellerApproved = false;
+    }
+
+    function finalize() public {
+        require(msg.sender == arbiter, "Only arbiter can finalize");
+        require(buyerApproved && sellerApproved, "Both parties must approve");
+        seller.transfer(amount);
+    }
+
+    function approve() public {
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else if (msg.sender == seller) {
+            sellerApproved = true;
+        }
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the EscrowContract are:
+1) Inconsistent state update: The state variables buyerApproved and sellerApproved can be updated separately without checking if both parties have approved before finalizing the transaction.
+2) Incorrect visibility/ownership: The finalize function allows any address to call it, regardless of their role in the contract (buyer, seller, or arbiter), which can lead to unauthorized access to finalizing the transaction.

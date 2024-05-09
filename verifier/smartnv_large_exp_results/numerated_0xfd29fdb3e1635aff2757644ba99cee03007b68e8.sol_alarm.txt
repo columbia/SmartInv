@@ -1,0 +1,28 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => address) public itemOwners;
+    mapping(address => uint256) public itemPrices;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createItem(uint256 itemId, uint256 price) public {
+        itemOwners[itemId] = msg.sender;
+        itemPrices[msg.sender] = price;
+    }
+
+    function buyItem(uint256 itemId) public payable {
+        address itemOwner = itemOwners[itemId];
+        uint256 price = itemPrices[itemOwner];
+        require(msg.value >= price, "Insufficient payment");
+
+        address payable recipient = payable(itemOwner);
+        recipient.transfer(msg.value);
+
+        itemOwners[itemId] = msg.sender;
+        itemPrices[msg.sender] = price;
+    }
+}
+<\contract\>

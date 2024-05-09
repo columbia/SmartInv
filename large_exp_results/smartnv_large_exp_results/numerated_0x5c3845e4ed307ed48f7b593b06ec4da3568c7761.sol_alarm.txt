@@ -1,0 +1,32 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => address) public idToSeller;
+    mapping(address => uint256) public sellerToId;
+    mapping(uint256 => uint256) public idToPrice;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createListing(uint256 id, uint256 price) public {
+        require(idToSeller[id] == address(0), "Listing already exists");
+        idToSeller[id] = msg.sender;
+        sellerToId[msg.sender] = id;
+        idToPrice[id] = price;
+    }
+
+    function buyItem(uint256 id) public payable {
+        require(idToSeller[id] != address(0), "Invalid listing ID");
+        require(msg.value == idToPrice[id], "Incorrect payment amount");
+
+        address seller = idToSeller[id];
+        (bool success, ) = seller.call{value: msg.value}("");
+        require(success, "Payment failed");
+
+        idToSeller[id] = address(0);
+        sellerToId[seller] = 0;
+        idToPrice[id] = 0;
+    }
+}
+<\contract\>

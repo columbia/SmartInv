@@ -1,0 +1,30 @@
+Contract:
+contract Marketplace {
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address owner;
+        bool isSold;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public productCounter;
+
+    function addProduct(string memory _name, uint _price) public {
+        productCounter++;
+        products[productCounter] = Product(productCounter, _name, _price, msg.sender, false);
+    }
+
+    function buyProduct(uint _id) public payable {
+        require(products[_id].id != 0, "Product does not exist");
+        require(products[_id].isSold == false, "Product is already sold");
+        require(msg.value >= products[_id].price, "Insufficient funds");
+
+        products[_id].owner.transfer(products[_id].price);
+        products[_id].owner = msg.sender;
+        products[_id].isSold = true;
+    }
+}
+Potential vulnerabilities:
+- Insufficient gas

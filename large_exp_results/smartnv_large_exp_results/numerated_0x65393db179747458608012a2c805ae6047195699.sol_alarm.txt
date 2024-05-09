@@ -1,0 +1,47 @@
+The contract provided for analysis is:
+
+contract Vesting {
+    address public beneficiary;
+    uint public cliff;
+    uint public start;
+    uint public duration;
+    uint public released;
+    address public token;
+
+    constructor(
+        address _beneficiary,
+        uint _start,
+        uint _cliff,
+        uint _duration,
+        address _token
+    ) public {
+        beneficiary = _beneficiary;
+        start = _start;
+        cliff = _cliff;
+        duration = _duration;
+        token = _token;
+    }
+
+    function release() public {
+        require(block.timestamp >= start, "Vesting hasn't started yet");
+        uint vested = vestedAmount();
+        require(vested > released, "No new tokens to release");
+        released = vested;
+        ERC20(token).transfer(beneficiary, vested);
+    }
+
+    function vestedAmount() public view returns (uint) {
+        uint currentBalance = ERC20(token).balanceOf(address(this));
+        uint totalBalance = ERC20(token).totalSupply();
+        
+        if (block.timestamp < start + cliff) {
+            return 0;
+        } else if (block.timestamp >= start + duration) {
+            return currentBalance;
+        } else {
+            return currentBalance * (block.timestamp - start) / duration;
+        }
+    }
+}
+
+Please identify potential vulnerabilities in the given contract.

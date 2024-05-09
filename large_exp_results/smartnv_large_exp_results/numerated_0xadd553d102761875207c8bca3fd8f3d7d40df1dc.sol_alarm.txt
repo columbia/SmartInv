@@ -1,0 +1,33 @@
+<\contract\>
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        string name;
+        uint quantity;
+        address owner;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function createProduct(string memory _name, uint _quantity) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _quantity, msg.sender);
+    }
+
+    function updateProductQuantity(uint _productId, uint _newQuantity) public {
+        require(products[_productId].owner == msg.sender, "You are not the owner of this product");
+        products[_productId].quantity = _newQuantity;
+    }
+
+    function transferOwnership(uint _productId, address _newOwner) public {
+        require(products[_productId].owner == msg.sender, "You are not the owner of this product");
+        products[_productId].owner = _newOwner;
+    }
+}
+<\contract\> 
+
+Potential vulnerability: 
+7) ID uniqueness violation 
+
+Please note that the provided analysis is based on the code snippet provided in the contract and additional vulnerabilities may exist outside the scope of the given code.

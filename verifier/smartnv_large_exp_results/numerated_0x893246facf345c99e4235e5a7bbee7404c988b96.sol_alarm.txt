@@ -1,0 +1,29 @@
+<\contract\>
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        string name;
+        uint quantity;
+        address owner;
+        bool isDelivered;
+    }
+    
+    mapping(uint => Product) products;
+    uint private productIdCount;
+
+    function addProduct(string memory _name, uint _quantity) public {
+        productIdCount++;
+        products[productIdCount] = Product(productIdCount, _name, _quantity, msg.sender, false);
+    }
+
+    function updateProductQuantity(uint _productId, uint _newQuantity) public {
+        require(products[_productId].owner == msg.sender, "Not the owner of the product");
+        products[_productId].quantity = _newQuantity;
+    }
+
+    function deliverProduct(uint _productId) public {
+        require(products[_productId].owner == msg.sender, "Not the owner of the product");
+        products[_productId].isDelivered = true;
+    }
+}
+<\contract\>

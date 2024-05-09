@@ -1,0 +1,28 @@
+The contract provided for analysis is:
+
+```solidity
+contract Marketplace {
+    address public admin;
+    mapping(uint => uint) public productIdToPrice;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function addProduct(uint productId, uint price) public {
+        require(msg.sender == admin, "Only admin can add products");
+        productIdToPrice[productId] = price;
+    }
+
+    function purchaseProduct(uint productId) public payable {
+        uint price = productIdToPrice[productId];
+        require(msg.value == price, "Incorrect payment amount");
+        payable(admin).transfer(msg.value);
+    }
+}
+```
+
+The potential vulnerabilities in the given contract are:
+1) Incorrect visibility/ownership.
+
+Therefore, the contract may have an incorrect visibility/ownership vulnerability.

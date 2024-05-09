@@ -1,0 +1,41 @@
+The contract provided for analysis:
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+     }
+     address internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBalance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Privilege escalation: The contract lacks access control mechanisms to prevent unauthorized users from calling certain functions that should only be accessed by privileged entities.
+2) Business logic flaw: There might be potential flaws in the business logic that can be exploited to achieve unintended behavior or outcomes.
+3) Inconsistent state update: There could be scenarios where the state of the contract is updated inconsistently, leading to unexpected results or vulnerabilities.
+4) Incorrect visibility/ownership: There might be issues related to the visibility or ownership of certain functions or variables within the contract that can be exploited by attackers.

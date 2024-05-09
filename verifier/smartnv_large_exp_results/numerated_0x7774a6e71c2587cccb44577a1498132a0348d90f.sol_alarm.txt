@@ -1,0 +1,41 @@
+<\contract\> 
+contract SubscriptionPlatform {
+       struct Subscriber {
+           string name;
+           uint subscriptionFee;
+           uint subscriptionDuration;
+           bool isActive;
+       }
+       mapping(address => Subscriber) public subscribers;
+       address public owner;
+       uint public totalSubscribers;
+       
+       constructor() {
+           owner = msg.sender;
+           totalSubscribers = 0;
+       }
+       
+       function subscribe(string memory _name, uint _subscriptionFee, uint _subscriptionDuration) public {
+           require(subscribers[msg.sender].isActive == false, "Subscriber is already active");
+           subscribers[msg.sender] = Subscriber(_name, _subscriptionFee, _subscriptionDuration, true);
+           totalSubscribers++;
+       }
+       
+       function unsubscribe() public {
+           require(subscribers[msg.sender].isActive == true, "Subscriber is not active");
+           subscribers[msg.sender].isActive = false;
+           totalSubscribers--;
+       }
+       
+       function updateSubscriptionFee(uint _newFee) public {
+           require(msg.sender == owner, "Only owner can update subscription fee");
+           // Update subscription fee for all subscribers
+           for (uint i = 0; i < totalSubscribers; i++) {
+               subscribers[msg.sender].subscriptionFee = _newFee;
+           }
+       }
+       
+       function getSubscriptionFee() public view returns (uint) {
+           return subscribers[msg.sender].subscriptionFee;
+       }
+}

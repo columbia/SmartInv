@@ -1,0 +1,25 @@
+Contract Analysis:
+The contract provided for analysis:
+
+contract Auction {
+    mapping(address => uint) public bids;
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid is lower than current highest bid");
+        bids[msg.sender] += msg.value;
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        uint amount = bids[msg.sender];
+        bids[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output:
+1) atomicity violation
+2) inconsistent state update

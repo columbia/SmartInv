@@ -1,0 +1,41 @@
+Contract being analyzed:
+
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address public owner;
+     IERC20 public votingToken;
+     mapping(address => uint256) public startingBalanceList;
+     Proposal public currentProposal;
+
+    function startVoting() public {
+          uint256 startingBalance;
+          require(currentProposal.startTime == 0, "Ongoing proposal exists");
+          currentProposal = Proposal(block.timestamp, 0, msg.sender);
+          startingBalance = getStartingBalance(currentProposal.proposer);
+          startingBalanceList[currentProposal.proposer] = startingBalance; 
+    }
+
+    function vote(uint256 amount) public {
+          require(currentProposal.startTime + 24 hours > block.timestamp, "Voting period ended");
+          require(currentProposal.votedAmount == 0, "Already voted");
+          votingToken.transferFrom(msg.sender, address(this), amount);
+          currentProposal.votedAmount += amount; 
+    }
+
+    function endVoting() public {
+          require(currentProposal.startTime != 0, "No active proposal");
+          require(currentProposal.startTime + 24 hours < block.timestamp, "Voting period not ended");
+          require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "Voting failed");
+    }
+}
+
+Output: 
+- The contract contains potential vulnerabilities: 
+  1) privilege escalation within the startVoting() function where any address can start a new proposal instead of only the owner.
+  2) inconsistent state update in the endVoting() function where the condition for successful voting might not accurately reflect the state of the voting.
+  3) atomicity violation in the vote() function where the transferFrom operation might not be complete before updating the votedAmount.
+  4) insufficient gas in the endVoting() function where the gas required for the operation might not be enough leading to transaction failure.

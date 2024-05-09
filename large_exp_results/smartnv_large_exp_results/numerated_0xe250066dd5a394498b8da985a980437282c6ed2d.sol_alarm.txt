@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract Voting {
+    address public owner;
+    mapping(address => uint) public votes;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint _amount) public {
+        votes[msg.sender] += _amount;
+        // Some voting logic here
+    }
+
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = _newOwner;
+    }
+}
+<\contract_to_analyze\> 
+Output:
+- privilege escalation
+- incorrect visibility/ownership

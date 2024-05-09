@@ -1,0 +1,23 @@
+Contract:
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCounts;
+    
+    function vote(bool inFavor) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        if (inFavor) {
+            voteCounts[msg.sender]++;
+        } else {
+            voteCounts[msg.sender]--;
+        }
+        hasVoted[msg.sender] = true;
+    }
+    
+    function getVoteCount(address user) public view returns(uint) {
+        return voteCounts[user];
+    }
+}
+
+Potential vulnerabilities:
+7) ID uniqueness violation: There is a possibility that a user can manipulate the vote by voting multiple times from the same address.
+10) Arithmetic flaw: The voting system does not have validation to ensure that the vote count does not go below zero, leading to the risk of negative vote counts.

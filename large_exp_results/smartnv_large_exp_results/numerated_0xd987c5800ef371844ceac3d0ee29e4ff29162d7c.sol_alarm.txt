@@ -1,0 +1,37 @@
+The contract provided for analysis:
+contract Shop {
+    address public owner;
+    mapping(uint => Item) public items;
+
+    struct Item {
+        uint price;
+        uint quantity;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(uint id, uint price, uint quantity) public onlyOwner {
+        Item storage newItem = items[id];
+        newItem.price = price;
+        newItem.quantity = quantity;
+    }
+
+    function purchaseItem(uint id, uint quantity) public payable {
+        require(items[id].quantity >= quantity, "Not enough quantity available");
+        require(msg.value >= items[id].price * quantity, "Insufficient funds");
+
+        items[id].quantity -= quantity;
+        owner.transfer(items[id].price * quantity);
+    }
+}
+The potential vulnerabilities in the contract "Shop" are:
+1) inconsistent state update
+2) integer overflow/underflow
+3) incorrect visibility/ownership

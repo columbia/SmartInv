@@ -1,0 +1,33 @@
+<\contract\> 
+contract Escrow {
+     address public payer;
+     address public recipient;
+     uint public amount;
+
+     function deposit(address _recipient) public payable {
+         payer = msg.sender;
+         recipient = _recipient;
+         amount = msg.value;
+     }
+
+     function withdraw() public {
+         require(msg.sender == recipient, "Only recipient can withdraw");
+         payable(recipient).transfer(amount);
+     }
+
+     function cancel() public {
+         require(msg.sender == payer, "Only payer can cancel");
+         payable(payer).transfer(amount);
+     }
+ }
+<\contract\> 
+
+The potential vulnerabilities in the Escrow contract are:
+
+1) Incorrect visibility/ownership: The "payer" and "recipient" variables are public, which can expose sensitive information. It may be preferable to use private visibility for these variables to prevent unauthorized access.
+
+2) Insufficient gas: The transfer function in the withdraw and cancel functions can potentially fail if the gas cost exceeds the gas limit. It is recommended to use the transfer() function with caution and consider using other patterns like a withdrawal pattern to handle large amounts of funds.
+
+3) Inconsistent state update: The deposit function updates the state variables "payer," "recipient," and "amount" without any input validation. This could potentially lead to inconsistent or incorrect state updates if the function is called with unexpected values. 
+
+Therefore, the potential vulnerabilities in the Escrow contract are incorrect visibility/ownership, insufficient gas, and inconsistent state update.

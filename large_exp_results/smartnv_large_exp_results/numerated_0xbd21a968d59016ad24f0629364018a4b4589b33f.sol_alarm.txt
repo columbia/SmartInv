@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract Insurance {
+    mapping(address => uint) public policyNumber;
+    mapping(uint => uint) public policyAmount;
+    uint public totalPolicies;
+
+    function buyPolicy(uint _policyNumber, uint _policyAmount) public {
+        policyNumber[msg.sender] = _policyNumber;
+        policyAmount[_policyNumber] = _policyAmount;
+        totalPolicies++;
+    }
+
+    function claimPolicy(uint _policyNumber) public {
+        require(policyNumber[msg.sender] == _policyNumber, "Policy does not exist for this user");
+        require(policyAmount[_policyNumber] > 0, "Policy has no amount to claim");
+
+        uint amountToClaim = policyAmount[_policyNumber];
+        policyAmount[_policyNumber] = 0;
+
+        msg.sender.transfer(amountToClaim);
+    }
+}
+
+Output: insufficient gas, ID uniqueness violation

@@ -1,0 +1,21 @@
+Contract: 
+
+contract Lottery {
+    uint public ticketPrice;
+    mapping(address => uint) public ticketsBought;
+
+    function buyTicket() public payable {
+        require(msg.value >= ticketPrice, "Insufficient payment");
+        ticketsBought[msg.sender] += 1;
+    }
+
+    function drawWinner() public {
+        require(ticketsBought[msg.sender] > 0, "No tickets bought");
+        // Randomly select a winner and transfer prize
+    }
+}
+
+Potential vulnerabilities:
+1) Integer overflow/underflow: The contract does not have checks for potential integer overflows or underflows when handling ticket purchases, which could lead to unexpected behavior if large amounts are involved.
+2) Insufficient gas: If the cost of the drawWinner function exceeds the gas limit, the transaction may fail, leaving participants unable to claim their prizes.
+3) Incorrect visibility/ownership: Depending on the context of the contract, the visibility and ownership of certain functions and variables may be incorrect, leading to unauthorized access or manipulation of data.

@@ -1,0 +1,11 @@
+The potential vulnerabilities in the contract to be analyzed are:
+
+1) Inconsistent state update: The function "endExecute" updates the "lockedFunds" variable based on the balance of the contract, which can lead to inconsistent state if the balance changes during the execution of the function.
+
+2) Incorrect visibility/ownership: The contract does not specify the visibility of the variables "owner", "votingToken", "startingBlance", "proposal", "startingBalanceList", and "lockedFunds", which can lead to accessibility issues and potential manipulation.
+
+3) Reentrancy: The "execute" function transfers tokens to the contract before updating the state variable "votedAmount". This can open up the contract to reentrancy attacks where an external contract can call back into the contract before the state is updated.
+
+4) Insufficient gas: The "endExecute" function performs a potentially expensive operation by checking if twice the balance of the contract is greater than the total supply of the token. This could consume too much gas and lead to out of gas exceptions.
+
+5) Integer overflow/underflow: There is a missing check for integer overflow/underflow in various arithmetic operations, such as addition in the "execute" function and multiplication in the "liquidate" function, which can lead to unintended behavior.

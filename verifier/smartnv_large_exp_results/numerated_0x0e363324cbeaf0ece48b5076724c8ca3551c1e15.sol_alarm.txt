@@ -1,0 +1,23 @@
+<\contract\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public price;
+     uint public releaseTime;
+     bool public released;
+
+     constructor(address _buyer, address _seller, uint _price, uint _duration) {
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+         releaseTime = block.timestamp + _duration;
+         released = false;
+     }
+
+     function release() public {
+         require(msg.sender == buyer || msg.sender == seller, "you are not authorized to release funds");
+         require(block.timestamp >= releaseTime, "release time has not arrived");
+         released = true;
+     }
+}
+<\contract\>

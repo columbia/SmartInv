@@ -1,0 +1,4 @@
+This contract may have the following potential vulnerabilities:
+1) business logic flaw: The function `liquidate` may have a business logic flaw as the condition `getPrice() * cAmount * 80 / 100 < dAmount` may not accurately determine if a user's fund can be liquidated.
+2) atomicity violation: The operations in the `liquidate` function involving two different token transfers are not atomic, which may risk partial execution and lead to inconsistencies.
+3) reentrancy: The token transfers in the `liquidate` function can potentially be vulnerable to reentrancy attacks if the receiving contracts have fallback functions that interact with this contract.

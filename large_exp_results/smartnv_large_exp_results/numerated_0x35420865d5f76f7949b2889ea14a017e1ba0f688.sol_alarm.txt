@@ -1,0 +1,40 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    
+    modifier onlyOwner {
+        require(msg.sender == owner, "Only owner can call this function.");
+        _;
+    }
+
+    function delegate(address to) public {
+        require(to != msg.sender, "Self-delegation is not allowed.");
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        
+        sender.voted = true;
+        sender.vote = option;
+        totalVotes++;
+    }
+
+    function updateOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+
+    function getWinner() public view returns (uint256) {
+        // Logic to determine the winner based on the votes
+    }
+}
+<\contract_to_analyze\>

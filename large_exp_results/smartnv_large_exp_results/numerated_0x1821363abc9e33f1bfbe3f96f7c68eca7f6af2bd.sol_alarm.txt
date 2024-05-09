@@ -1,0 +1,66 @@
+<b>The contract:</b> 
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+
+    enum State { Created, Locked, Released, InDispute }
+    State public state;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        state = State.Created;
+    }
+
+    function approveByBuyer() public {
+        require(msg.sender == buyer, "Only buyer can approve");
+        buyerApproved = true;
+    }
+
+    function approveBySeller() public {
+        require(msg.sender == seller, "Only seller can approve");
+        sellerApproved = true;
+    }
+
+    function approveByArbiter() public {
+        require(msg.sender == arbiter, "Only arbiter can approve");
+        arbiterApproved = true;
+    }
+
+    function releaseToSeller() public {
+        require(state == State.Locked, "Invalid state");
+        require(buyerApproved, "Buyer has not approved");
+        require(sellerApproved, "Seller has not approved");
+        state = State.Released;
+        seller.transfer(amount);
+    }
+
+    function refundToBuyer() public {
+        require(state == State.Locked || state == State.InDispute, "Invalid state");
+        require(buyerApproved, "Buyer has not approved");
+        require(!sellerApproved, "Seller has already approved");
+        state = State.Released;
+        buyer.transfer(amount);
+    }
+
+    function arbitrateAndReleaseToSeller() public {
+        require(state == State.InDispute, "Invalid state");
+        require(arbiterApproved, "Arbiter has not approved");
+        state = State.Released;
+        seller.transfer(amount);
+    }
+
+    function lock() public {
+        require(state == State.Created, "Invalid state");
+        state = State.Locked;
+    }
+}
+Healthy

@@ -1,0 +1,21 @@
+The contract:
+```
+contract TokenExchange {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     
+     function swapTokens(uint amountA, uint amountB) external {
+          tokenA.transferFrom(msg.sender, address(this), amountA);
+          tokenB.transferFrom(msg.sender, address(this), amountB);
+          
+          tokenA.transfer(msg.sender, amountB);
+          tokenB.transfer(msg.sender, amountA);
+     }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The contract swaps `amountA` of `tokenA` for `amountB` of `tokenB` and vice versa without any checks for the correct exchange rate or confirmation from both parties. This could lead to incorrect state updates if one of the transfer operations fail or if the tokens have different values.
+2) Atomicity violation: The contract does not perform the token transfers atomically, which can result in an inconsistency where only one transfer is completed while the other fails, leaving the contract in an inconsistent state.
+3) Insufficient gas: If the amount of gas provided for the token transfers is insufficient, the transactions might fail halfway through, leading to an inconsistent state.
+4) Incorrect visibility/ownership: The `tokenA` and `tokenB` variables are public, which could potentially expose sensitive information about the contract to unauthorized parties. Additionally, there is no check to ensure that only the rightful owner can call the `swapTokens` function.

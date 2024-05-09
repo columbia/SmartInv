@@ -1,0 +1,30 @@
+<\contract_to_analyze\> 
+contract Insurance {
+    address public owner;
+    mapping(address => uint) public premiums;
+    mapping(address => bool) public insured;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function purchaseInsurance() public payable {
+        require(!insured[msg.sender], "Already insured");
+        premiums[msg.sender] = msg.value;
+        insured[msg.sender] = true;
+    }
+
+    function claimInsurance() public {
+        require(insured[msg.sender], "Not insured");
+        uint payout = premiums[msg.sender] * 2;
+        msg.sender.transfer(payout);
+        insured[msg.sender] = false;
+        premiums[msg.sender] = 0;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Not owner");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

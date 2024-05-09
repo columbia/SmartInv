@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The execute function in the TimelockController contract allows for an inconsistent state update by incrementing the votedAmount before the transfer of tokens. This can lead to unexpected behavior if the transfer fails after the increment.
+2) Atomicity violation: The execute function in the TimelockController contract does not ensure atomicity of the token transfer and the update of votedAmount, which can result in inconsistent data if the transfer fails midway through the execution.
+3) Incorrect visibility/ownership: The variables startingBalanceList and lockedFunds in the TimelockController contract are not specified with any visibility keyword, which can lead to potential issues with access control and visibility.
+4) Ether leakage: The liquidate function in the ExchangeTokens contract allows for potential ether leakage if the transferFrom calls fail, as the ether sent with the calls will not be returned, leading to loss of funds.
+5) Insufficient gas: The calculatePrice function in the ExchangeTokens contract may encounter gas exhaustion issues if the balanceOf calls consume a large amount of gas, potentially causing the function to fail due to insufficient gas.

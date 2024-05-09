@@ -1,0 +1,25 @@
+<\contract\> 
+contract EscrowContract {
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    function createEscrow(address _seller, address _buyer, uint _price) public {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller, "Only the seller can release funds");
+        // Release funds to the buyer
+    }
+
+    function refundFunds() public {
+        require(msg.sender == buyer, "Only the buyer can request a refund");
+        // Refund funds to the buyer
+    }
+} 
+
+Output:
+- incorrect visibility/ownership in releaseFunds and refundFunds functions.

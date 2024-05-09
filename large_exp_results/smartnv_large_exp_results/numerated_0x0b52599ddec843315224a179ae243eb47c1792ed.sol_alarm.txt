@@ -1,0 +1,38 @@
+Contract to be analyzed:
+
+contract Insurance {
+     struct Policy {
+          address insured;
+          uint256 coverageAmount;
+          bool paidOut;
+          uint256 premium;
+          }
+     mapping(address => Policy) public policies;
+     address public owner;
+
+     function createPolicy(address _insured, uint256 _coverageAmount, uint256 _premium) public {
+           require(msg.sender == owner, "only owner can create policy");
+           policies[_insured] = Policy(_insured, _coverageAmount, false, _premium);
+     }
+
+     function claimInsurance(address _insured) public {
+           require(policies[_insured].insured == _insured, "policy does not exist");
+           require(!policies[_insured].paidOut, "insurance already paid out");
+           require(msg.sender == policies[_insured].insured, "only insured can claim insurance");
+           // process insurance claim and payout
+           policies[_insured].paidOut = true;
+     }
+
+     function cancelPolicy(address _insured) public {
+           require(policies[_insured].insured == _insured, "policy does not exist");
+           require(msg.sender == owner || msg.sender == policies[_insured].insured, "not authorized");
+           // refund premium and remove policy
+           delete policies[_insured];
+     }
+}
+
+Potential vulnerabilities:
+1) Privilege escalation
+2) Inconsistent state update
+3) Incorrect visibility/ownership
+4) Reentrancy

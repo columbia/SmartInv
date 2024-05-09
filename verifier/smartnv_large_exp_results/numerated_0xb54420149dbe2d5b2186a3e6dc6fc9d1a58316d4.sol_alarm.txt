@@ -1,0 +1,42 @@
+Contract to be analyzed: 
+
+contract Marketplace {
+    mapping(address => uint) public balances;
+    address public admin;
+    uint constant public MAX_PRODUCT_QUANTITY = 100;
+    
+    struct Product {
+        string name;
+        uint price;
+        uint quantity;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function addProduct(string memory _name, uint _price, uint _quantity) public {
+        require(msg.sender == admin, "only admin can add products");
+        require(_quantity <= MAX_PRODUCT_QUANTITY, "exceeds max product quantity");
+        
+        products[productCount] = Product(_name, _price, _quantity);
+        productCount++;
+    }
+
+    function buyProduct(uint _productId, uint _quantity) public {
+        require(_productId < productCount, "product doesn't exist");
+        
+        Product storage product = products[_productId];
+        require(product.quantity >= _quantity, "insufficient quantity");
+
+        uint totalAmount = product.price * _quantity;
+        require(balances[msg.sender] >= totalAmount, "insufficient balance");
+        
+        balances[msg.sender] -= totalAmount;
+        balances[admin] += totalAmount;
+        product.quantity -= _quantity;
+    }
+}

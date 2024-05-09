@@ -1,0 +1,25 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+
+    function vote(uint256 amount) external {
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function revokeVote(uint256 amount) external {
+        require(userVotes[msg.sender] >= amount, "Insufficient votes to revoke");
+        totalVotes -= amount;
+        userVotes[msg.sender] -= amount;
+    }
+
+    function getTotalVotes() external view returns (uint256) {
+        return totalVotes;
+    }
+
+    function getUserVotes(address user) external view returns (uint256) {
+        return userVotes[user];
+    }
+}
+<\analyzed_contract\>

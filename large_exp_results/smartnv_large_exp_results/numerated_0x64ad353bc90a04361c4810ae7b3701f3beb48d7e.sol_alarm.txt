@@ -1,0 +1,25 @@
+<\contract_to_be_analyzed\>
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributors;
+    uint public totalContributed;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function contribute() public payable {
+        contributors[msg.sender] += msg.value;
+        totalContributed += msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract_to_be_analyzed\> 
+
+Potential vulnerabilities:
+- incorrect visibility/ownership (withdraw function only checks for owner but doesn't restrict unauthorized access)
+- insufficient gas (potential gas exhaustion with large number of contributors or total contribution amount)

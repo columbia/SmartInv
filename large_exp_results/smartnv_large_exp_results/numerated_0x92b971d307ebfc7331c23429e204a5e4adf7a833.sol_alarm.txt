@@ -1,0 +1,16 @@
+<\analyzed_contract\>
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         address public owner;
+         
+         function initiateSwap(uint amountA, uint amountB) external {
+             require(msg.sender == owner, "only owner can initiate swap");
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transferFrom(msg.sender, address(this), amountB);
+             uint totalAmount = amountA + amountB;
+             tokenA.transfer(msg.sender, amountB);
+             tokenB.transfer(msg.sender, amountA);
+         }
+}
+<\analyzed_contract\>

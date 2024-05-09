@@ -1,0 +1,24 @@
+<\contract\>
+contract Marketplace {
+     mapping(uint => uint) public prices;
+     mapping(address => uint) public balances;
+     address public owner;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function setPrice(uint _productId, uint _price) public {
+         require(msg.sender == owner, "only owner can set price");
+         prices[_productId] = _price;
+     }
+
+     function buyProduct(uint _productId) public {
+         require(prices[_productId] > 0, "product not available");
+         require(balances[msg.sender] >= prices[_productId], "insufficient balance");
+         
+         balances[msg.sender] -= prices[_productId];
+         balances[owner] += prices[_productId];
+     }
+}
+<\contract\>

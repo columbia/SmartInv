@@ -1,0 +1,25 @@
+contract SubscriptionService {
+    mapping(address => uint) public subscriptionFee;
+    mapping(address => bool) public isSubscriber;
+
+    function subscribe(address user) external payable {
+        require(msg.value == subscriptionFee[user], "Incorrect subscription fee paid");
+        isSubscriber[user] = true;
+    }
+
+    function unsubscribe(address user) external {
+        require(isSubscriber[user] == true, "User is not subscribed");
+        isSubscriber[user] == false;
+    }
+
+    function updateSubscriptionFee(address user, uint fee) external {
+        require(msg.sender == owner, "Only owner can update subscription fee");
+        subscriptionFee[user] = fee;
+    }
+
+    function withdrawSubscriptionFees() external {
+        uint amount = subscriptionFee[msg.sender] * 100;
+        require(amount <= address(this).balance, "Insufficient balance in contract");
+        msg.sender.transfer(amount);
+    }
+}

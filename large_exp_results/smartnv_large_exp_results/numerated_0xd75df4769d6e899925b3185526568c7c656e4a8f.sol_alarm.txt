@@ -1,0 +1,31 @@
+<\contract\> 
+contract Escrow {
+         address public payer;
+         address payable public payee;
+         address public intermediary;
+
+         constructor(address _payee, address _intermediary) public {
+             payer = msg.sender;
+             payee = payable(_payee);
+             intermediary = _intermediary;
+         }
+
+         function deposit() public payable {
+             require(msg.sender == payer, "Only payer can deposit funds");
+         }
+
+         function release() public {
+             require(msg.sender == intermediary, "Only intermediary can release funds");
+             payee.transfer(address(this).balance);
+         }
+
+         function refund() public {
+             require(msg.sender == intermediary, "Only intermediary can refund funds");
+             payer.transfer(address(this).balance);
+         }
+}
+<\contract\> 
+
+Output:
+- Incorrect visibility/ownership
+- Privilege escalation

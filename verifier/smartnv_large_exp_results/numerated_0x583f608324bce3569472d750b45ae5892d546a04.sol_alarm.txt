@@ -1,0 +1,34 @@
+contract EscrowContract {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    bool public sellerApproved;
+    bool public buyerApproved;
+    
+    constructor(address _seller, address _buyer, address _arbiter, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+    }
+    
+    function approve() public {
+        if(msg.sender == seller) {
+            sellerApproved = true;
+        }
+        if(msg.sender == buyer) {
+            buyerApproved = true;
+        }
+    }
+    
+    function refund() public {
+        require(sellerApproved && buyerApproved, "Both parties must approve");
+        buyer.transfer(price);
+    }
+    
+    function release() public {
+        require(sellerApproved && buyerApproved, "Both parties must approve");
+        seller.transfer(price);
+    }
+}

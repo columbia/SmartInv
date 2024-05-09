@@ -1,0 +1,32 @@
+<\contract\>
+contract EscrowService {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public isPaid;
+
+    function deposit() public payable {
+        require(!isPaid, "Escrow already paid");
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        
+        escrowAmount += msg.value;
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(isPaid == false, "Escrow already released");
+        
+        isPaid = true;
+        seller.transfer(escrowAmount);
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(isPaid == false, "Escrow already released");
+
+        isPaid = true;
+        buyer.transfer(escrowAmount);
+    }
+}
+<\contract\>

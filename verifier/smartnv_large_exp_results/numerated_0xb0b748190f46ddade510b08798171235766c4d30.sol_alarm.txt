@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+- Inconsistent state update: The contract has multiple state variables like `proposal`, `startingBlance`, `startingBalanceList`, and `lockedFunds` that are being updated in different functions. This can lead to inconsistent state if the updates are not synchronized properly.
+
+- ID uniqueness violation: The contract seems to use addresses of users (`proposal.addr`, `proposal.addr`, `msg.sender`, `proposal.addr`) as identifiers without ensuring their uniqueness. This could potentially lead to conflicts or unexpected behavior if multiple users have the same address.
+
+- Incorrect visibility/ownership: The visibility of state variables like `owner`, `votingToken`, `proposal`, `startingBalanceList`, and `lockedFunds` is not specified, which might expose sensitive data or functionalities to external contracts.
+
+- Arithmetic flaw: The calculation `getPrice() * cAmount * 80 / 100 < dAmount` in the function `liquidate` involves multiple arithmetic operations without proper overflow/underflow checks, which can lead to unexpected results or vulnerabilities.
+
+Overall assessment: The contract contains multiple potential vulnerabilities that need to be addressed to ensure its security and integrity.

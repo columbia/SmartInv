@@ -1,0 +1,25 @@
+<\contract\> 
+contract TokenSale {
+     address payable public owner;
+     IERC20 public token;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(IERC20 _token, uint _tokenPrice) {
+         owner = msg.sender;
+         token = _token;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+         token.transfer(msg.sender, _amount);
+         owner.transfer(msg.value);
+         tokensSold += _amount;
+     }
+}
+<\contract\> 
+
+Output:
+- integer overflow/underflow
+- incorrect payment amount

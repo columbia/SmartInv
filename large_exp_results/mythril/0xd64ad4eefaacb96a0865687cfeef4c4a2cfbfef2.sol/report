@@ -1,0 +1,635 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Owned
+Function name: fallback
+PC address: 6
+Estimated Gas Usage: 19 - 114
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:48
+
+contract Owned {
+    address owner;
+
+    modifier onlyowner() {
+        if (msg.sender == owner) {
+            _;
+        }
+    }
+
+    function Owned() {
+        owner = msg.sender;
+    }
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SafeMath
+Function name: fallback
+PC address: 6
+Estimated Gas Usage: 19 - 114
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:3
+
+contract SafeMath {
+    function add(uint x, uint y) internal constant returns (uint z) {
+        assert((z = x + y) >= x);
+    }
+ 
+    function subtract(uint x, uint y) internal constant returns (uint z) {
+        assert((z = x - y) <= x);
+    }
+
+    function multiply(uint x, uint y) internal constant returns (uint z) {
+        z = x * y;
+        assert(x == 0 || z / x == y);
+        return z;
+    }
+
+    function divide(uint x, uint y) internal constant returns (uint z) {
+        z = x / y;
+        assert(x == ( (y * z) + (x % y) ));
+        return z;
+    }
+    
+    function min64(uint64 x, uint64 y) internal constant returns (uint64) {
+        return x < y ? x: y;
+    }
+    
+    function max64(uint64 x, uint64 y) internal constant returns (uint64) {
+        return x >= y ? x : y;
+    }
+
+    function min(uint x, uint y) internal constant returns (uint) {
+        return (x <= y) ? x : y;
+    }
+
+    function max(uint x, uint y) internal constant returns (uint) {
+        return (x >= y) ? x : y;
+    }
+
+    function assert(bool assertion) internal {
+        if (!assertion) {
+            revert();
+        }
+    }
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Owned
+Function name: constructor
+PC address: 10
+Estimated Gas Usage: 36 - 131
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:57
+
+function Owned() {
+        owner = msg.sender;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x1
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SafeMath
+Function name: constructor
+PC address: 10
+Estimated Gas Usage: 36 - 131
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:3
+
+contract SafeMath {
+    function add(uint x, uint y) internal constant returns (uint z) {
+        assert((z = x + y) >= x);
+    }
+ 
+    function subtract(uint x, uint y) internal constant returns (uint z) {
+        assert((z = x - y) <= x);
+    }
+
+    function multiply(uint x, uint y) internal constant returns (uint z) {
+        z = x * y;
+        assert(x == 0 || z / x == y);
+        return z;
+    }
+
+    function divide(uint x, uint y) internal constant returns (uint z) {
+        z = x / y;
+        assert(x == ( (y * z) + (x % y) ));
+        return z;
+    }
+    
+    function min64(uint64 x, uint64 y) internal constant returns (uint64) {
+        return x < y ? x: y;
+    }
+    
+    function max64(uint64 x, uint64 y) internal constant returns (uint64) {
+        return x >= y ? x : y;
+    }
+
+    function min(uint x, uint y) internal constant returns (uint) {
+        return (x <= y) ? x : y;
+    }
+
+    function max(uint x, uint y) internal constant returns (uint) {
+        return (x >= y) ? x : y;
+    }
+
+    function assert(bool assertion) internal {
+        if (!assertion) {
+            revert();
+        }
+    }
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x1
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Mortal
+Function name: fallback
+PC address: 57
+Estimated Gas Usage: 64 - 159
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:63
+
+contract Mortal is Owned {
+    
+    function kill() {
+        if (msg.sender == owner)
+            selfdestruct(owner);
+    }
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getBalance()
+PC address: 348
+Estimated Gas Usage: 122 - 217
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:261
+
+function getBalance() constant returns (uint) {
+        uint amount = balances[msg.sender];
+        if ((amount > 0) && (amount < this.balance)) {
+            return amount;
+        }
+        return 0;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: getBalance(), txdata: 0x12065fe0, value: 0x1
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: placeBet(uint256,uint8)
+PC address: 1545
+Estimated Gas Usage: 1010 - 1105
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:222
+
+function placeBet(uint gameId, uint8 bet) public payable returns (bool) {
+        Game game = games[gameId];
+        Round round = game.rounds[game.currentRound];
+        Bet[] bets = round.bets;
+
+        if (!round.open) {
+            return false;
+        }
+
+        if (msg.value < game.minAmountByBet) {
+            return false;
+        }
+
+        uint id = bets.length;
+        bets.length += 1;
+        bets[id].id = id;
+        bets[id].round = round.id;
+        bets[id].bet = bet;
+        bets[id].origin = msg.sender;
+        bets[id].amount = msg.value;
+        BetPlaced(game.id, round.id, msg.sender, id);
+
+        if (bets.length == game.maxNumberOfBets) {
+            closeRound(game.id);
+        }
+
+        return true;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x1, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: placeBet(uint256,uint8), txdata: 0x03edf914, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getGameRoundOpen(uint256,uint256)
+PC address: 3176
+Estimated Gas Usage: 1121 - 1216
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:280
+
+function getGameRoundOpen(uint gameId, uint roundId) constant returns(bool) {
+        return games[gameId].rounds[roundId].open;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getGameRoundOpen(uint256,uint256), txdata: 0x42207083, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getRoundPointer(uint256,uint256)
+PC address: 3271
+Estimated Gas Usage: 1143 - 1238
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:316
+
+function getRoundPointer(uint gameId, uint roundId) constant returns(uint) {
+        return games[gameId].rounds[roundId].pointer;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000001, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getRoundPointer(uint256,uint256), txdata: 0x4ac5dea9, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getGameMinAmountByBet(uint256)
+PC address: 3353
+Estimated Gas Usage: 1141 - 1236
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:288
+
+function getGameMinAmountByBet(uint gameId) constant returns(uint) {
+        return games[gameId].minAmountByBet;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000001, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getGameMinAmountByBet(uint256), txdata: 0x658d3423, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getRoundNumberOfBets(uint256,uint256)
+PC address: 3400
+Estimated Gas Usage: 1187 - 1282
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:296
+
+function getRoundNumberOfBets(uint gameId, uint roundId) constant returns(uint) {
+        return games[gameId].rounds[roundId].bets.length;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getRoundNumberOfBets(uint256,uint256), txdata: 0xae2c1506, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getRoundBetOrigin(uint256,uint256,uint256)
+PC address: 3485
+Estimated Gas Usage: 1233 - 1328
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:300
+
+function getRoundBetOrigin(uint gameId, uint roundId, uint betId) constant returns(address) {
+        return games[gameId].rounds[roundId].bets[betId].origin;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getRoundBetOrigin(uint256,uint256,uint256), txdata: 0xb24c35e4, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getRoundNumber(uint256,uint256)
+PC address: 4171
+Estimated Gas Usage: 1275 - 1370
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:312
+
+function getRoundNumber(uint gameId, uint roundId) constant returns(uint8) {
+        return games[gameId].rounds[roundId].number;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000009, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getRoundNumber(uint256,uint256), txdata: 0xc43e9462, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getGameCurrentRoundId(uint256)
+PC address: 4266
+Estimated Gas Usage: 1273 - 1368
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:276
+
+function getGameCurrentRoundId(uint gameId) constant returns(uint) {
+        return games[gameId].currentRound;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000001, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getGameCurrentRoundId(uint256), txdata: 0xceb9a5fd, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getRoundBetNumber(uint256,uint256,uint256)
+PC address: 4313
+Estimated Gas Usage: 1343 - 1438
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:308
+
+function getRoundBetNumber(uint gameId, uint roundId, uint betId) constant returns(uint) {
+        return games[gameId].rounds[roundId].bets[betId].bet;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000001, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getRoundBetNumber(uint256,uint256,uint256), txdata: 0xd3511f82, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getGameMaxNumberOfBets(uint256)
+PC address: 4446
+Estimated Gas Usage: 1317 - 1412
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:284
+
+function getGameMaxNumberOfBets(uint gameId) constant returns(uint) {
+        return games[gameId].maxNumberOfBets;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000001, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getGameMaxNumberOfBets(uint256), txdata: 0xe7320f9e, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getPointer(uint256)
+PC address: 4493
+Estimated Gas Usage: 1339 - 1434
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:320
+
+function getPointer(uint gameId) constant returns(uint) {
+        return games[gameId].pointer;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getPointer(uint256), txdata: 0xe8854cfd, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getGamePrize(uint256)
+PC address: 4540
+Estimated Gas Usage: 1361 - 1456
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:292
+
+function getGamePrize(uint gameId) constant returns(uint) {
+        return games[gameId].prize;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000001, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getGamePrize(uint256), txdata: 0xead2bfdc, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Lotthereum
+Function name: getRoundBetAmount(uint256,uint256,uint256)
+PC address: 4621
+Estimated Gas Usage: 1453 - 1548
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd64ad4eefaacb96a0865687cfeef4c4a2cfbfef2.sol:304
+
+function getRoundBetAmount(uint gameId, uint roundId, uint betId) constant returns(uint) {
+        return games[gameId].rounds[roundId].bets[betId].amount;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1000000000001, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getRoundBetAmount(uint256,uint256,uint256), txdata: 0xf68009b9, value: 0x0
+
+

@@ -1,0 +1,17 @@
+<\contract\>
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swapTokens(uint amount) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Not enough balance");
+        
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+<\contract\>
+
+<\output\>
+1) inconsistent state update
+2) atomicity violation

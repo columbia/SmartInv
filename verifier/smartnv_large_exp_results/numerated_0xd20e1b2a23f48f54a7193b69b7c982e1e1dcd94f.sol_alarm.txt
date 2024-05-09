@@ -1,0 +1,30 @@
+<\contract\>
+contract Escrow {
+    address public owner;
+    address public buyer;
+    address public seller;
+    uint public price;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        owner = msg.sender;
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == price, "Incorrect deposit amount");
+    }
+
+    function release() public {
+        require(msg.sender == owner, "Only owner can release funds");
+        payable(seller).transfer(price);
+    }
+
+    function refund() public {
+        require(msg.sender == owner, "Only owner can refund funds");
+        payable(buyer).transfer(price);
+    }
+}
+<\contract\>

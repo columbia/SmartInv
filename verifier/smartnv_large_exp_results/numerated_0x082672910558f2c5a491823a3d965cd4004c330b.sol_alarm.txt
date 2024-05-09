@@ -1,0 +1,17 @@
+<\contract_to_be_analyzed\>
+contract PaymentContract {
+     uint public totalBalance;
+     mapping(address => uint) public balances;
+
+     function deposit(address _account, uint _amount) public {
+         totalBalance += _amount;
+         balances[_account] += _amount;
+     }
+
+     function withdraw(address _account, uint _amount) public {
+         require(balances[_account] >= _amount, "Insufficient balance");
+         totalBalance -= _amount;
+         balances[_account] -= _amount;
+     }
+}
+<\contract_to_be_analyzed\>

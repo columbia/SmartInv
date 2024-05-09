@@ -1,0 +1,60 @@
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+    
+    uint256 public totalVotes;
+    mapping(address => Voter) public voters;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+        require(to != msg.sender, "Self-delegation is not allowed");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Loop in delegation");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+        if (delegate_.voted) {
+            totalVotes += sender.weight;
+        } else {
+            delegate_.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+
+        sender.voted = true;
+        sender.vote = option;
+        totalVotes += sender.weight;
+    }
+
+    function endVoting() public onlyOwner {
+        // Check if all voters have voted
+        for (uint i = 0; i < totalVotes; i++) {
+            require(voters[i].voted, "Not all voters have cast their votes yet");
+        }
+        // Declare the winner
+        // Code to declare the winner
+    }
+}

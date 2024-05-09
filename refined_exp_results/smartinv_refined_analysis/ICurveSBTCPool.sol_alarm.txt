@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+3) business logic flaw: The endExecute function checks if the balance of the contract is more than twice the total supply of the votingToken to determine if the execution was successful. This logic may not accurately reflect the success or failure of the execution. 
+5) atomicity violation: The execute function involves multiple state-changing operations, such as transferring tokens and updating the votedAmount in the proposal struct. If an error occurs during one of these operations, the contract could be left in an inconsistent state. 
+6) cross bridge inconsistency: The proposal struct is not properly initialized before being used in the startExecute function. This could lead to inconsistencies or unexpected behaviors in the contract.

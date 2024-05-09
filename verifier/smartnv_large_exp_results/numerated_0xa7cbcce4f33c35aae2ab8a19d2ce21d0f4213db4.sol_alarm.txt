@@ -1,0 +1,58 @@
+The contract provided for analysis: 
+
+contract SmartVendingMachine {
+     address public owner;
+     mapping(address => uint) public items;
+     uint public totalItems;
+
+     constructor() public {
+          owner = msg.sender;
+          totalItems = 0;
+     }
+
+     function addItem(address _item, uint _quantity) public {
+          require(msg.sender == owner, "only owner can add items");
+          items[_item] += _quantity;
+          totalItems += _quantity;
+     }
+
+     function removeItem(address _item, uint _quantity) public {
+          require(msg.sender == owner, "only owner can remove items");
+          require(items[_item] >= _quantity, "not enough items to remove");
+          items[_item] -= _quantity;
+          totalItems -= _quantity;
+     }
+
+     function purchaseItem(address _item, uint _quantity) public payable {
+          require(items[_item] >= _quantity, "not enough items available");
+          uint totalPrice = _quantity * getItemPrice(_item);
+          require(msg.value >= totalPrice, "insufficient funds sent");
+
+          items[_item] -= _quantity;
+          totalItems -= _quantity;
+
+          if(msg.value > totalPrice) {
+               msg.sender.transfer(msg.value - totalPrice); 
+          }
+     }
+
+     function getItemPrice(address _item) public view returns (uint) {
+          if(_item == address(0x0)) {
+               return 0;
+          } else {
+               return items[_item];
+          }
+     }
+}
+
+The potential vulnerabilities in the SmartVendingMachine contract are:
+
+1) Incorrect visibility/ownership: There is a lack of access control in the addItem and removeItem functions, allowing anyone to manipulate the items mapping.
+
+2) Insufficient gas: The purchaseItem function may run out of gas if the transfer operation fails due to an error, leaving the contract in an inconsistent state.
+
+3) Business logic flaw: The purchaseItem function does not handle the case where the total price exceeds the maximum uint value, leading to a potential arithmetic flaw.
+
+4) Atomicity violation: The purchaseItem function updates the items mapping and totalItems variable separately, which could lead to an inconsistent state if one operation fails. 
+
+5) integer overflow/underflow: There is a potential risk of integer overflow/underflow in the totalItems calculation if large quantities are involved in addItem or removeItem functions.

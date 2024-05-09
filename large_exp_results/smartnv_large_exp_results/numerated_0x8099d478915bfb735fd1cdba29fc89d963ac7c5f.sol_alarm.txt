@@ -1,0 +1,25 @@
+<\analyzed_contract\>
+contract Insurance {
+         uint256 public premium;
+         IERC20 public paymentToken;
+         address public beneficiary;
+
+        function setPremium(uint256 _premium) external {
+            premium = _premium;
+        }
+
+        function purchaseInsurance(address _beneficiary) external {
+            require(premium > 0, "premium not set");
+            require(beneficiary == address(0), "insurance already purchased");
+            beneficiary = _beneficiary;
+            paymentToken.transferFrom(msg.sender, address(this), premium);
+        }
+
+        function claimInsurance() external {
+            require(beneficiary != address(0), "insurance not purchased");
+            paymentToken.transfer(beneficiary, premium);
+            premium = 0;
+            beneficiary = address(0);
+        }
+}
+<\analyzed_contract\>

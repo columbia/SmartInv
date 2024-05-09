@@ -1,0 +1,23 @@
+Contract you are going to analyze:
+
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public playerTickets;
+    address[] public players;
+    uint public ticketPrice = 0.1 ether;
+  
+    function buyTickets(uint numberOfTickets) public payable {
+        require(msg.value >= ticketPrice * numberOfTickets, "Insufficient funds");
+        for (uint i = 0; i < numberOfTickets; i++) {
+            players.push(msg.sender);
+            playerTickets[msg.sender]++;
+        }
+    }
+  
+    function pickWinner() public {
+        require(msg.sender == owner, "Only owner can pick winner");
+        uint winningTicket = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % players.length;
+        address winner = players[winningTicket];
+        payable(winner).transfer(address(this).balance);
+    }
+}

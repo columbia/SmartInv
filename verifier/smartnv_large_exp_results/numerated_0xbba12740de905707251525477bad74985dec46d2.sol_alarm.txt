@@ -1,0 +1,36 @@
+<\contract_3\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public votesReceived;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegateTo = voters[to];
+
+        if (delegateTo.voted) {
+            votesReceived[delegateTo.vote] += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+}
+<\contract_3\>

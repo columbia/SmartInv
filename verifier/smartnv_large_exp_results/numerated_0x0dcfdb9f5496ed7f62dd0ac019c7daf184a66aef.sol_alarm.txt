@@ -1,0 +1,34 @@
+<\contract_to_be_analyzed\>
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public tickets;
+    uint public totalTickets;
+    uint public ticketPrice = 0.1 ether;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyTicket(uint amount) public payable {
+        require(msg.value == ticketPrice * amount, "Incorrect amount sent");
+        tickets[msg.sender] += amount;
+        totalTickets += amount;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        uint winner = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets;
+        address[] memory participants = new address[](totalTickets);
+        
+        // Timestamp-based seed generation
+        for (uint i = 0; i < totalTickets; i++) {
+            participants[i] = msg.sender;
+        }
+        
+        address winningAddress = participants[winner];
+        uint payoutAmount = totalTickets * ticketPrice;
+        
+        payable(winningAddress).transfer(payoutAmount);
+    }
+}
+<\contract_to_be_analyzed\>

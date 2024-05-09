@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenExchange {
+         IERC20 public baseToken;
+         IERC20 public quoteToken;
+         uint public baseAmount;
+         uint public quoteAmount;
+         address public owner;
+
+         constructor(address _baseToken, address _quoteToken) {
+             baseToken = IERC20(_baseToken);
+             quoteToken = IERC20(_quoteToken);
+             owner = msg.sender;
+         }
+
+         function setBaseAmount(uint _amount) public {
+             require(msg.sender == owner, "only owner can set base amount");
+             baseAmount = _amount;
+         }
+
+         function setQuoteAmount(uint _amount) public {
+             require(msg.sender == owner, "only owner can set quote amount");
+             quoteAmount = _amount;
+         }
+
+         function exchange() public {
+             require(baseToken.balanceOf(msg.sender) >= baseAmount, "insufficient base token balance");
+             require(quoteToken.balanceOf(msg.sender) >= quoteAmount, "insufficient quote token balance");
+
+             baseToken.transferFrom(msg.sender, owner, baseAmount);
+             quoteToken.transferFrom(owner, msg.sender, quoteAmount);
+         }
+}
+<\contract\>

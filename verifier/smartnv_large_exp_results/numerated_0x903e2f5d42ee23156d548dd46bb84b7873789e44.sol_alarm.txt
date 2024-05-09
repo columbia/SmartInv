@@ -1,0 +1,29 @@
+<\contract\> 
+contract Escrow {
+     address public Buyer;
+     address public Seller;
+     uint public amount;
+     bool public isPaid;
+
+     function deposit(uint _amount) public {
+           require(!isPaid, "payment already made");
+           require(msg.sender == Buyer, "only buyer can deposit");
+           amount = _amount;
+     }
+  
+     function release() public {
+           require(msg.sender == Seller, "only seller can release");
+           require(isPaid, "payment not made yet");
+           Seller.transfer(amount);
+     }
+
+     function refund() public {
+           require(msg.sender == Buyer, "only buyer can refund");
+           require(!isPaid, "payment not made yet");
+           Buyer.transfer(amount);
+     }
+}
+<\contract\> 
+
+POTENTIAL VULNERABILITIES:
+- Incorrect visibility/ownership.

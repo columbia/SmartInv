@@ -1,0 +1,22 @@
+<\contract\>
+contract Vesting {
+    uint public amount;
+    uint public vestingPeriod;
+    uint public startTime;
+    address public beneficiary;
+
+    constructor(address _beneficiary, uint _amount, uint _vestingPeriod) {
+        beneficiary = _beneficiary;
+        amount = _amount;
+        vestingPeriod = _vestingPeriod;
+        startTime = block.timestamp;
+    }
+
+    function release() external {
+        require(block.timestamp >= startTime + vestingPeriod, "Vesting period has not ended yet");
+        uint amountToRelease = amount;
+        amount -= amountToRelease;
+        beneficiary.transfer(amountToRelease);
+    }
+}
+<\contract\>

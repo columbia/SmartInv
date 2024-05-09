@@ -1,0 +1,1721 @@
+1 // SPDX-License-Identifier: MIT
+2 
+3 pragma solidity ^0.8.0;
+4 
+5 /**
+6  * @dev Interface of the ERC165 standard, as defined in the
+7  * https://eips.ethereum.org/EIPS/eip-165[EIP].
+8  *
+9  * Implementers can declare support of contract interfaces, which can then be
+10  * queried by others ({ERC165Checker}).
+11  *
+12  * For an implementation, see {ERC165}.
+13  */
+14 interface IERC165 {
+15     /**
+16      * @dev Returns true if this contract implements the interface defined by
+17      * `interfaceId`. See the corresponding
+18      * https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section]
+19      * to learn more about how these ids are created.
+20      *
+21      * This function call must use less than 30 000 gas.
+22      */
+23     function supportsInterface(bytes4 interfaceId) external view returns (bool);
+24 }
+25 
+26 
+27 
+28 
+29 
+30 
+31 /**
+32  * @dev Required interface of an ERC721 compliant contract.
+33  */
+34 interface IERC721 is IERC165 {
+35     /**
+36      * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
+37      */
+38     event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+39 
+40     /**
+41      * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
+42      */
+43     event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+44 
+45     /**
+46      * @dev Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.
+47      */
+48     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+49 
+50     /**
+51      * @dev Returns the number of tokens in ``owner``'s account.
+52      */
+53     function balanceOf(address owner) external view returns (uint256 balance);
+54 
+55     /**
+56      * @dev Returns the owner of the `tokenId` token.
+57      *
+58      * Requirements:
+59      *
+60      * - `tokenId` must exist.
+61      */
+62     function ownerOf(uint256 tokenId) external view returns (address owner);
+63 
+64     /**
+65      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
+66      * are aware of the ERC721 protocol to prevent tokens from being forever locked.
+67      *
+68      * Requirements:
+69      *
+70      * - `from` cannot be the zero address.
+71      * - `to` cannot be the zero address.
+72      * - `tokenId` token must exist and be owned by `from`.
+73      * - If the caller is not `from`, it must be have been allowed to move this token by either {approve} or {setApprovalForAll}.
+74      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+75      *
+76      * Emits a {Transfer} event.
+77      */
+78     function safeTransferFrom(
+79         address from,
+80         address to,
+81         uint256 tokenId
+82     ) external;
+83 
+84     /**
+85      * @dev Transfers `tokenId` token from `from` to `to`.
+86      *
+87      * WARNING: Usage of this method is discouraged, use {safeTransferFrom} whenever possible.
+88      *
+89      * Requirements:
+90      *
+91      * - `from` cannot be the zero address.
+92      * - `to` cannot be the zero address.
+93      * - `tokenId` token must be owned by `from`.
+94      * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
+95      *
+96      * Emits a {Transfer} event.
+97      */
+98     function transferFrom(
+99         address from,
+100         address to,
+101         uint256 tokenId
+102     ) external;
+103 
+104     /**
+105      * @dev Gives permission to `to` to transfer `tokenId` token to another account.
+106      * The approval is cleared when the token is transferred.
+107      *
+108      * Only a single account can be approved at a time, so approving the zero address clears previous approvals.
+109      *
+110      * Requirements:
+111      *
+112      * - The caller must own the token or be an approved operator.
+113      * - `tokenId` must exist.
+114      *
+115      * Emits an {Approval} event.
+116      */
+117     function approve(address to, uint256 tokenId) external;
+118 
+119     /**
+120      * @dev Returns the account approved for `tokenId` token.
+121      *
+122      * Requirements:
+123      *
+124      * - `tokenId` must exist.
+125      */
+126     function getApproved(uint256 tokenId) external view returns (address operator);
+127 
+128     /**
+129      * @dev Approve or remove `operator` as an operator for the caller.
+130      * Operators can call {transferFrom} or {safeTransferFrom} for any token owned by the caller.
+131      *
+132      * Requirements:
+133      *
+134      * - The `operator` cannot be the caller.
+135      *
+136      * Emits an {ApprovalForAll} event.
+137      */
+138     function setApprovalForAll(address operator, bool _approved) external;
+139 
+140     /**
+141      * @dev Returns if the `operator` is allowed to manage all of the assets of `owner`.
+142      *
+143      * See {setApprovalForAll}
+144      */
+145     function isApprovedForAll(address owner, address operator) external view returns (bool);
+146 
+147     /**
+148      * @dev Safely transfers `tokenId` token from `from` to `to`.
+149      *
+150      * Requirements:
+151      *
+152      * - `from` cannot be the zero address.
+153      * - `to` cannot be the zero address.
+154      * - `tokenId` token must exist and be owned by `from`.
+155      * - If the caller is not `from`, it must be approved to move this token by either {approve} or {setApprovalForAll}.
+156      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+157      *
+158      * Emits a {Transfer} event.
+159      */
+160     function safeTransferFrom(
+161         address from,
+162         address to,
+163         uint256 tokenId,
+164         bytes calldata data
+165     ) external;
+166 }
+167 
+168 
+169 
+170 
+171 /**
+172  * @dev String operations.
+173  */
+174 library Strings {
+175     bytes16 private constant _HEX_SYMBOLS = "0123456789abcdef";
+176 
+177     /**
+178      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
+179      */
+180     function toString(uint256 value) internal pure returns (string memory) {
+181         // Inspired by OraclizeAPI's implementation - MIT licence
+182         // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
+183 
+184         if (value == 0) {
+185             return "0";
+186         }
+187         uint256 temp = value;
+188         uint256 digits;
+189         while (temp != 0) {
+190             digits++;
+191             temp /= 10;
+192         }
+193         bytes memory buffer = new bytes(digits);
+194         while (value != 0) {
+195             digits -= 1;
+196             buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+197             value /= 10;
+198         }
+199         return string(buffer);
+200     }
+201 
+202     /**
+203      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.
+204      */
+205     function toHexString(uint256 value) internal pure returns (string memory) {
+206         if (value == 0) {
+207             return "0x00";
+208         }
+209         uint256 temp = value;
+210         uint256 length = 0;
+211         while (temp != 0) {
+212             length++;
+213             temp >>= 8;
+214         }
+215         return toHexString(value, length);
+216     }
+217 
+218     /**
+219      * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.
+220      */
+221     function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {
+222         bytes memory buffer = new bytes(2 * length + 2);
+223         buffer[0] = "0";
+224         buffer[1] = "x";
+225         for (uint256 i = 2 * length + 1; i > 1; --i) {
+226             buffer[i] = _HEX_SYMBOLS[value & 0xf];
+227             value >>= 4;
+228         }
+229         require(value == 0, "Strings: hex length insufficient");
+230         return string(buffer);
+231     }
+232 }
+233 
+234 
+235 
+236 
+237 /*
+238  * @dev Provides information about the current execution context, including the
+239  * sender of the transaction and its data. While these are generally available
+240  * via msg.sender and msg.data, they should not be accessed in such a direct
+241  * manner, since when dealing with meta-transactions the account sending and
+242  * paying for execution may not be the actual sender (as far as an application
+243  * is concerned).
+244  *
+245  * This contract is only required for intermediate, library-like contracts.
+246  */
+247 abstract contract Context {
+248     function _msgSender() internal view virtual returns (address) {
+249         return msg.sender;
+250     }
+251 
+252     function _msgData() internal view virtual returns (bytes calldata) {
+253         return msg.data;
+254     }
+255 }
+256 
+257 
+258 
+259 
+260 
+261 
+262 
+263 
+264 
+265 /**
+266  * @dev Contract module which provides a basic access control mechanism, where
+267  * there is an account (an owner) that can be granted exclusive access to
+268  * specific functions.
+269  *
+270  * By default, the owner account will be the one that deploys the contract. This
+271  * can later be changed with {transferOwnership}.
+272  *
+273  * This module is used through inheritance. It will make available the modifier
+274  * `onlyOwner`, which can be applied to your functions to restrict their use to
+275  * the owner.
+276  */
+277 abstract contract Ownable is Context {
+278     address private _owner;
+279 
+280     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+281 
+282     /**
+283      * @dev Initializes the contract setting the deployer as the initial owner.
+284      */
+285     constructor() {
+286         _setOwner(_msgSender());
+287     }
+288 
+289     /**
+290      * @dev Returns the address of the current owner.
+291      */
+292     function owner() public view virtual returns (address) {
+293         return _owner;
+294     }
+295 
+296     /**
+297      * @dev Throws if called by any account other than the owner.
+298      */
+299     modifier onlyOwner() {
+300         require(owner() == _msgSender(), "Ownable: caller is not the owner");
+301         _;
+302     }
+303 
+304     /**
+305      * @dev Leaves the contract without owner. It will not be possible to call
+306      * `onlyOwner` functions anymore. Can only be called by the current owner.
+307      *
+308      * NOTE: Renouncing ownership will leave the contract without an owner,
+309      * thereby removing any functionality that is only available to the owner.
+310      */
+311     function renounceOwnership() public virtual onlyOwner {
+312         _setOwner(address(0));
+313     }
+314 
+315     /**
+316      * @dev Transfers ownership of the contract to a new account (`newOwner`).
+317      * Can only be called by the current owner.
+318      */
+319     function transferOwnership(address newOwner) public virtual onlyOwner {
+320         require(newOwner != address(0), "Ownable: new owner is the zero address");
+321         _setOwner(newOwner);
+322     }
+323 
+324     function _setOwner(address newOwner) private {
+325         address oldOwner = _owner;
+326         _owner = newOwner;
+327         emit OwnershipTransferred(oldOwner, newOwner);
+328     }
+329 }
+330 
+331 
+332 
+333 
+334 
+335 /**
+336  * @dev Contract module that helps prevent reentrant calls to a function.
+337  *
+338  * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+339  * available, which can be applied to functions to make sure there are no nested
+340  * (reentrant) calls to them.
+341  *
+342  * Note that because there is a single `nonReentrant` guard, functions marked as
+343  * `nonReentrant` may not call one another. This can be worked around by making
+344  * those functions `private`, and then adding `external` `nonReentrant` entry
+345  * points to them.
+346  *
+347  * TIP: If you would like to learn more about reentrancy and alternative ways
+348  * to protect against it, check out our blog post
+349  * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+350  */
+351 abstract contract ReentrancyGuard {
+352     // Booleans are more expensive than uint256 or any type that takes up a full
+353     // word because each write operation emits an extra SLOAD to first read the
+354     // slot's contents, replace the bits taken up by the boolean, and then write
+355     // back. This is the compiler's defense against contract upgrades and
+356     // pointer aliasing, and it cannot be disabled.
+357 
+358     // The values being non-zero value makes deployment a bit more expensive,
+359     // but in exchange the refund on every call to nonReentrant will be lower in
+360     // amount. Since refunds are capped to a percentage of the total
+361     // transaction's gas, it is best to keep them low in cases like this one, to
+362     // increase the likelihood of the full refund coming into effect.
+363     uint256 private constant _NOT_ENTERED = 1;
+364     uint256 private constant _ENTERED = 2;
+365 
+366     uint256 private _status;
+367 
+368     constructor() {
+369         _status = _NOT_ENTERED;
+370     }
+371 
+372     /**
+373      * @dev Prevents a contract from calling itself, directly or indirectly.
+374      * Calling a `nonReentrant` function from another `nonReentrant`
+375      * function is not supported. It is possible to prevent this from happening
+376      * by making the `nonReentrant` function external, and make it call a
+377      * `private` function that does the actual work.
+378      */
+379     modifier nonReentrant() {
+380         // On the first call to nonReentrant, _notEntered will be true
+381         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+382 
+383         // Any calls to nonReentrant after this point will fail
+384         _status = _ENTERED;
+385 
+386         _;
+387 
+388         // By storing the original value once again, a refund is triggered (see
+389         // https://eips.ethereum.org/EIPS/eip-2200)
+390         _status = _NOT_ENTERED;
+391     }
+392 }
+393 
+394 
+395 
+396 
+397 
+398 
+399 
+400 
+401 
+402 
+403 
+404 
+405 
+406 
+407 /**
+408  * @title ERC721 token receiver interface
+409  * @dev Interface for any contract that wants to support safeTransfers
+410  * from ERC721 asset contracts.
+411  */
+412 interface IERC721Receiver {
+413     /**
+414      * @dev Whenever an {IERC721} `tokenId` token is transferred to this contract via {IERC721-safeTransferFrom}
+415      * by `operator` from `from`, this function is called.
+416      *
+417      * It must return its Solidity selector to confirm the token transfer.
+418      * If any other value is returned or the interface is not implemented by the recipient, the transfer will be reverted.
+419      *
+420      * The selector can be obtained in Solidity with `IERC721.onERC721Received.selector`.
+421      */
+422     function onERC721Received(
+423         address operator,
+424         address from,
+425         uint256 tokenId,
+426         bytes calldata data
+427     ) external returns (bytes4);
+428 }
+429 
+430 
+431 
+432 
+433 
+434 
+435 
+436 /**
+437  * @title ERC-721 Non-Fungible Token Standard, optional metadata extension
+438  * @dev See https://eips.ethereum.org/EIPS/eip-721
+439  */
+440 interface IERC721Metadata is IERC721 {
+441     /**
+442      * @dev Returns the token collection name.
+443      */
+444     function name() external view returns (string memory);
+445 
+446     /**
+447      * @dev Returns the token collection symbol.
+448      */
+449     function symbol() external view returns (string memory);
+450 
+451     /**
+452      * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
+453      */
+454     function tokenURI(uint256 tokenId) external view returns (string memory);
+455 }
+456 
+457 
+458 
+459 
+460 
+461 /**
+462  * @dev Collection of functions related to the address type
+463  */
+464 library Address {
+465     /**
+466      * @dev Returns true if `account` is a contract.
+467      *
+468      * [IMPORTANT]
+469      * ====
+470      * It is unsafe to assume that an address for which this function returns
+471      * false is an externally-owned account (EOA) and not a contract.
+472      *
+473      * Among others, `isContract` will return false for the following
+474      * types of addresses:
+475      *
+476      *  - an externally-owned account
+477      *  - a contract in construction
+478      *  - an address where a contract will be created
+479      *  - an address where a contract lived, but was destroyed
+480      * ====
+481      */
+482     function isContract(address account) internal view returns (bool) {
+483         // This method relies on extcodesize, which returns 0 for contracts in
+484         // construction, since the code is only stored at the end of the
+485         // constructor execution.
+486 
+487         uint256 size;
+488         assembly {
+489             size := extcodesize(account)
+490         }
+491         return size > 0;
+492     }
+493 
+494     /**
+495      * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+496      * `recipient`, forwarding all available gas and reverting on errors.
+497      *
+498      * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
+499      * of certain opcodes, possibly making contracts go over the 2300 gas limit
+500      * imposed by `transfer`, making them unable to receive funds via
+501      * `transfer`. {sendValue} removes this limitation.
+502      *
+503      * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].
+504      *
+505      * IMPORTANT: because control is transferred to `recipient`, care must be
+506      * taken to not create reentrancy vulnerabilities. Consider using
+507      * {ReentrancyGuard} or the
+508      * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+509      */
+510     function sendValue(address payable recipient, uint256 amount) internal {
+511         require(address(this).balance >= amount, "Address: insufficient balance");
+512 
+513         (bool success, ) = recipient.call{value: amount}("");
+514         require(success, "Address: unable to send value, recipient may have reverted");
+515     }
+516 
+517     /**
+518      * @dev Performs a Solidity function call using a low level `call`. A
+519      * plain `call` is an unsafe replacement for a function call: use this
+520      * function instead.
+521      *
+522      * If `target` reverts with a revert reason, it is bubbled up by this
+523      * function (like regular Solidity function calls).
+524      *
+525      * Returns the raw returned data. To convert to the expected return value,
+526      * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
+527      *
+528      * Requirements:
+529      *
+530      * - `target` must be a contract.
+531      * - calling `target` with `data` must not revert.
+532      *
+533      * _Available since v3.1._
+534      */
+535     function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+536         return functionCall(target, data, "Address: low-level call failed");
+537     }
+538 
+539     /**
+540      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
+541      * `errorMessage` as a fallback revert reason when `target` reverts.
+542      *
+543      * _Available since v3.1._
+544      */
+545     function functionCall(
+546         address target,
+547         bytes memory data,
+548         string memory errorMessage
+549     ) internal returns (bytes memory) {
+550         return functionCallWithValue(target, data, 0, errorMessage);
+551     }
+552 
+553     /**
+554      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+555      * but also transferring `value` wei to `target`.
+556      *
+557      * Requirements:
+558      *
+559      * - the calling contract must have an ETH balance of at least `value`.
+560      * - the called Solidity function must be `payable`.
+561      *
+562      * _Available since v3.1._
+563      */
+564     function functionCallWithValue(
+565         address target,
+566         bytes memory data,
+567         uint256 value
+568     ) internal returns (bytes memory) {
+569         return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+570     }
+571 
+572     /**
+573      * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
+574      * with `errorMessage` as a fallback revert reason when `target` reverts.
+575      *
+576      * _Available since v3.1._
+577      */
+578     function functionCallWithValue(
+579         address target,
+580         bytes memory data,
+581         uint256 value,
+582         string memory errorMessage
+583     ) internal returns (bytes memory) {
+584         require(address(this).balance >= value, "Address: insufficient balance for call");
+585         require(isContract(target), "Address: call to non-contract");
+586 
+587         (bool success, bytes memory returndata) = target.call{value: value}(data);
+588         return _verifyCallResult(success, returndata, errorMessage);
+589     }
+590 
+591     /**
+592      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+593      * but performing a static call.
+594      *
+595      * _Available since v3.3._
+596      */
+597     function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+598         return functionStaticCall(target, data, "Address: low-level static call failed");
+599     }
+600 
+601     /**
+602      * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+603      * but performing a static call.
+604      *
+605      * _Available since v3.3._
+606      */
+607     function functionStaticCall(
+608         address target,
+609         bytes memory data,
+610         string memory errorMessage
+611     ) internal view returns (bytes memory) {
+612         require(isContract(target), "Address: static call to non-contract");
+613 
+614         (bool success, bytes memory returndata) = target.staticcall(data);
+615         return _verifyCallResult(success, returndata, errorMessage);
+616     }
+617 
+618     /**
+619      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+620      * but performing a delegate call.
+621      *
+622      * _Available since v3.4._
+623      */
+624     function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+625         return functionDelegateCall(target, data, "Address: low-level delegate call failed");
+626     }
+627 
+628     /**
+629      * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+630      * but performing a delegate call.
+631      *
+632      * _Available since v3.4._
+633      */
+634     function functionDelegateCall(
+635         address target,
+636         bytes memory data,
+637         string memory errorMessage
+638     ) internal returns (bytes memory) {
+639         require(isContract(target), "Address: delegate call to non-contract");
+640 
+641         (bool success, bytes memory returndata) = target.delegatecall(data);
+642         return _verifyCallResult(success, returndata, errorMessage);
+643     }
+644 
+645     function _verifyCallResult(
+646         bool success,
+647         bytes memory returndata,
+648         string memory errorMessage
+649     ) private pure returns (bytes memory) {
+650         if (success) {
+651             return returndata;
+652         } else {
+653             // Look for revert reason and bubble it up if present
+654             if (returndata.length > 0) {
+655                 // The easiest way to bubble the revert reason is using memory via assembly
+656 
+657                 assembly {
+658                     let returndata_size := mload(returndata)
+659                     revert(add(32, returndata), returndata_size)
+660                 }
+661             } else {
+662                 revert(errorMessage);
+663             }
+664         }
+665     }
+666 }
+667 
+668 
+669 
+670 
+671 
+672 
+673 
+674 
+675 
+676 /**
+677  * @dev Implementation of the {IERC165} interface.
+678  *
+679  * Contracts that want to implement ERC165 should inherit from this contract and override {supportsInterface} to check
+680  * for the additional interface id that will be supported. For example:
+681  *
+682  * ```solidity
+683  * function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+684  *     return interfaceId == type(MyInterface).interfaceId || super.supportsInterface(interfaceId);
+685  * }
+686  * ```
+687  *
+688  * Alternatively, {ERC165Storage} provides an easier to use but more expensive implementation.
+689  */
+690 abstract contract ERC165 is IERC165 {
+691     /**
+692      * @dev See {IERC165-supportsInterface}.
+693      */
+694     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+695         return interfaceId == type(IERC165).interfaceId;
+696     }
+697 }
+698 
+699 
+700 /**
+701  * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including
+702  * the Metadata extension, but not including the Enumerable extension, which is available separately as
+703  * {ERC721Enumerable}.
+704  */
+705 contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
+706     using Address for address;
+707     using Strings for uint256;
+708 
+709     // Token name
+710     string private _name;
+711 
+712     // Token symbol
+713     string private _symbol;
+714 
+715     // Mapping from token ID to owner address
+716     mapping(uint256 => address) private _owners;
+717 
+718     // Mapping owner address to token count
+719     mapping(address => uint256) private _balances;
+720 
+721     // Mapping from token ID to approved address
+722     mapping(uint256 => address) private _tokenApprovals;
+723 
+724     // Mapping from owner to operator approvals
+725     mapping(address => mapping(address => bool)) private _operatorApprovals;
+726 
+727     /**
+728      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
+729      */
+730     constructor(string memory name_, string memory symbol_) {
+731         _name = name_;
+732         _symbol = symbol_;
+733     }
+734 
+735     /**
+736      * @dev See {IERC165-supportsInterface}.
+737      */
+738     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
+739         return
+740             interfaceId == type(IERC721).interfaceId ||
+741             interfaceId == type(IERC721Metadata).interfaceId ||
+742             super.supportsInterface(interfaceId);
+743     }
+744 
+745     /**
+746      * @dev See {IERC721-balanceOf}.
+747      */
+748     function balanceOf(address owner) public view virtual override returns (uint256) {
+749         require(owner != address(0), "ERC721: balance query for the zero address");
+750         return _balances[owner];
+751     }
+752 
+753     /**
+754      * @dev See {IERC721-ownerOf}.
+755      */
+756     function ownerOf(uint256 tokenId) public view virtual override returns (address) {
+757         address owner = _owners[tokenId];
+758         require(owner != address(0), "ERC721: owner query for nonexistent token");
+759         return owner;
+760     }
+761 
+762     /**
+763      * @dev See {IERC721Metadata-name}.
+764      */
+765     function name() public view virtual override returns (string memory) {
+766         return _name;
+767     }
+768 
+769     /**
+770      * @dev See {IERC721Metadata-symbol}.
+771      */
+772     function symbol() public view virtual override returns (string memory) {
+773         return _symbol;
+774     }
+775 
+776     /**
+777      * @dev See {IERC721Metadata-tokenURI}.
+778      */
+779     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+780         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+781 
+782         string memory baseURI = _baseURI();
+783         return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
+784     }
+785 
+786     /**
+787      * @dev Base URI for computing {tokenURI}. If set, the resulting URI for each
+788      * token will be the concatenation of the `baseURI` and the `tokenId`. Empty
+789      * by default, can be overriden in child contracts.
+790      */
+791     function _baseURI() internal view virtual returns (string memory) {
+792         return "";
+793     }
+794 
+795     /**
+796      * @dev See {IERC721-approve}.
+797      */
+798     function approve(address to, uint256 tokenId) public virtual override {
+799         address owner = ERC721.ownerOf(tokenId);
+800         require(to != owner, "ERC721: approval to current owner");
+801 
+802         require(
+803             _msgSender() == owner || isApprovedForAll(owner, _msgSender()),
+804             "ERC721: approve caller is not owner nor approved for all"
+805         );
+806 
+807         _approve(to, tokenId);
+808     }
+809 
+810     /**
+811      * @dev See {IERC721-getApproved}.
+812      */
+813     function getApproved(uint256 tokenId) public view virtual override returns (address) {
+814         require(_exists(tokenId), "ERC721: approved query for nonexistent token");
+815 
+816         return _tokenApprovals[tokenId];
+817     }
+818 
+819     /**
+820      * @dev See {IERC721-setApprovalForAll}.
+821      */
+822     function setApprovalForAll(address operator, bool approved) public virtual override {
+823         require(operator != _msgSender(), "ERC721: approve to caller");
+824 
+825         _operatorApprovals[_msgSender()][operator] = approved;
+826         emit ApprovalForAll(_msgSender(), operator, approved);
+827     }
+828 
+829     /**
+830      * @dev See {IERC721-isApprovedForAll}.
+831      */
+832     function isApprovedForAll(address owner, address operator) public view virtual override returns (bool) {
+833         return _operatorApprovals[owner][operator];
+834     }
+835 
+836     /**
+837      * @dev See {IERC721-transferFrom}.
+838      */
+839     function transferFrom(
+840         address from,
+841         address to,
+842         uint256 tokenId
+843     ) public virtual override {
+844         //solhint-disable-next-line max-line-length
+845         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+846 
+847         _transfer(from, to, tokenId);
+848     }
+849 
+850     /**
+851      * @dev See {IERC721-safeTransferFrom}.
+852      */
+853     function safeTransferFrom(
+854         address from,
+855         address to,
+856         uint256 tokenId
+857     ) public virtual override {
+858         safeTransferFrom(from, to, tokenId, "");
+859     }
+860 
+861     /**
+862      * @dev See {IERC721-safeTransferFrom}.
+863      */
+864     function safeTransferFrom(
+865         address from,
+866         address to,
+867         uint256 tokenId,
+868         bytes memory _data
+869     ) public virtual override {
+870         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
+871         _safeTransfer(from, to, tokenId, _data);
+872     }
+873 
+874     /**
+875      * @dev Safely transfers `tokenId` token from `from` to `to`, checking first that contract recipients
+876      * are aware of the ERC721 protocol to prevent tokens from being forever locked.
+877      *
+878      * `_data` is additional data, it has no specified format and it is sent in call to `to`.
+879      *
+880      * This internal function is equivalent to {safeTransferFrom}, and can be used to e.g.
+881      * implement alternative mechanisms to perform token transfer, such as signature-based.
+882      *
+883      * Requirements:
+884      *
+885      * - `from` cannot be the zero address.
+886      * - `to` cannot be the zero address.
+887      * - `tokenId` token must exist and be owned by `from`.
+888      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+889      *
+890      * Emits a {Transfer} event.
+891      */
+892     function _safeTransfer(
+893         address from,
+894         address to,
+895         uint256 tokenId,
+896         bytes memory _data
+897     ) internal virtual {
+898         _transfer(from, to, tokenId);
+899         require(_checkOnERC721Received(from, to, tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
+900     }
+901 
+902     /**
+903      * @dev Returns whether `tokenId` exists.
+904      *
+905      * Tokens can be managed by their owner or approved accounts via {approve} or {setApprovalForAll}.
+906      *
+907      * Tokens start existing when they are minted (`_mint`),
+908      * and stop existing when they are burned (`_burn`).
+909      */
+910     function _exists(uint256 tokenId) internal view virtual returns (bool) {
+911         return _owners[tokenId] != address(0);
+912     }
+913 
+914     /**
+915      * @dev Returns whether `spender` is allowed to manage `tokenId`.
+916      *
+917      * Requirements:
+918      *
+919      * - `tokenId` must exist.
+920      */
+921     function _isApprovedOrOwner(address spender, uint256 tokenId) internal view virtual returns (bool) {
+922         require(_exists(tokenId), "ERC721: operator query for nonexistent token");
+923         address owner = ERC721.ownerOf(tokenId);
+924         return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
+925     }
+926 
+927     /**
+928      * @dev Safely mints `tokenId` and transfers it to `to`.
+929      *
+930      * Requirements:
+931      *
+932      * - `tokenId` must not exist.
+933      * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
+934      *
+935      * Emits a {Transfer} event.
+936      */
+937     function _safeMint(address to, uint256 tokenId) internal virtual {
+938         _safeMint(to, tokenId, "");
+939     }
+940 
+941     /**
+942      * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
+943      * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
+944      */
+945     function _safeMint(
+946         address to,
+947         uint256 tokenId,
+948         bytes memory _data
+949     ) internal virtual {
+950         _mint(to, tokenId);
+951         require(
+952             _checkOnERC721Received(address(0), to, tokenId, _data),
+953             "ERC721: transfer to non ERC721Receiver implementer"
+954         );
+955     }
+956 
+957     /**
+958      * @dev Mints `tokenId` and transfers it to `to`.
+959      *
+960      * WARNING: Usage of this method is discouraged, use {_safeMint} whenever possible
+961      *
+962      * Requirements:
+963      *
+964      * - `tokenId` must not exist.
+965      * - `to` cannot be the zero address.
+966      *
+967      * Emits a {Transfer} event.
+968      */
+969     function _mint(address to, uint256 tokenId) internal virtual {
+970         require(to != address(0), "ERC721: mint to the zero address");
+971         require(!_exists(tokenId), "ERC721: token already minted");
+972 
+973         _beforeTokenTransfer(address(0), to, tokenId);
+974 
+975         _balances[to] += 1;
+976         _owners[tokenId] = to;
+977 
+978         emit Transfer(address(0), to, tokenId);
+979     }
+980 
+981     /**
+982      * @dev Destroys `tokenId`.
+983      * The approval is cleared when the token is burned.
+984      *
+985      * Requirements:
+986      *
+987      * - `tokenId` must exist.
+988      *
+989      * Emits a {Transfer} event.
+990      */
+991     function _burn(uint256 tokenId) internal virtual {
+992         address owner = ERC721.ownerOf(tokenId);
+993 
+994         _beforeTokenTransfer(owner, address(0), tokenId);
+995 
+996         // Clear approvals
+997         _approve(address(0), tokenId);
+998 
+999         _balances[owner] -= 1;
+1000         delete _owners[tokenId];
+1001 
+1002         emit Transfer(owner, address(0), tokenId);
+1003     }
+1004 
+1005     /**
+1006      * @dev Transfers `tokenId` from `from` to `to`.
+1007      *  As opposed to {transferFrom}, this imposes no restrictions on msg.sender.
+1008      *
+1009      * Requirements:
+1010      *
+1011      * - `to` cannot be the zero address.
+1012      * - `tokenId` token must be owned by `from`.
+1013      *
+1014      * Emits a {Transfer} event.
+1015      */
+1016     function _transfer(
+1017         address from,
+1018         address to,
+1019         uint256 tokenId
+1020     ) internal virtual {
+1021         require(ERC721.ownerOf(tokenId) == from, "ERC721: transfer of token that is not own");
+1022         require(to != address(0), "ERC721: transfer to the zero address");
+1023 
+1024         _beforeTokenTransfer(from, to, tokenId);
+1025 
+1026         // Clear approvals from the previous owner
+1027         _approve(address(0), tokenId);
+1028 
+1029         _balances[from] -= 1;
+1030         _balances[to] += 1;
+1031         _owners[tokenId] = to;
+1032 
+1033         emit Transfer(from, to, tokenId);
+1034     }
+1035 
+1036     /**
+1037      * @dev Approve `to` to operate on `tokenId`
+1038      *
+1039      * Emits a {Approval} event.
+1040      */
+1041     function _approve(address to, uint256 tokenId) internal virtual {
+1042         _tokenApprovals[tokenId] = to;
+1043         emit Approval(ERC721.ownerOf(tokenId), to, tokenId);
+1044     }
+1045 
+1046     /**
+1047      * @dev Internal function to invoke {IERC721Receiver-onERC721Received} on a target address.
+1048      * The call is not executed if the target address is not a contract.
+1049      *
+1050      * @param from address representing the previous owner of the given token ID
+1051      * @param to target address that will receive the tokens
+1052      * @param tokenId uint256 ID of the token to be transferred
+1053      * @param _data bytes optional data to send along with the call
+1054      * @return bool whether the call correctly returned the expected magic value
+1055      */
+1056     function _checkOnERC721Received(
+1057         address from,
+1058         address to,
+1059         uint256 tokenId,
+1060         bytes memory _data
+1061     ) private returns (bool) {
+1062         if (to.isContract()) {
+1063             try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
+1064                 return retval == IERC721Receiver(to).onERC721Received.selector;
+1065             } catch (bytes memory reason) {
+1066                 if (reason.length == 0) {
+1067                     revert("ERC721: transfer to non ERC721Receiver implementer");
+1068                 } else {
+1069                     assembly {
+1070                         revert(add(32, reason), mload(reason))
+1071                     }
+1072                 }
+1073             }
+1074         } else {
+1075             return true;
+1076         }
+1077     }
+1078 
+1079     /**
+1080      * @dev Hook that is called before any token transfer. This includes minting
+1081      * and burning.
+1082      *
+1083      * Calling conditions:
+1084      *
+1085      * - When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
+1086      * transferred to `to`.
+1087      * - When `from` is zero, `tokenId` will be minted for `to`.
+1088      * - When `to` is zero, ``from``'s `tokenId` will be burned.
+1089      * - `from` and `to` are never both zero.
+1090      *
+1091      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
+1092      */
+1093     function _beforeTokenTransfer(
+1094         address from,
+1095         address to,
+1096         uint256 tokenId
+1097     ) internal virtual {}
+1098 }
+1099 
+1100 
+1101 
+1102 
+1103 
+1104 
+1105 
+1106 /**
+1107  * @title ERC-721 Non-Fungible Token Standard, optional enumeration extension
+1108  * @dev See https://eips.ethereum.org/EIPS/eip-721
+1109  */
+1110 interface IERC721Enumerable is IERC721 {
+1111     /**
+1112      * @dev Returns the total amount of tokens stored by the contract.
+1113      */
+1114     function totalSupply() external view returns (uint256);
+1115 
+1116     /**
+1117      * @dev Returns a token ID owned by `owner` at a given `index` of its token list.
+1118      * Use along with {balanceOf} to enumerate all of ``owner``'s tokens.
+1119      */
+1120     function tokenOfOwnerByIndex(address owner, uint256 index) external view returns (uint256 tokenId);
+1121 
+1122     /**
+1123      * @dev Returns a token ID at a given `index` of all the tokens stored by the contract.
+1124      * Use along with {totalSupply} to enumerate all tokens.
+1125      */
+1126     function tokenByIndex(uint256 index) external view returns (uint256);
+1127 }
+1128 
+1129 
+1130 /**
+1131  * @dev This implements an optional extension of {ERC721} defined in the EIP that adds
+1132  * enumerability of all the token ids in the contract as well as all token ids owned by each
+1133  * account.
+1134  */
+1135 abstract contract ERC721Enumerable is ERC721, IERC721Enumerable {
+1136     // Mapping from owner to list of owned token IDs
+1137     mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
+1138 
+1139     // Mapping from token ID to index of the owner tokens list
+1140     mapping(uint256 => uint256) private _ownedTokensIndex;
+1141 
+1142     // Array with all token ids, used for enumeration
+1143     uint256[] private _allTokens;
+1144 
+1145     // Mapping from token id to position in the allTokens array
+1146     mapping(uint256 => uint256) private _allTokensIndex;
+1147 
+1148     /**
+1149      * @dev See {IERC165-supportsInterface}.
+1150      */
+1151     function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, ERC721) returns (bool) {
+1152         return interfaceId == type(IERC721Enumerable).interfaceId || super.supportsInterface(interfaceId);
+1153     }
+1154 
+1155     /**
+1156      * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
+1157      */
+1158     function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual override returns (uint256) {
+1159         require(index < ERC721.balanceOf(owner), "ERC721Enumerable: owner index out of bounds");
+1160         return _ownedTokens[owner][index];
+1161     }
+1162 
+1163     /**
+1164      * @dev See {IERC721Enumerable-totalSupply}.
+1165      */
+1166     function totalSupply() public view virtual override returns (uint256) {
+1167         return _allTokens.length;
+1168     }
+1169 
+1170     /**
+1171      * @dev See {IERC721Enumerable-tokenByIndex}.
+1172      */
+1173     function tokenByIndex(uint256 index) public view virtual override returns (uint256) {
+1174         require(index < ERC721Enumerable.totalSupply(), "ERC721Enumerable: global index out of bounds");
+1175         return _allTokens[index];
+1176     }
+1177 
+1178     /**
+1179      * @dev Hook that is called before any token transfer. This includes minting
+1180      * and burning.
+1181      *
+1182      * Calling conditions:
+1183      *
+1184      * - When `from` and `to` are both non-zero, ``from``'s `tokenId` will be
+1185      * transferred to `to`.
+1186      * - When `from` is zero, `tokenId` will be minted for `to`.
+1187      * - When `to` is zero, ``from``'s `tokenId` will be burned.
+1188      * - `from` cannot be the zero address.
+1189      * - `to` cannot be the zero address.
+1190      *
+1191      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
+1192      */
+1193     function _beforeTokenTransfer(
+1194         address from,
+1195         address to,
+1196         uint256 tokenId
+1197     ) internal virtual override {
+1198         super._beforeTokenTransfer(from, to, tokenId);
+1199 
+1200         if (from == address(0)) {
+1201             _addTokenToAllTokensEnumeration(tokenId);
+1202         } else if (from != to) {
+1203             _removeTokenFromOwnerEnumeration(from, tokenId);
+1204         }
+1205         if (to == address(0)) {
+1206             _removeTokenFromAllTokensEnumeration(tokenId);
+1207         } else if (to != from) {
+1208             _addTokenToOwnerEnumeration(to, tokenId);
+1209         }
+1210     }
+1211 
+1212     /**
+1213      * @dev Private function to add a token to this extension's ownership-tracking data structures.
+1214      * @param to address representing the new owner of the given token ID
+1215      * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
+1216      */
+1217     function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
+1218         uint256 length = ERC721.balanceOf(to);
+1219         _ownedTokens[to][length] = tokenId;
+1220         _ownedTokensIndex[tokenId] = length;
+1221     }
+1222 
+1223     /**
+1224      * @dev Private function to add a token to this extension's token tracking data structures.
+1225      * @param tokenId uint256 ID of the token to be added to the tokens list
+1226      */
+1227     function _addTokenToAllTokensEnumeration(uint256 tokenId) private {
+1228         _allTokensIndex[tokenId] = _allTokens.length;
+1229         _allTokens.push(tokenId);
+1230     }
+1231 
+1232     /**
+1233      * @dev Private function to remove a token from this extension's ownership-tracking data structures. Note that
+1234      * while the token is not assigned a new owner, the `_ownedTokensIndex` mapping is _not_ updated: this allows for
+1235      * gas optimizations e.g. when performing a transfer operation (avoiding double writes).
+1236      * This has O(1) time complexity, but alters the order of the _ownedTokens array.
+1237      * @param from address representing the previous owner of the given token ID
+1238      * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
+1239      */
+1240     function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
+1241         // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
+1242         // then delete the last slot (swap and pop).
+1243 
+1244         uint256 lastTokenIndex = ERC721.balanceOf(from) - 1;
+1245         uint256 tokenIndex = _ownedTokensIndex[tokenId];
+1246 
+1247         // When the token to delete is the last token, the swap operation is unnecessary
+1248         if (tokenIndex != lastTokenIndex) {
+1249             uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
+1250 
+1251             _ownedTokens[from][tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
+1252             _ownedTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
+1253         }
+1254 
+1255         // This also deletes the contents at the last position of the array
+1256         delete _ownedTokensIndex[tokenId];
+1257         delete _ownedTokens[from][lastTokenIndex];
+1258     }
+1259 
+1260     /**
+1261      * @dev Private function to remove a token from this extension's token tracking data structures.
+1262      * This has O(1) time complexity, but alters the order of the _allTokens array.
+1263      * @param tokenId uint256 ID of the token to be removed from the tokens list
+1264      */
+1265     function _removeTokenFromAllTokensEnumeration(uint256 tokenId) private {
+1266         // To prevent a gap in the tokens array, we store the last token in the index of the token to delete, and
+1267         // then delete the last slot (swap and pop).
+1268 
+1269         uint256 lastTokenIndex = _allTokens.length - 1;
+1270         uint256 tokenIndex = _allTokensIndex[tokenId];
+1271 
+1272         // When the token to delete is the last token, the swap operation is unnecessary. However, since this occurs so
+1273         // rarely (when the last minted token is burnt) that we still do the swap here to avoid the gas cost of adding
+1274         // an 'if' statement (like in _removeTokenFromOwnerEnumeration)
+1275         uint256 lastTokenId = _allTokens[lastTokenIndex];
+1276 
+1277         _allTokens[tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
+1278         _allTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
+1279 
+1280         // This also deletes the contents at the last position of the array
+1281         delete _allTokensIndex[tokenId];
+1282         _allTokens.pop();
+1283     }
+1284 }
+1285 
+1286 
+1287 contract StarLoot is ERC721Enumerable, ReentrancyGuard, Ownable {
+1288 
+1289         string[] private weapons = [
+1290         "Crystal",
+1291         "Sceptre",
+1292         "Staff",
+1293         "Sword",
+1294         "Mirror",
+1295         "Orb",
+1296         "Scythe",
+1297         "Warhammer",
+1298         "Twin Daggers",
+1299         "Feather Blade",
+1300         "Tome",
+1301         "Winged Bow",
+1302         "Chain Sickle",
+1303         "Bow",
+1304         "Crescent Wand",
+1305         "Star Wand",
+1306         "Wand",
+1307         "Spell"
+1308     ];
+1309     
+1310     string[] private chestArmor = [
+1311         "Winged Robe",
+1312         "Divine Robe",
+1313         "Celestial Robe",
+1314         "Ceremonial Robe",
+1315         "Celestial Gown",
+1316         "Royal Gown",
+1317         "Ceremonial Gown",
+1318         "Robe",
+1319         "Gown",
+1320         "Shifter's Cloak",
+1321         "Shadowy Cloak",
+1322         "Flowing Cloak",
+1323         "Star Armor",
+1324         "Star Suit",
+1325         "Suit"
+1326     ];
+1327     
+1328     string[] private headArmor = [
+1329         "Eternal Crown",
+1330         "Crystal Crown",
+1331         "Crescent Crown",
+1332         "Star Crown",
+1333         "Crown",
+1334         "Crescent Tiara",
+1335         "Star Tiara",
+1336         "Ornate Circlet",
+1337         "Circlet",
+1338         "Chain Circlet",
+1339         "Tiara",
+1340         "Sigil of the Sun",
+1341         "Sigil ofthe Moon",
+1342         "Sigil of the Star",
+1343         "Celestial Sigil"
+1344     ];
+1345     
+1346     string[] private pocketAccess = [
+1347         "Relic",
+1348         "Talisman",
+1349         "Tome",
+1350         "Ornate Locket",
+1351         "Dimensional Key",
+1352         "Disguise Pen",
+1353         "Computer Compact",
+1354         "Locket",
+1355         "Parasol",
+1356         "Mask",
+1357         "Hair Pin",
+1358         "Chain Belt",
+1359         "Earring",
+1360         "Bracelet",
+1361         "Communicator Watch"
+1362     ];
+1363     
+1364     string[] private footArmor = [
+1365         "Winged Heeled Slippers",
+1366         "Winged Slippers",
+1367         "Winged Sandals",
+1368         "Ribboned Slippers",
+1369         "Dancing Slippers",
+1370         "Ribboned Sandals",
+1371         "Heeled Sandals",
+1372         "Tall Sandals",
+1373         "Ribboned Shoes",
+1374         "Heeled Shoes",
+1375         "Sandals",
+1376         "Heeled Boots",
+1377         "Short Boots",
+1378         "Tall Boots",
+1379         "Shoes"
+1380     ];
+1381     
+1382     string[] private familiarHand = [
+1383         "Angel",
+1384         "Demon",
+1385         "Elemental",
+1386         "Cute Alien",
+1387         "Unicorn",
+1388         "Dragon",
+1389         "Wisp",
+1390         "Deer",
+1391         "Fox",
+1392         "Bird",
+1393         "Bunny",
+1394         "Dog",
+1395         "Cat",
+1396         "Cybernetic Animal",
+1397         "Stuffed Animal"
+1398     ];
+1399     
+1400     string[] private necklaces = [
+1401         "Necklace",
+1402         "Amulet",
+1403         "Pendant"
+1404     ];
+1405     
+1406     string[] private transformitems = [
+1407         "Winged Chalice",
+1408         "Brooch",
+1409         "Ring",
+1410         "Compact",
+1411         "Pen"
+1412     ];
+1413     
+1414     string[] private suffixes = [
+1415         "of Embrace",
+1416         "of the Underworld",
+1417         "of Deep Sea",
+1418         "of the Heavenly Sky",
+1419         "of Ruin",
+1420         "of Love and Beauty",
+1421         "of Courage",
+1422         "of Passion",
+1423         "of Intelligence",
+1424         "of Wisdom",
+1425         "of Love and Justice",
+1426         "of the Star Goddess",
+1427         "of the Sun Queen",
+1428         "of the Moon Princess",
+1429         "of Shadows",
+1430         "of Light"
+1431     ];
+1432     
+1433     string[] private namePrefixes = [
+1434         "Sweet", 
+1435         "Dream", 
+1436         "Death", 
+1437         "Fiery", 
+1438         "Windy", 
+1439         "Flowery", 
+1440         "Thundering", 
+1441         "Nature's", 
+1442         "Watery", 
+1443         "Eternal", 
+1444         "Cosmic", 
+1445         "Wailing", 
+1446         "Radiant", 
+1447         "Astral", 
+1448         "Coldest", 
+1449         "Crisis", 
+1450         "Solar", 
+1451         "Lunar", 
+1452         "Spiral", 
+1453         "Twilight", 
+1454         "Dawn's", 
+1455         "Dusk's", 
+1456         "Bejeweled", 
+1457         "Golden", 
+1458         "Silvery", 
+1459         "Cybernetic", 
+1460         "Shining", 
+1461         "Prophetic", 
+1462         "Miracle", 
+1463         "Planetary", 
+1464         "Cryptic", 
+1465         "Destined", 
+1466         "Diamond", 
+1467         "Pearl", 
+1468         "Sapphire", 
+1469         "Ruby", 
+1470         "Emerald", 
+1471         "Topaz", 
+1472         "Amber", 
+1473         "Aquamarine", 
+1474         "Garnet", 
+1475         "Fluorite", 
+1476         "Hollow", 
+1477         "Obsidian", 
+1478         "Hope's", 
+1479         "Frozen", 
+1480         "Sacred", 
+1481         "Wicked", 
+1482         "Divine", 
+1483         "Demonic", 
+1484         "Angelic", 
+1485         "Moonslayer's", 
+1486         "Stormbringer's", 
+1487         "Earthbreaker's", 
+1488         "Lightspinner's", 
+1489         "Otherwordly", 
+1490         "Iridescent", 
+1491         "Precious", 
+1492         "Sealing", 
+1493         "Serene", 
+1494         "Venomous", 
+1495         "Alluring", 
+1496         "Awakening", 
+1497         "Galactic", 
+1498         "Charming", 
+1499         "Furious", 
+1500         "Haunting",
+1501         "Burning", 
+1502         "Woeful"  
+1503     ];
+1504     
+1505     string[] private nameSuffixes = [
+1506         "Nightmare",
+1507         "Romance",
+1508         "Silence",
+1509         "Starseed",
+1510         "Spirit",
+1511         "Rosary",
+1512         "Regalia",
+1513         "Hands",
+1514         "Illusion",
+1515         "Phantom",
+1516         "Whisper",
+1517         "Scream",
+1518         "Submerge",
+1519         "Realm",
+1520         "Perfume",
+1521         "Incantation",
+1522         "Heart",
+1523         "Soul"
+1524     ];
+1525     
+1526     function random(string memory input) internal pure returns (uint256) {
+1527         return uint256(keccak256(abi.encodePacked(input)));
+1528     }
+1529     
+1530     function getWeapon(uint256 tokenId) public view returns (string memory) {
+1531         return pluck(tokenId, "WEAPON", weapons);
+1532     }
+1533     
+1534     function getChest(uint256 tokenId) public view returns (string memory) {
+1535         return pluck(tokenId, "CHEST", chestArmor);
+1536     }
+1537     
+1538     function getHead(uint256 tokenId) public view returns (string memory) {
+1539         return pluck(tokenId, "HEAD", headArmor);
+1540     }
+1541     
+1542     function getPocket(uint256 tokenId) public view returns (string memory) {
+1543         return pluck(tokenId, "POCKET", pocketAccess);
+1544     }
+1545 
+1546     function getFoot(uint256 tokenId) public view returns (string memory) {
+1547         return pluck(tokenId, "FOOT", footArmor);
+1548     }
+1549     
+1550     function getFamiliar(uint256 tokenId) public view returns (string memory) {
+1551         return pluck(tokenId, "FAMILIAR", familiarHand);
+1552     }
+1553     
+1554     function getNeck(uint256 tokenId) public view returns (string memory) {
+1555         return pluck(tokenId, "NECK", necklaces);
+1556     }
+1557     
+1558     function getItem(uint256 tokenId) public view returns (string memory) {
+1559         return pluck(tokenId, "ITEM", transformitems);
+1560     }
+1561     
+1562     function pluck(uint256 tokenId, string memory keyPrefix, string[] memory sourceArray) internal view returns (string memory) {
+1563         uint256 rand = random(string(abi.encodePacked(keyPrefix, toString(tokenId))));
+1564         string memory output = sourceArray[rand % sourceArray.length];
+1565         uint256 greatness = rand % 21;
+1566         if (greatness > 14) {
+1567             output = string(abi.encodePacked(output, " ", suffixes[rand % suffixes.length]));
+1568         }
+1569         if (greatness >= 19) {
+1570             string[2] memory name;
+1571             name[0] = namePrefixes[rand % namePrefixes.length];
+1572             name[1] = nameSuffixes[rand % nameSuffixes.length];
+1573             if (greatness == 19) {
+1574                 output = string(abi.encodePacked('"', name[0], ' ', name[1], '" ', output));
+1575             } else {
+1576                 output = string(abi.encodePacked('"', name[0], ' ', name[1], '" ', output, " +1"));
+1577             }
+1578         }
+1579         return output;
+1580     }
+1581 
+1582     function tokenURI(uint256 tokenId) override public view returns (string memory) {
+1583         string[17] memory parts;
+1584         parts[0] = '<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin meet" viewBox="0 0 350 350"><style>.base { fill: white; font-family: serif; font-size: 14px; }</style><rect width="100%" height="100%" fill="black" /><text x="10" y="20" class="base">';
+1585 
+1586         parts[1] = getWeapon(tokenId);
+1587 
+1588         parts[2] = '</text><text x="10" y="40" class="base">';
+1589 
+1590         parts[3] = getChest(tokenId);
+1591 
+1592         parts[4] = '</text><text x="10" y="60" class="base">';
+1593 
+1594         parts[5] = getHead(tokenId);
+1595 
+1596         parts[6] = '</text><text x="10" y="80" class="base">';
+1597 
+1598         parts[7] = getPocket(tokenId);
+1599 
+1600         parts[8] = '</text><text x="10" y="100" class="base">';
+1601 
+1602         parts[9] = getFoot(tokenId);
+1603 
+1604         parts[10] = '</text><text x="10" y="120" class="base">';
+1605 
+1606         parts[11] = getFamiliar(tokenId);
+1607 
+1608         parts[12] = '</text><text x="10" y="140" class="base">';
+1609 
+1610         parts[13] = getNeck(tokenId);
+1611 
+1612         parts[14] = '</text><text x="10" y="160" class="base">';
+1613 
+1614         parts[15] = getItem(tokenId);
+1615 
+1616         parts[16] = '</text></svg>';
+1617 
+1618         string memory output = string(abi.encodePacked(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], parts[7], parts[8]));
+1619         output = string(abi.encodePacked(output, parts[9], parts[10], parts[11], parts[12], parts[13], parts[14], parts[15], parts[16]));
+1620         
+1621         string memory json = Base64.encode(bytes(string(abi.encodePacked('{"name": "StarLoot #', toString(tokenId), '", "description": "StarLoot is randomized gear for Another Story. Based on Loot, it is generated and stored on chain. Feel free to use StarLoot in any way you want.", "image": "data:image/svg+xml;base64,', Base64.encode(bytes(output)), '"}'))));
+1622         output = string(abi.encodePacked('data:application/json;base64,', json));
+1623 
+1624         return output;
+1625     }
+1626 
+1627     function claim(uint256 tokenId) public nonReentrant {
+1628         require(tokenId > 0 && tokenId < 7778, "Token ID invalid");
+1629         _safeMint(_msgSender(), tokenId);
+1630     }
+1631     
+1632     function ownerClaim(uint256 tokenId) public nonReentrant onlyOwner {
+1633         require(tokenId > 7777 && tokenId < 8001, "Token ID invalid");
+1634         _safeMint(owner(), tokenId);
+1635     }
+1636     
+1637     function toString(uint256 value) internal pure returns (string memory) {
+1638     // Inspired by OraclizeAPI's implementation - MIT license
+1639     // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
+1640 
+1641         if (value == 0) {
+1642             return "0";
+1643         }
+1644         uint256 temp = value;
+1645         uint256 digits;
+1646         while (temp != 0) {
+1647             digits++;
+1648             temp /= 10;
+1649         }
+1650         bytes memory buffer = new bytes(digits);
+1651         while (value != 0) {
+1652             digits -= 1;
+1653             buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+1654             value /= 10;
+1655         }
+1656         return string(buffer);
+1657     }
+1658     
+1659     constructor() ERC721("StarLoot", "STARLOOT") Ownable() {}
+1660 }
+1661 
+1662 /// [MIT License]
+1663 /// @title Base64
+1664 /// @notice Provides a function for encoding some bytes in base64
+1665 /// @author Brecht Devos <brecht@loopring.org>
+1666 library Base64 {
+1667     bytes internal constant TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+1668 
+1669     /// @notice Encodes some bytes to the base64 representation
+1670     function encode(bytes memory data) internal pure returns (string memory) {
+1671         uint256 len = data.length;
+1672         if (len == 0) return "";
+1673 
+1674         // multiply by 4/3 rounded up
+1675         uint256 encodedLen = 4 * ((len + 2) / 3);
+1676 
+1677         // Add some extra buffer at the end
+1678         bytes memory result = new bytes(encodedLen + 32);
+1679 
+1680         bytes memory table = TABLE;
+1681 
+1682         assembly {
+1683             let tablePtr := add(table, 1)
+1684             let resultPtr := add(result, 32)
+1685 
+1686             for {
+1687                 let i := 0
+1688             } lt(i, len) {
+1689 
+1690             } {
+1691                 i := add(i, 3)
+1692                 let input := and(mload(add(data, i)), 0xffffff)
+1693 
+1694                 let out := mload(add(tablePtr, and(shr(18, input), 0x3F)))
+1695                 out := shl(8, out)
+1696                 out := add(out, and(mload(add(tablePtr, and(shr(12, input), 0x3F))), 0xFF))
+1697                 out := shl(8, out)
+1698                 out := add(out, and(mload(add(tablePtr, and(shr(6, input), 0x3F))), 0xFF))
+1699                 out := shl(8, out)
+1700                 out := add(out, and(mload(add(tablePtr, and(input, 0x3F))), 0xFF))
+1701                 out := shl(224, out)
+1702 
+1703                 mstore(resultPtr, out)
+1704 
+1705                 resultPtr := add(resultPtr, 4)
+1706             }
+1707 
+1708             switch mod(len, 3)
+1709             case 1 {
+1710                 mstore(sub(resultPtr, 2), shl(240, 0x3d3d))
+1711             }
+1712             case 2 {
+1713                 mstore(sub(resultPtr, 1), shl(248, 0x3d))
+1714             }
+1715 
+1716             mstore(result, encodedLen)
+1717         }
+1718 
+1719         return string(result);
+1720     }
+1721 }

@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are as follows:
+
+1) Inconsistent state update: The function execute() updates the state variable proposal.votedAmount without using safe arithmetic operations, which may lead to inconsistent state updates in case of overflow.
+
+2) Insufficient gas: The function endExecute() could potentially run out of gas due to the gas-intensive operation of checking if the locked funds exceed twice the total supply of the voting token, which can block further execution.
+
+3) Incorrect visibility/ownership: The contract TimelockController is missing the visibility specifier for the IERC20 interface in its inheritance declaration, which could potentially lead to visibility issues and impact the overall ownership of the contract.

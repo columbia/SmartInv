@@ -1,0 +1,30 @@
+The contract below contains potential vulnerabilities:
+
+<\contract\> 
+contract VotingSystem {
+    address public owner;
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote(uint amount) public {
+        require(amount > 0, "Invalid vote amount");
+        votes[msg.sender] += amount;
+        totalVotes += amount;
+    }
+
+    function withdraw() public {
+        require(votes[msg.sender] > 0, "No votes to withdraw");
+        msg.sender.transfer(votes[msg.sender]);
+        totalVotes -= votes[msg.sender];
+        votes[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract include:
+1) inconsistent state update - totalVotes is updated before setting the votes[msg.sender] to 0
+2) arithmetic flaw - totalVotes could potentially underflow if votes[msg.sender] is greater than totalVotes when withdrawn
+3) ether leakage - there is a direct transfer of funds to the sender without proper checks and balances
+4) ID uniqueness violation - multiple users could potentially have the same address, leading to conflicts in voting and withdrawal
+
+Please analyze and identify potential vulnerabilities in the provided contract.

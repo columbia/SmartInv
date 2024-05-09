@@ -1,0 +1,28 @@
+Contract to analyze:
+
+contract Marketplace {
+     address public owner;
+     mapping(address => uint) public items;
+     mapping(address => uint) public prices;
+
+     constructor() {
+          owner = msg.sender;
+     }
+
+     function addItem(address item, uint price) public {
+           require(msg.sender == owner, "only owner can add items");
+           items[item] = 1;
+           prices[item] = price;
+     }
+
+     function purchaseItem(address item) public payable {
+           require(items[item] == 1, "item not available");
+           require(msg.value >= prices[item], "insufficient funds");
+           owner.transfer(msg.value);
+           items[item] = 0;
+     }
+}
+
+Output: 
+- business logic flaw 
+- incorrect visibility/ownership

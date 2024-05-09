@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `startExecute` updates the `proposal` struct, but it does not update the `startingBalanceList` mapping, leading to potential inconsistency in the state.
+
+2) Insufficient gas: The function `endExecute` requires that `execution failed` if the locked funds are not twice the total supply of the voting token, which may require a significant amount of gas to calculate and verify, potentially resulting in the transaction running out of gas.
+
+3) Incorrect visibility/ownership: The `owner` variable is labeled as internal, which may not provide the desired visibility level or access control for this variable. This could potentially lead to unauthorized access or manipulation of the owner variable.

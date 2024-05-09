@@ -1,0 +1,33 @@
+<\contract\>
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public price;
+    bool public sellerApproved;
+    bool public buyerApproved;
+    
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+
+    function approveTransaction() {
+        require(msg.sender == seller || msg.sender == buyer, "You are not authorized to approve the transaction");
+        
+        if (msg.sender == seller) {
+            sellerApproved = true;
+        } else {
+            buyerApproved = true;
+        }
+    }
+
+    function releaseFunds() {
+        require(sellerApproved && buyerApproved, "Transaction not approved by both parties");
+        
+        address _this = address(this);
+        payable(seller).transfer(price);
+        payable(buyer).transfer(address(this).balance);
+    }
+}
+<\contract\>

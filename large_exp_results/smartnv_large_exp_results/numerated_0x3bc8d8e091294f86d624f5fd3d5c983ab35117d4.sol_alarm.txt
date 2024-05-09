@@ -1,0 +1,29 @@
+<\contract\> 
+contract Membership {
+     struct Member {
+         uint id;
+         string name;
+         address wallet;
+     }
+     mapping (uint => Member) public members;
+     uint public memberCount;
+
+     function addMember(string memory _name) public {
+         memberCount++;
+         members[memberCount] = Member(memberCount, _name, msg.sender);
+     }
+
+     function updateMember(uint _id, string memory _name) public {
+         require(members[_id].wallet == msg.sender, "You are not authorized to update this member");
+         members[_id].name = _name;
+     }
+
+     function removeMember(uint _id) public {
+         require(members[_id].wallet == msg.sender, "You are not authorized to remove this member");
+         delete members[_id];
+     }
+}
+<\contract\> 
+
+Output:
+- ID uniqueness violation

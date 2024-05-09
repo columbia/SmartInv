@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract InsuredExchange {
+         IERC20 public ETH;
+         IERC20 public DAI;
+         mapping(address => uint) public ethBalances;
+         mapping(address => uint) public daiBalances;
+         
+         function exchangeETHtoDAI(uint amount) public {
+             require(ethBalances[msg.sender] >= amount, "Insufficient ETH balance");
+             ethBalances[msg.sender] -= amount;
+             daiBalances[msg.sender] += amount * 2;
+         }
+         
+         function exchangeDAItoETH(uint amount) public {
+             require(daiBalances[msg.sender] >= amount * 2, "Insufficient DAI balance");
+             daiBalances[msg.sender] -= amount * 2;
+             ethBalances[msg.sender] += amount;
+         }
+     }
+
+The potential vulnerabilities in the provided contract are:
+1) Inconsistent state update: The ethBalances and daiBalances mappings are directly updated without proper checks or validation that could lead to inconsistent state updates.
+2) Arithmetic flaw: The calculation in the function exchangeETHtoDAI and exchangeDAItoETH may lead to arithmetic flaws if not handled carefully.
+3) Insufficient gas: The functions exchangeETHtoDAI and exchangeDAItoETH do not specify gas requirements, which could potentially lead to insufficient gas issues during the execution of these functions.

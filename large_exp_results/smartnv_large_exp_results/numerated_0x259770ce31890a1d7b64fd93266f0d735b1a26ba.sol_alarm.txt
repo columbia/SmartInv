@@ -1,0 +1,48 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential Vulnerabilities:
+1) inconsistent state update - the proposal state update may not be atomic and could lead to inconsistent data.
+2) insufficient gas - gas limit issues might lead to function calls not completing successfully.
+3) incorrect visibility/ownership - the ownership of the contract and visibility of certain functions can potentially be flawed.
+4) integer overflow/underflow - there is a risk of integer overflow or underflow in certain calculations within the contract.
+
+Therefore, the potential vulnerabilities in the provided contract are:
+
+1) inconsistent state update
+2) insufficient gas
+3) incorrect visibility/ownership
+4) integer overflow/underflow

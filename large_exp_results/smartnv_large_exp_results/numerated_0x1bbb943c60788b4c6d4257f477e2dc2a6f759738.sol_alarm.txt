@@ -1,0 +1,28 @@
+<\contract\>
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public price;
+    bool public sellerAgreed;
+    bool public buyerAgreed;
+
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+
+    function agree() public {
+        if(msg.sender == seller) {
+            sellerAgreed = true;
+        } else if(msg.sender == buyer) {
+            buyerAgreed = true;
+        }
+    }
+
+    function release() public {
+        require(sellerAgreed && buyerAgreed, "Both parties must agree.");
+        payable(seller).transfer(price);
+    }
+}
+<\contract\>

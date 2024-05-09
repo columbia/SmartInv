@@ -1,0 +1,38 @@
+<\contract\>
+contract Marketplace {
+     mapping(uint => address) public itemIdToSeller;
+     mapping(uint => uint) public itemIdToPrice;
+     mapping(address => uint[]) public sellerItemIds;
+     address public admin;
+
+     constructor() {
+          admin = msg.sender;
+     }
+
+     function createItem(uint _itemId, uint _price) external {
+          itemIdToSeller[_itemId] = msg.sender;
+          itemIdToPrice[_itemId] = _price;
+          sellerItemIds[msg.sender].push(_itemId);
+     }
+
+     function buyItem(uint _itemId) external payable {
+          require(msg.value == itemIdToPrice[_itemId], "Incorrect amount sent");
+          address seller = itemIdToSeller[_itemId];
+          payable(seller).transfer(msg.value);
+          itemIdToSeller[_itemId] = address(0);
+          itemIdToPrice[_itemId] = 0;
+          removeItemFromSeller(msg.sender, _itemId);
+     }
+
+     function removeItemFromSeller(address _seller, uint _itemId) internal {
+          uint[] storage itemIds = sellerItemIds[_seller];
+          for (uint i = 0; i < itemIds.length; i++) {
+               if (itemIds[i] == _itemId) {
+                    itemIds[i] = itemIds[itemIds.length - 1];
+                    itemIds.pop();
+                    break;
+               }
+          }
+     }
+}
+<\contract\>

@@ -1,0 +1,21 @@
+<\contract\> 
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid(uint amount) public {
+             require(amount > highestBid, "Bid not high enough");
+             if (highestBid != 0) {
+                 address(highestBidder).transfer(highestBid);
+             }
+             highestBidder = msg.sender;
+             highestBid = amount;
+         }
+
+         function withdraw() public {
+             require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+             address(highestBidder).transfer(highestBid*2); 
+             highestBid = 0;
+         }
+}
+<\contract\>

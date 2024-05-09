@@ -1,0 +1,37 @@
+<\contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public admin;
+     address public beneficiary;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     modifier onlyAdmin() {
+         require(msg.sender == admin, "Only admin can call this function");
+         _;
+     }
+
+     constructor(IERC20 _token, uint _tokenPrice, address _beneficiary) {
+         token = _token;
+         tokenPrice = _tokenPrice;
+         beneficiary = _beneficiary;
+         admin = msg.sender;
+     }
+
+     function buyTokens(uint _amount) public {
+         uint totalPrice = _amount * tokenPrice;
+         require(token.balanceOf(msg.sender) >= _amount, "Not enough tokens");
+         require(token.allowance(msg.sender, address(this)) >= totalPrice, "Not enough allowance");
+         token.transferFrom(msg.sender, beneficiary, _amount);
+         tokensSold += _amount;
+    }
+
+     function setTokenPrice(uint _newPrice) public onlyAdmin {
+         tokenPrice = _newPrice;
+     }
+
+     function withdrawFunds() public onlyAdmin {
+         token.transfer(admin, token.balanceOf(address(this)));
+     }
+}
+<\contract\>

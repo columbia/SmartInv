@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility: The functions `votedProposal` and `getStartingBalance` are called within the contract but not defined in the provided code snippet. If these functions are intended to be external, they should be properly defined with the correct visibility modifier.
+
+2) Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without checking if the transfer of tokens from `proposal.addr` to `address(this)` was successful. This could lead to an inconsistent state if the transfer fails after updating `proposal.votedAmount`.
+
+3) Insufficient gas: The `endExecute` function may fail if the gas provided by the caller is insufficient to perform all required operations within the function. This can lead to the function reverting unexpectedly.
+
+4) Reentrancy: The `liquidate` function in the `ExchangeTokens` contract allows external calls to trigger token transfers. If the transferred tokens trigger a function that makes an external call back to the `ExchangeTokens` contract, it could potentially lead to reentrancy bugs. Consider adding checks or using reentrancy guards to prevent this vulnerability. 
+
+5) Integer overflow/underflow: The calculations in the `liquidate` function, specifically the expression `getPrice() * cAmount * 80 / 100`, have the potential for overflow or underflow if the values involved are sufficiently large. Ensure proper checks and validations are in place to prevent these arithmetic flaws.
+
+6) Cross bridge inconsistency: The `liquidate` function transfers `dAmount` USDC tokens from the sender to the contract and `cAmount` WETH tokens from the contract to the sender. If the exchange rates or token values change between these transfers, it could result in an inconsistency between the received token amounts. Implement checks to ensure consistency in token transfers.

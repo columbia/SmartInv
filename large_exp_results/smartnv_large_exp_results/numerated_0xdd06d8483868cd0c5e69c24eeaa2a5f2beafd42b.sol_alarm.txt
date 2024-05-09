@@ -1,0 +1,26 @@
+Contract to analyze:
+```
+contract VotingSystem {
+    mapping(address => uint) public voteCount;
+    uint public totalVotes;
+
+    function vote() public {
+        voteCount[msg.sender]++;
+        totalVotes++;
+    }
+
+    function withdrawVote() public {
+        require(voteCount[msg.sender] > 0, "You have no votes to withdraw");
+        voteCount[msg.sender]--;
+        totalVotes--;
+    }
+
+    function getVotes(address user) public view returns (uint) {
+        return voteCount[user];
+    }
+}
+```
+
+Potential vulnerabilities:
+1) ID uniqueness violation
+2) Inconsistent state update

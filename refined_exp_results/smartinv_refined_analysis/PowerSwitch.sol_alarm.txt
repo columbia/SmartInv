@@ -1,0 +1,17 @@
+The contract to be analyzed is as follows:
+
+contract CrossBridgeContract {
+    address public token1;
+    address public token2;
+    
+    function swapTokens(uint256 amount) external {
+        require(msg.sender == token1 || msg.sender == token2, "Unauthorized access");
+        
+        // Swap tokens logic
+    }
+}
+
+The potential vulnerabilities in the CrossBridgeContract are:
+1) Privilege escalation: The swapTokens function does not restrict access to only the intended token1 and token2 addresses, allowing unauthorized users to call the function.
+2) Business logic flaw: The swapTokens function lacks adequate validation or checks on the token amounts being swapped, potentially leading to unexpected behavior or exploits.
+3) Cross bridge inconsistency: The contract does not ensure that both token1 and token2 are properly swapped in an atomic and consistent manner, opening up the possibility of inconsistencies in token balances or states.

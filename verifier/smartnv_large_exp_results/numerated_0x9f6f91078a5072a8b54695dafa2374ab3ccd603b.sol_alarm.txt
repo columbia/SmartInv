@@ -1,0 +1,38 @@
+The contract to be analyzed:
+
+contract SupplyChain {
+    address public owner;
+    mapping(uint256 => string) public products;
+    uint256 public productCount;
+
+    constructor() {
+        owner = msg.sender;
+        productCount = 0;
+    }
+
+    function addProduct(uint256 id, string memory name) public {
+        require(msg.sender == owner, "Only owner can add products");
+        products[id] = name;
+        productCount++;
+    }
+
+    function getProduct(uint256 id) public view returns (string memory) {
+        return products[id];
+    }
+
+    function updateProduct(uint256 id, string memory newName) public {
+        require(msg.sender == owner, "Only owner can update products");
+        products[id] = newName;
+    }
+
+    function deleteProduct(uint256 id) public {
+        require(msg.sender == owner, "Only owner can delete products");
+        delete products[id];
+        productCount--;
+    }
+}
+
+Output: 
+1) privilege escalation 
+2) privilege escalation 
+3) privilege escalation

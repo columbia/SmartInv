@@ -1,0 +1,46 @@
+The contract provided for analysis: 
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update in the functions startExecute(), execute(), and endExecute().
+2) Integer overflow/underflow in functions execute() and endExecute().
+3) Insufficient gas issue in function endExecute().
+4) Possible privilege escalation due to the lack of proper access control mechanisms.
+5) ID uniqueness violation in the struct Proposal.
+6) Business logic flaw in function endExecute() with the condition for checking execution failure.
+
+Overall assessment: The contract shows potential vulnerabilities that need to be addressed to ensure the security and correctness of the system.

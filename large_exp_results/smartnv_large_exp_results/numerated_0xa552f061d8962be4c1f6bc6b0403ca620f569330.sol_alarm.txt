@@ -1,0 +1,35 @@
+<\contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    bool public saleActive;
+    
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+        saleActive = true;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(saleActive, "Sale is not active");
+        uint totalPrice = _amount * tokenPrice;
+        require(msg.value == totalPrice, "Incorrect payment amount");
+        
+        balances[msg.sender] += _amount;
+        token.transfer(msg.sender, _amount);
+    }
+
+    function endSale() public {
+        require(msg.sender == admin, "You are not authorized");
+        saleActive = false;
+    }
+}
+<\contract\> 
+
+Output:
+- inconsistent state update 
+- incorrect visibility/ownership

@@ -1,0 +1,107 @@
+1 /**
+2  *Submitted for verification at Etherscan.io on 2017-09-27
+3 */
+4 
+5 pragma solidity ^0.4.8;
+6 contract Token{
+7     // token总量，默认会为public变量生成一个getter函数接口，名称为totalSupply().
+8     uint256 public totalSupply;
+9 
+10     /// 获取账户_owner拥有token的数量 
+11     function balanceOf(address _owner) constant returns (uint256 balance);
+12 
+13     //从消息发送者账户中往_to账户转数量为_value的token
+14     function transfer(address _to, uint256 _value) returns (bool success);
+15 
+16     //从账户_from中往账户_to转数量为_value的token，与approve方法配合使用
+17     function transferFrom(address _from, address _to, uint256 _value) returns   
+18     (bool success);
+19 
+20     //消息发送账户设置账户_spender能从发送账户中转出数量为_value的token
+21     function approve(address _spender, uint256 _value) returns (bool success);
+22 
+23     //获取账户_spender可以从账户_owner中转出token的数量
+24     function allowance(address _owner, address _spender) constant returns 
+25     (uint256 remaining);
+26 
+27     //发生转账时必须要触发的事件 
+28     event Transfer(address indexed _from, address indexed _to, uint256 _value);
+29 
+30     //当函数approve(address _spender, uint256 _value)成功执行时必须触发的事件
+31     event Approval(address indexed _owner, address indexed _spender, uint256 
+32     _value);
+33 }
+34 
+35 contract StandardToken is Token {
+36     function transfer(address _to, uint256 _value) returns (bool success) {
+37         //默认totalSupply 不会超过最大值 (2^256 - 1).
+38         //如果随着时间的推移将会有新的token生成，则可以用下面这句避免溢出的异常
+39         //require(balances[msg.sender] >= _value && balances[_to] + _value > balances[_to]);
+40         require(balances[msg.sender] >= _value);
+41         balances[msg.sender] -= _value;//从消息发送者账户中减去token数量_value
+42         balances[_to] += _value;//往接收账户增加token数量_value
+43         Transfer(msg.sender, _to, _value);//触发转币交易事件
+44         return true;
+45     }
+46 
+47 
+48     function transferFrom(address _from, address _to, uint256 _value) returns 
+49     (bool success) {
+50         //require(balances[_from] >= _value && allowed[_from][msg.sender] >= 
+51         // _value && balances[_to] + _value > balances[_to]);
+52         require(balances[_from] >= _value && allowed[_from][msg.sender] >= _value);
+53         balances[_to] += _value;//接收账户增加token数量_value
+54         balances[_from] -= _value; //支出账户_from减去token数量_value
+55         allowed[_from][msg.sender] -= _value;//消息发送者可以从账户_from中转出的数量减少_value
+56         Transfer(_from, _to, _value);//触发转币交易事件
+57         return true;
+58     }
+59     function balanceOf(address _owner) constant returns (uint256 balance) {
+60         return balances[_owner];
+61     }
+62 
+63 
+64     function approve(address _spender, uint256 _value) returns (bool success)   
+65     {
+66         allowed[msg.sender][_spender] = _value;
+67         Approval(msg.sender, _spender, _value);
+68         return true;
+69     }
+70 
+71 
+72     function allowance(address _owner, address _spender) constant returns (uint256 remaining) {
+73         return allowed[_owner][_spender];//允许_spender从_owner中转出的token数
+74     }
+75     mapping (address => uint256) balances;
+76     mapping (address => mapping (address => uint256)) allowed;
+77 }
+78 
+79 contract HumanStandardToken is StandardToken { 
+80 
+81     /* Public variables of the token */
+82     string public name;                   //名称: eg Simon Bucks
+83     uint8 public decimals;               //最多的小数位数，How many decimals to show. ie. There could 1000 base units with 3 decimals. Meaning 0.980 SBX = 980 base units. It's like comparing 1 wei to 1 ether.
+84     string public symbol;               //token简称: eg SBX
+85     string public version = 'H0.1';    //版本
+86 
+87     function HumanStandardToken(uint256 _initialAmount, string _tokenName, uint8 _decimalUnits, string _tokenSymbol) {
+88         balances[msg.sender] = 21000000000000000; // 初始token数量给予消息发送者
+89         totalSupply = 21000000000000000;         // 设置初始总量
+90         name = "POWER";                   // token名称
+91         decimals = 8;           // 小数位数
+92         symbol = "POWER";             // token简称
+93     }
+94 
+95     /* Approves and then calls the receiving contract */
+96     
+97     function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success) {
+98         allowed[msg.sender][_spender] = _value;
+99         Approval(msg.sender, _spender, _value);
+100         //call the receiveApproval function on the contract you want to be notified. This crafts the function signature manually so one doesn't have to include a contract in here just for this.
+101         //receiveApproval(address _from, uint256 _value, address _tokenContract, bytes _extraData)
+102         //it is assumed that when does this that the call *should* succeed, otherwise one would use vanilla approve instead.
+103         require(_spender.call(bytes4(bytes32(sha3("receiveApproval(address,uint256,address,bytes)"))), msg.sender, _value, this, _extraData));
+104         return true;
+105     }
+106 
+107 }

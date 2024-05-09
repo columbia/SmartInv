@@ -1,0 +1,39 @@
+The contract provided for analysis is as follows:
+
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public value;
+     enum State { Created, Confirmed, Done }
+     State public state;
+
+     constructor(address _buyer, address _seller, address _arbiter) payable {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         value = msg.value;
+         state = State.Created;
+     }
+
+     function confirmPayment() public {
+         require(msg.sender == buyer && state == State.Created, "invalid transaction state or sender");
+         state = State.Confirmed;
+     }
+
+     function confirmReceived() public {
+         require(msg.sender == buyer && state == State.Confirmed, "invalid transaction state or sender");
+         seller.transfer(value);
+         state = State.Done;
+     }
+
+     function refundPayment() public {
+         require(msg.sender == seller && state == State.Created, "invalid transaction state or sender");
+         buyer.transfer(value);
+         state = State.Done;
+     }
+}
+
+The potential vulnerabilities in the contract are as follows:
+1) Incorrect visibility/ownership
+2) Inconsistent state update

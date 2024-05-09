@@ -1,0 +1,24 @@
+The contract provided for analysis:
+```solidity
+contract SecureMarket {
+    address public owner;
+    mapping(address => uint) public prices;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function setPrice(address token, uint price) public {
+        require(msg.sender == owner, "Only the owner can set prices");
+        prices[token] = price;
+    }
+
+    function getPrice(address token) view public returns (uint) {
+        return prices[token];
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership - The `setPrice` function only checks if the caller is the owner, but it should also restrict the access control by using the `onlyOwner` modifier.
+2) Insufficient gas - Depending on the gas costs of the `setPrice` function and the price of the token, setting the price might consume more gas than the transaction limit, leading to an insufficient gas vulnerability.

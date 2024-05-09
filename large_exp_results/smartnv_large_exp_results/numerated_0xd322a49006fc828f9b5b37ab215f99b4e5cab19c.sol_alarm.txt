@@ -1,0 +1,37 @@
+<\contract:>
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public winningProposalId;
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+    }
+
+    function vote(uint256 proposalId) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "Has no right to vote.");
+        require(!sender.voted, "Already voted.");
+
+        sender.voted = true;
+        sender.vote = proposalId;
+    }
+
+    function winningProposal() public {
+        // logic to determine the winning proposal and update winningProposalId
+    }
+}
+
+Output:
+1) The contract does not contain any obvious vulnerabilities.

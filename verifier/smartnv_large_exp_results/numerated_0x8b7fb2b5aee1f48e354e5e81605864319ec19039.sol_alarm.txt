@@ -1,0 +1,17 @@
+<b>contract IdentityRegistry {
+    mapping(address => uint) public identityMap;
+
+    function registerIdentity(uint id) public {
+        require(identityMap[msg.sender] == 0, "Identity already registered");
+        identityMap[msg.sender] = id;
+    }
+
+    function updateIdentity(uint newId) public {
+        require(identityMap[msg.sender] != 0, "Identity not registered");
+        identityMap[msg.sender] = newId;
+    }
+
+    function retrieveIdentity() public view returns (uint) {
+        return identityMap[msg.sender];
+    }
+}</b>

@@ -1,0 +1,23 @@
+<\contract\> 
+contract PaymentProcessor {
+         address public owner;
+         mapping(address => uint) public balances;
+         event PaymentMade(address indexed _from, address indexed _to, uint _amount);
+         
+         constructor() public {
+             owner = msg.sender;
+         }
+         
+         function makePayment(address _to, uint _amount) public {
+             require(balances[msg.sender] >= _amount, "Not enough balance");
+             balances[msg.sender] -= _amount;
+             balances[_to] += _amount;
+             emit PaymentMade(msg.sender, _to, _amount);
+         }
+     }
+<\contract\> 
+
+Potential vulnerabilities:
+- inconsistent state update in the makePayment function
+- incorrect visibility/ownership 
+- ID uniqueness violation

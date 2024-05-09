@@ -1,0 +1,30 @@
+<\your_contract\>
+contract VotingSystem {
+    address public admin;
+    uint public totalVotes;
+    mapping(address => uint) public userVotes;
+
+    constructor() {
+        admin = msg.sender;
+        totalVotes = 0;
+    }
+
+    function vote(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function redeemVotes() public {
+        require(userVotes[msg.sender] > 0, "No votes to redeem");
+        uint amount = userVotes[msg.sender];
+        totalVotes -= amount;
+        userVotes[msg.sender] = 0;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+<\your_contract\>

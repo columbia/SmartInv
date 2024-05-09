@@ -1,0 +1,28 @@
+<\contract\> 
+contract PaymentChannel {
+    address public sender;
+    address public receiver;
+    uint public amount;
+
+    function openChannel(address _receiver) external payable {
+        sender = msg.sender;
+        receiver = _receiver;
+        amount = msg.value;
+    }
+
+    function closeChannel(uint _amount, bytes32 _signature) external {
+        require(msg.sender == receiver, "Only receiver can close the channel");
+        require(amount >= _amount, "Insufficient funds in channel");
+
+        amount -= _amount;
+        require(verifySignature(receiver, amount, _signature), "Invalid signature");
+
+        payable(sender).transfer(_amount);
+    }
+
+    function verifySignature(address _signer, uint _amount, bytes32 _signature) internal pure returns (bool) {
+        // To be implemented
+        return true;
+    }
+}
+<\contract\>

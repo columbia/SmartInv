@@ -1,0 +1,28 @@
+<\contract\> 
+contract Lottery {
+         mapping(address => uint) public users;
+         uint public totalAmount;
+
+         function participate() public payable {
+             require(msg.value > 0, "Invalid amount");
+             totalAmount += msg.value;
+             users[msg.sender] += msg.value;
+         }
+         function withdraw() public {
+             uint amount = users[msg.sender];
+             require(amount > 0, "No funds to withdraw");
+             users[msg.sender] = 0;
+             msg.sender.transfer(amount);
+             totalAmount -= amount;
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) atomicity violation: There is no use of mutexes or locking mechanisms to ensure atomicity in updating the totalAmount and users mapping. This can lead to race conditions and inconsistent state updates.
+
+2) integer overflow: There is a potential risk of integer overflow in the totalAmount variable if a large number of users participate and deposit funds, exceeding the maximum value that a uint can hold.
+
+3) insufficient gas: The withdrawal function transfers funds to the user without specifying the gas limit. This can result in the transfer failing due to running out of gas, leaving the user unable to withdraw their funds.
+
+4) incorrect visibility/ownership: The users mapping is public, exposing sensitive user data to the public. Additionally, there is no mention of ownership controls or access restrictions, leading to potential unauthorized access to the contract.

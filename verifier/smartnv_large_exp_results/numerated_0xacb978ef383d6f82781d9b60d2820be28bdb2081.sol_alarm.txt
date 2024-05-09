@@ -1,0 +1,25 @@
+<\contract\>
+contract PaymentChannel {
+     address public sender;
+     address public receiver;
+     uint public value;
+     uint public createdAt;
+
+     constructor(address _sender, address _receiver, uint _value) {
+         sender = _sender;
+         receiver = _receiver;
+         value = _value;
+         createdAt = block.timestamp;
+     }
+
+     function closeChannel() public {
+         require(msg.sender == sender || msg.sender == receiver, "Caller is not a participant");
+         selfdestruct(msg.sender);
+     }
+
+     function updateValue(uint _newValue) public {
+         require(msg.sender == sender, "Only sender can update the value");
+         value = _newValue;
+     }
+ }
+<\contract\>

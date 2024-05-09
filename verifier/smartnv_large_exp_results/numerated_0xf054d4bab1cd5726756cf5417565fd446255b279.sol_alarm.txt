@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public totalSupply;
+    
+    constructor(uint _totalSupply) {
+        owner = msg.sender;
+        totalSupply = _totalSupply;
+        balances[owner] = totalSupply;
+    }
+
+    function buyTokens(uint amount) external {
+        require(balances[owner] >= amount, "Insufficient balance");
+        balances[msg.sender] += amount;
+        balances[owner] -= amount;
+    }
+
+    function transfer(address to, uint amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[to] += amount;
+        balances[msg.sender] -= amount;
+    }
+}
+<\contract_to_analyze\>

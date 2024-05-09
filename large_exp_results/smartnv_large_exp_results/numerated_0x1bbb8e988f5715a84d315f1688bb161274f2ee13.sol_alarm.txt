@@ -1,0 +1,36 @@
+The contract provided for analysis is:
+
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    uint public amount;
+    bool public released;
+    bool public refunded;
+
+    constructor(address _payer, address _recipient, address _arbiter, uint _amount){
+        payer = _payer;
+        recipient = _recipient;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+
+    function release() public {
+        require(msg.sender == payer || msg.sender == recipient || msg.sender == arbiter);
+        require(!released);
+        
+        recipient.transfer(amount);
+        released = true;
+    }
+
+    function refund() public {
+        require(msg.sender == payer || msg.sender == arbiter);
+        require(!refunded);
+        
+        payer.transfer(amount);
+        refunded = true;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership in the release and refund functions.

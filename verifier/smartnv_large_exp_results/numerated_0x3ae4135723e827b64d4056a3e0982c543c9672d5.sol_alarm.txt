@@ -1,0 +1,22 @@
+<\contract\> 
+contract Escrow {
+         address public buyer;
+         address public seller;
+         uint public amount;
+         bool public released;
+
+         function createEscrow(address _seller) public payable {
+             require(msg.value > 0, "Invalid amount");
+             buyer = msg.sender;
+             seller = _seller;
+             amount = msg.value;
+             released = false;
+         }
+         function releaseAmount() public {
+             require(msg.sender == seller, "Unauthorized access");
+             require(released == false, "Amount already released");
+             seller.transfer(amount);
+             released = true;
+         }
+}
+<\contract\>

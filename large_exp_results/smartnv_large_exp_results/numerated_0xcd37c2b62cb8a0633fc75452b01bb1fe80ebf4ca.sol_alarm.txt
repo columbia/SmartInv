@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     bool public isComplete;
+     uint public purchaseAmount;
+    
+     constructor(address _buyer, address _seller, uint _purchaseAmount) {
+         buyer = _buyer;
+         seller = _seller;
+         purchaseAmount = _purchaseAmount;
+     }
+
+     function releaseAmount() public {
+         require(msg.sender == seller, "Only the seller can release the amount");
+         require(isComplete == false, "Amount already released");
+         seller.transfer(address(this).balance);
+         isComplete = true;
+     }
+
+     function refundAmount() public {
+         require(msg.sender == buyer, "Only the buyer can request a refund");
+         require(isComplete == false, "Amount already refunded");
+         buyer.transfer(address(this).balance);
+         isComplete = true;
+     }
+}
+<\contract_to_analyze\>

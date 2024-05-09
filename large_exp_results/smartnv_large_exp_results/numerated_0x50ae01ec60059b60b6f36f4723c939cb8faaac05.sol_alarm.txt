@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    uint public arbiterFee;
+    bool public isPaid;
+    
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == amount + arbiterFee, "Incorrect deposit amount");
+    }
+    
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can release amount");
+        require(isPaid == true, "Amount has not been paid yet");
+        seller.transfer(amount);
+    }
+    
+    function refundAmount() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can refund amount");
+        require(isPaid == true, "Amount has not been paid yet");
+        buyer.transfer(amount);
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,32 @@
+Contract to analyze for vulnerabilities:
+
+contract LockBox {
+    mapping(address => uint256) public balances;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+Potential vulnerabilities in the LockBox contract:
+1) Incorrect visibility/ownership: The transferOwnership function is not restricted to only the owner, which can lead to privilege escalation.
+2) Reentrancy: The withdraw function could be vulnerable to reentrancy attacks.
+3) Ether leakage: The use of the call function in the withdraw function could potentially lead to ether being trapped in the contract.
+4) Insufficient gas: The deposit function does not include gas stipend for the transfer, which could lead to out-of-gas errors.

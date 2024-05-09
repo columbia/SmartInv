@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract Marketplace {
+     address public admin;
+     mapping(uint => Item) public items;
+     uint public nextItemId;
+
+     struct Item {
+           address owner;
+           string name;
+           uint price;
+      }
+
+     constructor() {
+           admin = msg.sender;
+           nextItemId = 1;
+      }
+
+     function addItem(string memory _name, uint _price) public {
+           items[nextItemId] = Item(msg.sender, _name, _price);
+           nextItemId++;
+      }
+
+     function buyItem(uint _itemId) public payable {
+           Item storage item = items[_itemId];
+           require(msg.value >= item.price, "Insufficient payment");
+           payable(item.owner).transfer(msg.value);
+      }
+}
+
+Output: 
+- Incorrect visibility/ownership

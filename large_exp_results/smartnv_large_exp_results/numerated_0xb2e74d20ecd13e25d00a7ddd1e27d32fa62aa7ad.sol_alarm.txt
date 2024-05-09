@@ -1,0 +1,22 @@
+<\analyzed_contract\>
+contract Crowdsale {
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+    address public owner;
+    
+    function buyTokens(uint amount) external {
+        require(balances[msg.sender] + amount >= balances[msg.sender], "overflow error");
+        require(totalSupply >= amount, "insufficient tokens");
+        
+        balances[msg.sender] += amount;
+        totalSupply -= amount;
+    }
+    
+    function transfer(address recipient, uint amount) external {
+        require(balances[msg.sender] >= amount, "insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract PaymentContract {
+    address public owner;
+    uint public totalAmount;
+
+    constructor() {
+        owner = msg.sender;
+        totalAmount = 0;
+    }
+
+    function deposit(uint amount) public {
+        totalAmount += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= totalAmount, "Insufficient funds");
+        totalAmount -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

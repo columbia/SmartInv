@@ -1,0 +1,50 @@
+<\contract\> 
+
+contract EscrowContract {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    bool public sellerApproved;
+    bool public buyerApproved;
+    bool public arbiterApproved;
+
+    constructor(address _seller, address _buyer, address _arbiter, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function deposit() payable {
+        require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can deposit");
+    }
+
+    function approve() public {
+        if (msg.sender == seller) {
+            sellerApproved = true;
+        } else if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else if (msg.sender == arbiter) {
+            arbiterApproved = true;
+        }
+    }
+
+    function release() public {
+        require(sellerApproved && buyerApproved, "Seller and buyer must both approve");
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        seller.transfer(price);
+    }
+
+    function refund() public {
+        require(buyerApproved && arbiterApproved, "Buyer and arbiter must both approve");
+        require(msg.sender == seller, "Only seller can refund funds");
+        buyer.transfer(price);
+    }
+
+} 
+
+Output:
+1) Incorrect Visibility/Ownership
+2) Atomicity Violation
+3) Privilege Escalation

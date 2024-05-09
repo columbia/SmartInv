@@ -1,0 +1,29 @@
+The contract provided for analysis:
+<\contract_to_analyze\> 
+contract Lottery {
+     address public owner;
+     uint public ticketPrice;
+     mapping(address => uint) public ticketsBought;
+
+     constructor() {
+         owner = msg.sender;
+         ticketPrice = 1 ether;
+     }
+
+     function buyTicket(uint numberOfTickets) public payable {
+         require(msg.value == ticketPrice * numberOfTickets, "Incorrect amount sent");
+         ticketsBought[msg.sender] += numberOfTickets;
+     }
+
+     function drawWinner() public {
+         require(msg.sender == owner, "Only the owner can draw the winner");
+         uint winner = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % ticketsBought.length;
+         address winnerAddress = ticketsBought.keys[uint(winner)];
+         payable(winnerAddress).transfer(address(this).balance);
+     }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership
+2) inconsistent state update

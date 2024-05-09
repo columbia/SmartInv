@@ -1,0 +1,31 @@
+<\contract\> 
+contract Escrow {
+     address public seller;
+     address public buyer;
+     uint public price;
+
+     constructor(address _seller, address _buyer, uint _price) {
+         seller = _seller;
+         buyer = _buyer;
+         price = _price;
+     }
+     
+     function deposit() public payable {
+         require(msg.sender == buyer, "Only buyer can deposit funds");
+         require(msg.value == price, "Incorrect amount deposited");
+     }
+
+     function release() public {
+         require(msg.sender == seller, "Only seller can release funds");
+         payable(buyer).transfer(price);
+     }
+
+     function withdraw() public {
+         require(msg.sender == buyer, "Only buyer can withdraw funds");
+         payable(buyer).transfer(price);
+     }
+}
+<\contract\> 
+
+The potential vulnerability in the <\contract\> is:
+- Incorrect visibility/ownership: The deposit function does not restrict access to the buyer, allowing anyone to deposit funds.

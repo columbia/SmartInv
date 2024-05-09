@@ -1,0 +1,18 @@
+<\contract\> 
+contract UserRegistry {
+     mapping(address => uint) public userID;
+
+     function registerUser(address userAddr, uint id) public {
+          require(userID[userAddr] == 0, "user already registered");
+          userID[userAddr] = id;
+     }
+
+     function updateUser(address userAddr, uint newId) public {
+          require(userID[userAddr] != 0, "user not registered");
+          userID[userAddr] = newId;
+     }
+}
+<\contract\> 
+
+Output: 
+- ID uniqueness violation

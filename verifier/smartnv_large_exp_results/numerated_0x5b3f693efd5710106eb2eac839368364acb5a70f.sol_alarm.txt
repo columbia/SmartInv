@@ -1,0 +1,16 @@
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeOwner(address newOwner) external {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}

@@ -1,0 +1,20 @@
+<\contract_to_analyze\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public balances;
+
+    function placeBid(uint bidAmount) public {
+        require(bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+        require(balances[msg.sender] >= bidAmount, "Insufficient balance to place bid");
+        
+        if (highestBidder != address(0)) {
+            balances[highestBidder] += highestBid; 
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = bidAmount;
+        balances[msg.sender] -= bidAmount;
+    }
+}
+<\contract_to_analyze\>

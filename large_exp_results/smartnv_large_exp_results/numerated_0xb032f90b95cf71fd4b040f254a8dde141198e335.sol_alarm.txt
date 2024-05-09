@@ -1,0 +1,42 @@
+The contract to be analyzed:
+
+<\contract_to_analyze\> 
+
+contract VotingSystem {
+         struct Voter {
+             uint weight;
+             bool voted;
+             address delegate;
+             uint vote;
+         }
+
+         mapping(address => Voter) public voters;
+         address public admin;
+
+         function giveRightToVote(address voter) public {
+             require(msg.sender == admin, "Only admin can give the right to vote");
+             voters[voter].weight = 1;
+         }
+
+         function delegate(address to) public {
+             require(voters[msg.sender].weight >= 1, "Not enough weight to delegate");
+             require(to != msg.sender, "Self-delegation is not allowed");
+             while (voters[to].delegate != address(0)) {
+                 to = voters[to].delegate;
+                 require(to != msg.sender, "Found loop in delegation");
+             }
+             voters[msg.sender].delegate = to;
+         }
+
+         function vote(uint option) public {
+             Voter storage sender = voters[msg.sender];
+             require(sender.weight >= 1, "Not enough weight to vote");
+             require(!sender.voted, "Already voted");
+             sender.voted = true;
+             sender.vote = option;
+         }
+} 
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation: The `giveRightToVote` function does not check if the voter already has the right to vote, potentially allowing multiple rights to be assigned to the same address.
+- Incorrect visibility/ownership: The `admin` variable is public, which exposes the admin address to all users, potentially leading to unauthorized access to administrative privileges.

@@ -1,0 +1,43 @@
+<\analyzed_contract\> 
+contract EscrowContract {
+          IERC20 public token;
+          address public buyer;
+          address public seller;
+          address public arbiter;
+          uint public amount;
+          uint public arbiterFee;
+          bool public buyerApproved;
+          bool public sellerApproved;
+
+          constructor(address _buyer, address _seller, address _arbiter, uint _amount, uint _arbiterFee, IERC20 _token) {
+               buyer = _buyer;
+               seller = _seller;
+               arbiter = _arbiter;
+               amount = _amount;
+               arbiterFee = _arbiterFee;
+               token = _token;
+          }
+
+          function approve() public {
+               require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "not authorized");
+               if (msg.sender == buyer) {
+                    buyerApproved = true;
+               }
+               if (msg.sender == seller) {
+                    sellerApproved = true;
+               }
+          }
+
+          function releaseAmount() public {
+               require(buyerApproved == true && sellerApproved == true, "not approved by both parties");
+               token.transfer(seller, amount - arbiterFee);
+          }
+
+          function refundAmount() public {
+               require(buyerApproved == true && sellerApproved == false, "not approved correctly");
+               token.transfer(buyer, amount);
+          }
+} 
+
+Output:
+1) healthy 

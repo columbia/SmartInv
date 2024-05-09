@@ -1,0 +1,32 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint escrowAmount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    constructor(address _buyer, address _seller, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        escrowAmount = _escrowAmount;
+    }
+
+    function approve() public {
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else if (msg.sender == seller) {
+            sellerApproved = true;
+        }
+        if (buyerApproved && sellerApproved) {
+            address _this = address(this);
+            payable(seller).transfer(escrowAmount);
+            selfdestruct(payable(buyer));
+        }
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Privilege escalation
+- Reentrancy

@@ -1,0 +1,32 @@
+The contract provided below does not contain any apparent vulnerabilities:
+
+contract PaymentContract {
+    address public merchant;
+    address public customer;
+    uint public amount;
+
+    function makePayment(uint _amount) public {
+        require(msg.sender == customer, "Sender is not the customer");
+        require(_amount == amount, "Incorrect payment amount");
+        address payable merchantPayable = payable(merchant);
+        merchantPayable.transfer(amount);
+    }
+
+    function setMerchant(address _merchant) public {
+        require(msg.sender == customer, "Sender is not the customer");
+        merchant = _merchant;
+    }
+
+    function setCustomer(address _customer) public {
+        require(msg.sender == merchant, "Sender is not the merchant");
+        customer = _customer;
+    }
+
+    function setAmount(uint _amount) public {
+        require(msg.sender == merchant, "Sender is not the merchant");
+        amount = _amount;
+    }
+}
+
+Output:
+healthy

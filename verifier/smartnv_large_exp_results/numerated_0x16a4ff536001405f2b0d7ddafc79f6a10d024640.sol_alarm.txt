@@ -1,0 +1,15 @@
+Contract being analyzed:
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swap(uint amount, address user) external {
+        require(tokenA.balanceOf(user) >= amount, "Insufficient balance");
+        tokenA.transferFrom(user, address(this), amount);
+        tokenB.transfer(user, amount);
+    }
+}
+
+Potential vulnerabilities:
+1) insufficient gas
+2) incorrect visibility/ownership

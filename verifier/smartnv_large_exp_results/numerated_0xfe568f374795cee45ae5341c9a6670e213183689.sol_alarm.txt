@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function execute() updates the state variable proposal.votedAmount without considering the possibility of multiple calls, which may result in inconsistent state.
+
+2) Incorrect visibility/ownership: The visibility of the state variable startingBlance is not specified, potentially allowing external contracts to access and modify it.
+
+3) Insufficient gas: The function endExecute() may encounter gas exhaustion issues if the execution of require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()) consumes a large amount of gas.
+
+4) ID uniqueness violation: There is no mechanism in place to ensure the uniqueness of proposal IDs, which may lead to conflicts or unexpected behavior.
+
+5) Potential reentrancy: The transfer function calls in the execute() function should be carefully reviewed to prevent reentrancy vulnerabilities.
+
+6) Atomicity violation: The operations in the execute() function should be reviewed to ensure that they are executed atomically to avoid race conditions.
+
+7) Suicidal contracts: There is no mechanism in place to prevent the contract from self-destructing, which may lead to funds becoming inaccessible.

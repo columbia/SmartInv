@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint256 => uint256) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint256 paymentId, uint256 amount) public {
+        require(msg.sender == owner, "Only the owner can make payments");
+        payments[paymentId] = amount;
+    }
+
+    function viewPayment(uint256 paymentId) public view returns (uint256) {
+        return payments[paymentId];
+    }
+}
+<\contract_to_analyze\> 
+
+Output:
+- privilege escalation

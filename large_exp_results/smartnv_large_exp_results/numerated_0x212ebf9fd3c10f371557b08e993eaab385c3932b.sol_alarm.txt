@@ -1,0 +1,22 @@
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public price;
+
+    constructor(uint _price) {
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public {
+        require(balances[msg.sender] + amount >= amount, "Integer overflow");
+        uint cost = price * amount;
+        require(msg.value >= cost, "Insufficient funds");
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Unauthorized access");
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}

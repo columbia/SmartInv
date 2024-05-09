@@ -1,0 +1,23 @@
+<\contract_to_be_analyzed\>
+contract SuperToken {
+    uint256 public totalSupply;
+    mapping(address => uint256) balances;
+
+    function mint(uint256 amount) public {
+        totalSupply += amount;
+        balances[msg.sender] += amount;
+    }
+
+    function transfer(address recipient, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+
+    function burn(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        totalSupply -= amount;
+        balances[msg.sender] -= amount;
+    }
+}
+<\contract_to_be_analyzed\>

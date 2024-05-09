@@ -1,0 +1,35 @@
+Contract to analyze:
+contract MultiSigWallet {
+    mapping(address => uint256) balance;
+    mapping(address => bool) isOwner;
+    uint256 public totalBalance;
+
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+        totalBalance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function addOwner(address newOwner) public {
+        isOwner[newOwner] = true;
+    }
+
+    function removeOwner(address owner) public {
+        require(isOwner[owner], "Address is not an owner");
+        isOwner[owner] = false;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(isOwner[msg.sender], "You are not an owner");
+        isOwner[newOwner] = true;
+        isOwner[msg.sender] = false;
+    }
+}
+Output:
+healthy

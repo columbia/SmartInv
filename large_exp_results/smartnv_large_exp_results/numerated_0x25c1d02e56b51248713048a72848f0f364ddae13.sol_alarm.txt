@@ -1,0 +1,25 @@
+The contract below has the following potential vulnerabilities:
+
+1) Integer overflow/underflow
+2) Suicidal contracts
+
+<\contract_to_analyze\>
+contract Vault {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit value must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function close() public {
+        selfdestruct(msg.sender);
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `endExecute` function updates the `lockedFunds` variable based on the balance of the voting token held by the contract. However, there is no check to ensure that this update is done atomically or in a synchronized manner, which could lead to inconsistent state updates if multiple transactions try to access and update the `lockedFunds` variable simultaneously.
+
+2) Cross bridge inconsistency: The contract interacts with another contract `IERC20` and relies on external data from this contract without any validation or verification mechanisms in place. This lack of validation can lead to potential inconsistencies or malicious manipulations when exchanging data between the contracts.
+
+3) ID uniqueness violation: The `proposal` struct does not include any unique identifier for each proposal. This lack of unique identification could lead to confusion or conflicts when trying to manage and track multiple proposals simultaneously.

@@ -1,0 +1,19 @@
+Contract ExampleContract {
+    address public owner;
+    uint256 public balance;
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}

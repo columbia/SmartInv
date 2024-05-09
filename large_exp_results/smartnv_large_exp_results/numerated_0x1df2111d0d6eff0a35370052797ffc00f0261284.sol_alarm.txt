@@ -1,0 +1,25 @@
+<\Contract\>
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address[] public candidates;
+    mapping(address => uint256) public votesReceived;
+    
+    function vote(uint256 _candidateIndex) public {
+        require(!voters[msg.sender].hasVoted, "You have already voted.");
+        
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].vote = _candidateIndex;
+        
+        votesReceived[candidates[_candidateIndex]]++;
+    }
+    
+    function addCandidate(address _candidate) public {
+        candidates.push(_candidate);
+    }
+}
+<\Contract\>

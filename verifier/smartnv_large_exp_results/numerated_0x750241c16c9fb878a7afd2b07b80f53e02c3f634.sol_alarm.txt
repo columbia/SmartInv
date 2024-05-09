@@ -1,0 +1,38 @@
+Contract:
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+    mapping(address => uint) public tokensBought;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount * tokenPrice <= msg.value, "Insufficient payment");
+        require(ERC20(tokenAddress).transfer(msg.sender, amount), "Token transfer failed");
+        
+        totalTokensSold += amount;
+        tokensBought[msg.sender] += amount;
+    }
+
+    function withdrawFunds() public onlyOwner{
+        uint balance = address(this).balance;
+        payable(owner).transfer(balance);
+    }
+}
+
+Potential vulnerabilities:
+1) Price manipulation
+2) Inconsistent state update 
+3) Insufficient gas
+4) Incorrect visibility/ownership

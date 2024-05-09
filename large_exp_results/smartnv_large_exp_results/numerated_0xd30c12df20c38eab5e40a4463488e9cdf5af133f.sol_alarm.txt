@@ -1,0 +1,63 @@
+<\contract\>
+contract MultiSigWallet {
+         address[] public owners;
+         mapping(address => bool) public isOwner;
+         uint public numConfirmationsRequired;
+         Transaction[] public transactions;
+         
+         struct Transaction {
+             address to;
+             uint value;
+             bytes data;
+             bool executed;
+             uint numConfirmations;
+         }
+         
+         modifier onlyOwner() {
+             require(isOwner[msg.sender], "not an owner");
+             _;
+         }
+         
+         function addOwner(address owner) public onlyOwner {
+             owners.push(owner);
+             isOwner[owner] = true;
+         }
+         
+         function removeOwner(address owner) public onlyOwner {
+             require(owners.length > 1, "must have at least one owner");
+             for (uint i = 0; i < owners.length; i++) {
+                 if (owners[i] == owner) {
+                     isOwner[owner] = false;
+                     owners[i] = owners[owners.length - 1];
+                     owners.pop();
+                     break;
+                 }
+             }
+         }
+         
+         function submitTransaction(address to, uint value, bytes memory data) public onlyOwner {
+             Transaction memory newTransaction = Transaction({
+                 to: to,
+                 value: value,
+                 data: data,
+                 executed: false,
+                 numConfirmations: 0
+             });
+             transactions.push(newTransaction);
+         }
+         
+         function confirmTransaction(uint transactionId) public onlyOwner {
+             Transaction storage transaction = transactions[transactionId];
+             transaction.numConfirmations += 1;
+         }
+         
+         function executeTransaction(uint transactionId) public onlyOwner {
+             Transaction storage transaction = transactions[transactionId];
+             require(transaction.numConfirmations >= numConfirmationsRequired, "cannot execute transaction");
+             require(!transaction.executed, "transaction already executed");
+             (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+             require(success, "transaction execution failed");
+             transaction.executed = true;
+         }
+}
+<\contract\>

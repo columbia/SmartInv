@@ -1,0 +1,39 @@
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        sellerApproved = false;
+        arbiterApproved = false;
+    }
+
+    function approveBySeller() public {
+        require(msg.sender == seller, "Only seller can approve the transaction.");
+        sellerApproved = true;
+    }
+
+    function approveByArbiter() public {
+        require(msg.sender == arbiter, "Only arbiter can approve the transaction.");
+        arbiterApproved = true;
+    }
+
+    function releaseAmount() public {
+        require(sellerApproved || arbiterApproved, "Transaction not approved by seller or arbiter.");
+        if (sellerApproved && arbiterApproved) {
+            seller.transfer(amount);
+        } else if (sellerApproved) {
+            seller.transfer(amount);
+            buyer.transfer(amount);
+        } else {
+            arbiter.transfer(amount);
+        }
+    }
+}

@@ -1,0 +1,25 @@
+The contract to analyze:
+contract MultiSigWallet {
+    mapping(address => uint) public balances;
+    mapping(address => bool) public isOwner;
+    uint public numOwners;
+    
+    constructor(address[] memory owners) {
+        numOwners = owners.length;
+        for (uint i = 0; i < numOwners; i++) {
+            isOwner[owners[i]] = true;
+        }
+    }
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(address payable to, uint amount) public {
+        require(isOwner[msg.sender], "Caller is not an owner");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        to.transfer(amount);
+        balances[msg.sender] -= amount;
+    }
+}

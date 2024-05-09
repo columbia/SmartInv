@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility: The functions calculatePrice and liquidate are public, which may expose the contract to potential security risks. It is better to consider changing the visibility of these functions to internal or external if possible.
+
+2) Integer overflow/underflow: There is a possibility of integer overflow/underflow in the calculation inside the liquidate function where cAmount is multiplied by a percentage. It is essential to add proper checks to prevent such vulnerabilities.
+
+3) Inconsistent state update: The liquidate function updates the debt and collateral mappings without clear checks or validations, which could lead to inconsistent or incorrect state updates.
+
+4) Business logic flaw: The liquidate function's condition for checking whether a user's funds can be liquidated may be insufficient or inaccurate, potentially leading to unintended behavior.
+
+5) Ether leakage: There is no direct usage of Ether in this contract, but if Ether is sent mistakenly to this contract address, it could lead to ether leakage.
+
+Overall, the contract may require further examination and improvements to address the identified vulnerabilities.

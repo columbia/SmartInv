@@ -1,0 +1,27 @@
+<\contract\> 
+contract Sale {
+    mapping(address => uint) public balances;
+    uint public totalSupply = 1000;
+    uint public tokenPrice = 1 ether;
+
+    function buyTokens(uint amount) public payable {
+        require(amount * tokenPrice == msg.value, "Incorrect amount sent");
+        require(amount <= totalSupply, "Not enough tokens available");
+        
+        balances[msg.sender] += amount;
+        totalSupply -= amount;
+    }
+
+    function withdraw() public {
+        uint amount = balances[msg.sender] * tokenPrice;
+        require(address(this).balance >= amount, "Not enough balance in contract");
+
+        msg.sender.transfer(amount);
+        balances[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect amount calculation in buyTokens function - vulnerability related to arithmetic flaw.
+2) Insufficient balance check before transferring funds in withdraw function - vulnerability related to insufficient gas.

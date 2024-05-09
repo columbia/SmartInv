@@ -1,0 +1,17 @@
+<\contract\> 
+contract TokenSwap {
+     IERC20 public tokenA; 
+     IERC20 public tokenB; 
+     uint public exchangeRate;
+
+     function swapToken(uint amountA) public {
+         tokenA.transferFrom(msg.sender, address(this), amountA); 
+         uint amountB = amountA * exchangeRate; 
+         tokenB.transfer(msg.sender, amountB);
+     }
+
+     function updateExchangeRate(uint newRate) public {
+         require(msg.sender == owner, "only owner can update exchange rate");
+         exchangeRate = newRate;
+     }
+}

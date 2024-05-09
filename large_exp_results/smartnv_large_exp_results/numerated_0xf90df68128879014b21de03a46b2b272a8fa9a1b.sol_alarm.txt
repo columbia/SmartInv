@@ -1,0 +1,19 @@
+<\contract\>
+contract TokenExchange {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+
+     function exchange(uint amountA, uint amountB) public {
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transferFrom(msg.sender, address(this), amountB);
+
+         // Exchange logic here
+
+         tokenA.transfer(msg.sender, amountB);
+         tokenB.transfer(msg.sender, amountA);
+     }
+}
+<\contract\> 
+
+<\output\>
+incorrect visibility/ownership

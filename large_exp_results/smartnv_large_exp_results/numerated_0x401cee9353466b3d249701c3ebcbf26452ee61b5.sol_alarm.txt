@@ -1,0 +1,43 @@
+<\The Contract to Analyze\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State { Initial, Locked, Inactive }
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier inState(State _state) {
+        require(state == _state, "Invalid state");
+        _;
+    }
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.Initial;
+    }
+
+    function confirmPurchase() public onlyBuyer inState(State.Initial) {
+        state = State.Locked;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm received");
+        require(state == State.Locked, "Invalid state");
+        state = State.Inactive;
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund buyer");
+        require(state == State.Locked, "Invalid state");
+        // Transfer funds to buyer
+        state = State.Inactive;
+    }
+}

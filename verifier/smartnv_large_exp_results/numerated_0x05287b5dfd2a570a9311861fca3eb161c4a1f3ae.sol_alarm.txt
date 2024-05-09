@@ -1,0 +1,21 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    uint256 public totalVotes;
+    uint256 private latestVoteId;
+    mapping(uint256 => uint256) public votes;
+
+    function vote(uint256 voteValue) public {
+        totalVotes++;
+        votes[latestVoteId] = voteValue;
+    }
+
+    function changeVote(uint256 voteId, uint256 newValue) public {
+        require(voteId <= latestVoteId, "Invalid vote id");
+        votes[voteId] = newValue;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation
+- Inconsistent state update

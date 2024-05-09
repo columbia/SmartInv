@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract SupplyChain {
+    struct Product {
+        uint id;
+        string description;
+        uint price;
+        address payable owner;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function createProduct(string memory _description, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _description, _price, msg.sender);
+    }
+
+    function buyProduct(uint _id) public payable {
+        Product memory _product = products[_id];
+        require(msg.value >= _product.price, "Not enough Ether provided");
+        _product.owner.transfer(msg.value);
+    }
+}
+
+Output: 
+1) atomicity violation
+2) inconsistent state update

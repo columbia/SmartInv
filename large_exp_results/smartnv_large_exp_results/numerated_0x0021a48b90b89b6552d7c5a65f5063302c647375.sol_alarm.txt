@@ -1,0 +1,19 @@
+<\contract\>
+contract Escrow {
+    mapping(address => uint256) public deposits;
+
+    function deposit() payable public {
+        deposits[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(deposits[msg.sender] >= amount, "Insufficient balance");
+        msg.sender.transfer(amount);
+        deposits[msg.sender] -= amount;
+    }
+
+    function getBalance(address user) public view returns (uint256) {
+        return deposits[user];
+    }
+}
+<\contract\>

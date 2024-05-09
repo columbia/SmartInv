@@ -1,0 +1,24 @@
+The contract to analyze:
+
+contract VoteSystem {
+    struct Voter {
+        uint256 voteCount;
+        bool voted;
+    }
+    mapping(address => Voter) public voters;
+
+    function vote() public {
+        require(!voters[msg.sender].voted, "Already voted");
+        voters[msg.sender].voteCount += 1;
+        voters[msg.sender].voted = true;
+    }
+
+    function resetVotes() public {
+        require(voters[msg.sender].voted, "Not voted yet");
+        voters[msg.sender].voteCount = 0;
+        voters[msg.sender].voted = false;
+    }
+}
+
+Potential vulnerabilities in the VoteSystem contract:
+- Healthy

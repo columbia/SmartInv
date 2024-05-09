@@ -1,0 +1,24 @@
+<\analyzed_contract\>
+contract TokenManager {
+    struct Token {
+        address tokenAddress;
+        string name;
+        uint totalSupply;
+    }
+    
+    mapping(address => Token) public tokens;
+
+    function addToken(address _tokenAddress, string memory _name, uint _totalSupply) public {
+        Token memory newToken = Token(_tokenAddress, _name, _totalSupply);
+        tokens[_tokenAddress] = newToken;
+    }
+
+    function updateTokenName(address _tokenAddress, string memory _newName) public {
+        tokens[_tokenAddress].name = _newName;
+    }
+
+    function updateTokenTotalSupply(address _tokenAddress, uint _newTotalSupply) public {
+        tokens[_tokenAddress].totalSupply = _newTotalSupply;
+    }
+}
+<\analyzed_contract\>

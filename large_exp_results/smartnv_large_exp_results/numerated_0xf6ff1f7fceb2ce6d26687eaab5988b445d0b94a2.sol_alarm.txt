@@ -1,0 +1,26 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public itemReceived;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        itemReceived = false;
+    }
+
+    function releaseFunds() external {
+        require(msg.sender == buyer, "Only buyer can release funds");
+        require(itemReceived, "Item has not been received");
+        payable(seller).transfer(price);
+    }
+
+    function confirmItemReceived() external {
+        require(msg.sender == buyer, "Only buyer can confirm receiving the item");
+        itemReceived = true;
+    }
+}
+<\contract\>

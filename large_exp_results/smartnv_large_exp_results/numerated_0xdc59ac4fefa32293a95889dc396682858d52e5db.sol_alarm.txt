@@ -1,0 +1,20 @@
+The contract for analysis:
+contract SwapTokens {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         
+         function swap(uint amountA, uint amountB) public {
+             require(amountA > 0 && amountB > 0, "Invalid swap amounts");
+             
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transferFrom(msg.sender, address(this), amountB);
+             
+             tokenA.transfer(msg.sender, amountB);
+             tokenB.transfer(msg.sender, amountA);
+         }
+     }
+     
+Potential vulnerabilities:
+1) Inconsistent state update: The contract does not have proper checks for state updates after transfers, potentially leading to an inconsistent state.
+2) Insufficient gas: The contract may run out of gas during the swap function due to multiple transfers, causing the transaction to revert.
+3) Incorrect visibility/ownership: The visibility of functions and ownership of tokens may not be properly handled, leading to potential vulnerabilities in access control.

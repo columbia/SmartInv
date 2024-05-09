@@ -1,0 +1,36 @@
+Contract you are analyzing:
+contract Crowdsale {
+    address public owner;
+    address public token;
+    address public wallet;
+    uint public rate;
+    uint public cap;
+    
+    mapping(address => uint) public balances;
+
+    constructor(address _token, address _wallet, uint _rate, uint _cap) {
+        owner = msg.sender;
+        token = _token;
+        wallet = _wallet;
+        rate = _rate;
+        cap = _cap;
+    }
+
+    function buyTokens() public payable {
+        require(msg.value != 0, "Value sent is zero");
+        
+        uint tokens = msg.value * rate;
+        
+        require(balances[msg.sender] + tokens <= cap, "Exceeds the cap limit");
+        
+        balances[msg.sender] += tokens;
+        Token(token).transfer(msg.sender, tokens);
+        wallet.transfer(msg.value);
+    }
+    
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Unauthorized");
+        
+        Token(token).transfer(owner, Token(token).balanceOf(address(this)));
+    }
+}

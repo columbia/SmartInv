@@ -1,0 +1,32 @@
+<\your_contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokens;
+    uint public tokensSold;
+    
+    constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+        admin = msg.sender;
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        tokensSold = 0;
+    }
+    
+    function buyTokens(uint _numTokens) public {
+        require(_numTokens > 0, "Number of tokens must be greater than 0");
+        require(_numTokens <= totalTokens - tokensSold, "Not enough tokens available");
+        uint totalCost = _numTokens * tokenPrice;
+        token.transferFrom(msg.sender, address(this), totalCost);
+        token.transfer(msg.sender, _numTokens);
+        tokensSold += _numTokens;
+    }
+}
+<\your_contract\> 
+
+The potential vulnerabilities in the TokenSale contract could be:
+1) Incorrect visibility/ownership: The admin address is publicly visible, which could potentially lead to unauthorized access or manipulation by external parties.
+2) Inconsistent state update: The total number of tokens sold is updated without proper synchronization, which could lead to data integrity issues.
+3) Insufficient gas: The buyTokens function does not include gas stipend considerations, which could result in failed transactions due to insufficient gas provided for the token transfers.
+4) Atomicity violation: The buyTokens function does multiple state-changing operations in a sequence without proper atomicity guarantees, which could lead to inconsistent states in case of failures during execution.

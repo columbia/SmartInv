@@ -1,0 +1,29 @@
+<\contract\> 
+contract PaymentProcessor {
+    address public owner;
+    uint public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+        totalPayments = 0;
+    }
+
+    function makePayment(uint amount) public {
+        require(msg.sender == owner, "Only the owner can make payments");
+        totalPayments += amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        payable(owner).transfer(totalPayments);
+        totalPayments = 0;
+    }
+
+    function updateOwner(address newOwner) public {
+        owner = newOwner;
+    }
+}
+<\contract\> 
+
+Output:
+correct visibility/ownership

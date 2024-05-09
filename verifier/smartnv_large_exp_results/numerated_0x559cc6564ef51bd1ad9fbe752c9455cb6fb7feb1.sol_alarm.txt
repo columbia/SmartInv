@@ -1,0 +1,28 @@
+<\contract\> 
+contract TokenSale {
+    address public seller;
+    address public buyer;
+    uint public price;
+    uint public quantity;
+
+    constructor(address _seller, uint _price, uint _quantity) {
+        seller = _seller;
+        price = _price;
+        quantity = _quantity;
+    }
+
+    function buy() public payable {
+        require(msg.sender != seller, "Seller cannot buy tokens");
+        require(msg.value == price * quantity, "Incorrect payment amount");
+        _transferTokens(msg.sender);
+    }
+
+    function _transferTokens(address _buyer) private {
+        // Transfer tokens to the buyer
+    }
+}
+<\contract\> 
+
+Output:
+- Ether leakage: No mechanism to handle received ether, which could be leaked or not utilized properly.
+- Incorrect visibility/ownership: Seller is set as a variable with public visibility, which could lead to potential security issues.

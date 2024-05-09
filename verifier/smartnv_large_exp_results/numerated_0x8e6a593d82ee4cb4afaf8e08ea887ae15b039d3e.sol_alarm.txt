@@ -1,0 +1,28 @@
+<\contract\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    mapping(address => uint) public balances;
+    bool public saleActive;
+
+    constructor(address _token) {
+        admin = msg.sender;
+        token = IERC20(_token);
+        saleActive = true;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(saleActive, "Sale is not active");
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount;
+    }
+
+    function endSale() external {
+        require(msg.sender == admin, "Only admin can end the sale");
+        saleActive = false;
+    }
+}
+<\contract\> 
+
+Output:
+- Nothing to output. This contract is healthy.

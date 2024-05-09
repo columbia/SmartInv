@@ -1,0 +1,49 @@
+Contract TimelockController {
+    struct Proposal {
+        uint256 sTime;
+        uint256 votedAmount;
+        address addr;
+    }
+    
+    address internal owner;
+    IERC20 votingToken;
+    mapping(address => uint256) startingBalanceList;
+    Proposal public proposal;
+    uint256 public lockedFunds;
+
+    function startExecute() external {
+        uint256 startingBlance;
+        require(proposal.sTime == 0, "on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBlance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBlance; 
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount; 
+        votedProposal(proposal); 
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+
+    function getStartingBalance(address _addr) internal view returns (uint256) {
+        // Function implementation not shown
+    }
+
+    function votedProposal(Proposal memory _proposal) internal {
+        // Function implementation not shown
+    }
+}
+Potential vulnerabilities:
+1) ID uniqueness violation: The contract does not enforce uniqueness of proposal IDs, which may lead to confusion or manipulation if the same ID is used for multiple proposals.
+2) Inconsistent state update: There is a potential for inconsistent state updates as the function startExecute sets the proposal struct without checking if a proposal already exists, potentially overwriting existing data.
+3) Insecure time-dependent functions: The functions startExecute, execute, and endExecute rely on block.timestamp for time calculations, making them susceptible to timestamp manipulation.
+4) Access control issues: There is no explicit access control mechanism in place to restrict who can call the functions startExecute, execute, and endExecute, which may lead to unauthorized access and privilege escalation.

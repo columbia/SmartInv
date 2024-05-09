@@ -1,0 +1,30 @@
+The contract provided for analysis is:
+
+```solidity
+contract VotingSystem {
+    mapping(address => uint256) public votes;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint256 amount) public {
+        require(amount > 0, "Invalid vote amount");
+        votes[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        uint256 balance = votes[msg.sender];
+        msg.sender.transfer(balance);
+        votes[msg.sender] = 0;
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Reentrancy: The `withdraw` function allows the owner to withdraw their votes and sends the balance to the owner's address. This design is susceptible to reentrancy attacks if the recipient address executes malicious code that calls back into the contract before updating the votes balance.
+2) Incorrect visibility/ownership: The `owner` variable is public, allowing anyone to view the owner address, which may not be desired for confidentiality reasons.
+3) Insufficient gas: The `withdraw` function sends funds to the owner using `transfer`, which has a gas limit of 2300. If the owner's address is a contract that requires more gas to handle the received funds, the transaction may fail.
+4) Inconsistent state update: There is a potential issue with inconsistent state update as the `votes` mapping is not cleared after the withdrawal, enabling multiple withdrawals of the same balance.

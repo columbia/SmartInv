@@ -1,0 +1,26 @@
+The contract to analyze for potential vulnerabilities is:
+
+```solidity
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+
+    constructor(IERC20 _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public {
+        uint totalAmount = amount * price;
+        require(token.balanceOf(address(this)) >= totalAmount, "Not enough tokens in the contract");
+        
+        token.transfer(msg.sender, amount);
+    }
+}
+```
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Price manipulation: The price is set at deployment and can potentially be manipulated by the owner.
+2) Incorrect ownership: Only the owner address is stored, but no additional checks are performed to ensure that only the owner can perform specific actions.

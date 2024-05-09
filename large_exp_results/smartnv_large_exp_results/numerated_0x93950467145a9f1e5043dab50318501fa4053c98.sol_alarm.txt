@@ -1,0 +1,33 @@
+Contract Analyzer {
+    address public owner;
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Invalid deposit amount");
+        uint amount = msg.value;
+        balances[msg.sender] += amount;
+        totalSupply += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Invalid withdrawal amount");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        totalSupply -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+Potential vulnerabilities in the Contract Analyzer:
+- Inconsistent state update: The totalSupply is updated inconsistently in the deposit and withdraw functions, which could lead to incorrect total supply calculations.
+- Insufficient gas: The contract does not handle potential out-of-gas issues, which could result in the contract being unable to execute certain functions completely.
+- Incorrect visibility/ownership: The owner variable is declared as public, which exposes ownership details publicly and may lead to security risks.
+- Integer overflow/underflow: There are potential risks of integer overflow/underflow in the totalSupply calculations and balance adjustments, which could lead to unexpected behavior.

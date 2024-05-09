@@ -1,0 +1,54 @@
+The contract to analyze:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public buyerAmount;
+    uint public sellerAmount;
+    bool public buyerPaid;
+    bool public sellerPaid;
+
+    function setBuyer(address _buyer) external {
+        require(msg.sender == arbiter, "Only arbiter can set the buyer");
+        buyer = _buyer;
+    }
+
+    function setSeller(address _seller) external {
+        require(msg.sender == arbiter, "Only arbiter can set the seller");
+        seller = _seller;
+    }
+
+    function setArbiter(address _arbiter) external {
+        arbiter = _arbiter;
+    }
+
+    function deposit() public payable {
+        if (msg.sender == buyer) {
+            buyerAmount += msg.value;
+        } else if (msg.sender == seller) {
+            sellerAmount += msg.value;
+        }
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+
+        if (buyerPaid && !sellerPaid) {
+            seller.transfer(buyerAmount);
+        } else if (sellerPaid && !buyerPaid) {
+            buyer.transfer(sellerAmount);
+        }
+    }
+
+    function confirmPayment(bool _buyerPaid, bool _sellerPaid) public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm payment");
+        
+        buyerPaid = _buyerPaid;
+        sellerPaid = _sellerPaid;
+    }
+}
+
+Output:
+1) incorrect visibility/ownership
+2) inconsistent state update

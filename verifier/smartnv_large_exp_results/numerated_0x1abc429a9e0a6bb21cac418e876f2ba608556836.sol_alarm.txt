@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+    address public admin;
+    mapping(address => uint) public voteCount;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(address _voter, uint _voteCount) public {
+        require(msg.sender == admin, "Only admin can vote");
+        voteCount[_voter] += _voteCount;
+    }
+
+    function resetVotes(address _voter) public {
+        require(msg.sender == admin, "Only admin can reset votes");
+        voteCount[_voter] = 0;
+    }
+
+    function changeAdmin(address _newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = _newAdmin;
+    }
+}
+<\contract\>

@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+     IERC20 public token;
+     address public owner;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+
+     function vote() public {
+         require(hasVoted[msg.sender] == false, "Already voted");
+         token.transferFrom(msg.sender, address(this), 1);
+         hasVoted[msg.sender] = true;
+         totalVotes++;
+     }
+
+     function endVoting() public {
+         require(msg.sender == owner, "Only owner can end voting");
+         uint voteBalance = token.balanceOf(address(this));
+         require(voteBalance * 2 > token.totalSupply(), "Not enough votes");
+         // perform actions based on voting results
+     }
+}
+<\contract_to_analyze\>

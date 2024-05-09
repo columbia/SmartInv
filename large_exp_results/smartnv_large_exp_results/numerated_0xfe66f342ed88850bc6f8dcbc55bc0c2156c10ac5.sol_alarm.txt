@@ -1,0 +1,29 @@
+The contract provided for analysis is as follows:
+
+```solidity
+contract Escrow {
+    address public payer;
+    address payable public recipient;
+    address public arbiter;
+
+    mapping(address => uint) public deposits;
+
+    constructor(address _payer, address payable _recipient, address _arbiter) public {
+        payer = _payer;
+        recipient = _recipient;
+        arbiter = _arbiter;
+    }
+
+    function deposit(address depositor) public payable {
+        deposits[depositor] += msg.value;
+    }
+
+    function releaseToRecipient() public {
+        recipient.transfer(address(this).balance);
+    }
+}
+```
+
+The potential vulnerabilities in the given contract are:
+1) insufficient gas
+2) incorrect visibility/ownership

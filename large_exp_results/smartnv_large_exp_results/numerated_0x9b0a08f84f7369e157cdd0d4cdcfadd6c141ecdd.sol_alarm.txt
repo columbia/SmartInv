@@ -1,0 +1,30 @@
+<\contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+
+     constructor(address _token, uint _price) {
+         token = IERC20(_token);
+         owner = msg.sender;
+         tokenPrice = _price;
+     }
+
+     function buyTokens(uint amount) public payable {
+         uint totalCost = amount * tokenPrice;
+         require(msg.value >= totalCost, "Insufficient payment");
+         token.transfer(msg.sender, amount);
+     }
+
+     function setTokenPrice(uint _newPrice) public {
+         require(msg.sender == owner, "Unauthorized");
+         tokenPrice = _newPrice;
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership: The setTokenPrice function could be susceptible to privilege escalation if the modifier for checking ownership is not properly implemented, allowing unauthorized users to change the token price.
+- Price manipulation: If the tokenPrice is not properly validated or constrained, it could lead to potential price manipulation vulnerabilities.
+- Insufficient gas: If the contract does not handle gas properly, there could be vulnerabilities related to running out of gas during contract execution.
+- Integer overflow/underflow: The calculations involving amount * tokenPrice could potentially lead to integer overflow vulnerabilities if not handled correctly.

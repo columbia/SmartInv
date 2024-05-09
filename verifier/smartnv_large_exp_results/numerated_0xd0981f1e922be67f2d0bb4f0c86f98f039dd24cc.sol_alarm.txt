@@ -1,0 +1,28 @@
+<\contract\> 
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * price, "Incorrect amount sent");
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function setPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = _newPrice;
+    }
+}
+<\contract\> 
+
+Outputs:
+1) incorrect visibility/ownership
+2) missing constructor visibility
+3) inconsistent state update

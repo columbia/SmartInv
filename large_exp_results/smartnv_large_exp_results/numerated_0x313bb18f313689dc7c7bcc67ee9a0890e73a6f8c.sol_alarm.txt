@@ -1,0 +1,31 @@
+<\your_contract\> 
+contract OrderBook {
+    struct Order {
+        address trader;
+        uint amount;
+        uint price;
+        bool isBuyOrder;
+    }
+    
+    mapping(uint => Order) public orders;
+    uint public orderCount;
+
+    function createOrder(uint _amount, uint _price, bool _isBuyOrder) public {
+        Order memory newOrder = Order(msg.sender, _amount, _price, _isBuyOrder);
+        orders[orderCount++] = newOrder;
+    }
+
+    function executeOrder(uint _orderId) public {
+        Order memory order = orders[_orderId];
+        require(order.trader != address(0), "order does not exist");
+
+        if (order.isBuyOrder) {
+            // execute buy order logic
+        } else {
+            // execute sell order logic
+        }
+
+        delete orders[_orderId];
+    }
+}
+<\your_contract\>

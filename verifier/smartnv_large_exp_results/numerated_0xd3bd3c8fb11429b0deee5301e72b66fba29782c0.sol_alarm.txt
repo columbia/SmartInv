@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) hasVoted;
+    uint256 totalVotes;
+
+    function vote() external {
+        require(!hasVoted[msg.sender], "You have already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function getTotalVotes() external view returns(uint256) {
+        return totalVotes;
+    }
+
+    function resetVotes() external {
+        totalVotes = 0;
+    }
+}
+<\contract\> 
+
+<\output\>
+- ID uniqueness violation: The contract allows multiple votes from the same address without checking for uniqueness.
+- Inconsistent state update: The function resetVotes can potentially reset the totalVotes without any validation or restrictions, which can lead to unexpected behavior.
+- Integer overflow: If the totalVotes reaches the maximum limit for a uint256 variable and further votes are cast, an integer overflow can occur.

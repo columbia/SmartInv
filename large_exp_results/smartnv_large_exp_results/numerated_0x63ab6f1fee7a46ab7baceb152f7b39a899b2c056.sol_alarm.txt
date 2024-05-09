@@ -1,0 +1,27 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+    address public owner;
+    uint public price;
+    uint public totalSupply;
+    
+    constructor(uint _price, uint _totalSupply) {
+        owner = msg.sender;
+        price = _price;
+        totalSupply = _totalSupply;
+    }
+
+    function buyTokens(uint amount) public payable {
+        uint totalCost = amount * price;
+        require(msg.value >= totalCost, "Insufficient funds");
+        
+        // Transfer tokens to buyer
+        // Deduct tokens from total supply
+
+        if (totalSupply <= 0) {
+            owner.transfer(msg.value);
+            selfdestruct(msg.sender);
+        }
+    }
+}
+Output:
+- Business logic flaw: The "buyTokens" function has a vulnerability where if the total supply of tokens becomes zero, it will transfer all the contract's ETH balance to the owner and selfdestruct. This could be exploited by draining the contract's balance prematurely.

@@ -1,0 +1,57 @@
+The contract provided for analysis:
+
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributions;
+    mapping(address => bool) public whitelist;
+    uint public saleEnd;
+    uint public tokenPrice;
+    uint public totalTokens;
+
+    constructor(uint _saleEnd, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        saleEnd = _saleEnd;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(block.timestamp < saleEnd, "Crowdsale has ended");
+        require(whitelist[msg.sender], "You are not whitelisted");
+        
+        uint totalCost = _amount * tokenPrice;
+        require(totalCost / _amount == tokenPrice, "Potential integer overflow");
+
+        require(totalTokens >= _amount, "Not enough tokens left");
+        
+        contributions[msg.sender] += _amount;
+        totalTokens -= _amount;
+
+        // Transfer tokens to msg.sender
+    }
+
+    function addToWhitelist(address _user) public {
+        require(msg.sender == owner, "Only owner can whitelist users");
+        whitelist[_user] = true;
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only owner can end the sale");
+        
+        // Transfer remaining tokens back to owner
+    }
+}
+<\contract_to_analyze\> 
+
+The potential vulnerabilities in the provided contract are:
+
+1) Integer overflow/underflow: The calculation in the buyTokens function could potentially lead to an integer overflow if the total cost exceeds the maximum value that can be stored in a uint variable.
+
+2) Inconsistent state update: There is a risk of inconsistent state update in the buyTokens function where the totalTokens variable is updated after the contributions mapping, which could lead to unexpected behavior.
+
+3) Insufficient gas: If the buyTokens function requires a large amount of gas to execute, it may run out of gas before completing the necessary operations, leading to an incomplete transaction.
+
+4) Incorrect visibility/ownership: The addToWhitelist function allows any address to be added to the whitelist, which may not be intended and could lead to unauthorized users gaining access to the crowdsale.
+
+5) Business logic flaw: The contract does not have proper checks for potential corner cases, such as handling edge cases for the totalCost calculation or ensuring that tokens are transferred correctly in the buyTokens function.

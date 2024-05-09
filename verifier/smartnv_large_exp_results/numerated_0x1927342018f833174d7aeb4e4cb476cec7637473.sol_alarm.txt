@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     address public seller;
+     address public buyer;
+     uint public price;
+     uint public quantity;
+     IERC20 public token;
+
+     function initialize(address _seller, uint _price, uint _quantity, address _token) external {
+         seller = _seller;
+         price = _price;
+         quantity = _quantity;
+         token = IERC20(_token);
+     }
+
+     function buyTokens() external payable {
+         require(msg.value == price * quantity, "Incorrect payment amount");
+         token.transferFrom(seller, buyer, quantity);
+     }
+
+     function withdrawFunds() external {
+         require(msg.sender == seller, "Unauthorized withdrawal");
+         (bool success, ) = seller.call{value: address(this).balance}("");
+         require(success, "Withdrawal failed");
+     }
+}
+<\contract_to_analyze\>

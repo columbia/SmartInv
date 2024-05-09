@@ -1,0 +1,32 @@
+The contract you are going to analyze is: 
+
+contract Vesting {
+    address public beneficiary;
+    uint public cliff;
+    uint public start;
+    uint public duration;
+
+    function setBeneficiary(address _beneficiary) external {
+        beneficiary = _beneficiary;
+    }
+
+    function setCliff(uint _cliff) external {
+        cliff = _cliff;
+    }
+
+    function setStart(uint _start) external {
+        start = _start;
+    }
+
+    function setDuration(uint _duration) external {
+        duration = _duration;
+    }
+
+    function release() external {
+        require(block.timestamp > start + cliff, "Vesting has not started yet");
+        require(block.timestamp < start + duration, "Vesting has not ended yet");
+        // Release vested amount to beneficiary
+    }
+}
+
+Please provide potential vulnerabilities found in the contract above.

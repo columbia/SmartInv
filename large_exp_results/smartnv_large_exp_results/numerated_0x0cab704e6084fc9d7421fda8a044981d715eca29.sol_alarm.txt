@@ -1,0 +1,18 @@
+<\contract\>
+contract SampleContract {
+         IERC20 public token1;
+         IERC20 public token2;
+         uint256 public totalSupply;
+
+         function transferTokens(address recipient, uint256 amount) external {
+             require(token1.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             token1.transferFrom(msg.sender, recipient, amount);
+             token2.transferFrom(recipient, msg.sender, amount);
+         }
+  }
+<\contract\> 
+
+<\output\>
+The potential vulnerabilities in the contract are:
+1) cross bridge inconsistency 
+2) insufficient gas

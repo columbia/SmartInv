@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function endExecute() updates the lockedFunds variable based on the balance of the contract at a specific time. This can lead to inconsistent state if other transactions are modifying the contract state concurrently.
+
+2) Atomicity violation: The function execute() transfers tokens and updates the votedAmount variable in multiple steps, which may result in atomicity violations if the transaction fails after the token transfer but before updating votedAmount.
+
+3) Cross bridge inconsistency: There is a lack of checks to ensure consistent state across different functions and variables in the contract, which can potentially lead to cross bridge inconsistencies.

@@ -1,0 +1,62 @@
+<\contract\> 
+contract VotingContract {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public chairperson;
+    uint256 public winningProposal;
+    
+    constructor() {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+    }
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted.");
+        require(to != msg.sender, "Self-delegation is disallowed.");
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegate_ = voters[to];
+        if (delegate_.voted) {
+            voters[delegate_.vote].weight += sender.weight;
+        } else {
+            delegate_.weight += sender.weight;
+        }
+    }
+    
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Has no right to vote.");
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+        sender.weight = 0;
+    }
+    
+    function winningProposal() public {
+        uint256 winningVoteCount = 0;
+        for (uint256 prop = 0; prop < proposals.length; prop++) {
+            if (proposals[prop].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[prop].voteCount;
+                winningProposal = prop;
+            }
+        }
+    }
+    
+    function execute() public {
+        require(msg.sender == chairperson, "Only chairperson can execute.");
+        require(winningProposal != 0, "No winning proposal yet.");
+        // Execute the winning proposal
+        proposals[winningProposal].execute();
+    }
+}

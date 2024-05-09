@@ -1,0 +1,29 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public recipient;
+    uint public amount;
+    bool public isPaid;
+
+    constructor(address _payer, address _recipient, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        amount = _amount;
+        isPaid = false;
+    }
+
+    function release() public {
+        require(msg.sender == payer, "Only payer can release funds");
+        require(!isPaid, "Funds have already been released");
+        recipient.transfer(amount);
+        isPaid = true;
+    }
+
+    function cancel() public {
+        require(msg.sender == payer, "Only payer can cancel escrow");
+        require(!isPaid, "Funds have already been released");
+        payer.transfer(amount);
+        isPaid = true;
+    }
+}
+<\contract\>

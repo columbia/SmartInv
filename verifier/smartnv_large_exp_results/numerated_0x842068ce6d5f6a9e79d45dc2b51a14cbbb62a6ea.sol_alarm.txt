@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+contract Voting {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+    
+    constructor(uint256 _winningProposal) {
+        winningProposal = _winningProposal;
+    }
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        sender.voted = true;
+        if (voters[to].voted) {
+            sender.weight += voters[to].weight;
+        }
+        sender.delegate = to;
+    }
+    
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+}
+
+Output:
+- incorrect visibility/ownership

@@ -1,0 +1,41 @@
+<\contract\>
+pragma solidity ^0.8.0;
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public fundsDisbursed;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Only buyer, seller or arbiter can release funds");
+        require(!fundsDisbursed, "Funds already disbursed");
+        
+        // Release funds to the seller
+        // Code to transfer funds
+        fundsDisbursed = true;
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Only buyer, seller or arbiter can refund the buyer");
+        require(!fundsDisbursed, "Funds already disbursed");
+        
+        // Refund the buyer
+        // Code to refund buyer
+        fundsDisbursed = true;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The functions `releaseFunds` and `refundBuyer` do not have specified visibility (public, external, internal, private), making them default to public. It is recommended to explicitly specify the visibility for clarity and security.
+2) Inconsistent state update: The `fundsDisbursed` variable is set to true inside both the `releaseFunds` and `refundBuyer` functions, which could lead to inconsistent state updates if both functions are called.
+3) Privilege escalation: Any address can call the functions `releaseFunds` and `refundBuyer` if they know the contract address, potentially leading to privilege escalation issues.

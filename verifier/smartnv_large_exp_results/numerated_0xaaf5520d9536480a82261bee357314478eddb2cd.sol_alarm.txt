@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 endTime;
+        bool executed;
+    }
+    
+    address public admin;
+    mapping(uint256 => Proposal) public proposals;
+    
+    constructor() {
+        admin = msg.sender;
+    }
+    
+    function createProposal(uint256 id, uint256 start, uint256 end) public {
+        require(msg.sender == admin, "Only admin can create proposals");
+        Proposal memory newProposal;
+        newProposal.startTime = start;
+        newProposal.endTime = end;
+        newProposal.executed = false;
+        proposals[id] = newProposal;
+    }
+    
+    function executeProposal(uint256 id) public {
+        require(proposals[id].startTime <= block.timestamp, "Proposal has not started yet");
+        require(proposals[id].endTime >= block.timestamp, "Proposal has ended");
+        require(proposals[id].executed == false, "Proposal already executed");
+        
+        // Execute proposal logic
+        
+        proposals[id].executed = true;
+    }
+}
+<\contract_to_analyze\>

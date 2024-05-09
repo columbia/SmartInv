@@ -1,0 +1,37 @@
+<\contract_3\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    enum State { Initial, Confirmed, Disputed, Resolved }
+    State public currentState;
+
+    constructor(address _buyer, address _seller, uint _amount, address _arbiter) public {
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+        arbiter = _arbiter;
+        currentState = State.Initial;
+    }
+
+    function confirm() public {
+        require(msg.sender == buyer, "Only buyer can confirm");
+        currentState = State.Confirmed;
+    }
+
+    function dispute() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can dispute");
+        currentState = State.Disputed;
+    }
+
+    function resolve() public {
+        require(msg.sender == arbiter, "Only arbiter can resolve");
+        currentState = State.Resolved;
+    }
+}
+<\contract_3\> 
+
+The potential vulnerabilities in the Escrow contract are:
+1) Incorrect visibility/ownership: Lack of proper access control in the confirm(), dispute(), and resolve() functions may lead to unauthorized actions being taken by parties who should not have the authority.
+2) Inconsistent state update: State transitions may not be correctly enforced, allowing for unexpected or incorrect state changes during the contract's lifecycle.

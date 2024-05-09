@@ -1,0 +1,33 @@
+The contract provided for analysis is as follows:
+
+```solidity
+contract Lottery {
+    mapping(address => uint) public tickets;
+    address[] public participants;
+    address public winner;
+    
+    function buyTicket(uint _numTickets) external {
+        require(_numTickets > 0, "Number of tickets must be greater than 0");
+        tickets[msg.sender] += _numTickets;
+        for (uint i = 0; i < _numTickets; i++) {
+            participants.push(msg.sender);
+        }
+    }
+    
+    function drawWinner() external {
+        require(participants.length > 0, "No participants to draw a winner from");
+        uint index = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % participants.length;
+        winner = participants[index];
+    }
+    
+    function claimPrize() external {
+        require(msg.sender == winner, "Only the winner can claim the prize");
+        // Code to transfer prize money to winner
+    }
+}
+```
+
+Output: 
+1) inconsistent state update
+2) ID uniqueness violation
+3) integer overflow/underflow

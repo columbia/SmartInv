@@ -1,0 +1,22 @@
+The contract contains the following potential vulnerabilities:
+
+1) Inconsistent state update: 
+    - The function `startExecute` updates the `proposal` state without clearly initializing it first in the contract. This inconsistency can lead to unexpected behavior.
+
+2) Incorrect visibility/ownership:
+    - The contract implements the `IERC20` interface but does not define the required functions. This can lead to issues with contract interoperability and ownership control.
+
+3) Integer overflow/underflow:
+    - There are various arithmetic operations in the contract that may result in integer overflow or underflow, such as `startingBlance = getStartingBalance(proposal.addr)` in the `startExecute` function.
+
+4) Insufficient gas:
+    - The `endExecute` function performs a potentially gas-intensive operation `lockedFunds = votingToken.balanceOf(address(this))`, which could exceed the gas limit and cause the transaction to fail.
+  
+5) Business logic flaw:
+    - The condition in the `endExecute` function `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")` might have a logical flaw, as it checks if the locked funds are more than twice the total supply.
+
+6) Incorrect visibility/ownership:
+    - The `votingToken` used in multiple functions is not defined in the contract, potentially leading to ownership and visibility issues.
+
+7) Inconsistent state update:
+    - The `execute` function updates the `proposal` state without properly initializing it in the contract, leading to potential inconsistencies in the contract state.

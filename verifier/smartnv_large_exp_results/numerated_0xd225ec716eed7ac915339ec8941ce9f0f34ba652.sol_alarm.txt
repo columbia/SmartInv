@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract Lottery {
+    mapping(address => uint) public ticketBalances;
+    uint public totalTickets;
+
+    function buyTickets(uint numTickets) public payable {
+        require(msg.value >= numTickets * 0.1 ether, "Insufficient payment for tickets");
+        ticketBalances[msg.sender] += numTickets;
+        totalTickets += numTickets;
+    }
+
+    function drawWinner() public {
+        require(totalTickets > 0, "No tickets purchased");
+        uint winningTicket = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets;
+        address winner;
+        for (uint i = 0; i < totalTickets; i++) {
+            if (winningTicket < ticketBalances[address(i)]) {
+                winner = address(i);
+                break;
+            }
+            winningTicket -= ticketBalances[address(i)];
+        }
+        payable(winner).transfer(address(this).balance);
+    }
+}
+<\analyzed_contract\>

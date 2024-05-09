@@ -1,0 +1,42 @@
+<\your_contract\>
+contract MultiSigWallet {
+     uint public walletBalance;
+     address[] public owners;
+     mapping(address => uint) public balances;
+     mapping(address => bool) public isOwner;
+     bool public isPaused;
+     
+     constructor(address[] memory _owners) {
+         owners = _owners;
+         for (uint i = 0; i < owners.length; i++) {
+             isOwner[owners[i]] = true;
+         }
+     }
+     
+     function deposit() public payable {
+         require(!isPaused, "Contract is paused");
+         walletBalance += msg.value;
+         balances[msg.sender] += msg.value;
+     }
+     
+     function withdraw(uint amount) public {
+         require(!isPaused, "Contract is paused");
+         require(isOwner[msg.sender], "Sender is not an owner");
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         
+         walletBalance -= amount;
+         balances[msg.sender] -= amount;
+         payable(msg.sender).transfer(amount);
+     }
+     
+     function pauseContract() public {
+         require(isOwner[msg.sender], "Sender is not an owner");
+         isPaused = true;
+     }
+     
+     function resumeContract() public {
+         require(isOwner[msg.sender], "Sender is not an owner");
+         isPaused = false;
+     }
+}
+<\your_contract\>

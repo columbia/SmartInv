@@ -1,0 +1,33 @@
+The contract provided for analysis is:
+
+```solidity
+contract SupplyChain {
+    uint public productCount = 0;
+    mapping(uint => Product) public products;
+
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address owner;
+        bool isPurchased;
+    }
+
+    function addProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+    }
+
+    function purchaseProduct(uint _id) public payable {
+        Product memory _product = products[_id];
+        require(msg.value >= _product.price, "Insufficient payment");
+        _product.isPurchased = true;
+        address(uint160(_product.owner)).transfer(msg.value);
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+
+1) Insufficient gas
+2) Incorrect visibility/ownership

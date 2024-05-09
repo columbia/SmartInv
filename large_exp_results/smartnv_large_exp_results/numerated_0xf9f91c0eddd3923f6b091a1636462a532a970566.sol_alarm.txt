@@ -1,0 +1,24 @@
+<\analyzed_contract\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public fundsDeposited;
+
+    function bid() external payable {
+        require(msg.value > highestBid, "Bid must be higher than the current highest bid");
+        if (highestBidder != address(0)) {
+            fundsDeposited[highestBidder] += highestBid;
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() external {
+        uint amount = fundsDeposited[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        fundsDeposited[msg.sender] = 0;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Withdrawal failed");
+    }
+}
+<\analyzed_contract\>

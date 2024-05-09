@@ -1,0 +1,22 @@
+<\contract\>
+contract Marketplace {
+     address public admin;
+     mapping(uint256 => address) public items;
+     uint256 public itemCount; 
+     
+     function addItem(address _item) public {
+         require(msg.sender == admin, "only admin can add item");
+         items[itemCount] = _item;
+         itemCount++;
+     }
+     
+     function buyItem(uint256 _itemId) public payable {
+         address seller = items[_itemId];
+         require(seller != address(0), "item does not exist");
+         require(msg.value >= 1 ether, "insufficient funds to buy item");
+         (bool success, ) = seller.call{value: msg.value}("");
+         require(success, "transaction failed");
+         items[_itemId] = address(0);
+     }
+}
+<\contract\>

@@ -1,0 +1,23 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    uint public maxVotes = 100;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        require(totalVotes < maxVotes, "Max votes reached");
+        
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function reset() public {
+        totalVotes = 0;
+        for (uint i = 0; i < maxVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+    }
+} 
+
+<\contract\>

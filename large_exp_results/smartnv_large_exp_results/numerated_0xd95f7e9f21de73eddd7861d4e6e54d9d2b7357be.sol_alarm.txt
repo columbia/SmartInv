@@ -1,0 +1,7 @@
+<\example_1\> 
+1) Inconsistent state update: The update of 'proposal.votedAmount' in the 'execute' function is not atomic and could lead to inconsistent state if multiple transactions attempt to update it simultaneously.
+2) Incorrect visibility/ownership: The contract TimelockController claims to implement the IERC20 interface but does not provide any implementation of the required functions defined in the interface.
+
+<\example_2\>
+1) Price manipulation: The comparison in the 'liquidate' function where the debt amount is compared against 80% of the product of collateral amount and price can be manipulated if the 'calculatePrice' function is manipulated.
+2) Insufficient gas: If the 'calculatePrice' function consumes too much gas, it could lead to the 'liquidate' function failing due to insufficient gas.

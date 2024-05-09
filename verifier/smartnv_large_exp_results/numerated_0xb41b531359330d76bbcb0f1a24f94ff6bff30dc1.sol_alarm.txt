@@ -1,0 +1,36 @@
+<\contract_to_analyze\>
+contract Escrow {
+         address public seller;
+         address public buyer;
+         uint public price;
+         bool public sellerConfirmed;
+         bool public buyerConfirmed;
+
+         constructor(address _seller, address _buyer, uint _price) {
+             seller = _seller;
+             buyer = _buyer;
+             price = _price;
+         }
+
+         function confirmReceived() public {
+             require(msg.sender == buyer, "Only the buyer can confirm receipt");
+             require(sellerConfirmed == true, "Seller must confirm first");
+             buyerConfirmed = true;
+         }
+
+         function confirmSent() public {
+             require(msg.sender == seller, "Only the seller can confirm sending");
+             sellerConfirmed = true;
+         }
+
+         function releaseFunds() public {
+             require(buyerConfirmed == true, "Buyer must confirm receipt first");
+             // Transfer funds to the seller
+         }
+
+         function refundBuyer() public {
+             require(buyerConfirmed == false, "Buyer must not confirm receipt");
+             // Refund the buyer
+         }
+     }
+<\contract_to_analyze\>

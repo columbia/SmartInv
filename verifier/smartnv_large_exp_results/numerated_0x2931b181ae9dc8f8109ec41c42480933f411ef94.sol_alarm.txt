@@ -1,0 +1,27 @@
+Contract to analyze:
+contract Vault {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint _amount) public {
+        require(msg.sender == owner, "Only owner can deposit funds");
+        balance += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(balance > _amount, "Insufficient balance");
+        balance -= _amount;
+    }
+
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = _newOwner;
+    }
+}
+Output:
+1) Incorrect visibility/ownership

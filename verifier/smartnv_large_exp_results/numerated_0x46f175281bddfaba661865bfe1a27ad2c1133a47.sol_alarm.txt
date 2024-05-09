@@ -1,0 +1,37 @@
+<\the_contract_you_are_analyzing\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public buyerPaid;
+    bool public sellerPaid;
+
+    function initiate(address _buyer, address _seller, uint _price) public {
+        require(msg.sender == owner, "Only owner can initiate the transaction");
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+    }
+
+    function pay() public payable {
+        require(msg.sender == buyer, "Only buyer can make a payment");
+        require(msg.value == price, "Incorrect payment amount");
+        buyerPaid = true;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(buyerPaid == true, "Buyer has not paid yet");
+        seller.transfer(price);
+        sellerPaid = true;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can request a refund");
+        require(sellerPaid == false, "Seller has already been paid");
+        msg.sender.transfer(price);
+    }
+}
+Potential vulnerabilities:
+7) ID uniqueness violation
+8) reentrancy

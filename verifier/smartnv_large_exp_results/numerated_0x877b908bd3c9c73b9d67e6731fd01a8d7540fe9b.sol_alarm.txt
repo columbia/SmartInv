@@ -1,0 +1,16 @@
+contract Marketplace {
+    mapping(address => uint256) public balances;
+    mapping(uint256 => address) public itemOwners;
+    
+    function buyItem(uint256 itemId) external payable {
+        address seller = itemOwners[itemId];
+        uint256 price = balances[seller];
+        require(msg.value >= price, "Insufficient funds");
+        
+        balances[seller] += msg.value;
+        balances[msg.sender] -= price;
+        
+        itemOwners[itemId] = msg.sender;
+        seller.transfer(price);
+    }
+}

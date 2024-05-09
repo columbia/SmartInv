@@ -1,0 +1,29 @@
+The contract to analyze:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    IERC20 public token;
+    uint public tokenPrice;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public {
+        uint cost = amount * tokenPrice;
+        token.transferFrom(msg.sender, address(this), cost);
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public {
+        uint amount = balances[msg.sender];
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] = 0;
+    }
+}
+Output: 
+1) potential vulnerabilities: 
+   - inconsistency state update

@@ -1,0 +1,21 @@
+<\contract\> 
+contract DepositWithdraw {
+         IERC20 public token;
+         mapping(address => uint) public deposits;
+
+         function deposit(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+             deposits[msg.sender] += amount;
+         }
+
+         function withdraw(uint amount) public {
+             require(deposits[msg.sender] >= amount, "Insufficient balance");
+             deposits[msg.sender] -= amount;
+             token.transfer(msg.sender, amount);
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+- insufficient gas
+- inconsistent state update 

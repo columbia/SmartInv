@@ -1,0 +1,25 @@
+<\analyzed_contract\>
+contract PaymentContract {
+    address public owner;
+    mapping(uint256 => bool) payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint256 id) external {
+        require(msg.sender == owner, "Only the owner can make payments");
+        require(!payments[id], "Payment with this id already made");
+        
+        // Process payment
+        
+        payments[id] = true;
+    }
+
+    function updateOwner(address newOwner) external {
+        require(msg.sender == owner, "Only the owner can update owner");
+        
+        owner = newOwner;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,20 @@
+<\contract\>
+contract Crowdsale {
+     uint public startTimestamp;
+     uint public endTimestamp;
+     address public tokenAddress;
+     address public owner;
+     mapping(address => uint) public contributions;
+
+     function buyTokens() public payable {
+         require(block.timestamp >= startTimestamp && block.timestamp <= endTimestamp, "Crowdsale has ended");
+         uint amount = msg.value;
+         contributions[msg.sender] += amount;
+         tokenAddress.transfer(amount);
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+3) business logic flaw
+13) insufficient gas

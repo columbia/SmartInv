@@ -1,0 +1,30 @@
+Contract to analyze:
+
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _tokenPrice) public {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * tokenPrice;
+        require(token.transferFrom(msg.sender, address(this), cost), "Transfer failed");
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        require(token.transfer(msg.sender, _amount * tokenPrice), "Transfer failed");
+    }
+}
+
+Output: 
+1) arithmetic flaw 
+2) inconsistent state update

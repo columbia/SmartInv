@@ -1,0 +1,53 @@
+The contract provided for analysis:
+
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public numConfirmationsRequired;
+    Transaction[] public transactions;
+    
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+        mapping(address => bool) isConfirmed;
+        uint numConfirmations;
+    }
+
+    function submitTransaction(address _to, uint _value, bytes memory _data) public {
+        Transaction memory newTransaction = Transaction({
+            to: _to,
+            value: _value,
+            data: _data,
+            executed: false,
+            numConfirmations: 0
+        });
+        transactions.push(newTransaction);
+    }
+
+    function confirmTransaction(uint _transactionId) public {
+        Transaction storage transaction = transactions[_transactionId];
+        require(isOwner[msg.sender], "Not an owner");
+        require(!transaction.isConfirmed[msg.sender], "Transaction already confirmed");
+        
+        transaction.isConfirmed[msg.sender] = true;
+        transaction.numConfirmations++;
+    }
+
+    function executeTransaction(uint _transactionId) public {
+        Transaction storage transaction = transactions[_transactionId];
+        require(transaction.numConfirmations >= numConfirmationsRequired, "Not enough confirmations");
+        require(!transaction.executed, "Transaction already executed");
+        
+        transaction.executed = true;
+        (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+    }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) privilege escalation
+2) inconsistent state update
+3) reentrancy

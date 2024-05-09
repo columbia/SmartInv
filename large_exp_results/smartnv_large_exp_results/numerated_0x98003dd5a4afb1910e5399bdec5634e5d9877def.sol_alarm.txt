@@ -1,0 +1,4 @@
+Vulnerabilities in the contract:
+1) Inconsistent state update: The `votedAmount` in the `execute` function is being updated directly without considering potential race conditions or reentrancy issues, which could lead to inconsistent state.
+2) Insufficient gas: The `endExecute` function may fail if the gas limit is exceeded due to the potential high gas cost of the `require` statement checking the execution condition.
+3) Incorrect visibility/ownership: The `proposal` struct and `startingBalanceList` mapping are not specified with any visibility modifier, making them publicly accessible and modifiable, potentially leading to unauthorized changes.

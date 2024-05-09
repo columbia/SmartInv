@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) ID uniqueness violation: There is no mechanism in place to ensure that each user has a unique identifier, which may lead to conflicts or erroneous data.
+
+2) Inconsistent state update: The `liquidate` function updates the `debt` and `collateral` mappings without proper validation or synchronization, potentially leading to inconsistent data states.
+
+3) Incorrect visibility/ownership: The `calculatePrice` function is marked as public but doesn't seem to require any specific access control or ownership validation, which could lead to unauthorized access to sensitive information or functionality.
+
+4) Atomicity violation: The liquidation process in the `liquidate` function involves multiple state-changing operations that are not wrapped in a single atomic transaction, risking partial execution and potential inconsistencies.
+
+5) Business logic flaw: The condition in the `liquidate` function that determines if a user's funds can be liquidated seems arbitrary and could be exploited to perform unauthorized liquidations.
+
+6) Cross bridge inconsistency: The interaction between the `USDC` and `WETH` tokens, as seen in the `liquidate` function, may lead to potential inconsistencies or mismanagement if not handled carefully.
+
+7) Insufficient gas: The contract doesn't consider the gas requirements for its functions, which might result in failed or incomplete transactions due to insufficient gas supplied by users.

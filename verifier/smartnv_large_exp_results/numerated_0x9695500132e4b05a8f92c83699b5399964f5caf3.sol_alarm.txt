@@ -1,0 +1,20 @@
+Contract to analyze:
+contract Marketplace {
+     address public owner; 
+     mapping(address => uint) public balance;
+     
+     constructor() public {
+         owner = msg.sender;
+     }
+
+     function deposit(uint amount) public {
+         balance[msg.sender] += amount;
+     }
+
+     function withdraw(uint amount) public {
+         require(balance[msg.sender] >= amount, "Insufficient balance");
+         balance[msg.sender] -= amount;
+     }
+}
+Potential vulnerabilities in the Marketplace contract:
+- incorrect visibility/ownership

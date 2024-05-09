@@ -1,0 +1,33 @@
+The contract for analysis:
+
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+    
+    mapping(address => uint) public tokenBalances;
+    
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        
+        tokenBalances[msg.sender] += _numTokens;
+        totalTokensSold += _numTokens;
+        
+        transferTokens(msg.sender, _numTokens);
+    }
+    
+    function transferTokens(address _receiver, uint _numTokens) internal {
+        ERC20(tokenAddress).transfer(_receiver, _numTokens);
+    }
+}
+
+Output:
+1) Insufficient gas
+2) Incorrect visibility/ownership

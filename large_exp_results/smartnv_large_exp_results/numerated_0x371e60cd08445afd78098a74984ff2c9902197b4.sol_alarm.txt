@@ -1,0 +1,31 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _price) public {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(owner) >= _amount * price, "Insufficient token balance");
+        uint cost = _amount * price;
+        token.transferFrom(msg.sender, owner, cost);
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient token balance");
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] -= _amount;
+    }
+}
+<\contract\> 
+
+Output: 
+- price manipulation
+- inconsistent state update

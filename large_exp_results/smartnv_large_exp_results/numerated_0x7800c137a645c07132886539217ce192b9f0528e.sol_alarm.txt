@@ -1,0 +1,9 @@
+Based on the provided contract, here are the potential vulnerabilities identified:
+
+1) Inconsistent state update: 
+- In the function `startExecute()`, the `startingBalanceList[proposal.addr]` is updated based on `proposal.addr`, but `proposal.addr` is updated in the `proposal` struct only after this update. This can lead to inconsistent state if the `proposal.addr` changes before the `startingBalanceList[proposal.addr]` is updated.
+
+2) Incorrect visibility/ownership: 
+- The contract implements the `IERC20` interface but does not provide the necessary functions for token transfer like `transfer` and `transferFrom`. This can lead to issues related to incorrect visibility or ownership of these functions.
+
+Therefore, the potential vulnerabilities in the provided contract are inconsistent state update and incorrect visibility/ownership.

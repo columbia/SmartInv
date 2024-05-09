@@ -1,0 +1,9 @@
+This contract may have the following potential vulnerabilities:
+
+1) Inconsistent state update: The variable `lockedFunds` in the `endExecute` function is updated without considering the totalSupply of the voting token, which may lead to inconsistent data.
+
+2) Atomicity violation: The `execute` function performs multiple state-changing operations without using any locking mechanism, which may result in atomicity violations.
+
+3) Cross bridge inconsistency: The contract interacts with external token contracts (`votingToken`) without proper validation, which could result in inconsistencies or unexpected behavior.
+
+4) ID uniqueness violation: There is no check for the uniqueness of IDs in the `Proposal` struct, which may lead to conflicts or unexpected behavior if duplicate IDs are used.

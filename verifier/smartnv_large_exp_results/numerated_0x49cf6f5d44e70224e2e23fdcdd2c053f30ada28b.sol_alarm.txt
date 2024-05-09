@@ -1,0 +1,30 @@
+<\contract\> 
+contract Escrow {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Invalid deposit amount");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transfer(address to, uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\> 
+
+2) privilege escalation
+9) integer overflow/underflow

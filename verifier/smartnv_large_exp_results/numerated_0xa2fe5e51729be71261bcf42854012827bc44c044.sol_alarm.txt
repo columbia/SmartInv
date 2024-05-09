@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract PowerPlant {
+    address public owner;
+    uint public totalPowerOutput;
+    mapping(address => uint) public userPowerUsage;
+    
+    constructor() {
+        owner = msg.sender;
+        totalPowerOutput = 1000;
+    }
+    
+    function generatePower(uint amount) public {
+        require(userPowerUsage[msg.sender] + amount <= totalPowerOutput, "Exceeds power limit");
+        
+        userPowerUsage[msg.sender] += amount;
+    }
+    
+    function withdrawPower(uint amount) public {
+        require(userPowerUsage[msg.sender] >= amount, "Insufficient power balance");
+        
+        userPowerUsage[msg.sender] -= amount;
+    }
+}
+<\contract_to_analyze\>

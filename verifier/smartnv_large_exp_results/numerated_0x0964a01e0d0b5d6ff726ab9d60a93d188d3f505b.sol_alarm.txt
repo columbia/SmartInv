@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+
+contract Lottery {
+    mapping(address => uint) public playerTickets;
+    address[] public players;
+
+    function buyTicket(uint _numTickets) public payable {
+        require(msg.value >= 0.01 ether * _numTickets, "Insufficient payment");
+        for(uint i=0; i<_numTickets; i++) {
+            players.push(msg.sender);
+            playerTickets[msg.sender]++;
+        }
+    }
+
+    function drawWinner() public {
+        require(players.length > 0, "No players in the lottery");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty, players))) % players.length;
+        address winner = players[winnerIndex];
+        uint balance = address(this).balance;
+        uint prize = balance * 9 / 10;
+        uint commission = balance - prize;
+        payable(winner).transfer(prize);
+        // Send commission to contract owner
+        payable(owner).transfer(commission);
+        players = new address[](0);
+    }
+}
+
+
+The potential vulnerabilities in the contract above are:
+
+1) inconsistent state update
+2) integer overflow/underflow 
+3) incorrect visibility/ownership

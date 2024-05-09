@@ -1,0 +1,27 @@
+<\contract\>
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        string name;
+        uint price;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function addProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price);
+    }
+
+    function purchaseProduct(uint _productId) public payable {
+        require(msg.value == products[_productId].price, "Incorrect payment amount");
+        // Perform purchase logic
+    }
+}
+<\contract\>
+
+The potential vulnerabilities in the contract are:
+- Ether leakage: There is no logic implemented to handle any leftover ether that might remain in the contract after a purchase, which could lead to ether leakage.
+- Incorrect payment handling: The logic for verifying the payment amount in the purchaseProduct function is simplistic and does not account for potential edge cases such as integer overflow or underflow, which could result in incorrect payment processing.
+- Insufficient gas: If the purchase logic requires a significant amount of gas to execute, users might face out-of-gas errors, especially when purchasing multiple products in a batch.

@@ -1,0 +1,48 @@
+The contract you are going to analyze:
+
+contract VotingSystem {
+     struct Voter {
+           uint256 weight;
+           bool voted;
+           address delegate;
+           uint256 vote;
+            }
+
+      address public owner;
+      mapping(address => Voter) public voters;
+      mapping(address => uint256) public balances;
+
+     function delegate(address to) public {
+           require(msg.sender != to, "self-delegation is not allowed");
+           require(voters[to].weight > 0, "delegatee has no weight to delegate");
+           voters[msg.sender].delegate = to;
+        }
+
+     function vote(uint256 option) public {
+           require(voters[msg.sender].weight > 0, "you have no right to vote");
+           require(!voters[msg.sender].voted, "you have already voted");
+           voters[msg.sender].voted = true;
+           voters[msg.sender].vote = option;
+        }
+
+     function tallyVotes() public {
+           uint256 optionOneCount;
+           uint256 optionTwoCount;
+           for (uint i=0; i < voters.length; i++) {
+               address voterAddress = address(i);
+               if (voters[voterAddress].vote == 1) {
+                   optionOneCount += voters[voterAddress].weight;
+               } else if (voters[voterAddress].vote == 2) {
+                   optionTwoCount += voters[voterAddress].weight;
+               }
+            }
+            if (optionOneCount > optionTwoCount) {
+                // execute option 1
+            } else {
+                // execute option 2
+            }
+        }
+}
+
+Output:
+- The contract contains potential vulnerabilities: ID uniqueness violation.

@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+     uint public tokenPrice;
+     mapping(address => uint) public balances;
+
+     constructor(address _tokenAddress, uint _price) {
+         owner = msg.sender;
+         token = IERC20(_tokenAddress);
+         tokenPrice = _price;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+         uint tokensToTransfer = _amount;
+         token.transfer(msg.sender, tokensToTransfer);
+         balances[msg.sender] += _amount;
+     }
+}
+
+Output: 
+The contract contains potential vulnerabilities of:
+- Inconsistent state update: The balances of addresses are directly updated without considering potential reentrancy attacks.
+- Incorrect visibility/ownership: The owner variable is public, potentially exposing sensitive information. 
+- Insufficient gas: The buyTokens function does not specify gas limits, which can lead to out-of-gas issues.

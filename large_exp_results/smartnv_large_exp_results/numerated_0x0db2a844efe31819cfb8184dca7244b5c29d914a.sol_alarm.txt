@@ -1,0 +1,20 @@
+<\contract\> 
+contract VotingSystem {
+         address public owner;
+         mapping(address => uint) public votes;
+         
+         function vote() public {
+             votes[msg.sender]++;
+         }
+
+         function endVoting() public {
+             require(msg.sender == owner, "Only owner can end the voting");
+             // Calculate final result and perform actions based on the result
+         }
+}
+<\contract\> 
+
+1) Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership: The function endVoting doesn't restrict the access properly, allowing anyone to call it and potentially manipulate the final result.
+
+Therefore, the potential vulnerability in the contract is incorrect visibility/ownership.

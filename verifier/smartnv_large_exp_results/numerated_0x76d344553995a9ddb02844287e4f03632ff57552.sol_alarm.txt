@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+    uint public totalTokens;
+    uint public tokensSold;
+    address public tokenOwner;
+    
+    constructor(uint _totalTokens) public {
+        totalTokens = _totalTokens;
+        tokensSold = 0;
+        tokenOwner = msg.sender;
+    }
+    
+    function buyTokens(uint amount) public {
+        require(tokensSold + amount <= totalTokens, "Not enough tokens left to buy");
+        
+        // Transfer tokens to buyer
+        tokensSold += amount;
+    }
+    
+    function refundTokens(address buyer, uint amount) public {
+        require(msg.sender == tokenOwner, "Only token owner can refund tokens");
+        
+        // Refund tokens to buyer
+        tokensSold -= amount;
+    }
+}
+<\contract_to_analyze\>

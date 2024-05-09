@@ -1,0 +1,20 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        // Perform voting logic
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract_to_analyze\> 
+
+The potential vulnerabilities in the contract VotingSystem are:
+- incorrect visibility/ownership: There is no restriction on who can call the vote function, allowing anyone to vote multiple times. 
+- insufficient gas: If the voting logic consumes a lot of gas, it might prevent some users from being able to successfully vote.

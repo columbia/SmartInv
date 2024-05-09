@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract RentalAgreement {
+    mapping(address => uint) public renters;
+    address public owner;
+    uint public rentAmount;
+
+    function setRent(uint amount) public {
+        require(msg.sender == owner, "only owner can set rent amount");
+        rentAmount = amount;
+    }
+
+    function rentProperty() public {
+        require(renters[msg.sender] == 0, "already renting");
+        renters[msg.sender] = rentAmount;
+    }
+
+    function endRental() public {
+        require(renters[msg.sender] != 0, "not currently renting");
+        renters[msg.sender] = 0;
+    }
+}
+<\contract_to_analyze\>

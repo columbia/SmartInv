@@ -1,0 +1,40 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+    State public currentState;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function confirmPayment() public payable {
+        require(msg.sender == buyer, "Only buyer can confirm payment");
+        require(currentState == State.AWAITING_PAYMENT, "Invalid state for payment confirmation");
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm delivery");
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state for delivery confirmation");
+        currentState = State.COMPLETE;
+    }
+
+    function refundPayment() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Only seller or arbiter can initiate refund");
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state for refund initiation");
+        currentState = State.REFUNDED;
+    }
+}
+<\contract\> 
+
+<\output\> 
+The potential vulnerabilities in the Escrow contract are:
+1) Incorrect visibility: The currentState variable should be private to prevent external manipulation.
+2) Inconsistent state update: The currentState can be changed to REFUNDED without the buyer confirming delivery, potentially allowing for undesired refunds.

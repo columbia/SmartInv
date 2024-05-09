@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public depositAmount;
+     enum State { Created, Locked, Released, Disputed, Refunded }
+     State public state;
+
+     function confirmPayment() public payable {
+         require(msg.sender == buyer, "Only buyer can confirm payment");
+         require(msg.value == depositAmount, "Incorrect deposit amount");
+         state = State.Locked;
+     }
+
+     function confirmReceived() public {
+         require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm received");
+         require(state == State.Locked, "Escrow not locked yet");
+         state = State.Released;
+     }
+
+     function refund() public {
+         require(msg.sender == arbiter, "Only arbiter can refund");
+         require(state == State.Disputed, "Escrow not disputed");
+         state = State.Refunded;
+     }
+}
+<\contract_to_analyze\>

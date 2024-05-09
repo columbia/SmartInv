@@ -1,0 +1,31 @@
+Contract to analyze:
+
+contract Marketplace {
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address owner;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public productCount;
+    
+    function createProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender);
+    }
+    
+    function purchaseProduct(uint _id) public payable {
+        Product memory _product = products[_id];
+        require(msg.value >= _product.price, "Insufficient funds");
+        address payable _seller = payable(_product.owner);
+        _seller.transfer(msg.value);
+        delete products[_id];
+    }
+}
+```
+
+Output:
+- Insufficient gas
+- Incorrect visibility/ownership

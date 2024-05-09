@@ -1,0 +1,30 @@
+<\contract_to_be_analyzed\>
+contract Lottery {
+    address public manager;
+    address[] public players;
+    
+    constructor() {
+        manager = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Minimum entry fee is 0.01 ether");
+        players.push(msg.sender);
+    }
+
+    function pickWinner() public {
+        require(msg.sender == manager, "Only the manager can pick a winner");
+        require(players.length > 0, "There are no players in the lottery");
+
+        uint index = random() % players.length;
+        address winner = players[index];
+        payable(winner).transfer(address(this).balance);
+
+        players = new address[](0);
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+}
+<\contract_to_be_analyzed\>

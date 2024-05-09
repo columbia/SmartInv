@@ -1,0 +1,29 @@
+<\your_contract\>
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        
+        ERC20(tokenAddress).transfer(msg.sender, _amount);
+        tokensSold += _amount;
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only owner can end the sale");
+
+        uint remainingTokens = ERC20(tokenAddress).balanceOf(address(this));
+        ERC20(tokenAddress).transfer(owner, remainingTokens);
+        selfdestruct(payable(owner));
+    }
+}
+<\your_contract\>

@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute()` function without proper synchronization, which can lead to inconsistent state if multiple transactions try to update the `votedAmount` at the same time.
+
+2) Inconsistent state update: The `lockedFunds` variable is updated in the `endExecute()` function without proper synchronization, which can lead to inconsistent state if multiple transactions try to update the `lockedFunds` at the same time.
+
+3) ID uniqueness violation: There is no mechanism in place to ensure the uniqueness of the `proposal.addr` values, which can lead to conflicts or unexpected behavior if multiple proposals have the same `addr` value.
+
+Overall, the contract may be vulnerable to inconsistent state updates and ID uniqueness violations.

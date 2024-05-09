@@ -1,0 +1,26 @@
+<\contract\> 
+contract Escrow {
+     address public depositor;
+     address public beneficiary;
+     uint public amount;
+
+     constructor(address _depositor, address _beneficiary, uint _amount) {
+         depositor = _depositor;
+         beneficiary = _beneficiary;
+         amount = _amount;
+     }
+
+     function releaseAmount() public {
+         require(msg.sender == beneficiary, "Only beneficiary can release the amount");
+         payable(beneficiary).transfer(amount);
+     }
+
+     function refundAmount() public {
+         require(msg.sender == depositor, "Only depositor can refund the amount");
+         payable(depositor).transfer(amount);
+     }
+}
+<\contract\> 
+
+1) ID uniqueness violation
+2) Incorrect visibility/ownership

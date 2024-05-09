@@ -1,0 +1,47 @@
+<\Contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+
+    address public owner;
+    address public winningProposal;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(msg.sender == owner, "Only owner can delegate.");
+        require(to != owner, "Owner cannot delegate to themselves.");
+        
+        voters[msg.sender].delegate = to;
+ 
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        
+        sender.weight = 1;
+        sender.voted = true;
+        sender.vote = proposal;
+       
+    }
+
+    function countVotes() public {
+        uint256 winningVoteCount = 0;
+        for (uint256 p = 0; p < proposalCount; p++) {
+            if (proposals[p].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[p].voteCount;
+                winningProposal = proposals[p].name;
+            }
+        }
+    }
+}
+<\Contract\>

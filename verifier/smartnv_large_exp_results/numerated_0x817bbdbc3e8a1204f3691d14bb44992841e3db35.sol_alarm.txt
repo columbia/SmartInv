@@ -1,0 +1,23 @@
+Contract Analysis: 
+
+The contract provided for analysis:
+```solidity
+contract MyContract {
+    mapping(address => uint256) balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+```
+
+Potential Vulnerabilities:
+1) integer overflow/underflow
+2) ether leakage
+3) insufficient gas

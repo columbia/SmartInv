@@ -1,0 +1,24 @@
+<\contract\> 
+contract TokenSale {
+         IERC20 public token;
+         address payable public beneficiary;
+         uint public price;
+         uint public tokensSold;
+         mapping(address => uint) public balances;
+
+         constructor(IERC20 _token, address payable _beneficiary, uint _price) {
+             token = _token;
+             beneficiary = _beneficiary;
+             price = _price;
+         }
+            
+         function buyTokens(uint _amount) public payable {
+             require(msg.value == _amount * price, "Incorrect amount sent");
+             uint amount = _amount * price;
+             token.transfer(msg.sender, _amount);
+             tokensSold += _amount;
+             balances[msg.sender] += amount;
+             beneficiary.transfer(amount);
+         }
+}
+<\contract\>

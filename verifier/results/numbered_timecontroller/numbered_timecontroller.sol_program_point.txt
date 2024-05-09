@@ -1,0 +1,101 @@
+RC20.sol";
+4 //import "./Libraries/Lib.sol";
+5 import "./Libraries/VeriSolContracts.sol";
+
+
+6 contract TimelockController is IERC20 {
+    
+7     struct Proposal {
+8           uint256 sTime; address newOwner;
+9           }
+10      address owner;
+11      IERC20 votingToken;
+12      uint256 lockedFunds;
+13      Proposal proposal;
+     
+
+14     function startExecute() external {
+15               require(proposal.sTime == 0,"on-going proposal");
+16               proposal = Proposal(block.timestamp, msg.sender);
+17           }
+
+18     function execute(uint amount) external {
+19               require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+20               votingToken.transferFrom(msg.sender, address(this), amount); 
+21               lockedFunds += amount;         
+22          }
+23     function endExecute() external {
+24               require(proposal.sTime != 0, "no proposal");
+25               require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+26               require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+27               owner = proposal.newOwner;
+28               delete proposal;
+29           }
+30     function rewardFunds() public view returns (uint256) {
+31         return lockedFunds;
+32     }
+33 }
+Given transaction context cross-function
+, what are the critical program points?
+14+ 
+
+16+ 
+
+24+ 
+
+31+ 
+
+32+ 
+
+
+
+
+What are the invariants?
+16+ 
+
+24+ 
+
+31+ 
+
+32+ 
+
+
+What are the non-deterministic choices in the contract?
+24+ 
+
+31+ 
+
+32+ 
+
+
+What are the safety properties?
+16+ 
+
+24+ 
+
+31+ 
+
+32+ 
+
+
+What are the liveness properties?
+16+ 
+
+24+ 
+
+31+ 
+
+32+ 
+
+
+What are the storage properties?
+16+ 
+
+24+ 
+
+31+ 
+
+32+ 
+
+
+What are the environment

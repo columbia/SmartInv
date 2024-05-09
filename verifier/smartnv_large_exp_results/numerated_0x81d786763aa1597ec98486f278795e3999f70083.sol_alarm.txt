@@ -1,0 +1,34 @@
+Contract:
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+
+     constructor(IERC20 _token, uint _price) {
+         token = _token;
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint amount) public {
+         uint cost = amount * price;
+         require(token.balanceOf(msg.sender) >= cost, "Not enough tokens to buy");
+         token.transferFrom(msg.sender, owner, cost);
+     }
+
+     function setPrice(uint newPrice) public {
+         require(msg.sender == owner, "Only owner can set the price");
+         price = newPrice;
+     }
+
+     function withdrawTokens() public {
+         require(msg.sender == owner, "Only owner can withdraw tokens");
+         token.transfer(owner, token.balanceOf(address(this)));
+     }
+}
+
+Output:
+- Incorrect visibility/ownership: The `setPrice` and `withdrawTokens` functions only have a simple check for the owner, which could potentially lead to privilege escalation if the owner address is compromised.
+- Price manipulation: The `buyTokens` function calculates the cost based on the amount and the price set by the owner, making it vulnerable to price manipulation if the owner sets the price incorrectly or maliciously.
+- Insufficient gas: If the `withdrawTokens` function is called by the owner with insufficient gas, the token transfer may fail, leading to potential issues with withdrawal functionality.

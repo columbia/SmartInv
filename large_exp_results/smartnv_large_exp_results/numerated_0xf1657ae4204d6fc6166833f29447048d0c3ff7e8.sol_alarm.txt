@@ -1,0 +1,45 @@
+<\contract_3\> 
+contract Crowdsale {
+     address public beneficiary;
+     uint public fundingGoal;
+     uint public amountRaised;
+     uint public deadline;
+     mapping(address => uint) public balanceOf;
+     bool public fundingGoalReached = false;
+     bool public crowdsaleClosed = false;
+     
+     event GoalReached(address recipient, uint totalAmountRaised);
+     event FundTransfer(address backer, uint amount, bool isContribution);
+     
+     function Crowdsale(
+         address _beneficiary,
+         uint _fundingGoal,
+         uint _durationInMinutes
+     ) {
+         beneficiary = _beneficiary;
+         fundingGoal = _fundingGoal * 1 ether;
+         deadline = now + _durationInMinutes * 1 minutes;
+     }
+     
+     function () payable {
+         require(!crowdsaleClosed, "Crowdsale is closed");
+         uint amount = msg.value;
+         balanceOf[msg.sender] += amount;
+         amountRaised += amount;
+         FundTransfer(msg.sender, amount, true);
+     }
+     
+     function checkGoalReached() {
+         if (amountRaised >= fundingGoal){
+             fundingGoalReached = true;
+             GoalReached(beneficiary, amountRaised);
+         }
+         crowdsaleClosed = true;
+     }
+     
+     function withdrawFunds() {
+         require(fundingGoalReached, "Funding goal not reached");
+         require(beneficiary == msg.sender, "Only beneficiary can withdraw funds");
+         beneficiary.transfer(amountRaised);
+     }
+}

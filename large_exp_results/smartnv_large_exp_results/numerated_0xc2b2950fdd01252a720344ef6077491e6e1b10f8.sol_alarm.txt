@@ -1,0 +1,19 @@
+Contract you are going to analyze:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint256) public voteCounts;
+    
+    function vote(bool inSupport) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        if (inSupport) {
+            voteCounts[msg.sender] += 1;
+        } else {
+            voteCounts[msg.sender] -= 1;
+        }
+        
+        hasVoted[msg.sender] = true;
+    }
+}
+Output: Incorrect visibility/ownership

@@ -1,0 +1,40 @@
+Contract:
+```solidity
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    uint public amount;
+    bool public payerApproved;
+    bool public recipientApproved;
+
+    constructor(address _payer, address _recipient, address _arbiter, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        arbiter = _arbiter;
+        amount = _amount;
+        payerApproved = false;
+        recipientApproved = false;
+    }
+
+    function approvePayer() public {
+        require(msg.sender == arbiter, "Only arbiter can approve payer");
+        require(!payerApproved, "Payer already approved");
+        payerApproved = true;
+    }
+
+    function approveRecipient() public {
+        require(msg.sender == arbiter, "Only arbiter can approve recipient");
+        require(!recipientApproved, "Recipient already approved");
+        recipientApproved = true;
+    }
+
+    function releaseAmount() public {
+        require(payerApproved && recipientApproved, "Need both parties approval");
+        payable(recipient).transfer(amount);
+    }
+}
+```
+
+Output:
+incorrect visibility/ownership

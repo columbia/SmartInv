@@ -1,0 +1,26 @@
+<\contract_to_analyze\> 
+contract SubscriptionService {
+        address public owner;
+        mapping(address => bool) public subscribers;
+        uint public subscriptionPrice;
+
+        constructor(uint _subscriptionPrice) {
+            owner = msg.sender;
+            subscriptionPrice = _subscriptionPrice;
+        }
+
+        function subscribe() public payable {
+            require(msg.value >= subscriptionPrice, "Insufficient payment");
+            subscribers[msg.sender] = true;
+        }
+
+        function unsubscribe() public {
+            subscribers[msg.sender] = false;
+        }
+
+        function withdrawFunds() public {
+            require(msg.sender == owner, "Only owner can withdraw funds");
+            payable(owner).transfer(address(this).balance);
+        }
+}
+<\contract_to_analyze\> 

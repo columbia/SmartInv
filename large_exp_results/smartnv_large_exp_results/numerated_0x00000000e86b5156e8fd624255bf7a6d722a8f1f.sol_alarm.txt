@@ -1,0 +1,18 @@
+contract Escrow {
+    address public buyer;
+    address public seller;
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        payable(buyer).transfer(address(this).balance);
+    }
+
+    function cancel() public {
+        require(msg.sender == buyer, "Only buyer can cancel");
+        payable(buyer).transfer(address(this).balance);
+    }
+}

@@ -1,0 +1,26 @@
+<\contract\> 
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    address public admin;
+
+    constructor(address _admin) {
+        admin = _admin;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        return totalVotes;
+    }
+}
+<\contract\>

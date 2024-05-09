@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public owner;
+    uint public price;
+    uint public tokenBalance;
+
+    constructor(uint _price, uint _tokenBalance) {
+        owner = msg.sender;
+        price = _price;
+        tokenBalance = _tokenBalance;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        require(tokenBalance >= amount, "Not enough tokens available");
+        
+        // Transfer tokens to buyer
+        tokenBalance -= amount;
+        // Send ETH to owner
+        payable(owner).transfer(msg.value);
+    }
+}
+<\contract_to_analyze\>

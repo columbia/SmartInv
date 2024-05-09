@@ -1,0 +1,4 @@
+The vulnerabilities in the contract are:
+1) Inconsistent state update: The execution in the `execute` function updates the `proposal.votedAmount` without a proper synchronization mechanism, leading to potential inconsistent state.
+2) Insufficient gas: The `endExecute` function may require too much gas if the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` is triggered, potentially leading to out-of-gas error.
+3) Incorrect visibility/ownership: The `votingToken` and `lockedFunds` are not specified with any visibility specifier (public, internal, private), which could lead to unexpected access control issues.

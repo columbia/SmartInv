@@ -1,0 +1,34 @@
+Contract:
+```solidity
+contract PaymentContract {
+    address public owner;
+    uint public totalBalance;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+```
+
+**Potential vulnerabilities:**
+- ID uniqueness violation
+- Integer overflow/underflow

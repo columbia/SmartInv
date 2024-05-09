@@ -1,0 +1,28 @@
+The contract provided for analysis: 
+
+contract TokenSwap {
+     address public token1;
+     address public token2;
+     uint public token1Reserve;
+     uint public token2Reserve;
+
+     function swap(uint amountIn, address fromToken, address toToken) external {
+          require(fromToken == token1 || fromToken == token2, "Invalid from token");
+          require(toToken == token1 || toToken == token2, "Invalid to token");
+
+          if (fromToken == token1) {
+               require(amountIn <= token1Reserve, "Not enough tokens in reserve");
+               // Swap logic
+          } else {
+               require(amountIn <= token2Reserve, "Not enough tokens in reserve");
+               // Swap logic
+          }
+     }
+}
+
+Output:
+1) Inconsistent state update: The contract may be vulnerable to inconsistent state updates where the token reserve values may not be properly updated after a swap operation, potentially leading to incorrect balances.
+
+2) Incorrect visibility/ownership: The contract may not have proper access control mechanisms to restrict unauthorized access to sensitive functions, potentially leading to unauthorized swaps.
+
+3) Business logic flaw: The contract may have flaws in its business logic, such as not handling edge cases or potential errors properly, which may lead to unexpected behavior during swaps.

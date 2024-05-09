@@ -1,0 +1,34 @@
+<\contract\>
+contract TokenSwap {
+    struct Swap {
+        address sender;
+        uint amount;
+        uint timestamp;
+        bool completed;
+    }
+
+    mapping(address => uint) public tokenBalance;
+    Swap[] public swaps;
+
+    function swapTokens(uint _amount) external {
+        require(tokenBalance[msg.sender] >= _amount, "Insufficient balance");
+        
+        tokenBalance[msg.sender] -= _amount;
+        tokenBalance[address(this)] += _amount;
+
+        swaps.push(Swap(msg.sender, _amount, block.timestamp, false));
+    }
+
+    function completeSwap(uint _index) external {
+        Swap storage swap = swaps[_index];
+        require(swap.sender == msg.sender, "Unauthorized");
+
+        require(!swap.completed, "Swap already completed");
+        
+        tokenBalance[address(this)] -= swap.amount;
+        tokenBalance[msg.sender] += swap.amount;
+
+        swap.completed = true;
+    }
+}
+<\contract\>

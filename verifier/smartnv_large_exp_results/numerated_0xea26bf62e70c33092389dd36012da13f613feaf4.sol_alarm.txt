@@ -1,0 +1,26 @@
+Contract to be analyzed:
+contract Auction {
+    address highestBidder;
+    uint highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "Cannot withdraw while being the highest bidder");
+    
+        uint amount = highestBid;
+        highestBid = 0;
+        msg.sender.transfer(amount);
+    }
+} 
+
+Output: 
+Inconsistent state update 
+Integer overflow/underflow

@@ -1,0 +1,25 @@
+<\contract\>
+pragma solidity ^0.8.0;
+
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+
+    constructor(IERC20 _token) {
+        admin = msg.sender;
+        token = _token;
+    }
+
+    function buyTokens(uint _amount) external {
+        uint price = _amount * 100; 
+        require(token.balanceOf(msg.sender) >= price, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), price);
+        token.transfer(msg.sender, _amount);
+    }
+
+    function setAdmin(address _newAdmin) external {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = _newAdmin;
+    }
+}
+<\contract\>

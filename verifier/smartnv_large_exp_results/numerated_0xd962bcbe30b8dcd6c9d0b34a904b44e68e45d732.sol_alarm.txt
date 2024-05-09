@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation: There is no mechanism in place to ensure that the proposal ID or user ID is unique, which could lead to conflicts or errors in tracking proposals or users.
+2) Inconsistent state update: The logic for updating the proposal state in the `execute` function is not atomic, as the `proposal.votedAmount` is updated before calling `votedProposal(proposal)`, which may lead to inconsistent state updates under certain conditions. 
+3) Incorrect visibility/ownership: It's not clear if the `votingToken` is properly owned or accessible only by authorized parties, which could lead to unauthorized access or manipulation of the voting token.

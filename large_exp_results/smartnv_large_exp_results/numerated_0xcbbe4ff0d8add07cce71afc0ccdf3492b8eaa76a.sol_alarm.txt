@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract MultiSigWallet {
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+    
+    struct Transaction {
+        address from;
+        address to;
+        uint amount;
+        bool executed;
+    }
+    
+    function submitTransaction(address _to, uint _amount) public {
+        transactions[transactionCount] = Transaction(msg.sender, _to, _amount, false);
+        transactionCount++;
+    }
+    
+    function executeTransaction(uint _transactionId) public {
+        require(transactions[_transactionId].executed == false, "Transaction already executed");
+        transactions[_transactionId].to.transfer(transactions[_transactionId].amount);
+        transactions[_transactionId].executed = true;
+    }
+}
+
+Output: 
+1) insufficient gas
+2) incorrect visibility/ownership

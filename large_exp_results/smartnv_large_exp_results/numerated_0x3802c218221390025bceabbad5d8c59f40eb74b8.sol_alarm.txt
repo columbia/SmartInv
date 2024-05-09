@@ -1,0 +1,29 @@
+Contract to be analyzed:
+
+contract VotingSystem {
+    address public owner;
+    mapping(uint => uint) public votes;
+
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function vote(uint proposalId) external {
+        require(votes[proposalId] == 0, "You have already voted for this proposal");
+        votes[proposalId] = 1;
+    }
+
+    function executeProposal(uint proposalId) external {
+        require(votes[proposalId] == 1, "Proposal has not received enough votes");
+        // Execute proposal
+    }
+
+    function changeOwner(address newOwner) external {
+        require(msg.sender == owner, "Only the owner can change the owner");
+        owner = newOwner;
+    }
+}
+Potential vulnerabilities in the contract:
+- privilege escalation (changeOwner function allows changing the owner without proper authorization)
+- inconsistent state update (vote function allows multiple votes on the same proposal)
+- atomicity violation (executeProposal function can be called multiple times for the same proposal before execution)

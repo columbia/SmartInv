@@ -1,0 +1,60 @@
+Contract:
+contract MultiSigWallet {
+    address private _owner;
+    mapping(address => bool) private _isOwner;
+    uint private _numConfirmationsRequired;
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+        uint numConfirmations;
+        mapping(address => bool) isConfirmed;
+    }
+
+    Transaction[] public transactions;
+
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Not owner");
+        _;
+    }
+
+    function addTransaction(address destination, uint value, bytes memory data) public onlyOwner {
+        transactions.push(Transaction({
+            destination: destination,
+            value: value,
+            data: data,
+            executed: false,
+            numConfirmations: 0
+        }));
+    }
+
+    function confirmTransaction(uint transactionId) public onlyOwner {
+        Transaction storage transaction = transactions[transactionId];
+        require(_isOwner[msg.sender], "Not owner");
+        require(!transaction.isConfirmed[msg.sender], "Already confirmed");
+        
+        transaction.isConfirmed[msg.sender] = true;
+        transaction.numConfirmations += 1;
+        
+        if (transaction.numConfirmations >= _numConfirmationsRequired) {
+            executeTransaction(transactionId);
+        }
+    }
+
+    function executeTransaction(uint transactionId) public onlyOwner {
+        Transaction storage transaction = transactions[transactionId];
+        require(transaction.executed == false, "Transaction already executed");
+
+        transaction.destination.call{value: transaction.value}(transaction.data);
+        transaction.executed = true;
+    }
+}
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The 'executeTransaction' function does not update the 'executed' variable before executing the transaction, which can lead to reentry attacks or unintended execution of the same transaction multiple times.
+2) Incorrect visibility: The 'transactions' array is public, allowing external parties to access and potentially manipulate transaction data.
+3) Privilege escalation: The 'confirmTransaction' function allows any address marked as an owner to confirm transactions, potentially leading to unauthorized transaction confirmations.
+4) Atomicity violation: There is no atomicity in the 'executeTransaction' function, as the 'executed' flag is updated after the transaction is executed, opening up potential vulnerabilities.
+5) ID uniqueness violation: There is no check for duplicate transaction IDs, which can lead to unexpected behavior or confusion in the transaction processing flow.
+6) Insufficient gas: The 'executeTransaction' function may fail to execute due to insufficient gas provided, resulting in a failed transaction execution.

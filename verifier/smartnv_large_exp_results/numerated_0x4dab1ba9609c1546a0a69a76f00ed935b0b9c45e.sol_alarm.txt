@@ -1,0 +1,43 @@
+Contract to analyze:
+
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public tokenBalances;
+    bool public saleOpen;
+
+    constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        saleOpen = true;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(saleOpen, "Sale is not open");
+        require(_numTokens > 0, "Number of tokens must be greater than 0");
+        require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent");
+
+        tokenBalances[msg.sender] += _numTokens;
+        totalTokens -= _numTokens;
+        
+        payable(owner).transfer(msg.value);
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only the owner can end the sale");
+        require(totalTokens == 0, "Not all tokens have been sold");
+
+        saleOpen = false;
+        // distribute remaining tokens back to owner
+        tokenBalances[owner] += totalTokens;
+    }
+}
+
+Output:
+- Inconsistent state update
+- Integer overflow/underflow
+- Incorrect visibility/ownership

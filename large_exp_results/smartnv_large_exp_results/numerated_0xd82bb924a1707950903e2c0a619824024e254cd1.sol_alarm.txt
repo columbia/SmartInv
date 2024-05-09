@@ -1,0 +1,22 @@
+<\contract_3\>
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+
+     constructor(IERC20 _token) {
+         owner = msg.sender;
+         token = _token;
+     }
+
+     function buyTokens(uint amount) public {
+         uint price = amount * 2;
+         token.transferFrom(msg.sender, address(this), amount);
+         token.transfer(msg.sender, price);
+     }
+}
+<\contract_3\> 
+
+ The potential vulnerabilities in <\contract_3\> are:
+ - Incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to the public. It would be more secure to keep it private and implement proper access control mechanisms.
+ - Integer overflow/underflow: The calculation of price as amount * 2 could potentially cause an integer overflow if the amount is very large, leading to unexpected behavior.
+ - Insufficient gas: If the buyTokens function requires a significant amount of gas to execute, there might be a risk of out-of-gas errors, especially if a user tries to buy a large amount of tokens.

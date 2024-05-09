@@ -1,0 +1,46 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+        require(to != msg.sender, "Self-delegation is not allowed");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+
+            require(to != msg.sender, "Found loop in delegation");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegate = voters[to];
+        if (delegate.voted) {
+            voters[delegate.vote].weight += sender.weight;
+        } else {
+            delegate.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+}
+
+Output:
+1) Business logic flaw: The delegate function does not update the voter's weight correctly when delegating to a delegate who has already voted, which can lead to inaccurate voting results.
+2) Inconsistent state update: In the delegate function, the state of voters[delegate.vote].weight might not be correctly updated when a delegate who has already voted receives additional weight from another voter.
+3) ID uniqueness violation: The delegate function does not prevent multiple voters from delegating their vote to the same delegate, potentially causing confusion in vote delegation.

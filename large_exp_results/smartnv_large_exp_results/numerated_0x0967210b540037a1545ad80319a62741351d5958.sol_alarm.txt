@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+- Inconsistent state update: The `calculatePrice` function in the `ExchangeTokens` contract updates the state variables using the `USDC.balanceOf(address(pair))` and `WETH.balanceOf(address(pair))` which might not accurately reflect the current state of the contract.
+
+- Arithmetic flaw: The calculation in the `liquidate` function where `getPrice() * cAmount * 80 / 100 < dAmount` might lead to potential arithmetic flaws if the values of `getPrice()`, `cAmount`, and `dAmount` are not properly sanitized.
+
+- Incorrect visibility/ownership: The state variables `debt` and `collateral` in the `ExchangeTokens` contract are public, which might expose sensitive information to unauthorized parties.
+
+- Insufficient gas: The `liquidate` function includes token transfers using `transferFrom` without specifying sufficient gas limits which can potentially lead to out-of-gas errors during execution.

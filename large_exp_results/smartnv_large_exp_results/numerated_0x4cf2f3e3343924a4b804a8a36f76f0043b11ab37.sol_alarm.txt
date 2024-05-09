@@ -1,0 +1,25 @@
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function purchase(address seller, uint price) public {
+        require(balances[msg.sender] >= price, "Insufficient balance to make the purchase");
+        balances[seller] += price;
+        balances[msg.sender] -= price;
+    }
+}

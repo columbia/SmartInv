@@ -1,0 +1,35 @@
+The contract provided for analysis is:
+
+contract Marketplace {
+    address public owner;
+    mapping(uint => Item) public items;
+    
+    struct Item {
+        address seller;
+        uint price;
+        bool isSold;
+    }
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function createItem(uint _id, uint _price) public {
+        require(msg.sender == owner, "Only owner can add item");
+        items[_id] = Item(msg.sender, _price, false);
+    }
+    
+    function buyItem(uint _id) public payable {
+        require(items[_id].seller != address(0), "Item does not exist");
+        require(!items[_id].isSold, "Item already sold");
+        require(msg.value == items[_id].price, "Incorrect payment amount");
+        
+        items[_id].seller.transfer(msg.value);
+        items[_id].isSold = true;
+    }
+}
+
+Output:
+potential vulnerabilities:
+- reentrancy
+- incorrect visibility/ownership

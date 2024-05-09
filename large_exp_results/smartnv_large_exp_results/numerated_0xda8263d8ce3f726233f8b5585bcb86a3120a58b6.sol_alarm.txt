@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract Lottery {
+     address public owner;
+     uint public secretNumber;
+     mapping(address => uint) public userTickets;
+
+     constructor() {
+          owner = msg.sender;
+          secretNumber = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 1000;
+     }
+
+     function buyTicket(uint number) public payable {
+          require(msg.value == 1 ether, "Ticket price must be 1 ether");
+          require(number < 1000, "Number must be less than 1000");
+          userTickets[msg.sender] = number;
+     }
+
+     function drawWinner() public {
+          require(msg.sender == owner, "Only the owner can draw the winner");
+          uint winnerNumber = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 1000;
+          address winner;
+          uint winningAmount = address(this).balance;
+          if (winnerNumber == secretNumber) {
+              winner = msg.sender;
+              winner.transfer(winningAmount);
+          }
+     }
+}
+
+Output:
+- The contract does not contain vulnerabilities.

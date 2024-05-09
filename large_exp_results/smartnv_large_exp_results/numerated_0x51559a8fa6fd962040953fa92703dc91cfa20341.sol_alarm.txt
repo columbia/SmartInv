@@ -1,0 +1,49 @@
+The contract to analyze:
+
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproved;
+     bool public sellerApproved;
+     bool public arbiterApproved;
+     uint public price;
+
+     constructor(address _seller, address _arbiter, uint _price){
+         seller = _seller;
+         arbiter = _arbiter;
+         price = _price;
+     }
+
+     function deposit() public payable {
+         require(msg.sender == buyer, "Only the buyer can deposit funds");
+     }
+
+     function releaseToSeller() public {
+         require(buyerApproved && sellerApproved, "Both buyer and seller need to approve");
+         seller.transfer(price);
+     }
+
+     function refundToBuyer() public {
+         require(arbiterApproved, "Arbiter must approve for refund");
+         buyer.transfer(price);
+     }
+
+     function approveByBuyer() public {
+         require(msg.sender == buyer, "Only the buyer can approve");
+         buyerApproved = true;
+     }
+
+     function approveBySeller() public {
+         require(msg.sender == seller, "Only the seller can approve");
+         sellerApproved = true;
+     }
+
+     function approveByArbiter() public {
+         require(msg.sender == arbiter, "Only the arbiter can approve");
+         arbiterApproved = true;
+     }
+}
+
+Output: 
+1) The contract does not contain any evident vulnerabilities.

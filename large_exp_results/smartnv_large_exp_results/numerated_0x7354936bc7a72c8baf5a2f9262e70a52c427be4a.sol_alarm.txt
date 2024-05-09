@@ -1,0 +1,32 @@
+<\example_3\> 
+contract TimelockController {
+    IERC20 public token;
+    address public admin;
+    mapping(address => uint) public balances;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        admin = msg.sender;
+    }
+
+    function deposit(uint256 amount) external {
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw(uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] -= amount;
+    }
+
+    function changeAdmin(address newAdmin) external {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+<\example_3\> 
+
+  1) privilege escalation
+  2) inconsistent state update
+  3) incorrect visibility/ownership

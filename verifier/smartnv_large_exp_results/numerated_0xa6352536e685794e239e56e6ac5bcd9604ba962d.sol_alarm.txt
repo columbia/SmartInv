@@ -1,0 +1,12 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function startExecute() updates the state of the contract by modifying the proposal struct and startingBalanceList mapping without properly ensuring all necessary conditions are met beforehand.
+
+2) Incorrect visibility/ownership: The contract TimelockController is supposed to implement the interface IERC20 but it doesn't provide any of the required external functions, making it unclear if the contract adheres to the interface correctly. This could lead to unexpected behavior or errors when interacting with other contracts that rely on the IERC20 interface.
+
+3) Insufficient gas: The function endExecute() calculates a condition that checks if the double of the balance held in the contract is greater than the total supply, which could potentially consume a large amount of gas and cause the transaction to revert if the condition isn't met.
+
+Therefore, the potential vulnerabilities in the contract are: 
+1) inconsistent state update 
+2) incorrect visibility/ownership 
+3) insufficient gas

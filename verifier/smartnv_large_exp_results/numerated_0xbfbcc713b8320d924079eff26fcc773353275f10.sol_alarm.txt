@@ -1,0 +1,26 @@
+<\contract\>
+contract AccessControl {
+    address public owner;
+    mapping(address => bool) public admin;
+    
+    constructor() {
+        owner = msg.sender;
+        admin[msg.sender] = true;
+    }
+
+    function addAdmin(address _admin) public {
+        require(msg.sender == owner, "Only owner can add admin");
+        admin[_admin] = true;
+    }
+
+    function removeAdmin(address _admin) public {
+        require(msg.sender == owner, "Only owner can remove admin");
+        admin[_admin] = false;
+    }
+
+    function transferOwnership(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = _newOwner;
+    }
+}
+<\contract\>

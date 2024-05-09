@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `endExecute` function updates the `lockedFunds` variable based on the balance of the `votingToken`, but it does not consider other possible changes to the token balance that may occur outside of this function. This could lead to inconsistent state updates.
+
+2) Atomicity violation: The `execute` function updates the `proposal.votedAmount` without ensuring atomicity, which could potentially result in incorrect values if multiple transactions are processed simultaneously.
+
+3) Cross bridge inconsistency: There is no clear indication of how the `votingToken` is connected to the `TimelockController` contract, which could lead to inconsistencies or unauthorized access.
+
+4) ID uniqueness violation: The `proposal` struct does not include a unique identifier for each proposal, which could lead to issues with tracking and managing multiple proposals simultaneously.

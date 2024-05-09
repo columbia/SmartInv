@@ -1,0 +1,17 @@
+Contract you are going to analyze:
+
+contract TokenSwap {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+    
+     function swapTokens(uint amountA, uint amountB) public {
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transferFrom(msg.sender, address(this), amountB);
+         tokenA.transfer(msg.sender, amountB);
+         tokenB.transfer(msg.sender, amountA);
+     }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The contract allows for the transfer of tokens without properly updating the state variables, which could lead to inconsistencies in the token balances.
+2) Incorrect visibility/ownership: The contract does not specify the visibility of the state variables and functions, which could pose security risks related to unauthorized access.

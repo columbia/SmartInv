@@ -1,0 +1,23 @@
+<\contract\>
+contract PaymentContract {
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    function initialize(address _seller, uint _price) external {
+        seller = _seller;
+        price = _price;
+        buyer = msg.sender;
+    }
+
+    function makePayment() external payable {
+        require(msg.value == price, "Incorrect payment amount");
+        seller.transfer(msg.value);
+    }
+}
+<\contract\>
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: the `initialize` function can be called by any address, allowing potential unauthorized parties to set the seller and price.
+- Insufficient gas: when transferring the payment to the seller, if the seller's contract requires a significant amount of gas to execute, the transfer might fail due to running out of gas.
+- Ether leakage: if the seller address is a contract address and does not have a withdrawal function, the transferred ether could be locked in the contract forever.

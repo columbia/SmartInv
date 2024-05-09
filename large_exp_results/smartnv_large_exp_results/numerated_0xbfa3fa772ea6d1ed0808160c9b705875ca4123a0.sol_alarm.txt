@@ -1,0 +1,34 @@
+<\contract_to_analyze\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public isPaid;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        isPaid = false;
+    }
+
+    function pay() public payable {
+        require(msg.sender == buyer, "Only the buyer can pay");
+        require(msg.value == price, "Incorrect payment amount");
+        isPaid = true;
+    }
+
+    function releasePayment() public {
+        require(msg.sender == seller, "Only the seller can release payment");
+        require(isPaid, "Payment has not been made yet");
+        payable(seller).transfer(price);
+    }
+
+    function refundPayment() public {
+        require(msg.sender == buyer, "Only the buyer can request a refund");
+        require(isPaid, "Payment has not been made yet");
+        isPaid = false;
+        payable(buyer).transfer(price);
+    }
+}
+<\contract_to_analyze\>

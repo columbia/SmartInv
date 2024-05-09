@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) business logic flaw: The function `endExecute()` checks if the balance of the contract is greater than half of the total supply of the voting token to determine if the execution has failed. This logic might not accurately reflect the success or failure of the execution and could be manipulated.
+
+2) incorrect visibility/ownership: The `votingToken` variable is not specified with any visibility modifier, making it publicly accessible. This could potentially lead to unauthorized access and manipulation of the voting token. 
+
+3) inconsistent state update: In the `startExecute()` function, the `startingBalanceList` is updated without initializing it first. This could lead to inconsistent state updates and unexpected behavior. 
+
+4) privilege escalation: The `proposal` struct is modified in the `startExecute()` function without proper access control, potentially allowing for privilege escalation attacks. 
+
+5) insufficient gas: The execution of certain operations like transfers within the contract may require more gas than the default gas limit, potentially leading to out-of-gas errors.

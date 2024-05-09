@@ -1,0 +1,29 @@
+<\contract_to_analyze\> 
+contract EscrowContract {
+         address public seller;
+         address public buyer;
+         bool public isComplete;
+         uint public price;
+
+         function initiate(address _seller, address _buyer, uint _price) public {
+             require(seller == address(0) && buyer == address(0), "Escrow already initiated");
+             seller = _seller;
+             buyer = _buyer;
+             price = _price;
+             isComplete = false;
+         }
+
+         function confirmPayment() public payable {
+             require(msg.sender == buyer, "Only buyer can confirm payment");
+             require(msg.value == price, "Incorrect payment amount");
+             seller.transfer(msg.value);
+             isComplete = true;
+         }
+
+         function refundPayment() public {
+             require(msg.sender == seller, "Only seller can refund payment");
+             require(!isComplete, "Payment already completed");
+             buyer.transfer(price);
+             isComplete = true;
+         }
+     }

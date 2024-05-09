@@ -1,0 +1,26 @@
+<\contract\> 
+contract VotingSystem {
+         address public owner;
+         mapping(address => uint) public votes;
+         address[] public voters;
+
+         function vote(uint _vote) public {
+             require(_vote == 0 || _vote == 1, "Invalid vote");
+             votes[msg.sender] = _vote;
+             voters.push(msg.sender);
+         }
+
+         function tallyVotes() public view returns(uint, uint) {
+             uint countYes = 0;
+             uint countNo = 0;
+             for (uint i = 0; i < voters.length; i++) {
+                 if (votes[voters[i]] == 1) {
+                     countYes++;
+                 } else {
+                     countNo++;
+                 }
+             }
+             return (countYes, countNo);
+         }
+}
+<\contract\>

@@ -1,0 +1,22 @@
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public productPrices;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addProduct(address product, uint price) public {
+        require(msg.sender == owner, "Only owner can add products");
+        productPrices[product] = price;
+    }
+
+    function buyProduct(address product) public payable {
+        require(productPrices[product] > 0, "Product not found");
+        require(msg.value >= productPrices[product], "Insufficient funds");
+
+        address _this = address(this);
+        payable(owner).transfer(msg.value);
+        // Send product to buyer
+    }
+}

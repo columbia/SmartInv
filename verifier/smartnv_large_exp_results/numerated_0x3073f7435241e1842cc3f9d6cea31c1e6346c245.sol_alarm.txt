@@ -1,0 +1,25 @@
+<\contract\>
+pragma solidity ^0.8.0;
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint256 public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function resetVotes() public {
+        totalVotes = 0;
+        for (uint i = 0; i < totalVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Inconsistent state update: The loop in the resetVotes function is mistakenly setting the hasVoted mapping to false for msg.sender instead of iterating through all addresses.
+2) Incorrect visibility/ownership: The totalVotes variable is publicly readable, which may not be desired depending on the use case of the contract.

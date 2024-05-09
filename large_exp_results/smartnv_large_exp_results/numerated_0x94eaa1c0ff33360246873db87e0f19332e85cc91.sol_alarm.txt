@@ -1,0 +1,28 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public price;
+     bool public isPaid;
+     bool public isDelivered;
+     
+     function createEscrow(address _seller, uint _price) external {
+         buyer = msg.sender;
+         seller = _seller;
+         price = _price;
+         isPaid = false;
+         isDelivered = false;
+     }
+     
+     function pay() external payable {
+         require(msg.value == price, "Incorrect payment amount");
+         isPaid = true;
+     }
+     
+     function deliver() external {
+         require(msg.sender == seller, "Only seller can deliver the item");
+         require(isPaid == true, "Payment has not been made yet");
+         isDelivered = true;
+     }
+}
+<\contract\>

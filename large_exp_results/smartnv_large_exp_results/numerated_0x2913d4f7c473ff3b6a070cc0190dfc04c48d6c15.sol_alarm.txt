@@ -1,0 +1,30 @@
+<\contract\> 
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balance;
+
+    constructor(address _token, uint _price) public {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(ERC20(token).transferFrom(msg.sender, address(this), totalCost));
+
+        balance[msg.sender] += _amount;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner);
+        ERC20(token).transfer(owner, balance[owner]);
+        balance[owner] = 0;
+    }
+}
+<\contract\> 
+
+Output:
+1) incorrect visibility/ownership

@@ -1,0 +1,35 @@
+The contract in question is:
+
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyProduct(address seller, uint price) public payable {
+        require(msg.value >= price, "Insufficient funds sent");
+
+        balances[seller] += price;
+        balances[msg.sender] -= price;
+
+        (bool success, ) = seller.call{value : price}("");
+        require(success, "Transfer failed");
+
+    }
+
+    function withdraw() public {
+        uint amount = balances[msg.sender];
+        require(amount > 0, "Insufficient balance");
+
+        balances[msg.sender] = 0;
+        (bool success, ) = msg.sender.call{value : amount}("");
+        require(success, "Withdraw failed");
+    }
+
+}
+
+The potential vulnerabilities in the Marketplace contract are:
+1) Reentrancy
+2) Inconsistent state update

@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The "votedAmount" variable in the Proposal struct is updated in the execute function without a mechanism to ensure atomicity, which may lead to inconsistent states.
+2) Insufficient gas: If the contract runs out of gas during the execution of functions that involve transferring tokens, it may not complete the desired operations, leading to incomplete transactions.
+3) Incorrect visibility/ownership: The visibility of the "owner" variable is set to internal, which may not be intended and could lead to ownership vulnerabilities.
+4) ID uniqueness violation: There are no mechanisms in place to ensure the uniqueness of proposal addresses stored in the startingBalanceList mapping, which may lead to potential conflicts or issues.
+5) Arithmetic flaw: The calculation in the liquidate function involving getPrice() * cAmount * 80 / 100 might be subject to arithmetic flaws if not handled properly.

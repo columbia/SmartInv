@@ -1,0 +1,19 @@
+<\analyzed_contract\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    
+    function addPayee(address _payee, uint256 _shares) public {
+        payees.push(_payee);
+        shares.push(_shares);
+    }
+    
+    function release() public {
+        for (uint i = 0; i < payees.length; i++) {
+            address payee = payees[i];
+            uint amount = shares[i];
+            payee.transfer(amount);
+        }
+    }
+}
+<\analyzed_contract\>

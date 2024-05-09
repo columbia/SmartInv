@@ -1,0 +1,45 @@
+The contract provided for analysis is:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Based on the analysis of this contract, the potential vulnerabilities identified are:
+1) Incorrect visibility/ownership in the "proposal" variable. It is not specified which access control modifier should be used for this variable, which could lead to unauthorized access or manipulation.
+2) Inconsistent state update in the "startExecute" function where the startingBalanceList is updated based on proposal addr without clear initialization or validation of the proposal.addr variable.
+3) Insufficient gas in the "endExecute" function where the execution may fail due to running out of gas during the required token operations.
+
+Therefore, the identified vulnerabilities in the provided contract are:
+- Incorrect visibility/ownership
+- Inconsistent state update
+- Insufficient gas

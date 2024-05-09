@@ -1,0 +1,28 @@
+<\analyzed_contract\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    
+    constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint tokensToBuy) public payable {
+        require(msg.value == tokensToBuy * tokenPrice, "Incorrect amount sent");
+        require(tokensToBuy <= totalTokens, "Not enough tokens available");
+        
+        token.transfer(msg.sender, tokensToBuy);
+        totalTokens -= tokensToBuy;
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the TokenSale contract are:
+1) integer overflow/underflow: There is a risk of underflow in the totalTokens subtraction operation if an excessive amount of tokens is bought.
+2) inconsistent state update: The totalTokens variable is directly modified without proper synchronization mechanisms, which could lead to potential issues with the contract's state.
+3) incorrect visibility/ownership: The owner variable is public, which could potentially expose sensitive information and ownership control to external parties.

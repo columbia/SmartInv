@@ -1,0 +1,25 @@
+The contract to analyze for potential vulnerabilities:
+
+contract Marketplace {
+     struct Product {
+           uint productId;
+           string name;
+           uint price;
+           address owner;
+           bool isSoldOut;
+           }
+     mapping(uint => Product) public products;
+     uint public productCount;
+
+     function createProduct(string memory _name, uint _price) public {
+            productCount++;
+            products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+         }
+     function buyProduct(uint _productId) public payable {
+            Product storage product = products[_productId];
+            require(msg.value >= product.price, "Insufficient funds");
+            require(product.owner != msg.sender, "You cannot buy your own product");
+            product.owner.transfer(product.price);
+            product.isSoldOut = true;
+        }
+   }

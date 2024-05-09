@@ -1,0 +1,27 @@
+The contract for analysis:
+```solidity
+contract PaymentContract {
+     uint public totalPayment;
+     mapping(uint => uint) public payments;
+     address private owner;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function makePayment(uint paymentId, uint amount) public {
+         require(msg.sender == owner, "Only owner can make payments");
+         payments[paymentId] = amount;
+         totalPayment += amount;
+     }
+
+     function withdrawAll() public {
+         require(msg.sender == owner, "Only owner can withdraw");
+         payable(owner).transfer(address(this).balance);
+         totalPayment = 0;
+     }
+ }
+```
+
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership

@@ -1,0 +1,30 @@
+<\analyzed_contract\> 
+contract Subscription {
+    mapping(address => bool) public subscribers;
+    uint public subscriptionFee;
+    address public admin;
+
+    constructor(uint _fee) {
+        subscriptionFee = _fee;
+        admin = msg.sender;
+    }
+
+    function subscribe() public payable {
+        require(msg.value == subscriptionFee, "Incorrect subscription fee");
+        subscribers[msg.sender] = true;
+    }
+
+    function unsubscribe() public {
+        require(subscribers[msg.sender], "Not subscribed");
+        subscribers[msg.sender] = false;
+    }
+
+    function changeFee(uint _newFee) public {
+        require(msg.sender == admin, "Only admin can change fee");
+        subscriptionFee = _newFee;
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+- healthy

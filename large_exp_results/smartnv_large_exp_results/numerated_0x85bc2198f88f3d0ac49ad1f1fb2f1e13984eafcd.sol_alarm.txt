@@ -1,0 +1,40 @@
+The contract to be analyzed:
+
+contract PredictionMarket is IERC20 {
+    
+    struct Prediction {
+        uint256 amount;
+        address predictor;
+        bool outcome;
+    }
+    
+    mapping(address => Prediction) public predictions;
+    uint public totalPredictions;
+    
+    function makePrediction(uint256 amount, bool predictionOutcome) external {
+        require(amount > 0, "Prediction amount must be greater than 0");
+        
+        if (predictions[msg.sender].amount == 0) {
+            totalPredictions++;
+        }
+        
+        predictions[msg.sender] = Prediction(amount, msg.sender, predictionOutcome);
+        transferFrom(msg.sender, address(this), amount);
+    }
+    
+    function resolvePrediction(address user) external {
+        require(predictions[user].amount > 0, "User does not have a prediction");
+        
+        if (predictions[user].outcome) {
+            transfer(predictions[user].predictor, predictions[user].amount * 2);
+        } else {
+            transfer(address(0), predictions[user].amount);
+        }
+        
+        delete predictions[user];
+        totalPredictions--;
+    }
+}
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation
+2) Incorrect visibility/ownership

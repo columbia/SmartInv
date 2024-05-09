@@ -1,0 +1,26 @@
+<\contract\> 
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function getOwner() public view returns(address) {
+        return owner;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+- ID uniqueness violation: There is no check to ensure that the same address cannot vote multiple times.
+- Incorrect visibility/ownership: The function getOwner is publicly visible, which may expose sensitive information about the owner.

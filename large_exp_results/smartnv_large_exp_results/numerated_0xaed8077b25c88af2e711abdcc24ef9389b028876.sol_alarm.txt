@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) inconsistent state update: The contract has multiple state variables that are being updated in different functions without proper synchronization, which may lead to inconsistent or unexpected behavior.
+
+2) cross bridge inconsistency: The contract interacts with external contracts (such as `votingToken` and `pair`) without ensuring that the data passed between them is consistent, potentially leading to issues or vulnerabilities.
+
+3) incorrect visibility/ownership: The contract uses `internal` visibility for certain variables like `owner`, which may not be the intended visibility level and could lead to vulnerabilities related to data access or manipulation. 
+
+4) insufficient gas: The `endExecute` function may consume a large amount of gas due to the calculation `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, potentially causing out-of-gas errors or failed transactions.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, cross bridge inconsistency, incorrect visibility/ownership, and insufficient gas.

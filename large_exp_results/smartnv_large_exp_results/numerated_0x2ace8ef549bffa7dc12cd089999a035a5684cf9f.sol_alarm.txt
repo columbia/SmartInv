@@ -1,0 +1,44 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public admin;
+    address public winner;
+    
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+    
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You have already voted");
+        require(to != msg.sender, "Self-delegation is not allowed");
+        
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+    }
+    
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "You have no voting weight");
+        require(!sender.voted, "You have already voted");
+        
+        sender.voted = true;
+        sender.vote = option;
+        
+        if(option == 1) {
+            winner = msg.sender;
+        }
+    }
+    
+    function countVotes() public onlyAdmin {
+        // Logic to count the votes and declare the winner
+    }
+}
+<\contract\>

@@ -1,0 +1,27 @@
+<\contract\> 
+contract PaymentGateway {
+    address public admin;
+    mapping(address => uint) public payments;
+
+    constructor() public {
+        admin = msg.sender;
+    }
+
+    function makePayment(address recipient, uint amount) public {
+        require(msg.sender == admin, "only admin can make payments");
+        payments[recipient] += amount;
+    }
+
+    function withdrawPayment(address recipient) public {
+        require(msg.sender == admin, "only admin can withdraw payments");
+        uint amount = payments[recipient];
+        require(amount > 0, "no pending payments for recipient");
+        payments[recipient] = 0;
+        payable(recipient).transfer(amount);
+    }
+}
+<\contract\> 
+
+Output:
+- insufficient gas
+- incorrect visibility/ownership

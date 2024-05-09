@@ -1,0 +1,24 @@
+<\contract\>
+contract TokenSwap {
+    IERC20 public token1;
+    IERC20 public token2;
+    address public owner;
+
+    constructor(address _token1, address _token2) {
+        token1 = IERC20(_token1);
+        token2 = IERC20(_token2);
+        owner = msg.sender;
+    }
+
+    function swap(uint amount) public {
+        require(token1.balanceOf(msg.sender) >= amount, "Not enough balance for token1");
+        token1.transferFrom(msg.sender, address(this), amount);
+        token2.transfer(msg.sender, amount);
+    }
+
+    function setOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = _newOwner;
+    }
+}
+<\contract\>

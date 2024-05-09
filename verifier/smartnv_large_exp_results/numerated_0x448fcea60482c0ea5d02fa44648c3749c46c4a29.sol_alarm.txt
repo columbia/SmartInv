@@ -1,0 +1,24 @@
+<\contract\> 
+contract Escrow {
+         address public buyer;
+         address public seller; 
+        
+         constructor(address _buyer, address _seller) {
+             buyer = _buyer;
+             seller = _seller;
+         }
+         function releaseFunds() public {
+             require(msg.sender == seller, "only seller can release funds");
+             // release funds to seller
+         }
+         function refundFunds() public {
+             require(msg.sender == buyer, "only buyer can refund funds");
+             // refund funds to buyer
+         }
+  }
+<\contract\> 
+
+The potential vulnerabilities in the Escrow contract are:
+1) Incorrect visibility: The constructor should be marked as public to allow correct initialization of the contract.
+2) Privilege escalation: There is a risk of privilege escalation if the 'releaseFunds' and 'refundFunds' functions are called by unintended parties.
+3) Inconsistent state update: There is no logic implemented to prevent multiple calls to the 'releaseFunds' or 'refundFunds' functions, leading to inconsistent state updates.

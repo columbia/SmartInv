@@ -1,0 +1,57 @@
+Contract: 
+
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public chairperson;
+    uint public winningProposal;
+    
+    function giveRightToVote(address toVoter) public {
+        require(msg.sender == chairperson, "Only chairperson can give right to vote.");
+        require(!voters[toVoter].voted, "The voter already voted.");
+        require(voters[toVoter].weight == 0, "The voter already has voting rights.");
+        voters[toVoter].weight = 1;
+    }
+    
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Circular delegation is not allowed.");
+        }
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = to;
+
+        if (voters[to].voted) {
+            voters[voters[to].vote].weight += voters[msg.sender].weight;
+        } else {
+            voters[to].weight += voters[msg.sender].weight;
+        }
+    }
+    
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Only voters with voting rights can vote.");
+        require(!sender.voted, "Already voted.");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+        
+        if (voters[proposal].voted) {
+            winningProposal = proposal;
+        }
+    }
+} 
+
+Output: 
+- incorrect visibility/ownership
+- inconsistent state update

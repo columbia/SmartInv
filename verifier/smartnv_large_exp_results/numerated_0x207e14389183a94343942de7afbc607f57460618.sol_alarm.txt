@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `startExecute` updates the `proposal` struct without checking if `proposal.sTime` is already set, potentially leading to inconsistent state updates.
+
+2) Insufficient gas: The function `endExecute` may fail to execute if the gas limit is too low, as it checks if `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` which may consume a considerable amount of gas if the token supply is large.
+
+3) Incorrect visibility/ownership: The visibility of the `lockedFunds` variable is not specified, which could lead to potential accessibility issues. Additionally, there is no explicit ownership control defined for the contract.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, insufficient gas, and incorrect visibility/ownership.

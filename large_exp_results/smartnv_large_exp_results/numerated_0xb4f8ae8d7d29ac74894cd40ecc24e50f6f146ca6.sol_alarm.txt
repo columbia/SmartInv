@@ -1,0 +1,25 @@
+The contract to analyze:
+
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == owner, "Not authorized");
+        totalVotes = 0;
+        for (uint i=0; i<totalVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+    }
+}
+
+Potential vulnerabilities in the contract:
+7) ID uniqueness violation
+8) reentrancy
+14) incorrect visibility/ownership

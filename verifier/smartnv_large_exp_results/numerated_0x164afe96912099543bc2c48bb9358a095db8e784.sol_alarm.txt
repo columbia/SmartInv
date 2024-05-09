@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `startExecute` updates the `proposal` struct without checking if a proposal is already ongoing. This could lead to inconsistent state if multiple proposals are initiated without proper handling.
+
+2) Business logic flaw: The function `endExecute` calculates the locked funds based on the condition `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which may not accurately reflect the intended logic of the contract.
+
+3) ID uniqueness violation: There doesn't seem to be any mechanism in place to ensure uniqueness of proposals or addresses stored in the contract, which could lead to conflicts or unexpected behavior.
+
+4) Incorrect visibility/ownership: The `lockedFunds` variable is accessed externally without any access control mechanism in place, potentially exposing sensitive information to unauthorized parties.

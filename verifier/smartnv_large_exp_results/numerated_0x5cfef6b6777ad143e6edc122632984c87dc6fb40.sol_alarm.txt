@@ -1,0 +1,43 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+
+    enum State {Started, Locked, Released, Inactive}
+    State public state;
+
+    constructor(address _seller, address _buyer, address _arbiter) {
+        seller = _seller;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        state = State.Started;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(state == State.Started, "Invalid state for deposit");
+
+        // Seller receives the deposit
+        // ... 
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Only seller or arbiter can release funds");
+        require(state == State.Locked, "Invalid state for release");
+
+        // Buyer receives the funds
+        // ...
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can refund funds");
+        require(state == State.Locked, "Invalid state for refund");
+
+        // Seller receives the refund
+        // ...
+        state = State.Started;
+    }
+}

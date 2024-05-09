@@ -1,0 +1,26 @@
+The contract provided for analysis is:
+
+```
+contract Vesting {
+    uint public totalVested;
+    mapping(address => uint) public vestedAmounts;
+
+    function vest(address beneficiary, uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        totalVested += amount;
+        vestedAmounts[beneficiary] += amount;
+    }
+
+    function revokeVesting(address beneficiary) external {
+        require(vestedAmounts[beneficiary] > 0, "No vested amount to revoke");
+        totalVested -= vestedAmounts[beneficiary];
+        vestedAmounts[beneficiary] = 0;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow: The `totalVested` variable can potentially overflow if the values continue to increase without limit, leading to unexpected behavior.
+2) Inconsistent state update: The `totalVested` should be updated atomically with `vestedAmounts` to avoid inconsistencies in the contract state.
+3) Insufficient gas: If the contract operations consume a large amount of gas, it may lead to out-of-gas exceptions and incomplete execution of functions.
+4) Incorrect visibility/ownership: The visibility of the `totalVested` variable is public, which may expose sensitive information to unauthorized parties. Consider using internal or private visibility instead.

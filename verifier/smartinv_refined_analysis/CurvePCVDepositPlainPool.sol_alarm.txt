@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+```solidity
+contract CrossBridge {
+    mapping(address => uint) public bridgeBalances;
+
+    function deposit(address token, uint amount) external {
+        // Deposit funds into the bridge
+        bridgeBalances[msg.sender] += amount;
+        // Transfer tokens from the user to the contract
+        require(Token(token).transferFrom(msg.sender, address(this), amount));
+    }
+
+    function withdraw(address token, uint amount) external {
+        // Ensure user has enough funds in the bridge
+        require(bridgeBalances[msg.sender] >= amount);
+        // Withdraw funds from the bridge
+        bridgeBalances[msg.sender] -= amount;
+        // Transfer tokens from the contract to the user
+        require(Token(token).transfer(msg.sender, amount));
+    }
+}
+
+interface Token {
+    function transferFrom(address from, address to, uint value) external returns (bool);
+    function transfer(address to, uint value) external returns (bool);
+}
+```
+
+Output: 
+1) Inconsistent state update
+2) Atomicity violation
+3) Cross bridge inconsistency

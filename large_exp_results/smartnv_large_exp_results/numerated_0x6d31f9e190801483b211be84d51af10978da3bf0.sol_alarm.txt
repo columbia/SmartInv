@@ -1,0 +1,39 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    mapping(address => Voter) public voters;
+    address public admin;
+    uint public totalVotes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint option) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+
+        totalVotes += voters[msg.sender].weight;
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership (admin variable should be private)
+- ID uniqueness violation (voters mapping could potentially have duplicate keys)
+- inconsistent state update (totalVotes is incremented without considering voter's weight)
+- business logic flaw (weight of voters is not considered in totalVotes calculation)

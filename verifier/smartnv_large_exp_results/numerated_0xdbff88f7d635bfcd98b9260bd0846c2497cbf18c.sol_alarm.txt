@@ -1,0 +1,29 @@
+<\contract\> 
+contract Marketplace {
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address owner;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public productCounter;
+
+    function addProduct(string memory _name, uint _price) public {
+        productCounter++;
+        products[productCounter] = Product(productCounter, _name, _price, msg.sender);
+    }
+
+    function buyProduct(uint _id) public payable {
+        require(products[_id].id != 0, "Product does not exist");
+        require(msg.value >= products[_id].price, "Insufficient funds");
+
+        address payable productOwner = payable(products[_id].owner);
+        productOwner.transfer(products[_id].price);
+        payable(msg.sender).transfer(msg.value - products[_id].price);
+
+        delete products[_id];
+    }
+}
+<\contract\>

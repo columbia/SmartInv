@@ -1,0 +1,22 @@
+The contract provided for analysis:
+
+```solidity
+contract CrossBridge {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+
+     function swapTokens(uint amount) external {
+          require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance of tokenA");
+          tokenA.transferFrom(msg.sender, address(this), amount);
+          tokenB.transfer(msg.sender, amount);
+     }
+
+     function getExchangeRate() external view returns (uint) {
+          return tokenB.balanceOf(address(this)) / tokenA.balanceOf(address(this));
+     }
+}
+```
+
+Potential vulnerabilities in the provided contract:
+1) Inconsistent state update: The `swapTokens` function transfers `amount` of `tokenA` to the contract before transferring `amount` of `tokenB` to the caller. If the transfer of `tokenB` fails, the contract state will be left inconsistent.
+2) Cross bridge inconsistency: The exchange rate in the `getExchangeRate` function is calculated using the balances of `tokenA` and `tokenB` in the contract. This can lead to an inconsistency if external factors affect the balances or transfer operations outside the contract.

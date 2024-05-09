@@ -1,0 +1,27 @@
+<\contract\> 
+pragma solidity ^0.8.0;
+
+contract SampleContract {
+    
+    address public owner;
+    uint public value;
+    
+    constructor() {
+        owner = msg.sender;
+        value = 100;
+    }
+    
+    function updateValue(uint _newValue) public {
+        require(msg.sender == owner, "Only owner can update the value");
+        value = _newValue;
+    }
+    
+    function getValue() public view returns(uint) {
+        return value;
+    }
+}
+
+<\contract\>
+Potential vulnerabilities in the contract:
+
+- incorrect visibility/ownership

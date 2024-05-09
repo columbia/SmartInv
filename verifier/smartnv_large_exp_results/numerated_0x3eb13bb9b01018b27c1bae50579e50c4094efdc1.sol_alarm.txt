@@ -1,0 +1,30 @@
+Contract to be analyzed:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, uint _amount){
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == buyer, "Only buyer can release amount");
+        seller.transfer(amount);
+    }
+
+    function refundAmount() public {
+        require(msg.sender == seller, "Only seller can refund amount");
+        buyer.transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the Escrow contract:
+1) Incorrect visibility/ownership: The releaseAmount and refundAmount functions do not have access control modifiers to restrict their access, which can lead to privilege escalation vulnerabilities.
+2) Inconsistent state update: There is no check to ensure that the releaseAmount or refundAmount functions are not called multiple times, potentially resulting in inconsistent state updates.
+3) Insufficient gas: The transfer of funds using the transfer() function can fail if the gas limit is exceeded, leading to funds being stuck in the contract.
+4) Atomicity violation: The releaseAmount and refundAmount functions do fund transfers in multiple steps, which can result in atomicity violations and potential vulnerabilities.
+5) Ether leakage: If the contract receives Ether accidentally or intentionally, there is no way to withdraw or handle these funds, leading to potential ether leakage vulnerabilities.

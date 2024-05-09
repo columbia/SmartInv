@@ -1,0 +1,1685 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: TokenHolder
+Function name: withdrawTokens(address,address,uint256)
+PC address: 546
+Estimated Gas Usage: 1088 - 1513
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:222
+
+function withdrawTokens(IERC20Token _token, address _to, uint256 _amount)
+        public
+        ownerOnly
+        validAddress(_token)
+        validAddress(_to)
+        notThis(_to)
+    {
+        assert(_token.transfer(_to, _amount));
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: withdrawTokens(address,address,uint256), txdata: 0x5e35359e, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SmartTokenController
+Function name: transferTokenOwnership(address)
+PC address: 898
+Estimated Gas Usage: 1034 - 1459
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:290
+
+function transferTokenOwnership(address _newOwner) public ownerOnly {
+        token.transferOwnership(_newOwner);
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transferTokenOwnership(address), txdata: 0x21e6b53d, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: TokenHolder
+Function name: withdrawTokens(address,address,uint256)
+PC address: 906
+Estimated Gas Usage: 2905 - 38175
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:229
+
+_token.transfer(_to, _amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: withdrawTokens(address,address,uint256), txdata: 0x5e35359e000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Managed
+Function name: transferManagement(address)
+PC address: 928
+Estimated Gas Usage: 1100 - 1525
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:160
+
+function transferManagement(address _newManager) public managerOnly {
+        require(_newManager != manager);
+        newManager = _newManager;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transferManagement(address), txdata: 0xe4edf852, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Owned
+Function name: transferOwnership(address)
+PC address: 928
+Estimated Gas Usage: 1100 - 1525
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:115
+
+function transferOwnership(address _newOwner) public ownerOnly {
+        require(_newOwner != owner);
+        newOwner = _newOwner;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: transferOwnership(address), txdata: 0xf2fde38b, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: SmartTokenController
+Function name: transferTokenOwnership(address)
+PC address: 1093
+Estimated Gas Usage: 3459 - 38590
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:291
+
+token.transferOwnership(_newOwner)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: transferTokenOwnership(address), txdata: 0x21e6b53d, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SmartTokenController
+Function name: acceptTokenOwnership()
+PC address: 1197
+Estimated Gas Usage: 1016 - 1441
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:298
+
+function acceptTokenOwnership() public ownerOnly {
+        token.acceptOwnership();
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: acceptTokenOwnership(), txdata: 0x38a5e016, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: SmartTokenController
+Function name: acceptTokenOwnership()
+PC address: 1337
+Estimated Gas Usage: 3396 - 38432
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:299
+
+token.acceptOwnership()
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: acceptTokenOwnership(), txdata: 0x38a5e016, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SmartTokenController
+Function name: withdrawFromToken(address,address,uint256)
+PC address: 1440
+Estimated Gas Usage: 1132 - 1557
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:320
+
+function withdrawFromToken(
+        IERC20Token _token, 
+        address _to, 
+        uint256 _amount
+    ) 
+        public
+        ownerOnly
+    {
+        ITokenHolder(token).withdrawTokens(_token, _to, _amount);
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: withdrawFromToken(address,address,uint256), txdata: 0x41a5b33d, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: TokenHolder
+Function name: transferOwnership(address)
+PC address: 1520
+Estimated Gas Usage: 1122 - 1547
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:115
+
+function transferOwnership(address _newOwner) public ownerOnly {
+        require(_newOwner != owner);
+        newOwner = _newOwner;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transferOwnership(address), txdata: 0xf2fde38b, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: SmartTokenController
+Function name: withdrawFromToken(address,address,uint256)
+PC address: 1695
+Estimated Gas Usage: 3619 - 38940
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:328
+
+ITokenHolder(token).withdrawTokens(_token, _to, _amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: withdrawFromToken(address,address,uint256), txdata: 0x41a5b33d, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SmartTokenController
+Function name: withdrawTokens(address,address,uint256)
+PC address: 1801
+Estimated Gas Usage: 1154 - 1579
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:222
+
+function withdrawTokens(IERC20Token _token, address _to, uint256 _amount)
+        public
+        ownerOnly
+        validAddress(_token)
+        validAddress(_to)
+        notThis(_to)
+    {
+        assert(_token.transfer(_to, _amount));
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: withdrawTokens(address,address,uint256), txdata: 0x5e35359e, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: SmartTokenController
+Function name: withdrawTokens(address,address,uint256)
+PC address: 2161
+Estimated Gas Usage: 2971 - 38241
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:229
+
+_token.transfer(_to, _amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: withdrawTokens(address,address,uint256), txdata: 0x5e35359e000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SmartTokenController
+Function name: disableTokenTransfers(bool)
+PC address: 2700
+Estimated Gas Usage: 1144 - 1569
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:308
+
+function disableTokenTransfers(bool _disable) public ownerOnly {
+        token.disableTransfers(_disable);
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: disableTokenTransfers(bool), txdata: 0x85d5e631, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: SmartTokenController
+Function name: disableTokenTransfers(bool)
+PC address: 2855
+Estimated Gas Usage: 3569 - 38700
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:309
+
+token.disableTransfers(_disable)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [CREATOR], function: disableTokenTransfers(bool), txdata: 0x85d5e631, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: SmartTokenController
+Function name: transferOwnership(address)
+PC address: 3034
+Estimated Gas Usage: 1210 - 1635
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:115
+
+function transferOwnership(address _newOwner) public ownerOnly {
+        require(_newOwner != owner);
+        newOwner = _newOwner;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transferOwnership(address), txdata: 0xf2fde38b, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: updateConnector(address,uint32,bool,uint256)
+PC address: 4437
+Estimated Gas Usage: 1121 - 1546
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:653
+
+function updateConnector(IERC20Token _connectorToken, uint32 _weight, bool _enableVirtualBalance, uint256 _virtualBalance)
+        public
+        ownerOnly
+        validConnector(_connectorToken)
+        validConnectorWeight(_weight)
+    {
+        Connector storage connector = connectors[_connectorToken];
+        require(totalConnectorWeight - connector.weight + _weight <= MAX_WEIGHT); // validate input
+
+        totalConnectorWeight = totalConnectorWeight - connector.weight + _weight;
+        connector.weight = _weight;
+        connector.isVirtualBalanceEnabled = _enableVirtualBalance;
+        connector.virtualBalance = _virtualBalance;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101010101010101010101010101010101010100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: updateConnector(address,uint32,bool,uint256), txdata: 0x0ca78923, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: connectorTokens(uint256)
+PC address: 6405
+Estimated Gas Usage: 1053 - 1148
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:416
+
+IERC20Token[] public connectorTokens
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 010101010101010101010101010101010101010201010101010101010101010101010101010101010101010101, decoded_data: , value: 0x0
+Caller: [CREATOR], function: connectorTokens(uint256), txdata: 0x19b64015, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: transferTokenOwnership(address)
+PC address: 7020
+Estimated Gas Usage: 1144 - 1569
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:290
+
+function transferTokenOwnership(address _newOwner) public ownerOnly {
+        token.transferOwnership(_newOwner);
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000040101010101104000010104010101010101080100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transferTokenOwnership(address), txdata: 0x21e6b53d, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: transferTokenOwnership(address)
+PC address: 7215
+Estimated Gas Usage: 3569 - 38700
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:291
+
+token.transferOwnership(_newOwner)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: transferTokenOwnership(address), txdata: 0x21e6b53d, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: setExtensions(address)
+PC address: 7528
+Estimated Gas Usage: 1188 - 1613
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:544
+
+function setExtensions(IBancorConverterExtensions _extensions)
+        public
+        ownerOnly
+        validAddress(_extensions)
+        notThis(_extensions)
+    {
+        extensions = _extensions;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101010102082080010104010101010108010200000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: setExtensions(address), txdata: 0x2314aad6, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: acceptTokenOwnership()
+PC address: 8441
+Estimated Gas Usage: 1236 - 1661
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:298
+
+function acceptTokenOwnership() public ownerOnly {
+        token.acceptOwnership();
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010401010101401040010100401001010101010800000000000000000000000010, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: acceptTokenOwnership(), txdata: 0x38a5e016, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: acceptTokenOwnership()
+PC address: 8581
+Estimated Gas Usage: 3616 - 38652
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:299
+
+token.acceptOwnership()
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: acceptTokenOwnership(), txdata: 0x38a5e016, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 8842
+Estimated Gas Usage: 1380 - 1805
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:625
+
+function addConnector(IERC20Token _token, uint32 _weight, bool _enableVirtualBalance)
+        public
+        ownerOnly
+        inactive
+        validAddress(_token)
+        notThis(_token)
+        validConnectorWeight(_weight)
+    {
+        require(_token != token && !connectors[_token].isSet && totalConnectorWeight + _weight <= MAX_WEIGHT); // validate input
+
+        connectors[_token].virtualBalance = 0;
+        connectors[_token].weight = _weight;
+        connectors[_token].isVirtualBalanceEnabled = _enableVirtualBalance;
+        connectors[_token].isPurchaseEnabled = true;
+        connectors[_token].isSet = true;
+        connectorTokens.push(_token);
+        totalConnectorWeight += _weight;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101010102082080010180080101010140012000000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc2, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9014
+Estimated Gas Usage: 55213 - 255253
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:279
+
+token.owner()
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000040, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20000000000000000000000000000000040100040004000200020002000000001000000000000000000000000000402024010108000208000000000800002, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9243
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:633
+
+token
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9396
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:633
+
+connectors[_token].isSet
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9432
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:633
+
+totalConnectorWeight
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9537
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:635
+
+connectors[_token].virtualBalance = 0
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9613
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:636
+
+connectors[_token].weight = _weight
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9634
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:636
+
+connectors[_token].weight = _weight
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9710
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:637
+
+connectors[_token].isVirtualBalanceEnabled = _enableVirtualBalance
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9724
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:637
+
+connectors[_token].isVirtualBalanceEnabled = _enableVirtualBalance
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9801
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:638
+
+connectors[_token].isPurchaseEnabled = true
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9815
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:638
+
+connectors[_token].isPurchaseEnabled = true
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9892
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:639
+
+connectors[_token].isSet = true
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9906
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:639
+
+connectors[_token].isSet = true
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9911
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:640
+
+connectorTokens.push(_token)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 9951
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:640
+
+connectorTokens.push(_token)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 10004
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:640
+
+connectorTokens.push(_token)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 10016
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:641
+
+totalConnectorWeight += _weight
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 10038
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:641
+
+totalConnectorWeight += _weight
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 10059
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:641
+
+totalConnectorWeight += _weight
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: withdrawFromToken(address,address,uint256)
+PC address: 10155
+Estimated Gas Usage: 1396 - 1821
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:320
+
+function withdrawFromToken(
+        IERC20Token _token, 
+        address _to, 
+        uint256 _amount
+    ) 
+        public
+        ownerOnly
+    {
+        ITokenHolder(token).withdrawTokens(_token, _to, _amount);
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000012001080101000101010110010101200401200100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: withdrawFromToken(address,address,uint256), txdata: 0x41a5b33d, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: withdrawFromToken(address,address,uint256)
+PC address: 10410
+Estimated Gas Usage: 3883 - 39204
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:328
+
+ITokenHolder(token).withdrawTokens(_token, _to, _amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: withdrawFromToken(address,address,uint256), txdata: 0x41a5b33d, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: clearQuickBuyPath()
+PC address: 10592
+Estimated Gas Usage: 1368 - 1793
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:569
+
+function clearQuickBuyPath() public ownerOnly {
+        quickBuyPath.length = 0;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000040101010101104000010108080101010101040100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: clearQuickBuyPath(), txdata: 0x4e2280c4, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: disableConnectorPurchases(address,bool)
+PC address: 10698
+Estimated Gas Usage: 1460 - 1885
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:676
+
+function disableConnectorPurchases(IERC20Token _connectorToken, bool _disable)
+        public
+        ownerOnly
+        validConnector(_connectorToken)
+    {
+        connectors[_connectorToken].isPurchaseEnabled = !_disable;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101018004010101010108010101010102040100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: disableConnectorPurchases(address,bool), txdata: 0x514385be, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: withdrawTokens(address,address,uint256)
+PC address: 11154
+Estimated Gas Usage: 1550 - 1975
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:222
+
+function withdrawTokens(IERC20Token _token, address _to, uint256 _amount)
+        public
+        ownerOnly
+        validAddress(_token)
+        validAddress(_to)
+        notThis(_to)
+    {
+        assert(_token.transfer(_to, _amount));
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000040101018001010440018001010180010820010200000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: withdrawTokens(address,address,uint256), txdata: 0x5e35359e, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: withdrawTokens(address,address,uint256)
+PC address: 11514
+Estimated Gas Usage: 3367 - 38637
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:229
+
+_token.transfer(_to, _amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000080220010101010101018001010101010101010100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: withdrawTokens(address,address,uint256), txdata: 0x5e35359e000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: disableTokenTransfers(bool)
+PC address: 12647
+Estimated Gas Usage: 1628 - 2053
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:308
+
+function disableTokenTransfers(bool _disable) public ownerOnly {
+        token.disableTransfers(_disable);
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101010101400108100101400120404001200100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: disableTokenTransfers(bool), txdata: 0x85d5e631, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: disableTokenTransfers(bool)
+PC address: 12802
+Estimated Gas Usage: 4053 - 39184
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:309
+
+token.disableTransfers(_disable)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: disableTokenTransfers(bool), txdata: 0x85d5e631, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: getReturn(address,address,uint256)
+PC address: 13122
+Estimated Gas Usage: 4582 - 40322
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:720
+
+getPurchaseReturn(_fromToken, _amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000020401010101018201010901010801010184200100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: getReturn(address,address,uint256), txdata: 0x1e1401f800000000000000000000000010, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: getPurchaseReturn(address,uint256)
+PC address: 13122
+Estimated Gas Usage: 3327 - 38407
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:732
+
+function getPurchaseReturn(IERC20Token _connectorToken, uint256 _depositAmount)
+        public
+        view
+        active
+        validConnector(_connectorToken)
+        returns (uint256)
+    {
+        Connector storage connector = connectors[_connectorToken];
+        require(connector.isPurchaseEnabled); // validate input
+
+        uint256 tokenSupply = token.totalSupply();
+        uint256 connectorBalance = getConnectorBalance(_connectorToken);
+        uint256 amount = extensions.formula().calculatePurchaseReturn(tokenSupply, connectorBalance, connector.weight, _depositAmount);
+
+        // deduct the fee from the return amount
+        uint256 feeAmount = getConversionFeeAmount(amount);
+        return safeSub(amount, feeAmount);
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101010101010101010101010101010101010100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: getPurchaseReturn(address,uint256), txdata: 0xa2c4c336, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: convertInternal(address,address,uint256,uint256)
+PC address: 13122
+Estimated Gas Usage: 7204 - 77929
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:817
+
+getPurchaseReturn(_connectorToken, _depositAmount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000080000000000048000000000200000808000000100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [ATTACKER], function: convertInternal(address,address,uint256,uint256), txdata: 0x2a2e2f0c00000000000000000000000080000240000004800080008020084080021000000000000000000000000000000800000000000480000000002000008080000001000000000000000000000000000000000000000000000000000000000000000001, decoded_data: ('0x8000024000000480008000802008408002100000', '0x0800000000000480000000002000008080000001', 0, 452312848583266388373324160190187140051835877600158453279131187530910662656), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: setQuickBuyPath(address[])
+PC address: 14439
+Estimated Gas Usage: 1972 - 4984
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:558
+
+function setQuickBuyPath(IERC20Token[] _path)
+        public
+        ownerOnly
+        validConversionPath(_path)
+    {
+        quickBuyPath = _path;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101010101010101010104010101010101010100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: setQuickBuyPath(address[]), txdata: 0xd395ee0f, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: transferManagement(address)
+PC address: 15041
+Estimated Gas Usage: 1870 - 2295
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:160
+
+function transferManagement(address _newManager) public managerOnly {
+        require(_newManager != manager);
+        newManager = _newManager;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010108000101011080200101108001010101010400000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transferManagement(address), txdata: 0xe4edf852, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: quickBuyPath(uint256)
+PC address: 15217
+Estimated Gas Usage: 1845 - 1940
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:417
+
+IERC20Token[] public quickBuyPath
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010101010101010101010101010110010101010100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: quickBuyPath(uint256), txdata: 0xe7ee85a5, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: convertibleToken(uint16)
+PC address: 15729
+Estimated Gas Usage: 1964 - 2059
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:533
+
+function convertibleToken(uint16 _tokenIndex) public view returns (address) {
+        if (_tokenIndex == 0)
+            return token;
+        return connectorTokens[_tokenIndex - 1];
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000010108012008010101010101010101010101000100000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: convertibleToken(uint16), txdata: 0xf2c8d24701010101010101010101010101010101010101014040102001808000800101, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: transferOwnership(address)
+PC address: 15869
+Estimated Gas Usage: 1980 - 2405
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:115
+
+function transferOwnership(address _newOwner) public ownerOnly {
+        require(_newOwner != owner);
+        newOwner = _newOwner;
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000020101010101010101010101010201010101010100000000000000000000000002, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transferOwnership(address), txdata: 0xf2fde38b, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BancorConverter
+Function name: getReturn(address,address,uint256)
+PC address: 16328
+Estimated Gas Usage: 7004 - 77729
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x4a5cb62e27120a5a2b113198a69a2b12069ad146.sol:760
+
+getSaleReturn(_connectorToken, _sellAmount, token.totalSupply())
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: getReturn(address,address,uint256), txdata: 0x1e1401f800000000000000000000000020, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 19948
+Estimated Gas Usage: 55213 - 255253
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state. This issue is reported for internal compiler generated code.
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Low
+Contract: BancorConverter
+Function name: addConnector(address,uint32,bool)
+PC address: 19951
+Estimated Gas Usage: 55213 - 255253
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state. This issue is reported for internal compiler generated code.
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [CREATOR], function: addConnector(address,uint32,bool), txdata: 0x3f4d2fc20808080808080808080808080000000000000000000000000000000000000001080808080808080808080808400100800002000040000004800040040004, value: 0x0
+
+

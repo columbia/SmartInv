@@ -1,0 +1,34 @@
+<\contract\> 
+contract TokenSale {
+        uint public price;
+        uint public totalTokens;
+        address public tokenAddress;
+        address public owner;
+        
+        constructor(uint _price, uint _totalTokens, address _tokenAddress){
+            price = _price;
+            totalTokens = _totalTokens;
+            tokenAddress = _tokenAddress;
+            owner = msg.sender;
+        }
+        
+        function buyTokens(uint amount) public payable{
+            require(msg.value == amount * price, "Incorrect amount paid");
+            require(amount <= totalTokens, "Insufficient tokens available");
+            
+            // Transfer tokens to buyer
+            // Deduct tokens from totalTokens
+        }
+        
+        function withdrawFunds() public onlyOwner {
+            // Transfer all funds from contract to owner
+        }
+        
+        modifier onlyOwner {
+            require(msg.sender == owner, "Only owner can call this function");
+            _;
+        }
+    }
+<\contract\> 
+
+Cross bridge inconsistency

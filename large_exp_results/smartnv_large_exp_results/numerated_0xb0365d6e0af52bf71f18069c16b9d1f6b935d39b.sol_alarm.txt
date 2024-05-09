@@ -1,0 +1,24 @@
+Contract to be analyzed:
+contract PaymentContract {
+    uint public totalAmount;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only the owner can deposit funds");
+        totalAmount += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(totalAmount >= amount, "Insufficient balance");
+        totalAmount -= amount;
+    }
+}
+
+Potential vulnerabilities in the PaymentContract:
+8) reentrancy
+14) incorrect visibility/ownership

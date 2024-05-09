@@ -1,0 +1,25 @@
+The contract to analyze for potential vulnerabilities:
+
+contract Vault {
+    address public owner;
+    uint public balance;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit(uint _amount) public {
+        require(msg.sender != owner, "Owner cannot deposit");
+        balance += _amount;
+    }
+    
+    function withdraw(uint _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        require(_amount <= balance, "Insufficient balance");
+        balance -= _amount;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) Privilege escalation
+2) Incorrect visibility/ownership

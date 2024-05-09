@@ -1,0 +1,20 @@
+Contract to be analyzed:
+contract Marketplace {
+         IERC20 public token;
+         address public owner;
+
+         function buy(uint amount) public {
+             uint price = amount * 10;
+             require(token.balanceOf(msg.sender) >= price, "Insufficient balance");
+             token.transferFrom(msg.sender, owner, price);
+         }
+
+         function sell(uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             token.transferFrom(msg.sender, owner, amount);
+         }
+}
+Potential vulnerabilities:
+1) Arithmetic flaw: The calculation of the price in the buy function may suffer from an arithmetic flaw as it multiplies the amount by 10 without considering potential overflow or underflow.
+2) Incorrect visibility/ownership: The owner variable is declared as public, which could potentially lead to incorrect access to the owner of the contract.
+3) Insufficient gas: The sell function does not specify a gas limit, which could potentially lead to insufficient gas for the transaction to be completed successfully.

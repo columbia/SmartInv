@@ -1,0 +1,28 @@
+Contract in Analysis:
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    mapping(address => uint) public balances;
+    
+    constructor(address _token) {
+        admin = msg.sender;
+        token = IERC20(_token);
+    }
+    
+    function buyTokens(uint amount) public {
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens in contract");
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] += amount;
+    }
+    
+    function withdrawTokens() public {
+        uint balance = balances[msg.sender];
+        require(balance > 0, "No tokens to withdraw");
+        balances[msg.sender] = 0;
+        token.transfer(msg.sender, balance);
+    }
+}
+
+Output:
+1) Inconsistent State Update
+2) Incorrect Visibility/Ownership

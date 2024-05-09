@@ -1,0 +1,15 @@
+The potential vulnerabilities in the contract are as follows:
+
+1) Inconsistent state update: The contract does not update the `debt` and `collateral` mappings after executing the `liquidate` function, which may lead to inconsistent data.
+
+2) Arithmetic flaw: The calculation in the `liquidate` function could potentially result in an arithmetic flaw if the values of `getPrice()`, `cAmount`, and `dAmount` are not properly validated.
+
+3) Incorrect visibility/ownership: The visibility of the `calculatePrice` function is set to public, which may expose internal contract calculations and data to external parties.
+
+4) Insufficient gas: If the `liquidate` function requires a significant amount of gas to execute, it may fail due to insufficient gas limit set by the user when calling the function.
+
+5) Atomicity violation: The actions performed in the `liquidate` function are not atomic, which could lead to inconsistent or undesired behavior if an exception occurs during the execution.
+
+6) Cross bridge inconsistency: The contract interacts with external tokens (USDC, WETH) and a Uniswap pair, which may introduce inconsistency in token balances or pricing due to external market changes.
+
+7) Ether leakage: There is a possibility of ether leakage if the contract does not handle ether transfers properly within its functions.

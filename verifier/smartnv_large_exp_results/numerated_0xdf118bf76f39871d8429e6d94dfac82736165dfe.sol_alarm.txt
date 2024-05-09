@@ -1,0 +1,26 @@
+<\contract\> 
+contract EscrowContract {
+     address public seller;
+     address public buyer;
+     uint public price;
+
+     function setPrice(uint _price) public {
+          require(msg.sender == seller, "Only the seller can set the price");
+          price =_price;
+     }
+     function deposit() public payable {
+          require(msg.sender == buyer, "Only the buyer can deposit");
+     }
+     function release() public {
+          require(msg.sender == seller, "Only the seller can release funds");
+          seller.transfer(price);
+     }
+     function refund() public {
+          require(msg.sender == buyer, "Only the buyer can request a refund");
+          buyer.transfer(price);
+     }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

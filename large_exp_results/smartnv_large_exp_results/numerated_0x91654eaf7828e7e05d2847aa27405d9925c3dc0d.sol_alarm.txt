@@ -1,0 +1,29 @@
+<\analyzed_contract\> 
+contract TokenSale {
+    IERC20 public token; 
+    uint public price;
+    address public owner; 
+    address public recipient; 
+
+    constructor(IERC20 _token, uint _price, address _recipient) {
+        token = _token;
+        price = _price;
+        owner = msg.sender;
+        recipient = _recipient;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(msg.value == _amount * price, "Incorrect amount sent");
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(recipient).transfer(address(this).balance);
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+1) Incorrect visibility/ownership
+2) Insufficient gas

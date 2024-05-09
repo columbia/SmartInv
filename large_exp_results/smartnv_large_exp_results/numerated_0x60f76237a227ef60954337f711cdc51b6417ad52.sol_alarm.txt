@@ -1,0 +1,18 @@
+The contract provided for analysis:
+
+contract TokenSwap {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     address public owner;
+
+     function swapTokens(uint amountA, uint amountB) public {
+         require(msg.sender == owner, "Sender is not the owner");
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transferFrom(msg.sender, address(this), amountB);
+         tokenA.transfer(msg.sender,  amountB);
+         tokenB.transfer(msg.sender,  amountA);
+     }
+}
+
+Output: 
+- incorrect visibility/ownership

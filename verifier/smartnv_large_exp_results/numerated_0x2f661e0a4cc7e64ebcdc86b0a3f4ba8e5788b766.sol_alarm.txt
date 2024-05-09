@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The state of variables such as debt and collateral are not properly updated within the functions, which could lead to inconsistent data.
+2) Incorrect visibility/ownership: The visibility of variables like WETH, USDC, and pair being public may expose sensitive information and allow external manipulation.
+3) Integer overflow/underflow: There are calculations involving integer arithmetic that may result in overflow or underflow, such as in the liquidate function where the calculation (getPrice() * cAmount * 80 / 100) could potentially lead to overflow.
+4) Ether leakage: There is a lack of protection against ether leakage in the contract, where unintended recipients could receive ether due to improper handling of funds.
+5) Insufficient gas: The functions may require more gas than available in certain scenarios, leading to transaction failures or inconsistent behavior.

@@ -1,0 +1,16 @@
+The contract to analyze:
+
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid() public payable {
+             require(msg.value > highestBid, "Bid is lower than current highest bid");
+             highestBidder.transfer(highestBid);
+             highestBidder = msg.sender;
+             highestBid = msg.value;
+         }
+     }
+
+Output: potential vulnerabilities in the contract:
+- integer overflow/underflow: vulnerability present in the bid() function, where checking for msg.value > highestBid may result in integer overflow if msg.value is larger than the maximum value that can be stored in uint.

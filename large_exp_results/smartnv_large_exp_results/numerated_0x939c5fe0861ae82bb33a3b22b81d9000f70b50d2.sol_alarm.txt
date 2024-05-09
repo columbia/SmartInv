@@ -1,0 +1,26 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+     struct Candidate {
+         uint256 votes;
+         bool exists;
+     }
+     
+     mapping(address => Candidate) public candidates;
+     address public admin;
+
+     constructor() {
+         admin = msg.sender;
+     }
+
+     function addCandidate(address _candidate) public {
+         require(msg.sender == admin, "only admin can add candidate");
+         require(!candidates[_candidate].exists, "candidate already exists");
+         candidates[_candidate] = Candidate(0, true);
+     }
+
+     function vote(address _candidate) public {
+         require(candidates[_candidate].exists, "candidate does not exist");
+         candidates[_candidate].votes++;
+     }
+}
+<\analyzed_contract\>

@@ -1,0 +1,16 @@
+<\contract\>
+contract CrossBridge {
+     uint256 public totalBalance;
+
+     function deposit(uint256 amount) external {
+          totalBalance += amount;
+          externalContract.deposit(amount);
+     }
+
+     function withdraw(uint256 amount) external {
+          require(totalBalance >= amount, "Not enough balance");
+          totalBalance -= amount;
+          externalContract.withdraw(amount);
+     }
+}
+<\contract\>

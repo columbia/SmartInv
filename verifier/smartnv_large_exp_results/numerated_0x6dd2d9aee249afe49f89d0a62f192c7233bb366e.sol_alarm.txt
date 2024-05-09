@@ -1,0 +1,19 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+
+     constructor(address _token, uint _tokenPrice) {
+         token = IERC20(_token);
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+
+         token.transfer(msg.sender, _amount);
+     }
+
+}

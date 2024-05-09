@@ -1,0 +1,35 @@
+<\Contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public buyerAgreed;
+    bool public sellerAgreed;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        buyerAgreed = false;
+        sellerAgreed = false;
+    }
+
+    function agreeToTerms(bool _agreed) public {
+        require(msg.sender == buyer || msg.sender == seller, "You are not a participant");
+        
+        if(msg.sender == buyer) {
+            buyerAgreed = _agreed;
+        } else {
+            sellerAgreed = _agreed;
+        }
+    }
+
+    function releasePayment() public {
+        require(buyerAgreed && sellerAgreed, "Both parties must agree to release payment");
+        
+        address _this = address(this);
+        // Transfer the escrowed funds to the seller
+        payable(seller).transfer(price);
+    }
+}
+<\Contract\>

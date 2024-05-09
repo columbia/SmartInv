@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public bids;
+
+    function bid(uint amount) public payable {
+        require(msg.value == amount, "Insufficient amount sent");
+        require(amount > highestBid, "Bid amount is lower than current highest bid");
+        // Refund the previous highest bidder
+        uint refundAmount = bids[highestBidder];
+        highestBidder.transfer(refundAmount);
+        // Update highest bidder and bid amount
+        highestBidder = msg.sender;
+        highestBid = amount;
+        bids[msg.sender] = amount;
+    }
+
+    function withdraw() public {
+        uint amount = bids[msg.sender];
+        require(amount > 0, "You have no bids to withdraw");
+        msg.sender.transfer(amount);
+        bids[msg.sender] = 0;
+    }
+}
+
+Output:
+- Incorrect visibility/ownership: The `bids` mapping is public, allowing anyone to access the bids of any address.
+- Integer overflow/underflow: There is no check for potential integer overflows or underflows in the calculations involving bid amounts.
+- Insufficient gas: The `withdraw` function might fail if the gas stipend provided by the Ethereum Virtual Machine is insufficient to complete the transfer of funds.
+- Suicidal contracts: The contract transfers funds directly to addresses without checking if they are contracts, which can lead to loss of funds if the destination address is a contract with a self-destruct function.

@@ -1,0 +1,12 @@
+<\contract\>
+contract PaymentContract {
+     mapping(address => uint) public payments;
+     uint public totalPayments;
+
+     function makePayment(address _to, uint _amount) public {
+         require(_amount > 0, "Invalid payment amount");
+         payments[_to] += _amount;
+         totalPayments += _amount;
+     }
+}
+<\contract\>

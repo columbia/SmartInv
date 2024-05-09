@@ -1,0 +1,19 @@
+The contract you provided for analysis is:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) balances;
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public {
+        require(balances[msg.sender] > 0, "Insufficient balance");
+        msg.sender.transfer(balances[msg.sender]);
+        balances[msg.sender] = 0;
+    }
+}
+
+There is a potential vulnerability in the contract: incorrect visibility/ownership.

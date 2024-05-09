@@ -1,0 +1,22 @@
+<\contract\> 
+contract PaymentContract {
+         address public companyWallet;
+         address public customerWallet;
+         uint public totalAmount;
+
+         constructor(address _companyWallet, address _customerWallet, uint _totalAmount) {
+             companyWallet = _companyWallet;
+             customerWallet = _customerWallet;
+             totalAmount = _totalAmount;
+         }
+
+         function makePayment() public {
+             require(msg.sender == customerWallet, "Only customer can make payment");
+             require(address(this).balance >= totalAmount, "Insufficient balance in contract");
+             companyWallet.transfer(totalAmount);
+         }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

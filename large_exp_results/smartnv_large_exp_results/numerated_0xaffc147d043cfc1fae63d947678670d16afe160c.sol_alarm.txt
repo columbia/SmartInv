@@ -1,0 +1,29 @@
+Contract:
+contract PaymentSplitter {
+    address[] internal payees;
+    uint256[] internal shares;
+    uint256 internal totalShares;
+    mapping(address => uint256) internal released;
+    mapping(address => uint256) internal totalReleased;
+
+    function release(address payable _payee) public {
+        require(totalReleased[_payee] < shares.length, "Payment already released in full");
+
+        uint256 payment = shares[totalReleased[_payee]] - released[_payee];
+        released[_payee] += payment;
+        totalReleased[_payee] += 1;
+
+        _payee.transfer(payment);
+    }
+
+    function addPayee(address _payee, uint256 _shares) public {
+        require(_payee != address(0), "Invalid payee address");
+        require(_shares > 0, "Shares must be greater than 0");
+
+        payees.push(_payee);
+        shares.push(_shares);
+        totalShares += _shares;
+    }
+}
+Output: 
+- Incorrect visibility/ownership.

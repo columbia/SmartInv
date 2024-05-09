@@ -1,0 +1,24 @@
+The contract to be analyzed for potential vulnerabilities is:
+
+contract Marketplace {
+    mapping(uint => uint) public productPrices;
+    mapping(address => uint) public balances;
+
+    function buyProduct(uint productId) public {
+        uint price = productPrices[productId];
+        require(balances[msg.sender] >= price, "Insufficient balance");
+        
+        balances[msg.sender] -= price;
+        // Transfer funds to the seller
+        msg.sender.transfer(price);
+    }
+
+    function setProductPrice(uint productId, uint price) public {
+        require(price > 0, "Price must be greater than zero");
+        productPrices[productId] = price;
+    }
+}
+
+Output: 
+1) Reentrancy
+2) Inconsistent State Update

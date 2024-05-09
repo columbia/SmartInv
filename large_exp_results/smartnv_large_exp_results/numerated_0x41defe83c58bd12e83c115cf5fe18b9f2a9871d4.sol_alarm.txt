@@ -1,0 +1,10 @@
+The provided contract contains the following potential vulnerabilities:
+1) Inconsistent state update: The function `debt` and `collateral` update the state variables in `liquidate` function without proper checks or validation, which can lead to inconsistent state updates.
+
+2) Arithmetic flaw: The expression `getPrice() * cAmount * 80 / 100 < dAmount` in the `liquidate` function could potentially lead to arithmetic flaws if not properly handled.
+
+3) Insufficient gas: The `calculatePrice` function returns a value without specifying any gas limit, which could lead to insufficient gas error when executing the function.
+
+4) Incorrect visibility/ownership: It's not specified whether the state variables `debt` and `collateral` should be publicly accessible or not. Proper visibility control should be considered to prevent unauthorized access.
+
+5) Ether leakage: The contract does not handle Ether transactions properly, which could lead to Ether leakage vulnerabilities if not handled securely.

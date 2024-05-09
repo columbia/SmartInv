@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+         uint public totalVotes;
+         mapping(address => uint) public userVotes;
+         address public owner;
+         
+         constructor() {
+             owner = msg.sender;
+         }
+         
+         function vote(uint _numVotes) public {
+             require(_numVotes > 0, "Number of votes must be positive");
+             userVotes[msg.sender] += _numVotes;
+             totalVotes += _numVotes;
+         }
+         
+         function changeOwner(address _newOwner) public {
+             require(msg.sender == owner, "Only the owner can change the owner");
+             owner = _newOwner;
+         }
+}
+<\contract_to_analyze\>

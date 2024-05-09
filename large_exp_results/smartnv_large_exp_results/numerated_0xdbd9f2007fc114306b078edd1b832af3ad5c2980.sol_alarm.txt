@@ -1,0 +1,23 @@
+Contract MyContract {
+    address public owner;
+    uint public balance;
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balance, "Not enough balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+} 
+
+Potential vulnerabilities:
+- Privilege escalation: The transferOwnership function allows the current owner to transfer ownership to another address without any additional authorization, potentially leading to privilege escalation.
+- Insufficient gas: If the contract balance becomes too high, the withdraw function may fail to execute due to running out of gas.

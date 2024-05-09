@@ -1,0 +1,40 @@
+The contract provided for analysis is:
+```solidity
+contract Lottery {
+    address public manager;
+    address[] public players;
+
+    constructor() {
+        manager = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Minimum entry fee is 0.01 ether");
+        players.push(msg.sender);
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+
+    function pickWinner() public restricted {
+        require(msg.sender == manager, "Only the manager can pick a winner");
+        require(players.length > 0, "No players to pick a winner from");
+
+        uint index = random() % players.length;
+        address winner = players[index];
+        address(manager).transfer(address(this).balance);
+
+        players = new address[](0);
+    }
+
+    modifier restricted {
+        _;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Insufficient gas: There could be a risk of running out of gas during the `pickWinner` function, especially if there are a large number of players in the `players` array.
+2) Incorrect visibility/ownership: The `manager` variable is publicly accessible, and anyone can see who the manager is. This lack of privacy could lead to security risks.
+3) Integer overflow/underflow: There is a potential risk of integer overflow in the `random` function when calculating the index for selecting a winner.

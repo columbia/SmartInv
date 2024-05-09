@@ -1,0 +1,26 @@
+Contract to be analyzed:
+contract Auction {
+      struct Bid {
+          address bidder;
+          uint amount;
+      }
+      mapping(uint => Bid) public bids;
+      uint public currentBidId;
+  
+      function placeBid(uint _amount) public {
+          Bid storage newBid = bids[currentBidId];
+          newBid.bidder = msg.sender;
+          newBid.amount = _amount;
+          currentBidId++;
+      }
+  
+      function withdrawBid(uint _bidId) public {
+          require(_bidId < currentBidId, "Bid does not exist");
+          require(bids[_bidId].bidder == msg.sender, "You are not the bidder");
+  
+          msg.sender.transfer(bids[_bidId].amount);
+          delete bids[_bidId];
+      }
+}
+Potential vulnerabilities: 
+1) incorrect visibility/ownership

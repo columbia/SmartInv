@@ -1,0 +1,45 @@
+<\contract\> 
+contract YieldFarming {
+    address public owner;
+    IERC20 public stakingToken;
+    uint public totalStaked;
+    mapping(address => uint) public stakedBalance;
+    
+    constructor(IERC20 _stakingToken) {
+        owner = msg.sender;
+        stakingToken = _stakingToken;
+        totalStaked = 0;
+    }
+    
+    function stake(uint amount) public {
+        require(amount > 0, "Invalid amount");
+        stakingToken.transferFrom(msg.sender, address(this), amount);
+        stakedBalance[msg.sender] += amount;
+        totalStaked += amount;
+    }
+    
+    function unstake(uint amount) public {
+        require(amount > 0, "Invalid amount");
+        require(stakedBalance[msg.sender] >= amount, "Insufficient balance");
+        stakedBalance[msg.sender] -= amount;
+        totalStaked -= amount;
+        stakingToken.transfer(msg.sender, amount);
+    }
+    
+    function claimReward() public {
+        uint reward = calculateReward(msg.sender);
+        stakedBalance[msg.sender] += reward;
+        totalStaked += reward;
+    }
+    
+    function calculateReward(address user) internal returns (uint) {
+        // calculate reward based on some algorithm
+        return stakedBalance[user] * 0.01; 
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership
+- integer overflow/underflow 
+- inconsistent state update

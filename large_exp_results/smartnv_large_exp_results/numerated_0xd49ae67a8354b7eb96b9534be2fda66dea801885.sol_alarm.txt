@@ -1,0 +1,16 @@
+<\contract_to_analyze\> 
+contract TokenSwap {
+         IERC20 public token1;
+         IERC20 public token2;
+         address public owner;
+
+         function swapTokens(uint amount1, uint amount2) public {
+             require(token1.balanceOf(msg.sender) >= amount1, "Insufficient balance for token1");
+             require(token2.balanceOf(msg.sender) >= amount2, "Insufficient balance for token2");
+             token1.transferFrom(msg.sender, owner, amount1);
+             token2.transfer(owner, amount2);
+         }
+}
+<\contract_to_analyze\> 
+1) atomicity violation
+2) insufficient gas

@@ -1,0 +1,48 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+1) inconsistent state update: The possibility of inconsistent state updates in the 'execute' function, where the 'votedAmount' in the 'Proposal' struct is incrementing without proper checks.
+2) inconsistent state update: The 'endExecute' function may have inconsistent state updates as 'lockedFunds' is set based on the balance of the contract without proper safeguards.
+3) business logic flaw: The condition in the 'endExecute' function that checks whether the balance of the contract is more than double the total supply of the token may lead to business logic flaws.
+4) atomicity violation: Atomicity concerns can arise in various functions where multiple state changes occur without using mechanisms to ensure atomicity.
+5) integer overflow/underflow: Potential for integer overflows/underflows during calculations involving balances and amounts.
+
+Output: 
+- inconsistent state update
+- business logic flaw
+- atomicity violation
+- integer overflow/underflow

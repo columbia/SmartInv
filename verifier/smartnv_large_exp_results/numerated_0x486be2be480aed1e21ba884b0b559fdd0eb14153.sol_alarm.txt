@@ -1,0 +1,20 @@
+<\your_contract\>
+contract Escrow {
+    address public owner;
+    mapping(uint => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint id, uint amount) public {
+        require(msg.sender == owner, "Only owner can deposit");
+        balances[id] += amount;
+    }
+
+    function withdraw(uint id, uint amount) public {
+        require(balances[id] >= amount, "Insufficient balance");
+        balances[id] -= amount;
+    }
+}
+<\your_contract\>

@@ -1,0 +1,31 @@
+<\contract_to_be_analyzed\> 
+contract Escrow {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         bool public buyerApproved;
+         bool public sellerApproved;
+
+         function initiate(address _seller, address _arbiter) external {
+             require(buyer == address(0), "Escrow already initiated");
+             buyer = msg.sender;
+             seller = _seller;
+             arbiter = _arbiter;
+         }
+
+         function approveByBuyer() external {
+             require(msg.sender == buyer, "Only buyer can approve");
+             buyerApproved = true;
+         }
+
+         function approveBySeller() external {
+             require(msg.sender == seller, "Only seller can approve");
+             sellerApproved = true;
+         }
+
+         function releaseFunds() external {
+             require(buyerApproved && sellerApproved, "Both parties must approve");
+             payable(seller).transfer(address(this).balance);
+         }
+}
+<\contract_to_be_analyzed\>

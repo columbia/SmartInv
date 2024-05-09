@@ -1,0 +1,20 @@
+<\contract\>
+contract PaymentContract {
+    uint public totalAmount;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function makePayment(uint amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        totalAmount += amount;
+    }
+    
+    function withdrawPayment() public {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        totalAmount = 0;
+    }
+}
+<\contract\>

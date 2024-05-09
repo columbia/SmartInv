@@ -1,0 +1,39 @@
+<\contract\> 
+contract Escrow {
+     address public seller;
+     address public buyer;
+     address public arbiter;
+     uint public amount;
+     bool public isPaid;
+     bool public isReleased;
+     bool public isDisputed;
+
+     constructor(address _seller, address _buyer, address _arbiter, uint _amount) public {
+         seller = _seller;
+         buyer = _buyer;
+         arbiter = _arbiter;
+         amount = _amount;
+         isPaid = false;
+         isReleased = false;
+         isDisputed = false;
+     }
+
+     function pay() public payable {
+         require(msg.sender == buyer, "Only the buyer can pay");
+         require(msg.value == amount, "Incorrect amount sent");
+         isPaid = true;
+     }
+
+     function release() public {
+         require(msg.sender == arbiter, "Only the arbiter can release funds");
+         require(isPaid == true, "Payment not received yet");
+         isReleased = true;
+         payable(seller).transfer(address(this).balance);
+     }
+
+     function dispute() public {
+         require(msg.sender == buyer || msg.sender == seller, "Only the buyer or seller can dispute");
+         isDisputed = true;
+     }
+}
+<\contract\>

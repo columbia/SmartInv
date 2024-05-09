@@ -1,0 +1,20 @@
+contract PaymentGateway {
+    uint256 public totalBalance;
+    mapping(address => uint256) public balances;
+
+    function deposit() external payable {
+        totalBalance += msg.value;
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        totalBalance -= amount;
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function getBalance(address user) external view returns (uint256) {
+        return balances[user];
+    }
+}

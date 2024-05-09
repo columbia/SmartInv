@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public totalTokens;
+    
+    constructor(uint _totalTokens) {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value > 0, "value must be greater than 0");
+        require(_amount > 0, "token amount must be greater than 0");
+        
+        uint tokensToTransfer = _amount * 1 ether;
+        require(tokensToTransfer <= totalTokens, "insufficient tokens in sale");
+        
+        balances[msg.sender] += _amount;
+        totalTokens -= tokensToTransfer;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+Output: 
+- The contract contains insufficient gas vulnerability.

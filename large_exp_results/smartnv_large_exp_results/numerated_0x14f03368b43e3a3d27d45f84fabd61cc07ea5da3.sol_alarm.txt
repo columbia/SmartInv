@@ -1,0 +1,31 @@
+<\The Contract to be Analyzed\>
+contract PaymentContract {
+         address public owner;
+         uint public totalPayments;
+         mapping(uint => Payment) public payments;
+
+         struct Payment {
+             uint amount;
+             address recipient;
+         }
+
+         constructor() {
+             owner = msg.sender;
+             totalPayments = 0;
+         }
+
+         function makePayment(uint _amount, address _recipient) external {
+             require(msg.sender == owner, "Only owner can make payments");
+             payments[totalPayments] = Payment(_amount, _recipient);
+             totalPayments++;
+         }
+
+         function getPayment(uint _index) external view returns (uint, address) {
+             return (payments[_index].amount, payments[_index].recipient);
+         }
+
+         function updateOwner(address _newOwner) external {
+             owner = _newOwner;
+         }
+}
+<\The Contract to be Analyzed\>

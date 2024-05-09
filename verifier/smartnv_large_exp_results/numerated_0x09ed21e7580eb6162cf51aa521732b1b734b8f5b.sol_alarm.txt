@@ -1,0 +1,33 @@
+contract SupplyChain {
+     address public owner;
+     mapping(uint => Item) public items;
+     uint public itemCount;
+
+     struct Item {
+        uint itemId;
+        string itemName;
+        uint quantity;
+        uint price;
+     }
+
+     constructor() public {
+        owner = msg.sender;
+        itemCount = 0;
+     }
+
+     function addItem(string memory _name, uint _quantity, uint _price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        itemCount++;
+        items[itemCount] = Item(itemCount, _name, _quantity, _price);
+     }
+
+     function purchaseItem(uint _itemId, uint _quantity) public payable {
+        require(_itemId <= itemCount && _itemId > 0, "Invalid item ID");
+        require(items[_itemId].quantity >= _quantity, "Not enough quantity available");
+        require(msg.value >= items[_itemId].price * _quantity, "Insufficient payment");
+
+        items[_itemId].quantity -= _quantity;
+        address payable seller = payable(owner);
+        seller.transfer(msg.value);
+     }
+}

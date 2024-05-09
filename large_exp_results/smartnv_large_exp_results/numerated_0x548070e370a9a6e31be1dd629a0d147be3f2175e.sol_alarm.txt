@@ -1,0 +1,26 @@
+The contract provided for analysis is:
+
+contract MyContract {
+     address public owner;
+     uint public balance;
+
+     function deposit() public payable {
+         balance += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(amount <= balance, "Insufficient balance");
+         msg.sender.transfer(amount);
+         balance -= amount;
+     }
+
+     function changeOwner(address newOwner) public {
+         require(msg.sender == owner, "Only the owner can change owner");
+         owner = newOwner;
+     }
+}
+
+Output: 
+- privilege escalation
+- inconsistent state update
+- incorrect visibility/ownership

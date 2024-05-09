@@ -1,0 +1,29 @@
+Contract being analyzed: 
+
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributions;
+    uint public totalContributions;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function contribute() public payable {
+        contributions[msg.sender] += msg.value;
+        totalContributions += msg.value;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function getContribution(address contributor) public view returns (uint) {
+        return contributions[contributor];
+    }
+}
+
+Output: 
+- incorrect visibility/ownership (withdrawFunds function should be restricted only to the owner to prevent unauthorized withdrawals)
+- inconsistent state update (multiple functions update the state variables without proper synchronization)

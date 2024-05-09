@@ -1,0 +1,30 @@
+<\contract\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public amount;
+
+     constructor(address _buyer, address _seller, address _arbiter, uint _amount) public {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         amount = _amount;
+     }
+
+     function releaseAmountToSeller() public {
+         require(msg.sender == arbiter, "Only arbiter can release funds");
+         seller.transfer(amount);
+     }
+
+     function refundAmountToBuyer() public {
+         require(msg.sender == arbiter, "Only arbiter can refund funds");
+         buyer.transfer(amount);
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the Escrow contract are:
+1) Incorrect visibility/ownership: The releaseAmountToSeller and refundAmountToBuyer functions can be called by anyone, not just the arbiter, due to the lack of proper access control mechanisms.
+2) Insufficient gas: If the amount being transferred is large, it could potentially result in out-of-gas errors during the transfer process.
+3) Cross bridge inconsistency: There could be a discrepancy between the balances of the buyer, seller, and arbiter if the transfer functions fail or if there are errors in the contract logic.

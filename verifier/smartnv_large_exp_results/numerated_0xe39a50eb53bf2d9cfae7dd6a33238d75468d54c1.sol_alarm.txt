@@ -1,0 +1,26 @@
+The following contract may have vulnerabilities:
+
+<\contract\>
+contract TokenSale {
+     address public owner;
+     uint public price;
+     mapping(address => uint) public balance;
+
+     constructor(uint _price) public {
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint amount) public {
+         require(msg.value == amount * price, "Incorrect payment amount");
+         balance[msg.sender] += amount;
+     }
+
+     function withdraw() public {
+         require(balance[msg.sender] > 0, "Insufficient balance");
+         uint payment = balance[msg.sender] * price;
+         msg.sender.transfer(payment);
+         balance[msg.sender] = 0;
+     }
+}
+<\contract\>

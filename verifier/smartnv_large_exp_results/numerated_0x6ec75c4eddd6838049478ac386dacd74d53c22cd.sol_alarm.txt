@@ -1,0 +1,29 @@
+<\analyzed_contract\>
+contract TokenSale {
+    IERC20 public token;
+    address public admin;
+    mapping(address => uint) public balances;
+    
+    constructor(IERC20 _token, address _admin) {
+        token = _token;
+        admin = _admin;
+    }
+    
+    function buyTokens(uint amount) public {
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens in contract");
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] += amount;
+    }
+    
+    function withdrawTokens(uint amount) public {
+        require(balances[msg.sender] >= amount, "Not enough tokens in user's balance");
+        balances[msg.sender] -= amount;
+        token.transfer(msg.sender, amount);
+    }
+    
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+<\analyzed_contract\>

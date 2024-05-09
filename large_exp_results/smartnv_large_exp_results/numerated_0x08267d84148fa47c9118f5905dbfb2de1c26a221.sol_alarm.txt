@@ -1,0 +1,21 @@
+<\your_contract\>
+contract Escrow {
+    uint public amount; 
+    address public beneficiary;
+    bool public isFunded; 
+
+    function deposit(uint _amount, address _beneficiary) public {
+        require(!isFunded, "Escrow already funded");
+        require(_beneficiary != address(0), "Invalid beneficiary address");
+        amount = _amount;
+        beneficiary = _beneficiary;
+        isFunded = true;
+    }
+
+    function release() public {
+        require(isFunded, "Escrow not funded");
+        address(uint160(beneficiary)).transfer(amount);
+        isFunded = false;
+    }
+}
+<\your_contract\>

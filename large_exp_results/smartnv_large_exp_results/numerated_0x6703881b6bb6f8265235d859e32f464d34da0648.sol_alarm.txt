@@ -1,0 +1,22 @@
+<\contract\> 
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     address public beneficiary;
+
+     constructor(IERC20 _token, address _beneficiary) {
+         token = _token;
+         owner = msg.sender;
+         beneficiary = _beneficiary;
+     }
+ 
+     function buyTokens(uint amount) public {
+         token.transferFrom(msg.sender, beneficiary, amount);
+     }
+}
+<\contract\>
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Incorrect visibility/ownership: The constructor should be marked as `public` for visibility.
+2) Missing access control: There is no access control mechanism to restrict who can call the `buyTokens` function.
+3) Potential integer underflow: There is no validation or safeguard to prevent integer underflow when transferring tokens in the `buyTokens` function.

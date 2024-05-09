@@ -1,0 +1,35 @@
+<\analyzed_contract\> 
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public tokenPrice;
+         uint public availableTokens;
+         
+         constructor(address _token, uint _price, uint _totalTokens) {
+             token = IERC20(_token);
+             owner = msg.sender;
+             tokenPrice = _price;
+             availableTokens = _totalTokens;
+         }
+
+         function buyTokens(uint _amount) public payable {
+             require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+             require(_amount <= availableTokens, "Not enough tokens left");
+             token.transfer(msg.sender, _amount);
+             availableTokens -= _amount;
+         }
+
+         function changePrice(uint _newPrice) public {
+             require(msg.sender == owner, "You are not the owner");
+             tokenPrice = _newPrice;
+         }
+
+         function withdraw() public {
+             require(msg.sender == owner, "You are not the owner");
+             address payable _owner = payable(owner);
+             _owner.transfer(address(this).balance);
+         }
+     }
+<\analyzed_contract\> 
+Output:
+healthy

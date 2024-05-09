@@ -1,0 +1,31 @@
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+
+        balances[msg.sender] += _amount;
+    }
+
+    function withdraw() public {
+        uint amount = balances[msg.sender] * tokenPrice;
+        require(address(this).balance >= amount, "Insufficient contract balance");
+        
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        
+        balances[msg.sender] = 0;
+    }
+} 
+
+Output:
+business logic flaw
+integer overflow/underflow
+insufficient gas

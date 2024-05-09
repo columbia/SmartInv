@@ -1,0 +1,36 @@
+<\contract\>
+contract Escrow {
+     address public seller;
+     address public buyer;
+     address public arbiter;
+     uint public amount;
+     enum State {Created, Locked, Inactive}
+     State public state;
+
+     constructor(address _seller, address _buyer, uint _amount) {
+         seller = _seller;
+         buyer = _buyer;
+         amount = _amount;
+         arbiter = msg.sender;
+         state = State.Created;
+     }
+
+     function confirmPurchase() public {
+         require(msg.sender == buyer, "Only buyer can confirm purchase");
+         require(state == State.Created, "Purchase is not in the correct state to be confirmed");
+         state = State.Locked;
+     }
+
+     function confirmReceived() public {
+         require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm received");
+         require(state == State.Locked, "Purchase is not in the correct state to be confirmed as received");
+         if(msg.sender == arbiter){
+             seller.transfer(amount);
+         }
+         else{
+             buyer.transfer(amount);
+         }
+         state = State.Inactive;
+     }
+}
+<\contract\>

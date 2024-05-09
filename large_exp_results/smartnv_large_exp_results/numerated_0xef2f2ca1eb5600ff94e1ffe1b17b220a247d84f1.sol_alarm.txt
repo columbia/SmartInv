@@ -1,0 +1,50 @@
+<\contract\> 
+contract Escrow {
+     address public seller;
+     address public buyer; 
+     address public arbiter;
+     uint public escrowAmount;
+     bool public releasedToSeller;
+     bool public releasedToBuyer; 
+     bool public refundToBuyer;
+
+     event FundsReleased (address to, uint amount);
+     event FundsWithheld (string message);
+
+     constructor(address _seller, address _buyer, address _arbiter, uint _escrowAmount) public {
+         seller = _seller;
+         buyer = _buyer;
+         arbiter = _arbiter;
+         escrowAmount = _escrowAmount;
+     }
+
+     function releaseToSeller() public {
+         require(msg.sender == seller || msg.sender == arbiter, "Only seller or arbiter can release funds");
+         releasedToSeller = true;
+         if (releasedToBuyer) {
+             if (!refundToBuyer) {
+                 FundsReleased(seller, escrowAmount);
+             } else {
+                 FundsWithheld("Funds withheld from the buyer");
+             }
+         }
+     }
+
+     function releaseToBuyer() public {
+         require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can release funds");
+         releasedToBuyer = true;
+         if (releasedToSeller) {
+             if (refundToBuyer) {
+                 FundsReleased(buyer, escrowAmount);
+             } else {
+                 FundsWithheld("Funds withheld from the seller");
+             }
+         }
+     }
+
+     function setRefundToBuyer(bool _refundToBuyer) public {
+         require(msg.sender == arbiter, "Only arbiter can set refund option");
+         refundToBuyer = _refundToBuyer;
+     }
+}
+<\contract\>

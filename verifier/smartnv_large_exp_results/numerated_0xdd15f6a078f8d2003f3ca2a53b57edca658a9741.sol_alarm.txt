@@ -1,0 +1,31 @@
+The contract provided for analysis is: 
+
+```solidity
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+        token.transferFrom(msg.sender, owner, cost);
+        balances[msg.sender] += _amount;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+
+3) business logic flaw: The `buyTokens` function may have a business logic flaw regarding the calculation of the cost in tokens, as it multiplies the amount by the token price without proper consideration of decimal points or potential rounding issues.
+14) incorrect visibility/ownership: The `balances` mapping has a public visibility, which exposes the balances of all addresses, potentially compromising user privacy and security. Moreover, the `owner` variable is publicly accessible, which may not be intended and can lead to unauthorized access or manipulation.
+
+Therefore, the potential vulnerabilities in the contract are a business logic flaw and an issue with incorrect visibility/ownership.

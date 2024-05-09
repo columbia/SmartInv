@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentContract {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the PaymentContract are:
+1) Incorrect visibility/ownership: The owner variable is public, which exposes it to potential manipulation.
+2) Insufficient gas: If the contract balance runs out of gas during execution, it may result in transactions failing.
+3) Ether leakage: The transfer function is used to send Ether to the recipient, which can result in Ether being locked in the contract if the transfer fails.

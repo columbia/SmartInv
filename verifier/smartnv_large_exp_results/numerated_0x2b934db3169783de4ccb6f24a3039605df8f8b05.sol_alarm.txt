@@ -1,0 +1,23 @@
+The contract to analyze:
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+
+     constructor(address _token, uint _price) {
+          token = IERC20(_token);
+          owner = msg.sender;
+          price = _price;
+     }
+
+     function buyTokens(uint amount) public {
+          uint totalCost = amount * price;
+          token.transferFrom(msg.sender, address(this), totalCost);
+          token.transfer(msg.sender, amount);
+     }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function buyTokens updates the state (transferring tokens) before performing the necessary checks or calculations, which may lead to inconsistent state.
+2) Integer overflow: The multiplication in calculating the totalCost may result in an integer overflow if the amount is large enough, leading to unexpected behavior.

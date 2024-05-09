@@ -1,0 +1,12 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+  
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+}
+<\contract\>

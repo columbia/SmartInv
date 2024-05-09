@@ -1,0 +1,31 @@
+Contract: 
+contract VotingSystem {
+    address public admin;
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += amount;
+        totalVotes += amount;
+    }
+
+    function withdrawVotes() public {
+        require(votes[msg.sender] > 0, "No votes to withdraw");
+        uint amount = votes[msg.sender];
+        votes[msg.sender] = 0;
+        totalVotes -= amount;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

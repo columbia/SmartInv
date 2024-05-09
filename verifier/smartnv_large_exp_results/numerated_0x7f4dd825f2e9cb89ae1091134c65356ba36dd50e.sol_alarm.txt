@@ -1,0 +1,21 @@
+<\contract\>
+contract Vesting {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public constant releaseAmount = 1000 ether;
+
+    constructor(address _beneficiary, uint _releaseTime) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+    }
+
+    function release() public {
+        require(block.timestamp >= releaseTime, "Release time has not been reached yet");
+        payable(beneficiary).transfer(releaseAmount);
+    }
+}
+<\contract\>
+Potential vulnerabilities:
+1) Reentrancy: The transfer of ether to the beneficiary in the release function can potentially be vulnerable to reentrancy attacks.
+2) Incorrect visibility: The release function should be marked as external instead of public for better security practices.
+3) Insufficient gas: The transfer of ether to the beneficiary could fail due to insufficient gas limit, especially if the beneficiary is a contract with high gas cost operations.

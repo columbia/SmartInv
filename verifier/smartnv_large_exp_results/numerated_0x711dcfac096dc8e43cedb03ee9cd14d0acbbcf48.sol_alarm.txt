@@ -1,0 +1,23 @@
+<\contract\> 
+contract VotingSystem {
+          address[] public voters;
+          mapping(address => bool) public hasVoted;
+          uint public totalVotes;
+
+          function vote() public {
+              require(hasVoted[msg.sender] == false, "You have already voted");
+              voters.push(msg.sender);
+              hasVoted[msg.sender] = true;
+              totalVotes++;
+          }
+
+          function doubleVote() public {
+              hasVoted[msg.sender] = false;
+              totalVotes--;
+          }
+      }
+<\contract\> 
+
+1) ID uniqueness violation
+2) inconsistent state update
+3) insufficient gas

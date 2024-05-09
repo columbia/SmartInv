@@ -1,0 +1,19 @@
+<\contract\> 
+contract VotingContract {
+    IERC20 public token;
+    mapping(address => bool) public hasVoted;
+    
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        token.transferFrom(msg.sender, address(this), 1);
+        
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The `hasVoted` mapping is public, which exposes voter information to everyone.
+2) Insufficient gas: There is no check for the remaining gas before execution, which could lead to out-of-gas errors.
+3) Atomicity violation: The `hasVoted[msg.sender] = true;` line is not wrapped in a `nonReentrant` modifier, potentially allowing reentrancy attacks.

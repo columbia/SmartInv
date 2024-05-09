@@ -1,0 +1,50 @@
+The contract provided for analysis:
+<\contract\>
+contract Vesting {
+     address  public beneficiary;
+     uint256 public vestingStart;
+     uint256 public vestingDuration;
+     uint256 public vestingCliff;
+     uint256 public fullyVestedAmount;
+     uint256 public vestedAmount;
+     IERC20 public token;
+     bool public revoked;
+
+     function vestingSchedule(address _beneficiary, uint256 _start, uint256 _duration, uint256 _cliff, uint256 _fullyVested, address _token) external {
+        beneficiary = _beneficiary;
+        vestingStart = _start;
+        vestingDuration = _duration;
+        vestingCliff = _cliff;
+        fullyVestedAmount = _fullyVested;
+        token = IERC20(_token);
+        vestedAmount = 0;
+        revoked = false;
+     }
+
+     function vest() external {
+        require(!revoked, "Vesting revoked");
+        require(block.timestamp >= vestingStart, "Vesting not started yet");
+        require(vestedAmount < fullyVestedAmount, "Fully vested");
+       
+        uint256 currentTime = block.timestamp;
+
+        if (currentTime < vestingCliff) {
+            vestedAmount = 0;
+        } else if (currentTime >= vestingStart + vestingDuration) {
+            vestedAmount = fullyVestedAmount;
+        } else {
+            vestedAmount = fullyVestedAmount * (currentTime - vestingStart) / vestingDuration;
+        }
+
+        token.transfer(beneficiary, vestedAmount);
+     }
+
+     function revoke() external {
+        require(block.timestamp >= vestingStart + vestingDuration, "Cannot revoke yet");
+        require(!revoked, "Already revoked");
+        
+        token.transfer(beneficiary, fullyVestedAmount - vestedAmount);
+        revoked = true;
+     }
+}
+<\contract\>

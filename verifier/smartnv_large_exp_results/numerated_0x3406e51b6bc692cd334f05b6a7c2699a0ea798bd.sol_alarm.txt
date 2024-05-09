@@ -1,0 +1,36 @@
+<\contract\> 
+contract Escrow {
+     address public seller;
+     address public buyer;
+     address public arbiter;
+     bool public sellerAgrees;
+     bool public buyerAgrees;
+     bool public arbiterAgrees;
+
+     function confirmAgreement(string memory party) public {
+         require(msg.sender == seller || msg.sender == buyer || msg.sender == arbiter, "You are not authorized to confirm agreement");
+         if (keccak256(abi.encodePacked(party)) == keccak256(abi.encodePacked("seller"))) {
+             sellerAgrees = true;
+         } else if (keccak256(abi.encodePacked(party)) == keccak256(abi.encodePacked("buyer"))) {
+             buyerAgrees = true;
+         } else if (keccak256(abi.encodePacked(party)) == keccak256(abi.encodePacked("arbiter"))) {
+             arbiterAgrees = true;
+         } else {
+             revert("Invalid party");
+         }
+     }
+
+     function releaseFunds() public {
+         require(sellerAgrees && buyerAgrees || sellerAgrees && arbiterAgrees, "Agreement not reached");
+         // Release funds to seller
+     }
+
+     function dispute() public {
+         require(!sellerAgrees || !buyerAgrees || !arbiterAgrees, "All parties agree, no dispute");
+         // Handle dispute resolution
+     }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

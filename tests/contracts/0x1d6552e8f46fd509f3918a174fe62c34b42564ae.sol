@@ -1,0 +1,36 @@
+{{
+  "language": "Solidity",
+  "sources": {
+    "contracts/bulk/ETHBulkRegistrarV1.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity >=0.8.4;\nimport \"./IETHBulkRegistrar.sol\";\nimport \"./IETHRegistrarController.sol\";\n\ncontract ETHBulkRegistrarV1 is IETHBulkRegistrar {\n    IETHRegistrarController public immutable registrarController;\n\n    constructor(IETHRegistrarController _registrarController) {\n        registrarController = _registrarController;\n    }\n\n    function bulkRentPrice(string[] calldata names, uint256 duration) external view override returns (uint256 total) {\n        for (uint256 i = 0; i < names.length; i++) {\n            uint price = registrarController.rentPrice(names[i], duration);\n            total += price;\n        }\n        return total;\n    }\n\n    function bulkMakeCommitment(string[] calldata name, address owner, bytes32 secret) external view override returns (bytes32[] memory commitmentList) {\n        commitmentList = new bytes32[](name.length);\n        for (uint256 i = 0; i < name.length; i++) {\n            commitmentList[i] = registrarController.makeCommitmentWithConfig(name[i], owner, secret, address(0), address(0));\n        }\n        return commitmentList;\n    }\n\n    function commitments(bytes32 commit) external view override returns (uint256) {\n        return registrarController.commitments(commit);\n    }\n\n    function bulkCommit(bytes32[] calldata commitmentList) external override {\n        for (uint256 i = 0; i < commitmentList.length; i++) {\n            registrarController.commit(commitmentList[i]);\n        }\n    }\n\n    function bulkRegister(string[] calldata names, address owner, uint duration, bytes32 secret) external payable override {\n        uint256 cost = 0;\n        for (uint256 i = 0; i < names.length; i++) {\n            uint price = registrarController.rentPrice(names[i], duration);\n            registrarController.register{value: (price)}(names[i], owner, duration, secret);\n            cost = cost + price;\n        }\n\n        // Send any excess funds back\n        if (msg.value > cost) {\n            (bool sent, ) = msg.sender.call{value: msg.value - cost}(\"\");\n            require(sent, \"Failed to send Ether\");\n        }\n    }\n\n    function registerWithConfig(string calldata name, address owner, uint duration, bytes32 secret, address resolver, address addr) external payable override {\n        uint cost = registrarController.rentPrice(name, duration);\n        registrarController.registerWithConfig{value: cost}(name, owner, duration, secret, resolver, addr);\n        // Send any excess funds back\n        if (msg.value > cost) {\n            (bool sent, ) = msg.sender.call{value: msg.value - cost}(\"\");\n            require(sent, \"Failed to send Ether\");\n        }\n    }\n\n    function makeCommitmentWithConfig(string calldata name, address owner, bytes32 secret, address resolver, address addr) external view override returns (bytes32 commitment) {\n        commitment = registrarController.makeCommitmentWithConfig(name, owner, secret, resolver, addr);\n        return commitment;\n    }\n}\n"
+    },
+    "contracts/bulk/IETHRegistrarController.sol": {
+      "content": "pragma solidity >=0.8.4;\n\ninterface IETHRegistrarController {\n    function rentPrice(string memory, uint) external view returns (uint);\n\n    function available(string memory) external returns (bool);\n\n    function commit(bytes32) external;\n\n    function register(string calldata, address, uint256, bytes32) external payable;\n\n    function registerWithConfig(string memory, address, uint256, bytes32, address, address) external payable;\n\n    function makeCommitmentWithConfig(string memory, address, bytes32, address, address) external pure returns (bytes32);\n\n    function renew(string calldata, uint256) external payable;\n\n    function commitments(bytes32) external view returns (uint256);\n}\n"
+    },
+    "contracts/bulk/IETHBulkRegistrar.sol": {
+      "content": "pragma solidity >=0.8.4;\n\ninterface IETHBulkRegistrar {\n    function bulkRentPrice(string[] calldata names, uint256 duration) external view returns (uint256 total);\n\n    function bulkRegister(string[] calldata names, address owner, uint duration, bytes32 secret) external payable;\n\n    function bulkCommit(bytes32[] calldata commitments) external;\n\n    function bulkMakeCommitment(string[] calldata name, address owner, bytes32 secret) external view returns (bytes32[] memory commitments);\n\n    function commitments(bytes32 commit) external view returns (uint256);\n\n    function registerWithConfig(string calldata name, address owner, uint duration, bytes32 secret, address resolver, address addr) external payable;\n\n    function makeCommitmentWithConfig(string calldata name, address owner, bytes32 secret, address resolver, address addr) external view returns (bytes32);\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 10000
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "devdoc",
+          "userdoc",
+          "metadata",
+          "abi"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    },
+    "libraries": {}
+  }
+}}

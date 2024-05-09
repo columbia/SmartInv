@@ -1,0 +1,39 @@
+Contract: 
+contract TokenSale {
+     IERC20 public token;
+     address public admin;
+     address public buyer;
+     uint public rate; 
+     uint public amount;
+
+     constructor(IERC20 _token, address _admin) {
+          token = _token;
+          admin = _admin;
+          rate = 1000; 
+     }
+
+     function setRate(uint _rate) public {
+          require(msg.sender == admin, "only admin can set rate");
+          rate = _rate;
+     }
+
+     function buyTokens(uint _amount) public {
+          require(token.balanceOf(address(this)) >= _amount * rate, "insufficient tokens in contract");
+          token.transfer(msg.sender, _amount * rate);
+     }
+
+     function withdrawTokens(uint _amount) public {
+          require(msg.sender == admin, "only admin can withdraw tokens");
+          require(token.balanceOf(address(this)) >= _amount, "insufficient tokens in contract");
+          token.transfer(admin, _amount);
+     }
+
+     function setBuyer(address _buyer) public {
+          buyer = _buyer;
+     }
+} 
+
+Output: 
+- Incorrect visibility/ownership in functions setRate and withdrawTokens. 
+- Privilege escalation in setRate function.
+- Inconsistent state update in buyTokens and withdrawTokens functions.

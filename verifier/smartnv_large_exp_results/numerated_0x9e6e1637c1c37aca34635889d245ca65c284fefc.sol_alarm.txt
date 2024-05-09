@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract Lottery {
+    address public owner;
+    uint public ticketPrice;
+    mapping(address => uint) public ticketsBought;
+
+    constructor(uint _ticketPrice) public {
+        owner = msg.sender;
+        ticketPrice = _ticketPrice;
+    }
+
+    function buyTicket() public payable {
+        require(msg.value >= ticketPrice, "Insufficient funds");
+        uint numTickets = msg.value / ticketPrice;
+        ticketsBought[msg.sender] += numTickets;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        // Logic to select a random winner
+    }
+}
+<\contract_to_analyze\>

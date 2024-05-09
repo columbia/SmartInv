@@ -1,0 +1,27 @@
+The contract provided for analysis is:
+
+contract VotingSystem {
+     struct Voter {
+           uint256 votedProposalID;
+           bool hasVoted;
+           bool isAdmin; 
+           }
+     mapping(address => Voter) public voters;
+     mapping(uint256 => uint256) public proposalResults;
+     uint256 public totalVoters;
+
+     function vote(uint256 proposalID) external {
+           require(voters[msg.sender].hasVoted == false, "Already voted");
+           require(voters[msg.sender].isAdmin == false, "Admin cannot vote");
+           voters[msg.sender].hasVoted = true;
+           voters[msg.sender].votedProposalID = proposalID;
+           proposalResults[proposalID]++;
+           totalVoters++;
+      }
+}
+
+Potential vulnerabilities in the contract:
+- privilege escalation: The isAdmin flag is not being properly managed and can lead to unauthorized privilege escalation.
+- inconsistent state update: There is a potential for inconsistent state updates in the totalVoters count and proposalResults mapping.
+- ID uniqueness violation: There is no check for unique proposal IDs, which may lead to conflicts or inaccuracies in the proposalResults mapping.
+- incorrect visibility/ownership: The visibility of voter information and the lack of ownership controls can lead to unauthorized access or manipulation of voter data.

@@ -1,0 +1,38 @@
+<\your_contract\> 
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerOk;
+    bool public sellerOk;
+
+    function setUpEscrow(address _seller, address _arbiter) public {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = msg.value;
+    }
+
+    function confirmPurchase() public {
+        if (msg.sender == buyer) {
+            buyerOk = true;
+        } else if (msg.sender == seller) {
+            sellerOk = true;
+        }
+
+        if (buyerOk && sellerOk) {
+            _transfer();
+        }
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund buyer");
+        buyer.transfer(price);
+    }
+
+    function _transfer() internal {
+        seller.transfer(price);
+    }
+}
+<\your_contract\> 

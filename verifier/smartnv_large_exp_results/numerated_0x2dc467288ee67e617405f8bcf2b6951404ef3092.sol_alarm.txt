@@ -1,0 +1,24 @@
+contract Wallet {
+    mapping(address => uint) public balance;
+
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transfer(address recipient, uint amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+        balance[recipient] += amount;
+    }
+} 
+
+Potential vulnerabilities:
+1) Integer overflow/underflow: vulnerability in deposit function
+2) Insufficient gas: vulnerability in withdraw function
+3) Inconsistent state update: vulnerability in transfer function

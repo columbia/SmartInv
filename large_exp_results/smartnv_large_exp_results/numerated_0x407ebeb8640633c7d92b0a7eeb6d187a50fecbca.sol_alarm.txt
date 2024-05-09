@@ -1,0 +1,22 @@
+<\contract\>
+contract VotingSystem {
+    address public owner;
+    mapping(address => uint256) public votes;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function vote(address _voter, uint256 _amount) public {
+        require(msg.sender == owner, "Only owner can call this function");
+        votes[_voter] += _amount;
+    }
+    
+    function withdrawVotes(address _voter) public {
+        require(msg.sender == _voter, "Can only withdraw own votes");
+        uint256 amount = votes[_voter];
+        votes[_voter] = 0;
+        // Transfer amount to _voter
+    }
+}
+<\contract\>

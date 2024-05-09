@@ -1,0 +1,25 @@
+<\contract\>
+contract Crowdsale {
+     address public owner;
+     uint public totalSupply;
+     mapping(address => uint) public balances;
+     
+     constructor(uint _totalSupply) public {
+         owner = msg.sender;
+         totalSupply = _totalSupply;
+         balances[owner] = totalSupply;
+     }
+     
+     function buyTokens(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         balances[owner] += amount;
+     }
+     
+     function transfer(address to, uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         balances[to] += amount;
+     }
+}
+<\contract\>

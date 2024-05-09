@@ -1,0 +1,21 @@
+<\contract_3\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        msg.sender.transfer(highestBid); 
+    }
+} 
+
+The potential vulnerabilities in the contract are:
+4) inconsistent state update
+10) arithmetic flaw

@@ -1,0 +1,19 @@
+<\analyzed_contract\> 
+contract StakingPool {
+     IERC20 public token;
+     mapping(address => uint) public stakedBalance;
+
+     function stake(uint amount) external {
+         token.transferFrom(msg.sender, address(this), amount);
+         stakedBalance[msg.sender] += amount;
+     }
+
+     function unstake(uint amount) external {
+         require(stakedBalance[msg.sender] >= amount, "insufficient staked balance");
+         stakedBalance[msg.sender] -= amount;
+         token.transfer(msg.sender, amount);
+     }
+}
+<\analyzed_contract\> 
+
+Output: healthy

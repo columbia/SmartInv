@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+           address addr;
+           uint256 votedProposalId;
+           bool hasVoted;
+          }
+     mapping (uint256 => Proposal) public proposals;
+     mapping (address => Voter) public voters;
+     uint256 public totalProposals;
+     
+     function vote(uint256 proposalId) external {
+           require(proposals[proposalId].isActive, "Proposal is not active");
+           require(!voters[msg.sender].hasVoted, "Already voted");
+           proposals[proposalId].voteCount++;
+           voters[msg.sender].votedProposalId = proposalId;
+           voters[msg.sender].hasVoted = true;
+      }
+     
+     function createProposal(string memory _description) external {
+           proposals[totalProposals] = Proposal(_description, true, 0);
+           totalProposals++;
+      }
+}
+<\contract\>

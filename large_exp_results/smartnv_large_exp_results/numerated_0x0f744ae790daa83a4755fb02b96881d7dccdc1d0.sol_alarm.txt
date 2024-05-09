@@ -1,0 +1,27 @@
+The contract provided for analysis is:
+
+```
+contract Crowdfunding {
+    uint totalAmountRaised;
+    mapping(address => uint) public contributions;
+
+    function contribute() public payable {
+        totalAmountRaised += msg.value;
+        contributions[msg.sender] += msg.value;
+    }
+
+    function withdrawFunds() public {
+        uint amount = contributions[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        totalAmountRaised -= amount;
+        contributions[msg.sender] = 0;
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+1) Integer overflow/underflow in the totalAmountRaised variable.
+2) Inconsistent state update in the withdrawFunds function.
+3) Ether leakage in the call to msg.sender in the withdrawFunds function.

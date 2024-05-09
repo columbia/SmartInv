@@ -1,0 +1,31 @@
+Contract being analyzed:
+
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice) public {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient tokens balance");
+        balances[msg.sender] -= _amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        address payable _owner = address(uint160(owner));
+        _owner.transfer(address(this).balance);
+    }
+}
+
+Output: 
+healthy

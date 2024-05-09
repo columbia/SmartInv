@@ -1,0 +1,26 @@
+The contract provided for analysis is:
+
+contract ExampleContract {
+     address public owner;
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+         balances[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         msg.sender.transfer(amount);
+     }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Integer overflow/underflow - The balances mapping might be susceptible to integer overflow or underflow if the amount deposited or withdrawn exceeds the maximum or minimum integer value.
+
+2) Ether leakage - If there are issues with the withdraw function implementation, it could potentially lead to ether being stuck in the contract and not being properly transferred back to the sender.
+
+3) Insufficient gas - If the contract has a large number of balances stored in the mapping, the gas required to iterate through all of them during withdrawal could exceed the block gas limit, leading to a failed transaction.
+
+Therefore, the potential vulnerabilities in the contract are integer overflow/underflow, ether leakage, and insufficient gas.

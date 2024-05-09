@@ -1,0 +1,39 @@
+The contract provided for analysis:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State { Created, Locked, Released, Inactive}
+    State public state;
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.Created;
+    }
+
+    function confirmPurchase() public {
+        require(msg.sender == buyer, "Only buyer can confirm");
+        state = State.Locked;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can confirm");
+        state = State.Released;
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Only seller or arbiter can refund");
+        state = State.Inactive;
+    }
+}
+
+Potential Vulnerabilities:
+- Incorrect Visibility/Ownership: The state variable is public, allowing anyone to directly access and modify it. This may lead to unauthorized changes in the state of the contract.
+- Business Logic Flaw: The 'confirmReceived' function allows either the buyer or the arbiter to confirm the received item, which may result in inconsistency or improper resolution of disputes between the parties.
+- Privilege Escalation: The 'refundBuyer' function allows the seller or arbiter to refund the buyer, potentially leading to misuse of authority or unauthorized refunds.
+- Inconsistent State Update: The state variable is directly set in each function without proper checks or safeguards, which could result in unexpected state transitions or inconsistent contract state.
+- Cross Bridge Inconsistency: The contract involves multiple parties (buyer, seller, arbiter) with different roles, which may lead to conflicts of interest or disputes that are not properly resolved.

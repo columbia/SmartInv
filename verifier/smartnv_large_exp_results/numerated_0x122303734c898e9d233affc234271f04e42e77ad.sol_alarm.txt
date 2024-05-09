@@ -1,0 +1,42 @@
+***Contract to be analyzed:***
+
+```solidity
+contract Lottery {
+    address[] public players;
+    address public manager;
+
+    constructor() {
+        manager = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Minimum 0.01 ether is required to enter");
+        players.push(msg.sender);
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+
+    function pickWinner() public restricted {
+        uint index = random() % players.length;
+        address winner = players[index];
+        address payable winnerAddress = payable(winner);
+        winnerAddress.transfer(address(this).balance);
+        players = new address[](0);
+    }
+
+    modifier restricted {
+        require(msg.sender == manager, "Only manager can call this function");
+        _;
+    }
+
+    function getPlayers() public view returns(address[] memory) {
+        return players;
+    }
+}
+```
+
+***Output:***
+
+- `healthy`

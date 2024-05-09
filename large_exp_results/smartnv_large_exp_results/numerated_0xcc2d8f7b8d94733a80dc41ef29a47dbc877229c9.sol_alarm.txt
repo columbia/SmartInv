@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `proposal.votedAmount` is directly updated in the `execute` function without proper synchronization or checking, which can lead to inconsistent state updates.
+
+2) Incorrect visibility/ownership: The contract implements the interface `IERC20` but doesn't define the required functions. This might lead to incorrect visibility and ownership issues in the contract.
+
+3) Insufficient gas: The `endExecute` function has a potentially heavy operation of checking if `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which might require significant gas to execute and could result in out of gas errors.
+
+Therefore, the identified potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and insufficient gas.

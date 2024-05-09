@@ -1,0 +1,26 @@
+<\contract\>
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public votesReceived;
+    address public winner;
+
+    function vote(address _voter, uint256 _numVotes) public {
+        require(_numVotes > 0, "Number of votes must be greater than 0");
+        votesReceived[_voter] += _numVotes;
+        totalVotes += _numVotes;
+    }
+
+    function determineWinner() public {
+        require(totalVotes > 0, "No votes have been cast");
+        uint256 maxVotes = 0;
+        address leadingCandidate;
+        for (uint i = 0; i < totalVotes; i++) {
+            if (votesReceived[msg.sender] > maxVotes) {
+                maxVotes = votesReceived[msg.sender];
+                leadingCandidate = msg.sender;
+            }
+        }
+        winner = leadingCandidate;
+    }
+}
+<\contract\>

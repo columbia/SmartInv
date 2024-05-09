@@ -1,0 +1,55 @@
+<\contract_to_analyze\> 
+contract Escrow {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public amount;
+         bool public buyerIn;
+         bool public sellerIn;
+         bool public arbiterIn;
+         
+         function Escrow(address _buyer, address _seller, address _arbiter) {
+             buyer = _buyer;
+             seller = _seller;
+             arbiter = _arbiter;
+         }
+         
+         function deposit(address party) payable {
+             require(msg.value > 0);
+             if (party == buyer) {
+                 buyerIn = true;
+             } else if (party == seller) {
+                 sellerIn = true;
+             } else if (party == arbiter) {
+                 arbiterIn = true;
+             }
+             amount += msg.value;
+         }
+         
+         function refund(address party) {
+             require((buyerIn && sellerIn) || (buyerIn && arbiterIn) || (arbiterIn && sellerIn));
+             if (party == buyer && buyerIn) {
+                 buyer.transfer(amount);
+             } else if (party == seller && sellerIn) {
+                 seller.transfer(amount);
+             } else if (party == arbiter && arbiterIn) {
+                 arbiter.transfer(amount);
+             }
+         }
+         
+         function pay(address party) {
+             require((buyerIn && sellerIn) || (buyerIn && arbiterIn) || (arbiterIn && sellerIn));
+             if (party == buyer && buyerIn) {
+                 seller.transfer(amount);
+             } else if (party == seller && sellerIn) {
+                 buyer.transfer(amount);
+             } else if (party == arbiter && arbiterIn) {
+                 seller.transfer(amount);
+             }
+         }
+         
+     } 
+
+Output: 
+- integer overflow/underflow
+- inconsistent state update

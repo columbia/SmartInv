@@ -1,0 +1,20 @@
+Contract to be analyzed:
+contract PaymentProcessor {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function transferFunds(uint amount, address payable recipient) public {
+        require(msg.sender == owner, "Only owner can transfer funds");
+        recipient.transfer(amount);
+    }
+
+    function updateOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can update owner");
+        owner = newOwner;
+    }
+}
+Output:
+healthy

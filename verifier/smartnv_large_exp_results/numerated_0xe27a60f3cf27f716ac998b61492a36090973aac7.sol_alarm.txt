@@ -1,0 +1,27 @@
+<\contract\> 
+contract Lottery {
+    mapping(address => uint) public players;
+    address public admin;
+
+    function buyTicket() public payable {
+        require(msg.value > 0, "Amount should be greater than 0");
+        players[msg.sender] += msg.value;
+    }
+
+    function selectWinner() public {
+        require(msg.sender == admin, "Only admin can select winner");
+        address winner = // logic to select winner
+        payable(winner).transfer(address(this).balance);
+        players[winner] = 0;
+    }
+
+    function setAdmin(address _admin) public {
+        admin = _admin;
+    }
+}
+<\contract\> 
+
+4) inconsistent state update
+7) ID uniqueness violation
+8) reentrancy
+9) integer overflow/underflow

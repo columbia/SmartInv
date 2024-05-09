@@ -1,0 +1,18 @@
+The contract provided for analysis:
+
+contract TokenSwap {
+    address public token1;
+    address public token2;
+    uint public rate;
+
+    function swapTokens(uint amount) external {
+        require(token1.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        uint token2Amount = amount * rate;
+        token1.transferFrom(msg.sender, address(this), amount);
+        token2.transfer(msg.sender, token2Amount);
+    }
+}
+
+Potential vulnerabilities:
+1) Integer overflow/underflow in the calculation of token2Amount.
+2) Insufficient gas provided for the token transfer operations.

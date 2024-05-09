@@ -1,0 +1,23 @@
+The contract to analyze:
+
+
+contract StoreData {
+         uint public data;
+         address public owner;
+         
+         constructor() {
+             owner = msg.sender;
+         }
+         
+         function setData(uint _data) public {
+             require(msg.sender == owner, "Only owner can set data");
+             data = _data;
+         }
+         
+         function getData() public view returns (uint) {
+             return data;
+         }
+}
+
+Output: 
+Healthy

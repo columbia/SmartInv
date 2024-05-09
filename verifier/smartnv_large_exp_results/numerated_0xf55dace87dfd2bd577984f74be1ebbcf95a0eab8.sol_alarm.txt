@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract Lottery {
+    address public manager;
+    address[] public players;
+
+    constructor() {
+        manager = msg.sender;
+    }
+
+    function enter() public payable {
+        require(msg.value > 0.01 ether, "Not enough ETH sent.");
+        players.push(msg.sender);
+    }
+
+    function pickWinner() public restricted {
+        uint index = random() % players.length;
+        address payable winner = payable(players[index]);
+        winner.transfer(address(this).balance);
+        players = new address[](0);
+    }
+
+    function getPlayers() public view returns (address[] memory) {
+        return players;
+    }
+
+    modifier restricted() {
+        require(msg.sender == manager, "Only manager can call this function.");
+        _;
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+}
+<\contract_to_analyze\>

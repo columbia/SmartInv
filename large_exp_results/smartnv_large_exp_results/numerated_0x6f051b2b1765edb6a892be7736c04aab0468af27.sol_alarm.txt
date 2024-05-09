@@ -1,0 +1,53 @@
+Contract MultiSigWallet {
+    address[] public owners;
+    uint public transactionCount;
+    uint public minimumSignatures;
+    
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+        mapping(address => bool) signatures;
+    }
+
+    mapping(uint => Transaction) public transactions;
+
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        uint transactionId = transactionCount;
+        transactions[transactionId] = Transaction({
+            destination: destination,
+            value: value,
+            data: data,
+            executed: false
+        });
+        transactionCount++;
+    }
+
+    function signTransaction(uint transactionId) public {
+        require(transactionId < transactionCount, "Transaction does not exist");
+
+        transactions[transactionId].signatures[msg.sender] = true;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        require(transactionId < transactionCount, "Transaction does not exist");
+        
+        Transaction storage transaction = transactions[transactionId];
+        require(transaction.executed == false, "Transaction already executed");
+        
+        uint count = 0;
+        for (uint i = 0; i < owners.length; i++) {
+            if (transaction.signatures[owners[i]]) {
+                count++;
+            }
+        }
+        require(count >= minimumSignatures, "Insufficient signatures");
+        
+        // Execute transaction
+        transaction.executed = true;
+        (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+    }
+}
+```

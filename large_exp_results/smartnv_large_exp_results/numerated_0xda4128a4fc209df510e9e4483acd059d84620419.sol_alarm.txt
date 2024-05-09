@@ -1,0 +1,22 @@
+<\contract\>
+contract PaymentProcessor {
+    mapping(address => uint256) public payments;
+    address public admin;
+
+    function pay() public payable {
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(payments[msg.sender] >= amount, "Insufficient balance");
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        payments[msg.sender] -= amount;
+    }
+
+    function setAdmin(address _admin) public {
+        require(msg.sender == admin, "Only admin can set new admin");
+        admin = _admin;
+    }
+}
+<\contract\>

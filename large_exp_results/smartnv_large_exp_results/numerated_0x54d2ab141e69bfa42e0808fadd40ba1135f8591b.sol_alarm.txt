@@ -1,0 +1,47 @@
+<\Analyzing Contract\>
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 votedAmount;
+        address proposer;
+    }
+    
+    address public owner;
+    address[] public voters;
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint256) public voteCount;
+    mapping(address => Proposal) public proposals;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function startVoting() external {
+        require(msg.sender == owner, "Only owner can start voting");
+        Proposal memory newProposal;
+        newProposal.startTime = block.timestamp;
+        newProposal.proposer = msg.sender;
+        proposals[msg.sender] = newProposal;
+    }
+    
+    function vote(uint256 amount) external {
+        require(proposals[msg.sender].startTime != 0, "No active proposal");
+        require(hasVoted[msg.sender] == false, "Already voted");
+        voteCount[msg.sender] = amount;
+        proposals[msg.sender].votedAmount += amount;
+        voters.push(msg.sender);
+        hasVoted[msg.sender] = true;
+    }
+    
+    function endVoting() external {
+        require(msg.sender == owner, "Only owner can end voting");
+        for (uint i = 0; i < voters.length; i++) {
+            address voter = voters[i];
+            uint256 vote = voteCount[voter];
+            if (proposals[voter].votedAmount >= vote) {
+                // Execute proposal
+            }
+        }
+    }
+}
+<\Analyzing Contract\>

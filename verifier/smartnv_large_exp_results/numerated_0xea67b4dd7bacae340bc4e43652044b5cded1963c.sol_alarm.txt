@@ -1,0 +1,28 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public released;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+    
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        require(released == false, "Amount already released");
+        
+        // Transfer amount to seller
+        payable(seller).transfer(amount);
+        released = true;
+    }
+}
+<\contract\> 
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

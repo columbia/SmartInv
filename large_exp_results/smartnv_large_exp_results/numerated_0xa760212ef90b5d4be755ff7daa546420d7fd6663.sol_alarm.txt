@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership for the `votingToken` and `proposal.sTime` variables.
+2) Inconsistent state update in the `execute` function as the `proposal.votedAmount` is updated without proper synchronization in a potentially concurrent environment.
+3) Insufficient gas in the `endExecute` function as the gas estimation might be incorrect leading to potential failures.
+4) ID uniqueness violation could occur if the `votingToken` doesn't properly handle duplicate IDs.
+5) Business logic flaw in the `endExecute` function, as the condition `(votingToken.balanceOf(address(this))*2 >votingToken.totalSupply())` might not accurately reflect the intended execution.
+6) Incorrect ownership for the `lockedFunds` variable.

@@ -1,0 +1,35 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+
+    constructor(address _seller, address _arbiter) public {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == buyer, "only buyer can deposit");
+        escrowAmount += amount;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == arbiter, "only arbiter can release amount");
+        seller.transfer(escrowAmount);
+        escrowAmount = 0;
+    }
+
+    function refundAmount() public {
+        require(msg.sender == arbiter, "only arbiter can refund amount");
+        buyer.transfer(escrowAmount);
+        escrowAmount = 0;
+    }
+}
+<\contract\> 
+
+Output:
+1) privilege escalation
+2) inconsistent state update

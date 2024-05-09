@@ -1,0 +1,21 @@
+<\contract_to_be_analyzed\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+
+    constructor(address _token) {
+        admin = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) external {
+        require(token.balanceOf(address(this)) >= _amount, "Not enough tokens available");
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdraw(uint _amount) external {
+        require(msg.sender == admin, "You are not authorized to withdraw");
+        token.transfer(msg.sender, _amount);
+    }
+}
+<\contract_to_be_analyzed\>

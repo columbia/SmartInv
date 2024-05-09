@@ -1,0 +1,50 @@
+Contract to analyze:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        
+        sender.voted = true;
+        sender.delegate = to;
+        
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            totalVotes += sender.weight;
+        }
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        
+        sender.vote = proposal;
+        sender.voted = true;
+        
+        totalVotes += sender.weight;
+    }
+
+    function endVoting() public {
+        require(msg.sender == owner, "Only owner can end voting.");
+        
+        // Code to calculate winning proposal and take action.
+    }
+}
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership

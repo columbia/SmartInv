@@ -1,0 +1,31 @@
+Contract to analyze:
+
+contract TokenSale {
+    address public token; 
+    uint public price; 
+    uint public availableTokens; 
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        require(availableTokens >= amount, "Not enough tokens available");
+
+        ERC20(token).transfer(msg.sender, amount);
+        availableTokens -= amount;
+    }
+
+    function updatePrice(uint newPrice) public {
+        require(msg.sender == owner, "Only owner can update the price");
+        price = newPrice;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+
+Output:
+- Incorrect visibility/ownership: The owner variable is not defined in the contract, which can lead to unauthorized access to sensitive functions.
+- Integer overflow/underflow: The subtraction operation in the buyTokens function can result in integer underflow if amount is greater than availableTokens, leading to unexpected behavior.
+- Insufficient gas: The withdrawFunds function transfer operation might run out of gas if the contract balance is too high, preventing the owner from withdrawing funds.
+- Incorrect payment amount: There is a potential vulnerability for a price manipulation attack where the attacker can manipulate the amount of tokens by sending a different value than the expected amount.

@@ -1,0 +1,30 @@
+Contract to analyze:
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+     mapping(address => uint) public funds;
+     
+     function placeBid() public payable {
+          require(msg.value > highestBid, "bid not high enough");
+          funds[msg.sender] += msg.value;
+          highestBidder = msg.sender;
+          highestBid = msg.value;
+     }
+     
+     function withdrawBid() public {
+          uint amount = funds[msg.sender];
+          require(amount > 0, "no funds to withdraw");
+          funds[msg.sender] = 0;
+          msg.sender.transfer(amount);
+     }
+     
+     function endAuction() public {
+          require(msg.sender == highestBidder, "only highest bidder can end auction");
+          uint amount = funds[highestBidder];
+          funds[highestBidder] = 0;
+          highestBidder.transfer(amount);
+     }
+}
+Identified potential vulnerabilities:
+1) inconsistent state update
+2) reentrancy

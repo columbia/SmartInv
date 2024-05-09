@@ -1,0 +1,34 @@
+<\contract_to_analyze\>
+contract BondingCurve {
+    uint public scale = 1000; 
+    uint public offset = 1000; 
+    uint public slope = 2;
+    uint public reserve = 1000000;
+    IERC20 public token;
+
+    function buy(uint amount) external {
+        uint price = calculatePrice(amount); 
+        require(token.balanceOf(msg.sender) >= price, "Insufficient balance");
+        require(token.allowance(msg.sender, address(this)) >= price, "Allowance not enough"); 
+        token.transferFrom(msg.sender, address(this), price);
+        token.transfer(msg.sender, amount);
+        reserve += price;
+    }
+
+    function sell(uint amount) external {
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        uint refund = calculateRefund(amount);
+        token.transfer(msg.sender, refund);
+        token.transferFrom(address(this), msg.sender, amount);
+        reserve -= refund;
+    }
+
+    function calculatePrice(uint amount) public view returns (uint) {
+        return (amount * slope + offset) * scale - reserve;
+    }
+
+    function calculateRefund(uint amount) public view returns (uint) {
+        return (amount - offset) / slope;
+    }
+}
+<\contract_to_analyze\>

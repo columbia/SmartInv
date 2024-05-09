@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    mapping(address => bool) public hasVoted;
+
+    function vote(uint _proposalId) public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        votes[msg.sender] = _proposalId;
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeVote(uint _newProposalId) public {
+        require(hasVoted[msg.sender], "You have not voted yet");
+        votes[msg.sender] = _newProposalId;
+    }
+
+    function getVote(address _voter) public view returns(uint) {
+        return votes[_voter];
+    }
+}
+
+Potential vulnerabilities in the contract:
+
+1) ID uniqueness violation
+2) Inconsistent state update
+3) Incorrect visibility/ownership

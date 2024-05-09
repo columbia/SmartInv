@@ -1,0 +1,26 @@
+Contract to be analyzed:
+
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint => uint) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function processPayment(uint _paymentId, uint _amount) external {
+        require(msg.sender == owner, "Only owner can process payments");
+        payments[_paymentId] = _amount;
+    }
+    
+    function withdrawPayment(uint _paymentId) external {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        uint amount = payments[_paymentId];
+        require(amount > 0, "No payment available for withdrawal");
+        // Sending the payment to the owner
+        payable(owner).transfer(amount);
+        payments[_paymentId] = 0;
+    }
+}
+Output:
+healthy

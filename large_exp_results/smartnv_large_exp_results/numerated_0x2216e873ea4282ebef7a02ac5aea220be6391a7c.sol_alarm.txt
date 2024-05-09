@@ -1,0 +1,25 @@
+<\contract\>
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        string productName;
+        uint quantity;
+        bool isAvailable;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function addProduct(uint _productId, string memory _productName, uint _quantity) public {
+        Product memory newProduct = Product(_productId, _productName, _quantity, true);
+        products[_productId] = newProduct;
+        productCount++;
+    }
+
+    function updateProductQuantity(uint _productId, uint _newQuantity) public {
+        require(products[_productId].isAvailable, "Product not available");
+        
+        products[_productId].quantity = _newQuantity;
+    }
+}
+<\contract\>

@@ -1,0 +1,240 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: BLITZ_GAME
+Function name: Try(string)
+PC address: 143
+Estimated Gas Usage: 1221 - 3806
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x32f1ee166437b15b7716f51f2cbb53a57475bc76.sol:5
+
+function Try(string _response) external payable {
+        require(msg.sender == tx.origin);
+        
+        if(responseHash == keccak256(_response) && msg.value>2 ether)
+        {
+            msg.sender.transfer(this.balance);
+        }
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: Try(string), txdata: 0x3853682cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: BLITZ_GAME
+Function name: set_game(string,string)
+PC address: 482
+Estimated Gas Usage: 29080 - 136319
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x32f1ee166437b15b7716f51f2cbb53a57475bc76.sol:20
+
+function set_game(string _question,string _response) public payable {
+        if(responseHash==0x0) 
+        {
+            responseHash = keccak256(_response);
+            question = _question;
+            questionSender = msg.sender;
+        }
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: set_game(string,string), txdata: 0xfd26c460ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdccb, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: BLITZ_GAME
+Function name: set_game(string,string)
+PC address: 503
+Estimated Gas Usage: 18940 - 85993
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x32f1ee166437b15b7716f51f2cbb53a57475bc76.sol:20
+
+function set_game(string _question,string _response) public payable {
+        if(responseHash==0x0) 
+        {
+            responseHash = keccak256(_response);
+            question = _question;
+            questionSender = msg.sender;
+        }
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: set_game(string,string), txdata: 0xfd26c460fffffffffffffffffe000000000001ffffffffffffffffffffffffffffffff8e9f, value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: BLITZ_GAME
+Function name: Try(string)
+PC address: 663
+Estimated Gas Usage: 192 - 287
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x32f1ee166437b15b7716f51f2cbb53a57475bc76.sol:6
+
+require(msg.sender == tx.origin)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: Try(string), txdata: 0x3853682c, value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: BLITZ_GAME
+Function name: NewQuestion(string,bytes32)
+PC address: 911
+Estimated Gas Usage: 1234 - 4246
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x32f1ee166437b15b7716f51f2cbb53a57475bc76.sol:35
+
+if(msg.sender==questionSender){
+            question = _question;
+            responseHash = _responseHash;
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: NewQuestion(string,bytes32), txdata: 0x3e3ee859, value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: BLITZ_GAME
+Function name: newQuestioner(address)
+PC address: 1194
+Estimated Gas Usage: 1087 - 1512
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x32f1ee166437b15b7716f51f2cbb53a57475bc76.sol:42
+
+if(msg.sender==questionSender)questionSender = newAddress
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: newQuestioner(address), txdata: 0x59988dce, value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: BLITZ_GAME
+Function name: StopGame()
+PC address: 1350
+Estimated Gas Usage: 1053 - 1478
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x32f1ee166437b15b7716f51f2cbb53a57475bc76.sol:30
+
+require(msg.sender==questionSender)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x200000, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: StopGame(), txdata: 0xf50ab247, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: Low
+Contract: BLITZ_GAME
+Function name: set_game(string,string)
+PC address: 1732
+Estimated Gas Usage: 18940 - 85993
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation.  This issue is reported for internal compiler generated code.
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: set_game(string,string), txdata: 0xfd26c460fffffffffffffffffffffffdfffffffffffffffffffffffffffffffffffffff8ff, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: Low
+Contract: BLITZ_GAME
+Function name: set_game(string,string)
+PC address: 1746
+Estimated Gas Usage: 18940 - 85993
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation.  This issue is reported for internal compiler generated code.
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: set_game(string,string), txdata: 0xfd26c460ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd8ff, value: 0x0
+
+

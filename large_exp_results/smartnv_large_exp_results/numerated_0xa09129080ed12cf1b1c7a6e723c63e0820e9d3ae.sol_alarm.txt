@@ -1,0 +1,49 @@
+Contract TimelockController {
+    struct Proposal {
+        uint256 votingStartTime;
+        uint256 votedAmount;
+        address proposer;
+    }
+    
+    address private owner;
+    IERC20 private votingToken;
+    mapping(address => uint256) private startingBalanceList;
+    Proposal private proposal;
+
+    function startExecute() external {
+        require(proposal.votingStartTime == 0, "Ongoing proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        uint256 startingBalance = getStartingBalance(proposal.proposer);
+        startingBalanceList[proposal.proposer] = startingBalance;
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.votingStartTime + 24 hours > block.timestamp, "Execution period has ended");
+        require(proposal.votedAmount == 0, "Voting hasn't finished");
+        votingToken.transferFrom(proposal.proposer, address(this), amount);
+        proposal.votedAmount += amount;
+        votedProposal(proposal);
+    }
+
+    function endExecute() external {
+        require(proposal.votingStartTime != 0, "No proposal exists");
+        require(proposal.votingStartTime + 24 hours < block.timestamp, "Execution period has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "Execution failed");
+        uint256 lockedFunds = votingToken.balanceOf(address(this));
+    }
+
+    function getStartingBalance(address addr) private view returns (uint256) {
+        // Implement logic to determine starting balance
+    }
+
+    function votedProposal(Proposal memory prop) private {
+        // Implement logic for voted proposal
+    }
+} 
+
+Output:
+- Business logic flaw: The function `execute` can be called multiple times for the same proposal, potentially allowing someone to manipulate the voting outcome by repeatedly transferring tokens.
+- Privilege escalation: The `execute` function is accessible externally, potentially allowing unauthorized users to call it and manipulate the voted amount.
+- Incorrect visibility/ownership: The `owner` and `votingToken` variables are marked as private, but they may need to be accessed by other contracts or users, leading to potential access control issues.
+
+Overall Vulnerabilities: Business logic flaw, privilege escalation, incorrect visibility/ownership.

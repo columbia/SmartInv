@@ -1,0 +1,46 @@
+<\contract\> 
+contract SmartVotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          mapping(address => uint256) votes;
+     }
+    
+    address public owner;
+    uint public totalVotedAmount;
+    Proposal public activeProposal;
+
+    function startProposal() external {
+        require(activeProposal.startTime == 0, "There is an active proposal");
+        activeProposal = Proposal(block.timestamp, 0, msg.sender);
+    }
+
+    function vote(uint256 amount) external {
+        require(activeProposal.startTime != 0, "There is no active proposal");
+        require(amount > 0, "Amount must be greater than 0");
+        IERC20 token = IERC20(msg.sender);
+        token.transferFrom(msg.sender, address(this), amount);
+        activeProposal.votes[msg.sender] += amount;
+        activeProposal.votedAmount += amount;
+        totalVotedAmount += amount;
+    }
+
+    function endProposal() external {
+        require(activeProposal.startTime != 0, "There is no active proposal");
+        require(block.timestamp > activeProposal.startTime + 3600, "Voting period has not ended yet");
+        
+        if (activeProposal.votedAmount > totalVotedAmount / 2) {
+            // execute proposal
+        }
+        resetProposal();
+    }
+
+    function resetProposal() private {
+        activeProposal.startTime = 0;
+        activeProposal.votedAmount = 0;
+        activeProposal.proposer = address(0);
+        totalVotedAmount = 0;
+    }
+}
+<\contract\>

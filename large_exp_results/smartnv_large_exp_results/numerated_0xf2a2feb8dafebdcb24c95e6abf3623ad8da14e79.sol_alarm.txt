@@ -1,0 +1,13 @@
+Potential vulnerabilities in the provided contract:
+
+1) Inconsistent state update: The function `startExecute` updates the state of `proposal` and `startingBalanceList` without ensuring that the previous proposal has been completed or that the sender has the necessary permissions. This can lead to inconsistent data states.
+
+2) Incorrect visibility/ownership: The contract does not explicitly define the visibility of the `proposal` struct, making it internal by default. This could lead to potential access control issues and visibility concerns.
+
+3) Insufficient gas: The function `endExecute` relies on a costly operation by checking if twice the balance of the contract is greater than the total token supply. This can potentially lead to insufficient gas for the transaction to be completed successfully.
+
+4) ID uniqueness violation: The contract does not have a mechanism to ensure the uniqueness of proposal IDs, which could lead to conflicts or inconsistencies in data handling.
+
+5) Arithmetic flaw: In the `liquidate` function of the contract, the calculation `getPrice() * cAmount * 80 / 100 < dAmount` might result in arithmetic errors or unexpected behavior if the values of `getPrice()`, `cAmount`, or `dAmount` are not handled carefully.
+
+6) Ether leakage: The contract does not have proper mechanisms to handle ETH transfers, which could potentially result in unintended ether leakage or loss of funds.

@@ -1,0 +1,9 @@
+<\TimelockController\>
+1) business logic flaw: The `endExecute` function checks if the total locked funds are greater than two times the total supply of the voting token, which could prevent the execution from happening even when the conditions are met. This may lead to unexpected behavior.
+2) incorrect visibility/ownership: The visibility of the `owner` variable is set to `internal` which may not be intended and could potentially lead to issues related to ownership control. 
+
+<\ExchangeTokens\>
+1) price manipulation: The `liquidate` function calculates the price based on the `getPrice` function, which could potentially be manipulated and result in incorrect liquidation calculations.
+2) incorrect visibility/ownership: There are public mappings for `debt` and `collateral`, which could lead to unauthorized access and manipulation of user data. 
+
+Overall, the TimelockController contract contains business logic flaws and incorrect visibility/ownership, while the ExchangeTokens contract contains price manipulation and incorrect visibility/ownership vulnerabilities.

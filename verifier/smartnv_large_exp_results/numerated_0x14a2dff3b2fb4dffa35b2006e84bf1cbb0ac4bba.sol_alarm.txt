@@ -1,0 +1,22 @@
+<\Analyzing Contract\>
+contract PaymentProcessor {
+    address public admin;
+    mapping(uint => uint) public payments;
+
+    constructor(address _admin) {
+        admin = _admin;
+    }
+
+    function processPayment(uint _paymentId, uint _amount) public {
+        require(msg.sender == admin, "Only admin can process payments");
+        payments[_paymentId] = _amount;
+    }
+
+    function updateAdmin(address _newAdmin) public {
+        admin = _newAdmin;
+    }
+}
+<\Analyzing Contract\> 
+
+<\Output\>
+potential vulnerability: privilege escalation

@@ -1,0 +1,25 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+
+    function deposit() external payable {
+        require(msg.sender == buyer, "only buyer can deposit funds");
+        amount += msg.value;
+    }
+
+    function release() external {
+        require(msg.sender == arbiter, "only arbiter can release funds");
+        seller.transfer(amount);
+        amount = 0;
+    }
+
+    function refund() external {
+        require(msg.sender == arbiter, "only arbiter can refund funds");
+        buyer.transfer(amount);
+        amount = 0;
+    }
+}
+<\contract\>

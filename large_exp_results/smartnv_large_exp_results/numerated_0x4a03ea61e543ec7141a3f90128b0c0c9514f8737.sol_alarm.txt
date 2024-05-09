@@ -1,0 +1,43 @@
+<\analyzed_contract\>
+contract Marketplace {
+    address public owner;
+    uint public totalItems;
+    mapping(uint => Item) public items;
+
+    struct Item {
+        uint id;
+        string name;
+        uint price;
+        address seller;
+        bool active;
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can perform this action");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(uint _id, string memory _name, uint _price) public onlyOwner {
+        require(items[_id].id == 0, "Item with this ID already exists");
+        totalItems++;
+        items[_id] = Item(_id, _name, _price, msg.sender, true);
+    }
+
+    function buyItem(uint _id) public payable {
+        require(items[_id].active, "Item is not available");
+        require(msg.value == items[_id].price, "Incorrect payment amount");
+
+        items[_id].seller.transfer(msg.value);
+        items[_id].active = false;
+    }
+
+    function deactivateItem(uint _id) public onlyOwner {
+        require(items[_id].active, "Item is already inactive");
+        items[_id].active = false;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,15 @@
+The contract provided:
+
+contract MyToken {
+    mapping(address => uint) balances;
+
+    function transfer(address _to, uint _value) public {
+        require(balances[msg.sender] >= _value);
+        balances[msg.sender] -= _value;
+        balances[_to] += _value;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Integer underflow in the transfer function.
+2) Inconsistent state update in the transfer function.

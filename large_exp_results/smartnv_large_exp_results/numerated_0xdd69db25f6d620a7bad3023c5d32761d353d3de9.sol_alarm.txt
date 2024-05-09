@@ -1,0 +1,28 @@
+Contract:
+
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    IERC20 public token;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(address(this)) >= _amount, "Not enough tokens available");
+        balances[msg.sender] += _amount;
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Not enough tokens in balance");
+        balances[msg.sender] -= _amount;
+        token.transfer(msg.sender, _amount);
+    }
+}
+
+Potential Vulnerabilities:
+1) Inconsistent state update: There is a possibility of inconsistent state update in the buyTokens function where the balance of the buyer is updated before transferring the tokens. This could lead to a race condition.
+2) Incorrect visibility/ownership: The owner variable is public, which exposes the owner's address publicly. It is recommended to make ownership information private for security purposes.

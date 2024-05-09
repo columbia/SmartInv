@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+     mapping(address => uint) public balances;
+
+     constructor(address _token, uint _tokenPrice) public {
+         token = IERC20(_token);
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public {
+         uint cost = _amount * tokenPrice;
+         require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+         token.transferFrom(msg.sender, address(this), cost);
+         balances[msg.sender] += _amount;
+     }
+
+     function sellTokens(uint _amount) public {
+         uint income = _amount * tokenPrice;
+         require(balances[msg.sender] >= _amount, "Insufficient tokens");
+         token.transfer(msg.sender, income);
+         balances[msg.sender] -= _amount;
+     }
+}
+<\contract\> 
+
+1) potential vulnerabilities in the contract:
+- Inconsistent state update: The balances mapping is not updated when tokens are sold, which could lead to incorrect data.
+- Integer overflow/underflow: Multiplying _amount with tokenPrice in buyTokens and sellTokens functions could lead to overflow if _amount is too large.
+- Incorrect visibility/ownership: The owner variable is set as public, which could potentially lead to unauthorized access to the owner's address.

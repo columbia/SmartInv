@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+<\example_3\> 
+contract TokenSale {
+    mapping(address => uint) public balances;
+    uint public tokenPrice;
+    uint public totalTokens;
+    IERC20 public token;
+
+    constructor(uint _tokenPrice, uint _totalTokens, IERC20 _token) {
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        token = _token;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect amount sent");
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens available");
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public {
+        uint amount = balances[msg.sender];
+        require(amount > 0, "No tokens to withdraw");
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] = 0;
+    }
+}
+<\example_3\> 
+
+Output:
+- The contract in <\example_3\> does not contain any identified vulnerabilities. It is healthy.

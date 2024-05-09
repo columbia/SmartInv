@@ -1,0 +1,22 @@
+<\contract\>
+contract Insurance {
+    mapping(address => uint) public insuredAmounts;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function setInsuredAmount(address user, uint amount) public {
+        require(msg.sender == owner, "only owner can set insured amount");
+        insuredAmounts[user] = amount;
+    }
+    
+    function claimInsurance(address user) public {
+        require(insuredAmounts[user] > 0, "user is not insured");
+        uint amount = insuredAmounts[user];
+        insuredAmounts[user] = 0;
+        payable(user).transfer(amount);
+    }
+}
+<\contract\>

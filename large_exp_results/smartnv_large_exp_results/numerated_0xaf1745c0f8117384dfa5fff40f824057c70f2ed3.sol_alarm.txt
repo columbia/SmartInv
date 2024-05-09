@@ -1,0 +1,31 @@
+Contract being analyzed:
+contract TokenSale {
+    address public token;
+    address public owner;
+    address public beneficiary;
+    uint public price;
+    uint public totalTokens;
+    uint public tokensSold;
+
+    constructor(address _token, address _beneficiary, uint _price, uint _totalTokens) {
+        token = _token;
+        owner = msg.sender;
+        beneficiary = _beneficiary;
+        price = _price;
+        totalTokens = _totalTokens;
+        tokensSold = 0;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(msg.sender != owner, "Owner cannot buy tokens");
+        require(tokensSold + _amount <= totalTokens, "Not enough tokens left for sale");
+        
+        uint totalPrice = price * _amount;
+        IERC20(token).transferFrom(msg.sender, beneficiary, totalPrice);
+        
+        tokensSold += _amount;
+    }
+}
+Potential vulnerabilities:
+1) Incorrect visibility/ownership: The owner of the TokenSale contract should not be able to buy tokens. This can lead to unauthorized actions and manipulation by the owner.
+2) Inconsistent state update: The check for remaining tokens in the buyTokens function is not atomic, which can lead to race conditions and inconsistent state updates if multiple transactions try to buy tokens simultaneously.

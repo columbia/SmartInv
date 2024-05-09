@@ -1,0 +1,36 @@
+Contract being analyzed:
+
+contract Marketplace {
+   address public admin;
+   uint public productCount;
+   mapping(uint => Product) public products;
+
+   struct Product {
+      uint id;
+      string name;
+      uint price;
+      address owner;
+   }
+
+   constructor() {
+      admin = msg.sender;
+   }
+
+   function createProduct(string memory _name, uint _price) public {
+      require(msg.sender != address(0), "Invalid address");
+      
+      productCount++;
+      products[productCount] = Product(productCount, _name, _price, msg.sender);
+   }
+
+   function purchaseProduct(uint _productId) public payable {
+      Product storage product = products[_productId];
+      require(product.id != 0, "Product does not exist");
+      require(msg.value >= product.price, "Insufficient funds");
+
+      product.owner.transfer(msg.value);
+   }
+}
+
+Output: 
+- potential vulnerability: incorrect visibility/ownership

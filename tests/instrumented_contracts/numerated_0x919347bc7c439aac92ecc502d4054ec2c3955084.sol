@@ -1,0 +1,38 @@
+1 {{
+2   "language": "Solidity",
+3   "sources": {
+4     "/Volumes/WORK/OVR/ovr-merkle-distributor/contracts/LightMint.sol": {
+5       "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity =0.6.11;\n\nimport '@openzeppelin/contracts/access/Ownable.sol';\nimport '@openzeppelin/contracts/cryptography/MerkleProof.sol';\nimport './interfaces/IOVRLand.sol';\n\ncontract LightMint is Ownable {\n    address public ovrLand;\n    bytes32 public merkleRoot;\n\n    uint256 private mappingVersion;\n    mapping(bytes32 => bool) private claimedMap;\n\n    // This is a packed array of booleans.\n    mapping(uint256 => uint256) private claimedBitMap;\n\n    function setOVRLand(address ovrLand_) external onlyOwner {\n        ovrLand = ovrLand_;\n    }\n\n    function setMerkleRoot(bytes32 merkleRoot_) external onlyOwner {\n        merkleRoot = merkleRoot_;\n        mappingVersion++;\n    }\n\n    function isClaimed(uint256 index) public view returns (bool) {\n        bytes32 key = keccak256(abi.encodePacked(mappingVersion, index));\n        return claimedMap[key];\n    }\n\n    function _setClaimed(uint256 index) private {\n        bytes32 key = keccak256(abi.encodePacked(mappingVersion, index));\n        claimedMap[key] = true;\n    }\n\n    function claim(\n        uint256 index,\n        address account,\n        uint256 OVRLandID,\n        string calldata uri,\n        bytes32[] calldata merkleProof\n    ) external {\n        require(!isClaimed(index), 'MerkleDistributor: Drop already claimed.');\n\n        // Verify the merkle proof.\n        bytes32 node = keccak256(abi.encodePacked(index, account, OVRLandID, uri));\n        require(MerkleProof.verify(merkleProof, merkleRoot, node), 'MerkleDistributor: Invalid proof.');\n\n        // Mark it claimed and send the token.\n        _setClaimed(index);\n        require(IOVRLand(ovrLand).mintLand(account, OVRLandID), 'MerkleDistributor: Mint failed.');\n        IOVRLand(ovrLand).setOVRLandURI(OVRLandID, uri);\n    }\n}\n"
+6     },
+7     "/Volumes/WORK/OVR/ovr-merkle-distributor/contracts/interfaces/IOVRLand.sol": {
+8       "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity >=0.5.0;\n\ninterface IOVRLand {\n    function mintLand(address to, uint256 OVRLandID) external returns (bool);\n\n    function setOVRLandURI(uint256 OVRLandID, string memory uri) external;\n}\n"
+9     },
+10     "@openzeppelin/contracts/GSN/Context.sol": {
+11       "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.6.0;\n\n/*\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with GSN meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address payable) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes memory) {\n        this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691\n        return msg.data;\n    }\n}\n"
+12     },
+13     "@openzeppelin/contracts/access/Ownable.sol": {
+14       "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.6.0;\n\nimport \"../GSN/Context.sol\";\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n *\n * By default, the owner account will be the one that deploys the contract. This\n * can later be changed with {transferOwnership}.\n *\n * This module is used through inheritance. It will make available the modifier\n * `onlyOwner`, which can be applied to your functions to restrict their use to\n * the owner.\n */\ncontract Ownable is Context {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /**\n     * @dev Initializes the contract setting the deployer as the initial owner.\n     */\n    constructor () internal {\n        address msgSender = _msgSender();\n        _owner = msgSender;\n        emit OwnershipTransferred(address(0), msgSender);\n    }\n\n    /**\n     * @dev Returns the address of the current owner.\n     */\n    function owner() public view returns (address) {\n        return _owner;\n    }\n\n    /**\n     * @dev Throws if called by any account other than the owner.\n     */\n    modifier onlyOwner() {\n        require(_owner == _msgSender(), \"Ownable: caller is not the owner\");\n        _;\n    }\n\n    /**\n     * @dev Leaves the contract without owner. It will not be possible to call\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\n     *\n     * NOTE: Renouncing ownership will leave the contract without an owner,\n     * thereby removing any functionality that is only available to the owner.\n     */\n    function renounceOwnership() public virtual onlyOwner {\n        emit OwnershipTransferred(_owner, address(0));\n        _owner = address(0);\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Can only be called by the current owner.\n     */\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        emit OwnershipTransferred(_owner, newOwner);\n        _owner = newOwner;\n    }\n}\n"
+15     },
+16     "@openzeppelin/contracts/cryptography/MerkleProof.sol": {
+17       "content": "// SPDX-License-Identifier: MIT\n\npragma solidity ^0.6.0;\n\n/**\n * @dev These functions deal with verification of Merkle trees (hash trees),\n */\nlibrary MerkleProof {\n    /**\n     * @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree\n     * defined by `root`. For this, a `proof` must be provided, containing\n     * sibling hashes on the branch from the leaf to the root of the tree. Each\n     * pair of leaves and each pair of pre-images are assumed to be sorted.\n     */\n    function verify(bytes32[] memory proof, bytes32 root, bytes32 leaf) internal pure returns (bool) {\n        bytes32 computedHash = leaf;\n\n        for (uint256 i = 0; i < proof.length; i++) {\n            bytes32 proofElement = proof[i];\n\n            if (computedHash <= proofElement) {\n                // Hash(current computed hash + current element of the proof)\n                computedHash = keccak256(abi.encodePacked(computedHash, proofElement));\n            } else {\n                // Hash(current element of the proof + current computed hash)\n                computedHash = keccak256(abi.encodePacked(proofElement, computedHash));\n            }\n        }\n\n        // Check if the computed hash (root) is equal to the provided root\n        return computedHash == root;\n    }\n}\n"
+18     }
+19   },
+20   "settings": {
+21     "remappings": [],
+22     "optimizer": {
+23       "enabled": true,
+24       "runs": 200
+25     },
+26     "evmVersion": "istanbul",
+27     "libraries": {},
+28     "outputSelection": {
+29       "*": {
+30         "*": [
+31           "evm.bytecode",
+32           "evm.deployedBytecode",
+33           "abi"
+34         ]
+35       }
+36     }
+37   }
+38 }}

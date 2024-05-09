@@ -1,0 +1,15 @@
+The contract you provided contains the following potential vulnerabilities:
+
+1) Inconsistent state update: The contract has multiple state variables that are being updated individually but are related, such as `proposal.votedAmount` being updated in the `execute` function without updating `votedProposal(proposal)`, which can lead to inconsistent state.
+
+2) Incorrect visibility/ownership: The `internal` visibility of the `owner` state variable may lead to potential issues related to contract ownership and visibility.
+
+3) Integer overflow/underflow: There are several arithmetic operations in the contract, such as `startingBlance = getStartingBalance(proposal.addr);` and `proposal.votedAmount += amount;`, which could potentially lead to integer overflow or underflow.
+
+4) Insufficient gas: The `endExecute` function may fail if the gas limit is reached during the execution of `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");`, leading to incomplete execution and potential funds being locked.
+
+5) Privilege escalation: The contract structure and functions may be vulnerable to privilege escalation attacks due to certain functions not properly checking for the necessary permissions before execution.
+
+6) Suicidal contracts: The contract does not have any implementation to prevent the possibility of a suicidal contract, where the contract's code can be destroyed, rendering it unusable.
+
+7) Cross bridge inconsistency: The contract uses multiple external contracts and token transfers, which can introduce complexities and potential inconsistencies in state updates across different contracts.

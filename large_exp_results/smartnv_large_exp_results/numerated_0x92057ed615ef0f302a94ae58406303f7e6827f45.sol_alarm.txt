@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function placeBid(uint bidAmount) public {
+        require(msg.sender != owner, "Owner cannot bid");
+        require(bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+        
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+        
+        highestBid = bidAmount;
+        highestBidder = msg.sender;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        
+        uint amount = highestBid;
+        highestBid = 0;
+        
+        msg.sender.transfer(amount);
+    }
+}
+<\contract_to_analyze\>

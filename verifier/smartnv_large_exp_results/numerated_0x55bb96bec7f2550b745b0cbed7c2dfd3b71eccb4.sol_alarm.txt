@@ -1,0 +1,24 @@
+The contract provided:
+
+contract MultiSigWallet {
+     address[] public owners;
+     uint public transactionCount;
+     mapping(uint => Transaction) public transactions;
+     
+     struct Transaction {
+          address destination;
+          uint value;
+          bytes data;
+          bool executed;
+     }
+
+     function submitTransaction(address destination, uint value, bytes memory data) public {
+          transactions[transactionCount] = Transaction(destination, value, data, false);
+          transactionCount++;
+     }
+} 
+
+output:
+- missing access control: the submitTransaction function does not have any access control mechanism, allowing anyone to submit a transaction.
+- inconsistent state update: the transactionCount is incremented after assigning the transaction to transactions mapping, it should be incremented beforehand to ensure consistency.
+- potential reentrancy: the execute function is missing, assuming that transactions can be executed elsewhere, which can lead to reentrancy vulnerability if not handled properly.

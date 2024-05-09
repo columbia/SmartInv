@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract TokenSale {
+         address public owner;
+         IERC20 public token;
+
+         constructor(address _token) {
+             owner = msg.sender;
+             token = IERC20(_token);
+         }
+
+         function buyTokens(uint amount) external {
+             require(token.balanceOf(address(this)) >= amount, "insufficient tokens");
+             token.transfer(msg.sender, amount);
+         }
+
+         function changeOwnership(address newOwner) external {
+             require(msg.sender == owner, "only owner can change ownership");
+             owner = newOwner;
+         }
+}
+
+The potential vulnerabilities in the TokenSale contract are:
+1) incorrect visibility/ownership
+2) privilege escalation

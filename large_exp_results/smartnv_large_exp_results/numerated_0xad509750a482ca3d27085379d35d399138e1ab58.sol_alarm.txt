@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenSale {
+    address public token; 
+    address public owner; 
+    uint public price; 
+    uint public totalTokens; 
+    mapping (address => uint) public tokenBalances; 
+
+    constructor(address _token, uint _price, uint _totalTokens) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        require(tokenBalances[msg.sender] + _amount <= totalTokens, "Not enough tokens available");
+        tokenBalances[msg.sender] += _amount;
+        totalTokens -= _amount;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        // Transfer tokens to owner
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) business logic flaw: The withdrawal function does not include the actual logic for transferring tokens to the owner, which can lead to unexpected behavior.
+2) incorrect visibility/ownership: The ownership check in the withdrawTokens function should be made private to prevent unauthorized access to token withdrawal.
+3) atomicity violation: The buyTokens function should consider using the SafeMath library to prevent overflow/underflow issues in tokenBalances and totalTokens calculations.

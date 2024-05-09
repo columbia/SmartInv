@@ -1,0 +1,38 @@
+The contract provided for analysis:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public bids;
+
+    function placeBid() external payable {
+        uint previousBid = bids[msg.sender];
+        require(msg.value > previousBid, "Bid must be higher than previous");
+
+        if(previousBid != 0) {
+            msg.sender.transfer(previousBid);
+        }
+
+        bids[msg.sender] = msg.value;
+        if(msg.value > highestBid) {
+            if(highestBidder != address(0)) {
+                highestBidder.transfer(highestBid);
+            }
+            highestBidder = msg.sender;
+            highestBid = msg.value;
+        }
+    }
+
+    function finalizeAuction() external {
+        require(msg.sender == highestBidder, "Only highest bidder can finalize");
+        
+        // Some logic for finalizing the auction 
+        
+        highestBidder = address(0);
+        highestBid = 0;
+    }
+}
+
+Output:
+1) potential vulnerability: reentrancy
+2) potential vulnerability: inconsistent state update

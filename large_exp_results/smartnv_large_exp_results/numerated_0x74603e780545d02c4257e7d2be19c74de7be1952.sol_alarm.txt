@@ -1,0 +1,26 @@
+The contract provided for analysis is:
+
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public price;
+         uint public totalTokens;
+         mapping(address => uint) public balances;
+         
+         function buyTokens(uint amount) public {
+             uint cost = amount * price;
+             require(token.balanceOf(address(this)) >= amount, "Not enough tokens available");
+             require(msg.value >= cost, "Insufficient payment");
+             
+             token.transfer(msg.sender, amount);
+             balances[msg.sender] += amount;
+         }
+         
+         function withdrawEther() public {
+             require(msg.sender == owner, "Only owner can withdraw");
+             msg.sender.transfer(address(this).balance);
+         }
+     }
+
+Output:
+- Incorrect visibility/ownership

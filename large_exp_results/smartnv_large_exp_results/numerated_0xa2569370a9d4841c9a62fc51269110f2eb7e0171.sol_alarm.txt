@@ -1,0 +1,37 @@
+The contract you provided is:
+contract Lottery {
+     address public owner;
+     uint public ticketPrice;
+     mapping(address => uint) public playerTickets;
+     address[] public players;
+     uint public totalTickets;
+     
+     constructor() {
+         owner = msg.sender;
+         ticketPrice = 1 ether;
+         totalTickets = 0;
+     }
+     
+     function buyTickets(uint numTickets) public payable {
+         require(msg.value == numTickets * ticketPrice, "Incorrect amount sent");
+
+         for (uint i = 0; i < numTickets; i++) {
+             playerTickets[msg.sender]++;
+             totalTickets++;
+             players.push(msg.sender);
+         }
+     }
+     
+     function drawWinner() public {
+         require(msg.sender == owner, "Only owner can draw winner");
+         
+         uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty, players.length))) % players.length;
+         address winner = players[winnerIndex];
+         
+         payable(winner).transfer(address(this).balance);
+     }
+}
+
+The potential vulnerabilities in the Lottery contract are:
+1) Insufficient gas - The function drawWinner may require more gas than is available in a single block, causing the transaction to fail.
+2) Incorrect visibility/ownership - The owner variable is public, which may expose the owner's address to the public, violating privacy concerns and potentially leading to privilege escalation attacks.

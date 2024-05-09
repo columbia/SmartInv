@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `execute` updates the `proposal.votedAmount` without using safe arithmetic functions to prevent overflow/underflow risks.
+2) Incorrect visibility/ownership: The `votingToken` variable is public, which exposes the token information to all external entities. It should be made private for better security.
+3) Insufficient gas: The function `endExecute` could potentially fail if the amount of gas provided is not enough for the required computations, leading to a failed execution.
+4) Inconsistent state update: The variable `lockedFunds` is updated in the `endExecute` function, but it is not clear how this information will be used or if it might result in an inconsistent state update.

@@ -1,0 +1,21 @@
+<\contract\> 
+contract Escrow {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Insufficient gas - If the gas limit for a transaction is insufficient, the withdrawal function may not complete successfully, resulting in the loss of funds.
+2) Incorrect visibility/ownership - The balances mapping is public, which could expose sensitive information about the balances of all users.
+3) Integer overflow/underflow - There is a risk of integer overflow if the amount exceeds the maximum value that a uint can hold, potentially resulting in unexpected behavior.
+4) Ether leakage - If there are vulnerabilities in the deposit or withdrawal functions, it could result in unintended ether transfers or loss of funds.

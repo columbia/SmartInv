@@ -1,0 +1,23 @@
+<\the_contract\>
+contract Marketplace {
+    mapping(address => uint) public balances;
+    
+    function buy(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        balances[owner] += amount;
+    }
+    
+    function sell(uint amount) public {
+        require(balances[owner] >= amount, "Owner has insufficient balance");
+        
+        balances[owner] -= amount;
+        balances[msg.sender] += amount;
+    }
+}
+<\the_contract\> 
+
+Output: 
+1) atomicity violation
+2) inconsistent state update

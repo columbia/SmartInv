@@ -1,0 +1,33 @@
+The contract for analysis:
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _price) {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public {
+        uint cost = amount * price;
+        require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+        balances[msg.sender] += amount;
+        token.transferFrom(msg.sender, owner, cost);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        token.transfer(owner, address(this).balance);
+    }
+
+    function setPrice(uint newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = newPrice;
+    }
+}
+
+Output:
+1) There is no vulnerability detected in this contract. It is healthy.

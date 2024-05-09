@@ -1,0 +1,66 @@
+<\analyzed_contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        _;
+    }
+
+    event Aborted();
+    event PurchaseConfirmed();
+    event ItemReceived();
+    event Withdrawal(uint amount);
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function confirmPurchase() public {
+        require(msg.sender == buyer, "Only buyer can confirm purchase");
+        require(state == State.Created, "Purchase has already been confirmed");
+        state = State.Locked;
+        emit PurchaseConfirmed();
+    }
+
+    function confirmReceived() public onlyBuyer {
+        require(state == State.Locked, "Item has not been confirmed to be received");
+        state = State.Released;
+        emit ItemReceived();
+    }
+
+    function withdraw() public {
+        if (msg.sender == buyer) {
+            require(state == State.Released, "Purchase has not been fully completed");
+            payable(buyer).transfer(price);
+            emit Withdrawal(price);
+        }
+    }
+
+    function abort() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can abort the transaction");
+        require(state == State.Created, "Transaction cannot be aborted");
+        state = State.Inactive;
+        emit Aborted();
+    }
+}
+<\analyzed_contract\>

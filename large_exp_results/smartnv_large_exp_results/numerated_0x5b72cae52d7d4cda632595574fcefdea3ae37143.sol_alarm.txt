@@ -1,0 +1,17 @@
+<\contract_to_analyze\> 
+contract TransferOwnership {
+     address public owner;
+
+     function transferOwnership(address _newOwner) public {
+         require(msg.sender == owner, "Only the current owner can transfer ownership");
+         owner = _newOwner;
+     }
+
+    function renounceOwnership() public {
+        owner = address(0);
+    }
+} 
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

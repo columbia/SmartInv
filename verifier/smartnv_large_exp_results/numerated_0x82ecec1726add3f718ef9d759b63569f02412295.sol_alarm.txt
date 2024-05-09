@@ -1,0 +1,19 @@
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility/ownership: The `votedProposal` function is called in the `execute` function without a visibility specifier, potentially leading to unintended access or manipulation of data in the contract by external parties.
+
+2) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function with the `+=` operator, which could potentially lead to inconsistent state updates if multiple transactions try to update `proposal.votedAmount` simultaneously.
+
+3) Inconsistent state update: The `lockedFunds` variable is updated in the `endExecute` function without proper synchronization mechanisms, which could lead to inconsistent state updates if multiple transactions try to access or update `lockedFunds` simultaneously.
+
+4) Inconsistent state update: The `startingBalanceList` mapping is updated in the `startExecute` function without proper synchronization mechanisms, which could lead to inconsistent state updates if multiple transactions try to update `startingBalanceList` for the same address simultaneously.
+
+5) Insufficient gas: The `endExecute` function includes a gas-intensive operation (checking if `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`), which could lead to out-of-gas errors if the gas limit is not sufficient for this operation.
+
+6) ID uniqueness violation: There is no check for ensuring the uniqueness of proposals or addresses in the `Proposal` struct, which could lead to conflicts if multiple proposals are created with the same address or if duplicate proposals are created.
+
+7) Insufficient gas: The `calculatePrice` function includes a gas-intensive operation (calculating the price by dividing `USDC.balanceOf(address(pair))` by `WETH.balanceOf(address(pair))`), which could lead to out-of-gas errors if the gas limit is not sufficient for this operation.
+
+8) Cross bridge inconsistency: The `liquidate` function transfers USDC from `msg.sender` to the contract address, and then transfers WETH from the contract address to `msg.sender`, which could lead to inconsistency if the transfer of USDC is successful but the transfer of WETH fails, causing loss of funds for the user.
+
+9) Business logic flaw: The condition in the `liquidate` function for liquidating a user's funds (`getPrice() * cAmount * 80 / 100 < dAmount`) may not accurately reflect the intended logic for deciding when to liquidate a user's funds, potentially leading to incorrect liquidation decisions.

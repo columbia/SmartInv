@@ -1,0 +1,21 @@
+<\Your Contract\>
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() public payable {
+         require(msg.value > highestBid, "Bid must be higher than current highest bid");
+         // Refund the previous highest bidder
+         address payable previousBidder = payable(highestBidder);
+         previousBidder.transfer(highestBid);
+         // Update highest bidder and bid amount
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+
+     function withdraw() public {
+         require(msg.sender != highestBidder, "Highest bidder cannot withdraw");
+         uint amount = msg.sender.balance;
+         msg.sender.transfer(amount);
+     }
+}

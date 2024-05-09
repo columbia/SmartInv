@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public investors;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function invest() public payable {
+        require(msg.value > 0, "Investment amount cannot be zero");
+        investors[msg.sender] += msg.value;
+    }
+
+    function withdrawFunds(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(address(this).balance >= amount, "Insufficient funds");
+        payable(msg.sender).transfer(amount);
+    }
+
+    function getBalance() public view returns(uint) {
+        return address(this).balance;
+    }
+}
+<\contract_to_analyze\>

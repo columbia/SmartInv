@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public tokenAddress;
+    address public owner;
+    uint public price;
+    uint public totalTokens;
+    uint public tokensSold;
+
+    mapping(address => uint) public balances;
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(tokensSold + amount <= totalTokens, "Not enough tokens left");
+
+        uint cost = amount * price;
+        require(msg.value >= cost, "Insufficient funds");
+
+        balances[msg.sender] += amount;
+        tokensSold += amount;
+        payable(owner).transfer(cost);
+        IERC20(tokenAddress).transfer(msg.sender, amount);
+    }
+
+    function withdraw() public {
+        require(balances[msg.sender] > 0, "No tokens to withdraw");
+
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        IERC20(tokenAddress).transfer(msg.sender, amount);
+    }
+}
+<\contract_to_analyze\>

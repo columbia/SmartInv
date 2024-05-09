@@ -1,0 +1,29 @@
+<\analyzed_contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public price;
+     enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE}
+     State public currentState = State.AWAITING_PAYMENT;
+
+     constructor(address _seller, address _arbiter, uint _price) {
+          buyer = msg.sender;
+          seller = _seller;
+          arbiter = _arbiter;
+          price = _price;
+     }
+
+     function confirmPayment() public {
+          require(msg.sender == buyer, "Only buyer can confirm payment");
+          require(currentState == State.AWAITING_PAYMENT, "Payment already confirmed");
+          currentState = State.AWAITING_DELIVERY;
+     }
+
+     function confirmDelivery() public {
+          require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can confirm delivery");
+          require(currentState == State.AWAITING_DELIVERY, "Delivery already confirmed");
+          currentState = State.COMPLETE;
+     }
+}
+<\analyzed_contract\>

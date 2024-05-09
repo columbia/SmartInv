@@ -1,0 +1,22 @@
+contract UserRegistry {
+     mapping(address => uint) public users;
+     address public admin;
+     
+     constructor() {
+         admin = msg.sender;
+     }
+     
+     function addUser(address user) public {
+         require(msg.sender == admin, "Only admin can add users");
+         users[user] = 1;
+     }
+     
+     function removeUser(address user) public {
+         require(msg.sender == admin, "Only admin can remove users");
+         users[user] = 0;
+     }
+     
+     function isAdmin() public view returns(bool) {
+         return (msg.sender == admin);
+     }
+}

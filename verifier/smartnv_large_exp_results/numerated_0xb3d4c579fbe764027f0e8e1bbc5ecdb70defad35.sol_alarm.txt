@@ -1,0 +1,48 @@
+<\contract\> 
+contract EscrowContract {
+      address public sender;
+      address public receiver;
+      address public arbiter;
+      uint256 public amount;
+      enum State {AWAITING_PAYMENT, PAYED, DELIVERED, COMPLETED, REFUNDED}
+      State public currentState;
+      
+      constructor(address _sender, address _receiver, address _arbiter, uint256 _amount) {
+          sender = _sender;
+          receiver = _receiver;
+          arbiter = _arbiter;
+          amount = _amount;
+          currentState = State.AWAITING_PAYMENT;
+      }
+
+      function makePayment() public payable {
+          require(msg.sender == sender, "Only sender can make payment");
+          require(msg.value == amount, "Incorrect payment amount");
+          currentState = State.PAYED;
+      }
+
+      function releasePayment() public {
+          require(msg.sender == receiver, "Only receiver can release payment");
+          require(currentState == State.PAYED, "Payment not made yet");
+          receiver.transfer(amount);
+          currentState = State.DELIVERED;
+      }
+      
+      function refundPayment() public {
+          require(msg.sender == arbiter, "Only arbiter can refund payment");
+          require(currentState == State.PAYED, "Payment not made yet");
+          sender.transfer(amount);
+          currentState = State.REFUNDED;
+      }
+      
+      function completeTransaction() public {
+          require(msg.sender == arbiter, "Only arbiter can complete transaction");
+          require(currentState == State.DELIVERED, "Payment not released yet");
+          currentState = State.COMPLETED;
+      }
+} 
+
+output:
+1) atomicity violation
+2) reentrancy
+3) incorrect visibility/ownership

@@ -1,0 +1,29 @@
+<\The Contract to Analyze\>
+contract TokenSale {
+    IERC20 public token; 
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) external {
+        require(amount > 0, "Amount should be greater than 0");
+        uint totalCost = amount * tokenPrice;
+        token.transferFrom(msg.sender, address(this), amount);
+        token.transfer(msg.sender, amount);
+        owner.transfer(totalCost);
+    }
+
+    function changeTokenPrice(uint newPrice) external {
+        require(msg.sender == owner, "Only owner can change token price");
+        tokenPrice = newPrice;
+    }
+}
+Potential Vulnerabilities:
+1) Business logic flaw: The buyTokens function does not accurately handle the transfer of funds, potentially leading to inconsistencies in token balances and payments.
+2) Incorrect visibility/ownership: The changeTokenPrice function relies on a simple owner check for access control, which may be insufficient for protecting sensitive operations.
+3) Ether leakage: The owner.transfer(totalCost) operation could lead to unintended ether leakage and vulnerability to reentrancy attacks.

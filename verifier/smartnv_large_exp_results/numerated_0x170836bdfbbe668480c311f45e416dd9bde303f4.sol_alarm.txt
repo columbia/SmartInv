@@ -1,0 +1,41 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address[] public voters;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += _amount;
+        if(!voterExists(msg.sender)){
+            voters.push(msg.sender);
+        }
+    }
+
+    function tallyVotes() public view returns(uint) {
+        uint total = 0;
+        for(uint i=0; i<voters.length; i++){
+            total += votes[voters[i]];
+        }
+        return total;
+    }
+
+    function changeAdmin(address _newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = _newAdmin;
+    }
+
+    function voterExists(address _voter) internal view returns(bool){
+        for(uint i=0; i<voters.length; i++){
+            if(voters[i] == _voter){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+<\contract_to_analyze\>

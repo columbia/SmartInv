@@ -1,0 +1,29 @@
+<\contract\> 
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint256) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() external payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transfer(address to, uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\> 
+
+1) ID uniqueness violation
+2) Suicidal contracts

@@ -1,0 +1,28 @@
+The contract specified for analysis is:
+
+contract Purchase {
+    uint public price;
+    address public owner;
+
+    constructor() {
+        price = 100;
+        owner = msg.sender;
+    }
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "Only owner can set the price");
+        price = _price;
+    }
+
+    function buy() public payable {
+        require(msg.value >= price, "Insufficient funds");
+        owner.transfer(msg.value);
+        // Perform purchase logic
+    }
+}
+
+The potential vulnerabilities in the contract are as follows:
+3) business logic flaw
+5) atomicity violation
+8) reentrancy
+12) ether leakage

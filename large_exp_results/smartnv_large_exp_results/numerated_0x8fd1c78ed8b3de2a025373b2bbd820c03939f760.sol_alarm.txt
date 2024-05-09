@@ -1,0 +1,41 @@
+The contract that needs to be analyzed:
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    enum State { Created, Locked, Inactive }
+    State public state;
+    modifier onlySeller {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+    modifier onlyBuyer {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+    constructor() {
+        seller = msg.sender;
+        state = State.Created;
+    }
+    function initiate(address _buyer) public onlySeller {
+        require(state == State.Created, "Escrow already initiated");
+        buyer = _buyer;
+        state = State.Locked;
+    }
+    function confirmReceipt() public onlyBuyer {
+        require(state == State.Locked, "Invalid state to confirm receipt");
+        state = State.Inactive;
+        (bool success, ) = seller.call{value: address(this).balance}("");
+        require(success, "Failed to transfer funds to seller");
+    }
+    function refundBuyer() public onlySeller {
+        require(state == State.Locked, "Invalid state to refund buyer");
+        state = State.Inactive;
+        (bool success, ) = buyer.call{value: address(this).balance}("");
+        require(success, "Failed to transfer funds to buyer");
+    }
+}
+
+Output:
+- The contract contains insufficient gas issue in the confirmReceipt and refundBuyer functions.
+- The contract might be vulnerable to reentrancy in the confirmReceipt and refundBuyer functions.

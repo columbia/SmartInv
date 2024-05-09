@@ -1,0 +1,40 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    uint public amount;
+
+    constructor(address _seller, address _arbiter) public payable {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = msg.value;
+    }
+
+    function approve(uint _option) public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter,
+            "You are not authorized to approve");
+        
+        if(msg.sender == buyer && _option == 1) {
+            buyerApproved = true;
+        }
+
+        if(msg.sender == seller && _option == 2) {
+            sellerApproved = true;
+        }
+
+        if(msg.sender == arbiter && _option == 3) {
+            if(buyerApproved && !sellerApproved) {
+                seller.transfer(amount);
+            } else if(sellerApproved && !buyerApproved) {
+                buyer.transfer(amount);
+            }
+        }
+    }
+}
+<\contract\>

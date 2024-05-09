@@ -1,0 +1,41 @@
+The contract mentioned in the task is: 
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+1) Privilege escalation: The use of a struct to store proposal information and the lack of access control mechanisms could lead to privilege escalation vulnerabilities.
+2) Inconsistent state update: There are multiple state changes happening in different functions without proper synchronization, which can result in inconsistent state updates.
+3) Insufficient gas: Depending on the implementation of the functions and the gas limit, there might be a risk of running out of gas during contract execution.
+4) Incorrect visibility/ownership: The ownership of the contract is not clearly defined, which may lead to ownership-related vulnerabilities.
+
+Overall assessment: Vulnerable contract due to privilege escalation, inconsistent state updates, insufficient gas, and incorrect visibility/ownership.

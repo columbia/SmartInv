@@ -1,0 +1,39 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+    mapping(address => bool) owners;
+    uint256 public transactionCount;
+    mapping(uint256 => Transaction) transactions;
+
+    struct Transaction {
+        address from;
+        address to;
+        uint256 value;
+        uint256 gas;
+        bool executed;
+    }
+
+    function addOwner(address _owner) public {
+        owners[_owner] = true;
+    }
+
+    function removeOwner(address _owner) public {
+        owners[_owner] = false;
+    }
+
+    function submitTransaction(address _to, uint256 _value, uint256 _gas) public {
+        transactions[transactionCount] = Transaction(msg.sender, _to, _value, _gas, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint256 _txIndex) public {
+        Transaction storage transaction = transactions[_txIndex];
+        require(owners[msg.sender] == true, "Only owners can execute transactions");
+        require(transaction.executed == false, "Transaction already executed");
+        
+        (bool success, ) = transaction.to.call{value: transaction.value, gas: transaction.gas}("");
+        require(success, "Transaction execution failed");
+        
+        transaction.executed = true;
+    }
+}
+<\contract_to_analyze\>

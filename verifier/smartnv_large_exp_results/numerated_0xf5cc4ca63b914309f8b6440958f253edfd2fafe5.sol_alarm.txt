@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount <= 100, "exceeds maximum amount");
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public {
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "not the owner");
+        owner = newOwner;
+    }
+}
+
+Output:
+1) There is a potential vulnerability of privilege escalation in the transferOwnership function since anyone can call this function and become the new owner.
+2) There is a potential vulnerability of inconsistent state update in the buyTokens function as the balances are directly modified without proper validation or synchronization.
+3) There is a potential vulnerability of improper input validation in the buyTokens function as there is a hardcoded upper limit on the amount without considering other factors.
+4) There is a potential vulnerability of incorrect visibility/ownership in the transferOwnership function as anyone can change the owner without proper authorization.

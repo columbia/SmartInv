@@ -1,0 +1,43 @@
+<\analyzed_contract\> 
+contract PaymentSplitter {
+      address[] internal payees;
+      uint[] internal shares;
+      uint internal totalShares;
+      mapping(address => uint) internal released;
+      mapping(address => uint) internal totalReleased;
+
+      constructor(address[] memory _payees, uint[] memory _shares) {
+          require(_payees.length > 0, "No payees");
+          require(_payees.length == _shares.length, "Payees and shares lengths mismatch");
+          totalShares = 0;
+          for (uint i = 0; i < _payees.length; i++) {
+              require(_payees[i] != address(0), "Payee is the zero address");
+              require(_shares[i] > 0, "Shares should be greater than 0");
+              payees.push(_payees[i]);
+              shares.push(_shares[i]);
+              totalShares += _shares[i];
+          }
+      }
+
+      function release(address payable _payee) public {
+          require(released[_payee] < totalReleased[_payee], "Payee has no unclaimed payments");
+
+          uint payment = calculatePayment(_payee);
+          require(payment > 0, "Payment is 0");
+
+          totalReleased[_payee] += payment;
+          released[_payee] = totalReleased[_payee];
+          _payee.transfer(payment);
+      }
+
+      function calculatePayment(address _payee) internal view returns(uint) {
+          uint payment = shares[_payee] * address(this).balance / totalShares;
+          return payment;
+      }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the analyzed contract are:
+1) Integer overflow/underflow: The calculation in the calculatePayment function can potentially cause an integer overflow if the totalShares value becomes very large.
+2) Inconsistent state update: The released mapping is not properly updated after transferring the payment to the payee, which could lead to incorrect state keeping track of the released amounts.
+3) Incorrect visibility/ownership: The release function allows anyone to call it, potentially leading to unauthorized payments being released.

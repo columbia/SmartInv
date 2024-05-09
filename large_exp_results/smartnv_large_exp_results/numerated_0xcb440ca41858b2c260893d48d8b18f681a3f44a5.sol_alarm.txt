@@ -1,0 +1,18 @@
+<\analyzed_contract\>
+contract TokenSwap {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     uint public exchangeRate;
+
+     function swap(uint amount) external {
+         require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+         uint amountToReceive = amount * exchangeRate;
+         tokenA.transferFrom(msg.sender, address(this), amount);
+         tokenB.transfer(msg.sender, amountToReceive);
+     }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the contract are:
+- Integer overflow in the calculation of amountToReceive.
+- Incorrect visibility/ownership in the exchangeRate variable.

@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproved;
+     bool public sellerApproved;
+     bool public arbiterApproved;
+     uint public amount;
+  
+     function finalize() public {
+         require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "only buyer, seller, or arbiter can finalize");
+         require(buyerApproved && sellerApproved || arbiterApproved && (buyerApproved || sellerApproved),
+         "buyer and seller or arbiter must approve and only one party if arbiter is involved");
+         require(address(this).balance >= amount, "insufficient balance to finalize");
+         if (buyerApproved && sellerApproved){
+             payable(seller).transfer(amount);
+         } else {
+             payable(buyer).transfer(amount);
+         }
+     }
+}
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update
+2) Incorrect visibility/ownership

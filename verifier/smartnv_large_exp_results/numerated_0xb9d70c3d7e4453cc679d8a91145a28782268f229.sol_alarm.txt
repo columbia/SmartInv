@@ -1,0 +1,28 @@
+<\Contract\>
+contract Escrow {
+     address public depositor;
+     address public beneficiary;
+     uint public amount;
+
+     constructor(address _beneficiary) {
+         depositor = msg.sender;
+         beneficiary = _beneficiary;
+     }
+
+     function deposit() public payable {
+         require(msg.sender == depositor, "Only depositor can deposit funds");
+         amount += msg.value;
+     }
+
+     function withdraw() public {
+         require(msg.sender == beneficiary, "Only beneficiary can withdraw funds");
+         payable(beneficiary).transfer(amount);
+         amount = 0;
+     }
+}
+<\Contract\>
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership - The deposit and withdraw functions rely only on checking the address of the sender without considering potential vulnerabilities like privilege escalation or unauthorized access.
+2) Ether leakage - The contract does not include proper checks or mechanisms to ensure that the deposited funds are not lost or leaked during the transfer process.
+3) Inconsistent state update - The withdrawal function does not handle scenarios where the beneficiary may not be able to withdraw the full balance due to insufficient gas or other reasons, potentially leading to inconsistent state updates.

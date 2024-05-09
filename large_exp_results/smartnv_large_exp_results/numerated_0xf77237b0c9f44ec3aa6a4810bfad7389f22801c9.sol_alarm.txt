@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `lockedFunds` variable is being updated without any protection against reentrancy, which can lead to unexpected behavior when multiple calls are made to the `endExecute` function.
+
+2) Cross bridge inconsistency: The `votingToken.transferFrom` call in the `execute` function can result in a potential inconsistency if the token transfer fails after the balance is updated, leaving the contract in an inconsistent state.
+
+3) Incorrect visibility/ownership: The `proposal` and `startingBalanceList` variables are being used without any access control or visibility modifiers, which can lead to potential unauthorized access or manipulation of data.

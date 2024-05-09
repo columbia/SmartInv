@@ -1,0 +1,25 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint256 public amount;
+    bool public releaseApproved;
+  
+    constructor(address _buyer, address _seller, address _arbiter, uint256 _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized");
+        require(!releaseApproved, "Amount already released");
+        releaseApproved = true;
+        
+        seller.transfer(amount);
+    }
+} 
+
+<\contract\> 

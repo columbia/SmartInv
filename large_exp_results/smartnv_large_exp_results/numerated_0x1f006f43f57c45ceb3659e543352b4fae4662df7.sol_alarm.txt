@@ -1,0 +1,37 @@
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+    
+    function vote(uint256 proposal) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = proposal;
+    }
+    
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation.");
+        }
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = to;
+
+        if (voters[to].voted) {
+            winningProposal += voters[to].weight;
+        }
+    }
+}
+ 
+Output:
+- Inconsistent state update
+- Business logic flaw

@@ -1,0 +1,38 @@
+Contract you are going to analyze:
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+
+     enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, DISPUTE, REFUND}
+     State public state;
+     uint public amount;
+
+     constructor(address _buyer, address _seller, address _arbiter) {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         state = State.AWAITING_PAYMENT;
+     }
+
+     function deposit() public payable {
+         require(msg.sender == buyer && state == State.AWAITING_PAYMENT, "only buyer can deposit during AWAITING_PAYMENT state");
+         require(msg.value == amount, "incorrect deposit amount");
+         state = State.AWAITING_DELIVERY;
+     }
+
+     function confirmDelivery() public {
+         require(msg.sender == buyer || msg.sender == seller, "only buyer or seller can confirm delivery");
+         require(state == State.AWAITING_DELIVERY, "can only confirm delivery during AWAITING_DELIVERY state");
+         state = State.COMPLETE;
+         (bool success, ) = seller.call{value: amount}("");
+         require(success, "transfer to seller failed");
+     }
+
+     function refund() public {
+         require(msg.sender == arbiter && state == State.DISPUTE, "only arbiter can initiate refund during DISPUTE state");
+         state = State.REFUND;
+         (bool success, ) = buyer.call{value: amount}("");
+         require(success, "refund to buyer failed");
+     }
+}

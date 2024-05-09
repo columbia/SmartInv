@@ -1,0 +1,21 @@
+The contract provided for analysis:
+
+<\contract\>
+ contract SwapTokens {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+
+     function swap(uint amountA, uint amountB) external {
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transferFrom(msg.sender, address(this), amountB);
+
+         tokenA.transfer(msg.sender, amountB);
+         tokenB.transfer(msg.sender, amountA);
+     }
+ }
+<\contract\>
+
+Potential vulnerabilities in the contract:
+- Inconsistent state update: The contract swaps tokens between users but updates the state inconsistently, which could result in incorrect token balances.
+- Insufficient gas: The swap function performs multiple token transfers which could exceed the gas limit, resulting in failed transactions or unexpected behavior. 
+- Incorrect visibility/ownership: The contract's tokenA and tokenB variables are public, which may expose sensitive information about the tokens being swapped.

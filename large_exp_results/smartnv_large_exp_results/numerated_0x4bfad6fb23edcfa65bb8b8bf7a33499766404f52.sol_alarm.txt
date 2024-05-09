@@ -1,0 +1,45 @@
+<\contract\>
+contract PaymentChannel {
+    address public sender;
+    address public recipient;
+    uint public amount;
+    uint public expiration;
+
+    constructor(address _recipient, uint _amount) payable {
+        sender = msg.sender;
+        recipient = _recipient;
+        amount = _amount;
+        expiration = block.timestamp + 3600;
+    }
+
+    function closeChannel(uint256 _amount, bytes memory _signature) public {
+        require(msg.sender == recipient, "Only recipient can close the channel");
+        require(block.timestamp < expiration, "Channel has expired");
+        // verify signature
+        address signer = recoverSigner(keccak256(abi.encodePacked(_amount)), _signature);
+        require(signer == sender, "Invalid signature");
+
+        // transfer funds
+        (bool success, ) = recipient.call{value: _amount}("");
+        require(success, "Transfer failed");
+
+        // return remaining funds to sender
+        recipient.transfer(address(this).balance);
+    }
+
+    function recoverSigner(bytes32 _hash, bytes memory _signature) internal pure returns (address) {
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+        assembly {
+            r := mload(add(_signature, 32))
+            s := mload(add(_signature, 64))
+            v := byte(0, mload(add(_signature, 96)))
+        }
+        if (v < 27) {
+            v += 27;
+        }
+        return ecrecover(_hash, v, r, s);
+    }
+}
+<\contract\>

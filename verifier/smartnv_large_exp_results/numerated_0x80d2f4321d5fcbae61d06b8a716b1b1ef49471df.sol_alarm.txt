@@ -1,0 +1,32 @@
+<\contract\>
+contract VotingSystem {
+    address public admin;
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+    
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint256 numVotes) public {
+        require(numVotes > 0, "Number of votes must be greater than 0");
+        
+        totalVotes += numVotes;
+        userVotes[msg.sender] += numVotes;
+    }
+
+    function revokeVote(uint256 numVotes) public {
+        require(numVotes > 0, "Number of votes must be greater than 0");
+        require(userVotes[msg.sender] >= numVotes, "Not enough votes to revoke");
+        
+        totalVotes -= numVotes;
+        userVotes[msg.sender] -= numVotes;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        
+        admin = newAdmin;
+    }
+}
+<\contract\>

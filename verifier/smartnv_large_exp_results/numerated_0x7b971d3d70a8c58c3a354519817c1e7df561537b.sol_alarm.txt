@@ -1,0 +1,31 @@
+The contract provided is as follows:
+
+contract TokenSale {
+     address public owner;
+     address public token;
+     address public wallet;
+
+     uint public tokenPrice;
+
+     mapping(address => uint) balances;
+
+     constructor(address _token, address _wallet, uint _tokenPrice) {
+          owner = msg.sender;
+          token = _token;
+          wallet = _wallet;
+          tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint amount) public payable {
+          require(msg.value == amount*tokenPrice, "Incorrect amount sent");
+          balances[msg.sender] += amount;
+          token.transfer(msg.sender, amount);
+          wallet.transfer(msg.value);
+     }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Price manipulation: The tokenPrice is set by the owner during contract deployment and could potentially be manipulated by the owner.
+2) Integer overflow/underflow: There is no check for potential integer overflow in the calculation of msg.value == amount*tokenPrice.
+3) Incorrect visibility/ownership: The owner variable is public, which may expose sensitive information. It is recommended to use internal or private visibility for this variable.

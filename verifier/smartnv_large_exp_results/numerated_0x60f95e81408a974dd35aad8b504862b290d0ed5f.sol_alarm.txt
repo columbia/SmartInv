@@ -1,0 +1,31 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+     }
+     address internal admin;
+     IERC20 public votingToken;
+     Proposal public currentProposal;
+
+     function createProposal() external {
+          require(currentProposal.startTime == 0, "existing proposal");
+          currentProposal = Proposal(block.timestamp, 0, msg.sender);
+     }
+
+     function vote(uint256 amount) external {
+          require(currentProposal.startTime != 0, "no active proposal");
+          require(block.timestamp <= currentProposal.startTime + 24 hours, "voting period has ended");
+          votingToken.transferFrom(msg.sender, address(this), amount);
+          currentProposal.votedAmount += amount;
+     }
+
+     function finalizeProposal() external {
+          require(currentProposal.startTime != 0, "no active proposal");
+          require(block.timestamp > currentProposal.startTime + 24 hours, "voting period has not ended");
+          require(currentProposal.votedAmount * 2 > votingToken.totalSupply(), "proposal failed to pass");
+          // execute proposal logic
+     }
+}
+<\contract_to_analyze\>

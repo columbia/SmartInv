@@ -1,0 +1,32 @@
+The contract provided for analysis is as follows:
+
+contract DiscountStore {
+         IERC20 public token;
+         address public owner;
+         mapping(address => uint) public discountRates;
+
+         constructor(address _token) {
+             token = IERC20(_token);
+             owner = msg.sender;
+         }
+
+         function setDiscountRate(address _address, uint _rate) external {
+             require(msg.sender == owner, "Only owner can set discount rate");
+             discountRates[_address] = _rate;
+         }
+
+         function purchaseWithDiscount(uint _amount) external {
+             uint discount = discountRates[msg.sender];
+             uint discountedAmount = _amount * (100 - discount) / 100;
+             token.transferFrom(msg.sender, address(this), discountedAmount);
+         }
+
+         function withdrawTokens() external {
+             require(msg.sender == owner, "Only owner can withdraw tokens");
+             token.transfer(owner, token.balanceOf(address(this)));
+         }
+}
+
+Based on the provided contract, the potential vulnerabilities identified are:
+1) incorrect visibility/ownership in the setDiscountRate function.
+2) incorrect visibility/ownership in the withdrawTokens function.

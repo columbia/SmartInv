@@ -1,0 +1,23 @@
+<\contract_to_analyze\> 
+contract TokenBridge {
+     mapping(address => uint256) public balances;
+     address public tokenAddress;
+     address public bridgeAddress;
+
+     constructor(address _tokenAddress, address _bridgeAddress) {
+         tokenAddress = _tokenAddress;
+         bridgeAddress = _bridgeAddress;
+     }
+
+     function deposit(uint256 amount) external {
+         balances[msg.sender] += amount;
+         require(IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount));
+     }
+
+     function withdraw(uint256 amount) external {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         require(IERC20(tokenAddress).transfer(msg.sender, amount));
+     }
+}
+<\contract_to_analyze\>

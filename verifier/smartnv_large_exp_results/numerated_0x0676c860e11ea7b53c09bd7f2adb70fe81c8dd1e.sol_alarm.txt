@@ -1,0 +1,36 @@
+The contract being analyzed for potential vulnerabilities is:
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+
+     constructor(address _token, uint _price) {
+         token = IERC20(_token);
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint _amount) external {
+         require(token.balanceOf(address(this)) >= _amount * price, "Not enough tokens in the contract");
+         token.transfer(msg.sender, _amount);
+     }
+
+     function setPrice(uint _newPrice) external {
+         require(msg.sender == owner, "Only the owner can set the price");
+         price = _newPrice;
+     }
+
+     function withdrawTokens(address _to, uint _amount) external {
+         require(msg.sender == owner, "Only the owner can withdraw tokens");
+         token.transfer(_to, _amount);
+     }
+
+     function withdrawEther(address payable _to, uint _amount) external {
+         require(msg.sender == owner, "Only the owner can withdraw Ether");
+         _to.transfer(_amount);
+     }
+}
+
+Output: 
+- incorrect visibility/ownership

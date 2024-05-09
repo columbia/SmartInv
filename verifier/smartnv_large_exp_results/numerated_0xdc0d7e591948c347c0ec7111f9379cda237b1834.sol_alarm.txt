@@ -1,0 +1,19 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += _amount;
+        totalVotes += _amount;
+    }
+
+    function revokeVote(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        require(votes[msg.sender] >= _amount, "Not enough votes to revoke");
+        votes[msg.sender] -= _amount;
+        totalVotes -= _amount;
+    }
+}
+<\contract\>

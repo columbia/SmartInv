@@ -1,0 +1,42 @@
+<\the_contract_you_are_analyzing\>
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public depositAmount;
+    bool public sellerApproved;
+    bool public buyerApproved;
+
+
+    function deposit(address _arbiter) public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        require(seller == address(0) && buyer == address(0), "Escrow already in progress");
+        arbiter = _arbiter;
+        depositAmount = msg.value;
+        seller = msg.sender;
+    }
+
+    function approveSeller() public {
+        require(msg.sender == seller, "Only seller can approve");
+        sellerApproved = true;
+    }
+
+    function approveBuyer() public {
+        require(msg.sender == buyer, "Only buyer can approve");
+        buyerApproved = true;
+    }
+
+    function releaseAmount() public {
+        require(seller != address(0) && buyer != address(0), "Escrow not initialized");
+        require(sellerApproved && buyerApproved, "Both parties must approve");
+        address payable _seller = payable(seller);
+        _seller.transfer(depositAmount);
+    }
+
+    function refundAmount() public {
+        require(seller != address(0) && buyer != address(0), "Escrow not initialized");
+        require(!sellerApproved && !buyerApproved, "Both parties must not approve");
+        address payable _buyer = payable(buyer);
+        _buyer.transfer(depositAmount);
+    }
+}

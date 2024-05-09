@@ -1,0 +1,22 @@
+<\analyzed_contract\>
+contract InsuranceContract {
+    uint public premiumAmount;
+    address public insurer;
+    address public insured;
+    
+    function setPremiumAmount(uint _amount) external {
+        require(msg.sender == insurer, "Only insurer can set premium amount");
+        premiumAmount = _amount;
+    }
+    
+    function payPremium() external payable {
+        require(msg.sender == insured, "Only insured can pay premium");
+        require(msg.value == premiumAmount, "Incorrect premium amount sent");
+    }
+    
+    function claimInsurance() external {
+        require(msg.sender == insured, "Only insured can claim insurance");
+        // Process insurance claim logic
+    }
+}
+<\analyzed_contract\>

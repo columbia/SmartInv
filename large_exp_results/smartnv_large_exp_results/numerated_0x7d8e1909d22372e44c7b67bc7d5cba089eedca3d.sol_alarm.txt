@@ -1,0 +1,41 @@
+The contract for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the TimelockController contract:
+1) Inconsistent state update: The update of "proposal.votedAmount" in the execute function can lead to inconsistent state if multiple transactions are executed concurrently.
+2) ID uniqueness violation: The address used as ID in the startExecute function may not be unique, leading to potential conflicts.
+3) Business logic flaw: The endExecute function contains a requirement that compares the balance of the contract with twice the total supply of the votingToken, which may not accurately represent the intended logic.
+4) Insufficient gas: If the operations in the execute function consume a large amount of gas, it may result in insufficient gas for the transaction to complete successfully.

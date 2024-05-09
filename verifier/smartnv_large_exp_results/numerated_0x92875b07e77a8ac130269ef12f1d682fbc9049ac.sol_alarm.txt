@@ -1,0 +1,10 @@
+<\TimelockController\>
+1) business logic flaw: The requirement `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")` in the `endExecute` function may have a business logic flaw, as it is unclear why the comparison with twice the total supply is necessary for successful execution.
+2) inconsistent state update: There is a potential inconsistency in state update in the `startExecute` function, as `proposal.sTime` is set to zero before checking if an ongoing proposal exists.
+
+<\ExchangeTokens\>
+5) atomicity violation: The liquidate function involves transferring USDC and WETH tokens, which are not done atomically, making it vulnerable to potential reentrancy attacks.
+6) cross bridge inconsistency: There is a potential inconsistency in the pricing calculation between the `getPrice()` function and the `calculatePrice()` function, which may lead to incorrect pricing information.
+10) arithmetic flaw: In the `liquidate` function, the calculation `getPrice() * cAmount * 80 / 100` may result in an arithmetic flaw if the values are not validated properly for potential overflow or underflow.
+
+Overall, the contract TimelockController contains vulnerabilities related to business logic flaw and inconsistent state update, while the contract ExchangeTokens contains vulnerabilities related to atomicity violation, cross bridge inconsistency, and arithmetic flaw.

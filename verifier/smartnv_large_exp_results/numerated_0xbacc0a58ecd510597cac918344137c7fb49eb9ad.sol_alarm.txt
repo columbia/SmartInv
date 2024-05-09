@@ -1,0 +1,28 @@
+The contract for analysis:
+
+contract Orders {
+    struct Order {
+        uint orderId;
+        address buyer;
+        address seller;
+        uint amount;
+        bool fulfilled;
+    }
+
+    mapping(uint => Order) public orders;
+    uint public nextOrderId;
+
+    function createOrder(address _seller, uint _amount) public {
+        orders[nextOrderId] = Order(nextOrderId, msg.sender, _seller, _amount, false);
+        nextOrderId++;
+    }
+
+    function fulfillOrder(uint _orderId) public {
+        require(orders[_orderId].seller == msg.sender, "Only seller can fulfill the order");
+        require(orders[_orderId].fulfilled == false, "Order already fulfilled");
+        orders[_orderId].fulfilled = true;
+    }
+}
+
+Output: 
+healthy

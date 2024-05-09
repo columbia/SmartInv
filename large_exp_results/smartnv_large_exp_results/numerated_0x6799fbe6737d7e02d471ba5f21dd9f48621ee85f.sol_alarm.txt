@@ -1,0 +1,30 @@
+<\contract\>
+
+contract VotingSystem {
+    struct Voter {
+        uint256 voterID;
+        bool hasVoted;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public owner;
+    uint256 public totalVotes;
+    
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+    
+    function vote() public {
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        voters[msg.sender].hasVoted = true;
+        totalVotes++;
+    }
+    
+    function endVoting() public {
+        require(msg.sender == owner, "Only owner can end voting");
+        // Logic to determine the winner and perform actions based on the result
+    }
+}
+
+<\contract\>

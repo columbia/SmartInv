@@ -1,0 +1,33 @@
+<\contract\>
+contract Insurance {
+    address public owner;
+    uint256 public totalPayout;
+    
+    struct Policy {
+        address policyHolder;
+        uint256 premium;
+        uint256 payoutAmount;
+        bool isValid;
+    }
+    
+    mapping(uint256 => Policy) public policies;
+    
+    constructor() {
+        owner = msg.sender;
+        totalPayout = 0;
+    }
+    
+    function purchasePolicy(uint256 policyID, address _policyHolder, uint256 _premium, uint256 _payoutAmount) public {
+        require(msg.sender == owner, "Only owner can create policies.");
+        policies[policyID] = Policy(_policyHolder, _premium, _payoutAmount, true);
+    }
+    
+    function claimPayout(uint256 policyID) public {
+        require(policies[policyID].isValid == true, "Policy is not valid.");
+        require(msg.sender == policies[policyID].policyHolder, "You are not the policy holder.");
+        
+        totalPayout += policies[policyID].payoutAmount;
+        policies[policyID].isValid = false;
+    }
+}
+<\contract\>

@@ -1,0 +1,19 @@
+<\contract\> 
+contract VotingSystem {
+     address public owner;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+     
+     constructor() {
+         owner = msg.sender;
+     }
+     
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         totalVotes++;
+         hasVoted[msg.sender] = true;
+     }
+} 
+
+Output:
+- ID uniqueness violation

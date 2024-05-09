@@ -1,0 +1,23 @@
+<\contract\>
+contract VestingContract {
+    mapping(address => uint) public vestedAmounts;
+    mapping(address => uint) public releaseTimes;
+
+    function vest(address beneficiary, uint amount, uint releaseTime) public {
+        require(msg.sender == owner, "Only owner can vest tokens");
+        require(amount > 0, "Amount must be greater than 0");
+        
+        vestedAmounts[beneficiary] += amount;
+        releaseTimes[beneficiary] = releaseTime;
+    }
+
+    function release() public {
+        uint amount = vestedAmounts[msg.sender];
+        require(amount > 0, "No vested amount to release");
+        require(block.timestamp >= releaseTimes[msg.sender], "Release time has not been reached");
+
+        vestedAmounts[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\>

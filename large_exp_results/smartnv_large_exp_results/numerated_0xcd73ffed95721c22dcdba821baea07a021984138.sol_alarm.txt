@@ -1,0 +1,29 @@
+<\contract_to_analyze\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public amount;
+     bool public isPaid;
+
+     function createEscrow(address _seller) public payable {
+         require(!isPaid, "Escrow already created");
+         seller = _seller;
+         buyer = msg.sender;
+         amount = msg.value;
+     }
+
+     function releaseAmount() public {
+         require(msg.sender == seller, "Only seller can release the amount");
+         require(isPaid, "Amount not yet paid");
+         payable(seller).transfer(amount);
+         amount = 0;
+     }
+
+     function payAmount() public payable {
+         require(msg.sender == buyer, "Only buyer can pay the amount");
+         require(!isPaid, "Amount already paid");
+         require(msg.value == amount, "Incorrect amount sent");
+         isPaid = true;
+     }
+}
+<\contract_to_analyze\>

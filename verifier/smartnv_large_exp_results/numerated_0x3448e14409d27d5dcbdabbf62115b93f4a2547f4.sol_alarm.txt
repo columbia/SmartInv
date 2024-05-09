@@ -1,0 +1,26 @@
+<\contract_to_analyze\> 
+contract PaymentProcessor {
+    mapping(uint => uint) public payments;
+    uint public totalPayments;
+
+    function processPayment(uint _paymentId, uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        payments[_paymentId] = _amount;
+        totalPayments += _amount;
+    }
+
+    function refundPayment(uint _paymentId, uint _amount) public {
+        require(payments[_paymentId] >= _amount, "Not enough funds to refund");
+        payments[_paymentId] -= _amount;
+        totalPayments -= _amount;
+    }
+
+    function getTotalPayments() public view returns (uint) {
+        return totalPayments;
+    }
+}
+<\contract_to_analyze\> 
+
+Output:
+- atomicity violation
+- inconsistent state update

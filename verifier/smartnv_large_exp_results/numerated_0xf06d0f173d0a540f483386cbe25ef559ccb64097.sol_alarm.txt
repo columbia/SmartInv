@@ -1,0 +1,22 @@
+<\analyzed_contract\> 
+contract PaymentContract {
+         address public owner;
+         mapping(uint => uint) public payments;
+
+         function makePayment(uint paymentID, uint amount) public {
+             require(msg.sender == owner, "Not authorized");
+             payments[paymentID] += amount;
+         }
+         function withdrawPayment(uint paymentID) public {
+             require(payments[paymentID] > 0, "No funds to withdraw");
+             address payable withdrawalAddress = msg.sender;
+             uint amount = payments[paymentID];
+             payments[paymentID] = 0;
+             withdrawalAddress.transfer(amount);
+         }
+}
+<\analyzed_contract\> 
+
+Output:
+- incorrect visibility/ownership
+- privilege escalation

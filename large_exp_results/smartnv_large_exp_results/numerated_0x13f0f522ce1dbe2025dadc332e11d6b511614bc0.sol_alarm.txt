@@ -1,0 +1,26 @@
+The contract provided: 
+
+contract MultiSigWallet {
+    mapping(address => uint) public owners;
+    mapping(uint => bool) public transactions;
+    uint public transactionCount;
+    
+    function submitTransaction(uint _transactionId) public {
+        require(owners[msg.sender] == 1, "Sender is not an owner");
+        transactions[_transactionId] = true;
+        transactionCount++;
+    }
+    
+    function executeTransaction(uint _transactionId) public {
+        require(transactions[_transactionId] == true, "Transaction does not exist");
+        // Code to execute transaction
+        delete transactions[_transactionId];
+        transactionCount--;
+    }
+}
+
+The potential vulnerabilities in the provided contract are: 
+1) Inconsistent state update - The transaction count is incremented in submitTransaction() but not decremented in executeTransaction(), potentially leading to an inconsistent state.
+2) Incorrect visibility/ownership - The owners mapping should be private to prevent external manipulation. 
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update and incorrect visibility/ownership.

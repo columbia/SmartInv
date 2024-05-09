@@ -1,0 +1,35 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        state = State.Created;
+    }
+
+    function confirmPayment() public {
+        require(msg.sender == buyer, "Only the buyer can confirm payment");
+        state = State.Locked;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == arbiter, "Only the arbiter can confirm received");
+        state = State.Released;
+    }
+
+    function refundPayment() public {
+        require(msg.sender == arbiter, "Only the arbiter can refund payment");
+        state = State.Inactive;
+    }
+}
+<\contract\> 
+
+The potential vulnerability in the contract is incorrect visibility/ownership.

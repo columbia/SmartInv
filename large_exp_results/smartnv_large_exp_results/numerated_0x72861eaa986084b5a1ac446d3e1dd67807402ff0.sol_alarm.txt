@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+     uint public tokenSold;
+     
+     constructor(IERC20 _token, uint _tokenPrice) {
+         token = _token;
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+     
+     function buyTokens(uint _amount) external payable {
+         uint totalCost = _amount * tokenPrice;
+         require(msg.value == totalCost, "Incorrect ether value sent");
+         token.transfer(msg.sender, _amount);
+         tokenSold += _amount;
+     }
+     
+     function withdrawEther() external onlyOwner {
+         owner.transfer(address(this).balance);
+     }
+     
+     modifier onlyOwner() {
+         require(msg.sender == owner, "Only owner can call this function");
+         _;
+     }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,45 @@
+Contract to be analyzed: 
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    uint public startTime;
+    bool public isPaid;
+    
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "You are not the buyer");
+        _;
+    }
+    
+    modifier onlySeller() {
+        require(msg.sender == seller, "You are not the seller");
+        _;
+    }
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        startTime = block.timestamp;
+        isPaid = false;
+    }
+    
+    function deposit() public payable onlyBuyer {
+        require(msg.value == price, "Incorrect deposit amount");
+        isPaid = true;
+    }
+    
+    function releasePayment() public onlySeller {
+        require(isPaid == true, "Payment has not been made");
+        payable(seller).transfer(price);
+    }
+    
+    function refundPayment() public onlyBuyer {
+        require(isPaid == true, "Payment has not been made");
+        payable(buyer).transfer(price);
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership: The contract does not enforce proper visibility and access control for certain functions which could lead to unauthorized access and manipulation of the contract's state and funds.

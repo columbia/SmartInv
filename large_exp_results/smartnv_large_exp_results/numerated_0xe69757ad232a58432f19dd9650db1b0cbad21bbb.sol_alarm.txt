@@ -1,0 +1,34 @@
+<\analyzed_contract\>
+contract TokenSale {
+     address public token;
+     address public owner;
+     uint public price;
+     mapping(address => uint) public balances;
+
+     constructor(address _token, uint _price) {
+         token = _token;
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(msg.value == _amount * price, "Incorrect payment amount");
+         balances[msg.sender] += _amount;
+         transferToken(msg.sender, _amount);
+     }
+
+     function transferToken(address _to, uint _amount) private {
+         //Transfer token logic
+     }
+
+     function setPrice(uint _newPrice) public {
+         require(msg.sender == owner, "Only owner can set the price");
+         price = _newPrice;
+     }
+
+     function withdraw() public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         payable(owner).transfer(address(this).balance);
+     }
+}
+<\analyzed_contract\>

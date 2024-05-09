@@ -1,0 +1,26 @@
+The contract being analyzed:
+
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+     mapping(address => uint) public bids;
+
+     function bid() public payable {
+         require(msg.value > highestBid, "Bid not high enough");
+         if(highestBid != 0) {
+             bids[highestBidder] += highestBid; 
+         }
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+
+     function withdraw() public {
+         require(msg.sender != highestBidder, "Cannot withdraw while being the highest bidder");
+         uint amount = bids[msg.sender];
+         bids[msg.sender] = 0;
+         msg.sender.transfer(amount);
+     }
+}
+
+Output:
+1) potential vulnerability: inconsistent state update

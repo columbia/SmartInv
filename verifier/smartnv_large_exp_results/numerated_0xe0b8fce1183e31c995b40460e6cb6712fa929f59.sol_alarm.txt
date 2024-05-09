@@ -1,0 +1,29 @@
+<\contract\> 
+contract TokenSale {
+        address public token;
+        address public owner;
+        uint public price;
+        uint public availableTokens;
+
+        constructor(address _token, uint _price, uint _availableTokens) {
+            token = _token;
+            owner = msg.sender;
+            price = _price;
+            availableTokens = _availableTokens;
+        }
+
+        function buyTokens(uint amount) public payable {
+            require(msg.value == amount * price, "Incorrect payment amount");
+            require(availableTokens >= amount, "Not enough tokens available");
+            
+            // Transfer tokens to the buyer
+            // Deduct tokens from the availableTokens
+            // Send ether to the owner
+        }
+
+        function changePrice(uint newPrice) public {
+            require(msg.sender == owner, "Only the owner can change the price");
+            price = newPrice;
+        }
+
+}

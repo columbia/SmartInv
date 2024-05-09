@@ -1,0 +1,15 @@
+<\contract\>
+contract PaymentGateway {
+         address public owner;
+         mapping(uint => bool) public paymentStatus;
+
+         function makePayment(uint paymentID) public {
+             require(msg.sender == owner, "Only owner can make payment");
+             paymentStatus[paymentID] = true;
+         }
+
+         function checkPaymentStatus(uint paymentID) public view returns (bool) {
+             return paymentStatus[paymentID];
+         }
+}
+<\contract\>

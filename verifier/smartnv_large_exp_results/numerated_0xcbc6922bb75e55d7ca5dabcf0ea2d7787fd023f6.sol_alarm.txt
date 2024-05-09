@@ -1,0 +1,16 @@
+The contract provided for analysis:
+
+contract Auction {
+     uint public highestBid;
+     address public highestBidder;
+
+     function bid(uint bidAmount) public {
+         require(bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+         highestBidder.transfer(highestBid); 
+         highestBidder = msg.sender;
+         highestBid = bidAmount;
+     }
+}
+
+Potential vulnerabilities identified in the contract:
+- Integer overflow/underflow in the bid function, as bidAmount may be larger than the maximum value allowed for uint type variables.

@@ -1,0 +1,34 @@
+<\contract\>
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public price;
+    bool public sellerConfirmed;
+    bool public buyerConfirmed;
+    bool public released;
+
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+
+    function confirmReceipt() public {
+        require(msg.sender == buyer, "Only the buyer can confirm receipt");
+        buyerConfirmed = true;
+    }
+
+    function confirmPayment() public payable {
+        require(msg.sender == seller, "Only the seller can confirm payment");
+        require(msg.value == price, "Incorrect payment amount");
+        sellerConfirmed = true;
+    }
+
+    function releaseFunds() public {
+        require(sellerConfirmed && buyerConfirmed, "Both parties must confirm");
+        require(!released, "Funds already released");
+        payable(seller).transfer(price);
+        released = true;
+    }
+}
+<\contract\>

@@ -1,0 +1,33 @@
+Contract: 
+
+contract Auction {
+    mapping(address => uint) public bids;
+    address highestBidder;
+    uint public highestBid;
+    
+    function placeBid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        if (highestBid != 0) {
+            bids[highestBidder] += highestBid;
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+    
+    function withdrawBid() public {
+        require(msg.sender != highestBidder, "Cannot withdraw highest bid");
+        uint amount = bids[msg.sender];
+        bids[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities:
+1) Reentrancy - The contract is susceptible to reentrancy attacks in the withdrawBid function where the transfer is done before updating the bids mapping.
+2) Inconsistent state update - In the placeBid function, there is a possibility of inconsistent state update as the bids mapping is updated after changing the highestBidder and highestBid variables. 
+3) Incorrect visibility - The bids mapping is public, which exposes sensitive information to anyone who can access the contract storage.
+
+Output: 
+reentrancy
+inconsistent state update
+incorrect visibility

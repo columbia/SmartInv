@@ -1,0 +1,10 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function execute updates the votedAmount in the proposal without utilizing proper synchronization methods. This may lead to inconsistent data if multiple transactions attempt to execute at the same time.
+
+2) Incorrect visibility/ownership: The contract TimelockController implements the IERC20 interface but does not provide any implementation for the required functions. This could result in incorrect behavior when interacting with this contract through the interface.
+
+3) Insufficient gas: The function endExecute reads the balance of the contract and the total supply of the ERC20 token, which can consume a significant amount of gas. If the gas limit is exceeded, the function may fail to execute fully, leaving the contract in an inconsistent state.
+
+4) Integer overflow/underflow: The function liquidate calculates the liquidation amount based on the getPrice() function, which may lead to integer overflow or underflow if not handled carefully. 
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, insufficient gas, and integer overflow/underflow.

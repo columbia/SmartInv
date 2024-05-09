@@ -1,0 +1,23 @@
+<\contract\>
+contract AutomatedMarketMaker {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         IUniswapV2Pair public pair; 
+         mapping(address => uint) public reservesA;
+         mapping(address => uint) public reservesB;
+
+         function swap(uint amountA, uint amountB) public {
+             require(tokenA.balanceOf(msg.sender) >= amountA, "insufficient balance of tokenA");
+             require(tokenB.balanceOf(msg.sender) >= amountB, "insufficient balance of tokenB");
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transferFrom(msg.sender, address(this), amountB);
+             tokenA.transfer(msg.sender, amountA * reservesA[msg.sender] / reservesB[msg.sender]);
+             tokenB.transfer(msg.sender, amountB * reservesB[msg.sender] / reservesA[msg.sender]);
+         }
+         
+         function updateReserves(uint newReserveA, uint newReserveB) public {
+             reservesA[msg.sender] = newReserveA;
+             reservesB[msg.sender] = newReserveB;
+         }
+}
+<\contract\>

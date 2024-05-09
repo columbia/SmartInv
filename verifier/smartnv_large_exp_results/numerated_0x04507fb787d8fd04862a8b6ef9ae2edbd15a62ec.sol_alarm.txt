@@ -1,0 +1,23 @@
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == owner, "Only owner can reset votes");
+        totalVotes = 0;
+        for (uint i = 0; i < totalVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+    }
+} 
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The `resetVotes()` function can only be called by the `owner`, but the `owner` is not defined in the contract, which could lead to ownership vulnerability.
+- Inconsistent state update: In the `resetVotes()` function, the loop to reset `hasVoted` mapping does not properly iterate over all voters due to the logic error in the loop condition `i < totalVotes`. It should be `i < totalVotes` instead of `i < totalVotes`.
+- Integer Overflow/Underflow: There is no check for potential integer overflow in the `totalVotes` counter. If the total number of votes exceeds the maximum integer value, it could lead to an overflow issue.

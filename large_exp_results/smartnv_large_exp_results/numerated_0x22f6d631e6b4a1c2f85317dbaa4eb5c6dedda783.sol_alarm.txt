@@ -1,0 +1,28 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+     address public owner;
+     IERC20 public token;
+     uint public price;
+     uint public totalSold;
+    
+     constructor(address _token, uint _price) public {
+         owner = msg.sender;
+         token = IERC20(_token);
+         price = _price;
+     }
+
+     function buyTokens(uint amount) public {
+         uint totalPrice = amount * price;
+         require(token.balanceOf(msg.sender) >= totalPrice, "insufficient balance");
+         token.transferFrom(msg.sender, owner, totalPrice);
+         totalSold += amount;
+     }
+
+     function endCrowdsale() public {
+         require(msg.sender == owner, "only owner can end crowdsale");
+         // distribute remaining tokens
+         uint remainingTokens = token.balanceOf(address(this));
+         token.transfer(owner, remainingTokens);
+     }
+}
+<\contract_to_analyze\>

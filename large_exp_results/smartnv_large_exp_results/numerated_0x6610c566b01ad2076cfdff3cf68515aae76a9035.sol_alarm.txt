@@ -1,0 +1,27 @@
+The contract you are going to analyze is:
+
+contract TokenSale {
+     address public admin;
+     IERC20 public token;
+     address payable public beneficiary;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     mapping(address => uint) public balance;
+
+     function buyTokens(uint _numTokens) public {
+         require(balance[msg.sender] >= _numTokens * tokenPrice,"insufficient balance");
+         require(token.balanceOf(address(this)) >= _numTokens,"insufficient tokens in the contract");
+
+         uint cost = _numTokens * tokenPrice;
+         balance[msg.sender] -= cost;
+         balance[beneficiary] += cost;
+         tokensSold += _numTokens;
+         token.transfer(msg.sender, _numTokens);
+     }
+
+     function setTokenPrice(uint _newPrice) public {
+         require(msg.sender == admin,"not authorized");
+         tokenPrice = _newPrice;
+     }
+}

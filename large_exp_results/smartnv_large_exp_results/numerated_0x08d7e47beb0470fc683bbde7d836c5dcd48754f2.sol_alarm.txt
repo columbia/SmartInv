@@ -1,0 +1,24 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+    address public owner;
+    IERC20 public token;
+    mapping(address => uint256) public balances;
+    
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+    
+    function buyTokens(uint256 amount) external {
+        require(amount > 0, "Invalid amount");
+        uint256 tokenAmount = amount * 100;
+        token.transfer(msg.sender, tokenAmount);
+        balances[msg.sender] += amount;
+    }
+    
+    function withdraw() external {
+        require(msg.sender == owner, "Only owner can withdraw");
+        token.transfer(msg.sender, token.balanceOf(address(this)));
+    }
+}
+<\contract_to_analyze\>

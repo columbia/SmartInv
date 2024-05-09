@@ -1,0 +1,36 @@
+Contract:
+contract VotingSystem {
+    struct Vote {
+        address voter;
+        uint256 timestamp;
+        uint256 choice;
+    }
+    
+    mapping(uint256 => Vote[]) public votes;
+    mapping(address => bool) public hasVoted;
+    uint256 public totalVotes;
+
+    function vote(uint256 _choice) public {
+        require(_choice == 0 || _choice == 1, "Invalid choice");
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        votes[_choice].push(Vote(msg.sender, block.timestamp, _choice));
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+    
+    function getWinner() public view returns (uint256) {
+        require(totalVotes > 0, "No votes casted");
+        
+        uint256 choice0Votes = votes[0].length;
+        uint256 choice1Votes = votes[1].length;
+        
+        if(choice0Votes > choice1Votes){
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+}
+Output:
+- inconsistent state update

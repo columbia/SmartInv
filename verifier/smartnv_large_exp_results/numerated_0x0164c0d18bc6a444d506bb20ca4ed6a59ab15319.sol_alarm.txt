@@ -1,0 +1,25 @@
+The contract provided is:
+
+contract Governance {
+    address public owner;
+    mapping(uint => address) public delegates;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function addDelegate(uint id, address delegate) public {
+        require(msg.sender == owner, "Only owner can add delegates");
+        delegates[id] = delegate;
+    }
+    
+    function removeDelegate(uint id) public {
+        require(msg.sender == owner, "Only owner can remove delegates");
+        delete delegates[id];
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

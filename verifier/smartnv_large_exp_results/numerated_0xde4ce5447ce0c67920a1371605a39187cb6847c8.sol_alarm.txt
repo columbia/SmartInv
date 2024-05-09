@@ -1,0 +1,18 @@
+contract PaymentProcessor {
+    mapping(address => uint256) public balance;
+    
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint256 amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+} 
+
+The potential vulnerabilities in the given contract are:
+- Incorrect visibility/ownership in the balance mapping, as it is declared as public which exposes all user balances publicly.
+- Insufficient gas could potentially arise if the contract's methods require more gas to execute than the user provides.
+- Ether leakage due to the use of transfer in the withdraw function, which can lead to Ether being locked in the contract if the receiving address has a fallback function that consumes too much gas.

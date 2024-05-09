@@ -1,0 +1,26 @@
+<\contract\>
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public tokenPrice;
+         uint public totalTokens;
+         
+         constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+             token = _token;
+             owner = msg.sender;
+             tokenPrice = _tokenPrice;
+             totalTokens = _totalTokens;
+         }
+         
+         function buyTokens(uint _numTokens) public payable {
+             require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+             require(totalTokens >= _numTokens, "Not enough tokens available");
+             
+             token.transfer(msg.sender, _numTokens);
+             totalTokens -= _numTokens;
+         }
+     }
+<\contract\> 
+Output:
+- Integer overflow/underflow
+- Inconsistent state update

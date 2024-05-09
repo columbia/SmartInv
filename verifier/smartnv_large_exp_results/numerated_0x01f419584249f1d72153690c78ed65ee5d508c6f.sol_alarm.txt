@@ -1,0 +1,35 @@
+The contract provided for analysis: 
+
+contract Escrow {
+     address public buyer;
+     address payable public seller;
+     uint public price;
+     bool public released;
+     bool public fundsDeposited;
+     
+     constructor(address _buyer, address payable _seller, uint _price) {
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+         released = false;
+         fundsDeposited = false;
+     }
+     
+     function depositFunds() external payable {
+         require(msg.sender == buyer, "Only buyer can deposit funds");
+         require(msg.value == price, "Incorrect amount deposited");
+
+         fundsDeposited = true;
+     }
+     
+     function releaseFunds() external {
+         require(msg.sender == buyer, "Only buyer can release funds");
+         require(fundsDeposited == true, "Funds have not been deposited yet");
+
+         seller.transfer(address(this).balance);
+         released = true;
+     }
+} 
+
+Output:
+- healthy

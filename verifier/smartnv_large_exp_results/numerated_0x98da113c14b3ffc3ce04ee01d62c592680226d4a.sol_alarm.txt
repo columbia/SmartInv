@@ -1,0 +1,28 @@
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCounts;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(bool inFavor) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        if (inFavor) {
+            voteCounts[msg.sender]++;
+        } else {
+            voteCounts[msg.sender]--;
+        }
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+
+    function getVoteCount(address voter) public view returns (uint) {
+        return voteCounts[voter];
+    }
+}

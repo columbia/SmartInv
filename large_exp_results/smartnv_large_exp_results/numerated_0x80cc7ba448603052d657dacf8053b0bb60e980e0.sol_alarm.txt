@@ -1,0 +1,9 @@
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update: The `endExecute` function updates the `lockedFunds` without checking if the conditions for execution have actually been met, potentially leading to an inconsistent state.
+
+2) Integer overflow/underflow: There is a possibility of integer overflow in the `liquidate` function where the calculation `getPrice() * cAmount * 80 / 100` could potentially lead to overflow if the values involved are large.
+
+3) Incorrect visibility/ownership: The visibility of the `calculatePrice` function is set to `public` but it directly interacts with the state variables of the contract (`USDC` and `WETH`) without any access control, which could lead to unauthorized access.
+
+Therefore, the vulnerabilities in the provided contract are inconsistent state update, integer overflow/underflow, and incorrect visibility/ownership.

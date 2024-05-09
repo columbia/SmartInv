@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+contract WithdrawContract {
+    uint public balance;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(amount <= balance, "Not enough balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the WithdrawContract:
+
+1) Integer overflow/underflow: The contract does not have checks for potential integer overflow or underflow in the balance variable manipulation.
+
+2) Insufficient gas: The use of transfer in the withdraw function may result in out-of-gas errors if the contract's gas stipend is not enough to cover the transfer operation.
+
+3) Incorrect visibility/ownership: The owner variable is public, which could allow unauthorized parties to change the owner of the contract.
+
+Therefore, the potential vulnerabilities in the WithdrawContract are integer overflow/underflow, insufficient gas, and incorrect visibility/ownership.

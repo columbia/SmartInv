@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The variable "lockedFunds" is updated in the function "endExecute()". However, this update is not protected by any locks or modifiers, which could lead to inconsistent state updates if multiple transactions try to update the variable simultaneously.
+
+2) Privilege escalation: The function "startExecute()" allows any address to start a new proposal. This could potentially lead to unauthorized parties gaining privileges they shouldn't have.
+
+3) Atomicity violation: The function "execute()" involves multiple state changes (transferring tokens, updating proposal state). If an external call fails after one of the state changes, it could leave the contract in an inconsistent state.
+
+4) ID uniqueness violation: The contract does not have any mechanism to ensure uniqueness of proposal IDs. This could lead to unexpected behavior if multiple proposals have the same ID.

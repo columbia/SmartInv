@@ -1,0 +1,27 @@
+Contract to analyze:
+contract Marketplace {
+    struct Product {
+        uint256 id;
+        string name;
+        uint256 price;
+        address owner;
+        bool isSold;
+    }
+
+    mapping(uint256 => Product) public products;
+    uint256 public productCount;
+
+    function createProduct(string memory _name, uint256 _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+    }
+
+    function buyProduct(uint256 _productId) public payable {
+        Product memory product = products[_productId];
+        require(msg.value == product.price, "Incorrect amount sent");
+        
+        product.owner.transfer(msg.value);
+        product.isSold = true;
+    }
+}
+Please carefully study the contract and identify potential vulnerabilities from the list provided.

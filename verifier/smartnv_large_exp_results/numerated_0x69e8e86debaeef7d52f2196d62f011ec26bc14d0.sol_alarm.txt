@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public funds;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid is not higher than the current highest bid");
+        if (highestBidder != address(0)) {
+            funds[highestBidder] += highestBid;
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender != highestBidder, "Cannot withdraw while being the highest bidder");
+        uint amount = funds[msg.sender];
+        funds[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output: 
+1) Integer overflow/underflow
+2) Insufficient gas
+3) Inconsistent state update

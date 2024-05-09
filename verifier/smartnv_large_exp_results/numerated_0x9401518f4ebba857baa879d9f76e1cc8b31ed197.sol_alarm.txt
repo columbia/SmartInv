@@ -1,0 +1,32 @@
+<\Analyzing_contract\>
+contract PaymentChannel {
+    address public sender;
+    address public recipient;
+    uint public expiration;
+    uint public value;
+    bool public closed;
+
+    constructor(address _recipient, uint _duration, uint _amount) public {
+        sender = msg.sender;
+        recipient = _recipient;
+        expiration = block.number + _duration;
+        value = _amount;
+        closed = false;
+    }
+
+    function close(uint256 _proof) public {
+        require(msg.sender == recipient, "Only the recipient can close the payment channel");
+        require(_proof == expiration, "Invalid proof provided");
+        require(!closed, "Payment channel is already closed");
+        
+        msg.sender.transfer(value);
+        closed = true;
+    }
+
+    function extendDuration(uint _additionalDuration) public {
+        require(msg.sender == sender, "Only the sender can extend the duration");
+        
+        expiration += _additionalDuration;
+    }
+}
+<\Analyzing_contract\>

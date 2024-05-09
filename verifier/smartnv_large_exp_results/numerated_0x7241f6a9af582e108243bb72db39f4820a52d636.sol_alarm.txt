@@ -1,0 +1,37 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public tokenPrice;
+
+    constructor(uint _tokenPrice) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public {
+        require(balances[msg.sender] >= amount * tokenPrice, "Insufficient balance");
+        balances[msg.sender] -= amount * tokenPrice;
+        // Transfer tokens to buyer
+    }
+
+    function setTokenPrice(uint _tokenPrice) public {
+        require(msg.sender == owner, "Only owner can set token price");
+        tokenPrice = _tokenPrice;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        // Transfer funds to owner
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to the public. This can potentially be a security risk.
+2) privilege escalation: The setTokenPrice function allows the owner to set the token price, which can lead to privilege escalation if the owner account is compromised.
+3) inconsistent state update: In the buyTokens function, the balances of the buyer and token price are updated separately which can lead to inconsistent state if there is an error or interruption during the update process.
+4) atomicity violation: The buyTokens function does not perform the balance deduction and token transfer atomically, leaving room for potential race conditions.
+5) integer overflow/underflow: There is a risk of integer overflow in calculations involving token amounts and prices, which can lead to unexpected behavior or vulnerabilities.
+6) insufficient gas: If the operations in the functions require higher gas than provided, it can lead to incomplete execution and potential vulnerabilities.
+7) ether leakage: If the contract holds Ether and does not provide a way to withdraw it or secure it properly, there can be a risk of Ether leakage.

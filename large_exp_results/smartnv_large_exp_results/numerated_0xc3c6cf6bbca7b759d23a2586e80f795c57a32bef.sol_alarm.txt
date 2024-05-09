@@ -1,0 +1,46 @@
+The contract for analysis:
+contract Escrow {
+    address payable public buyer;
+    address payable public seller;
+    address public arbiter;
+    uint public value;
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE}
+    State public currentState;
+
+    constructor(address payable _buyer, address payable _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(currentState == State.AWAITING_PAYMENT, "Payment already made");
+        require(msg.value == value, "Incorrect amount sent");
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm delivery");
+        require(currentState == State.AWAITING_DELIVERY, "Payment not made yet");
+        currentState = State.COMPLETE;
+        seller.transfer(value);
+    }
+
+    function refund() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can refund");
+        require(currentState == State.AWAITING_DELIVERY, "Not awaiting delivery");
+        currentState = State.COMPLETE;
+        buyer.transfer(value);
+    }
+
+    function setArbiter(address _arbiter) public {
+        require(msg.sender == arbiter, "Only current arbiter can set new arbiter");
+        arbiter = _arbiter;
+    }
+}
+
+Output:
+1) Insufficient gas
+2) Incorrect visibility/ownership

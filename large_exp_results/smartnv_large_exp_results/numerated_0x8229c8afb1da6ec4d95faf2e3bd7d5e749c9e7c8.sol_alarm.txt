@@ -1,0 +1,36 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight; 
+        bool voted; 
+        uint256 vote;
+    }
+    
+    address public admin;
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    
+    constructor() {
+        admin = msg.sender;
+        totalVotes = 0;
+    }
+    
+    function giveRightToVote(address _voter) public {
+        require(msg.sender == admin, "Only admin can give voting rights");
+        voters[_voter].weight = 1;
+    }
+    
+    function vote(uint256 _vote) public {
+        require(voters[msg.sender].weight > 0, "Voter has no right to vote");
+        require(!voters[msg.sender].voted, "Voter has already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = _vote;
+        totalVotes += _vote;
+    }
+    
+    function tallyVotes() public view returns (uint256) {
+        return totalVotes;
+    }
+}
+<\contract_to_analyze\>

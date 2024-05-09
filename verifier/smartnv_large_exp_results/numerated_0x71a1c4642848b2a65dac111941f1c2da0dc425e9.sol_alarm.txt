@@ -1,0 +1,29 @@
+<\contract\>
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public totalTokens;
+    uint public tokenPrice;
+
+    constructor(uint _totalTokens, uint _tokenPrice) {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public {
+        require(balances[msg.sender] + amount >= amount, "Integer overflow");
+        require(msg.value == amount * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += amount;
+        totalTokens -= amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Unauthorized");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\> 
+Output:
+- Integer overflow/underflow
+- Incorrect payment amount

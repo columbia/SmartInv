@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+     }
+     address public admin;
+     address[] public voters;
+     mapping(address => bool) public hasVoted;
+     
+     function createProposal() external {
+          Proposal memory newProposal = Proposal(block.timestamp, 0, msg.sender);
+          // create and store new proposal
+     }
+     
+     function vote() external {
+          require(!hasVoted[msg.sender], "You have already voted");
+          // record voter
+          voters.push(msg.sender);
+          hasVoted[msg.sender] = true;
+          // update proposal voted amount
+     }
+     
+     function finalizeVoting() external {
+          // check if admin calls this function
+          // calculate total voted amount
+          // check if proposal meets minimum votes
+          // execute proposal if passed
+     }
+}
+<\contract_to_analyze\>

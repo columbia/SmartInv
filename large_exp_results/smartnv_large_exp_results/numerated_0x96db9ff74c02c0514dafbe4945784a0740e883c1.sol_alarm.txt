@@ -1,0 +1,44 @@
+The contract under analysis: 
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+        uint256 sTime; 
+        uint256 votedAmount; 
+        address addr; 
+    }
+    address internal owner;
+    IERC20 votingToken;
+
+    function startExecute() external {
+        uint256 startingBlance;
+        require(proposal.sTime == 0,"on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBalance; 
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount; 
+        votedProposal(proposal); 
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Business logic flaw in the startExecute() function - startingBlance should be startingBalance as there is a typo in the variable name.
+2) Inconsistent state update in the startExecute() function - proposal struct is updated without proper handling of existing proposals.
+3) Atomicity violation in the execute() function - proposal.votedAmount is incremented without proper synchronization control, leading to potential race conditions.
+4) Inconsistent state update in the execute() function - votedProposal(proposal) is called without clear indication of what this function does or what impact it may have on the proposal state.
+5) Incorrect visibility/ownership - the owner variable is declared but not used or implemented in the contract, indicating potential issues with ownership control.
+6) Insufficient gas - the endExecute() function may fail if gas running out due to the gas-intensive operation of comparing the balance with the total supply.
+
+Therefore, the potential vulnerabilities in the TimelockController contract are business logic flaw, inconsistent state update, atomicity violation, insufficient gas, and incorrect visibility/ownership.

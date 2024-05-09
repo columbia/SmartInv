@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+```solidity
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+}
+```
+
+Potential vulnerabilities in the VotingSystem contract:
+- ID uniqueness violation: There is no mechanism to prevent a user from voting multiple times by using different addresses.
+- Incorrect visibility/ownership: The owner variable is set as public, which may expose the contract owner's address publicly.
+
+Therefore, the potential vulnerabilities in the VotingSystem contract are ID uniqueness violation and incorrect visibility/ownership.

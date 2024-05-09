@@ -1,0 +1,12 @@
+This contract contains the following potential vulnerabilities:
+
+1) integer overflow/underflow: 
+   - In the function "endExecute()", the comparison "votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()" may result in an integer overflow if the multiplication of the balance is too large.
+
+2) inconsistent state update:
+   - In the function "execute()", the statement "proposal.votedAmount += amount;" updates the state variable without taking into consideration potential reentrancy issues, leading to inconsistent state updates.
+
+3) incorrect visibility/ownership:
+   - The contract does not specify the visibility of the state variables "owner" and "votingToken", which could result in unintended access or modification by external contracts.
+
+Overall, the contract has vulnerabilities that need to be addressed for improved security.

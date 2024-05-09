@@ -1,0 +1,31 @@
+<\analyzed_contract\>
+contract InsurancePolicy {
+     uint public premium;
+     uint public payout;
+     address public beneficiary;
+     bool public payoutComplete;
+     
+     function setPremium(uint _premium) external {
+           premium = _premium;
+     }
+     
+     function setPayout(uint _payout) external {
+           payout = _payout;
+     }
+     
+     function setBeneficiary(address _beneficiary) external {
+           beneficiary = _beneficiary;
+     }
+     
+     function payPremium() external payable {
+           require(msg.value == premium, "Incorrect premium amount");
+     }
+     
+     function requestPayout() external {
+           require(msg.sender == beneficiary, "Only beneficiary can request payout");
+           require(!payoutComplete, "Payout already completed");
+           payoutComplete = true;
+           payable(beneficiary).transfer(payout);
+     }
+}
+<\analyzed_contract\>

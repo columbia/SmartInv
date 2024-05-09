@@ -1,0 +1,27 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint _amount) public {
+        votes[msg.sender] += _amount;
+    }
+
+    function tallyVotes() public view returns(uint) {
+        uint total = 0;
+        for (uint i = 0; i < votes.length; i++) {
+            total += votes[i];
+        }
+        return total;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract\>

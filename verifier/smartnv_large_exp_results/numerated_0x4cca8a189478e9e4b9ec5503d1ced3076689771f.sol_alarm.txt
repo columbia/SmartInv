@@ -1,0 +1,29 @@
+Contract to be analyzed:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) external {
+        require(token.balanceOf(address(this)) >= _amount, "Insufficient token balance in the contract");
+        require(msg.value == _amount * tokenPrice, "Incorrect amount of Ether sent");
+        
+        token.transfer(msg.sender, _amount);
+    }
+    
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only the contract owner can set the token price");
+        
+        tokenPrice = _newPrice;
+    }
+}
+Potential vulnerabilities in the contract:
+2) privilege escalation
+6) cross bridge inconsistency

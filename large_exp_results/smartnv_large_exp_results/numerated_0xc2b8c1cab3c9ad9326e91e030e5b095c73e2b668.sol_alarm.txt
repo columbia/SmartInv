@@ -1,0 +1,16 @@
+contract TokenEscrow {
+    address public token;
+    mapping(address => uint) public escrowedTokens;
+
+    function deposit(uint amount) public {
+        require(escrowedTokens[msg.sender] + amount >= escrowedTokens[msg.sender], "Integer overflow");
+        escrowedTokens[msg.sender] += amount;
+        require(token.transferFrom(msg.sender, address(this), amount), "Transfer failed");
+    }
+
+    function withdraw(uint amount) public {
+        require(escrowedTokens[msg.sender] >= amount, "Insufficient balance");
+        escrowedTokens[msg.sender] -= amount;
+        require(token.transfer(msg.sender, amount), "Transfer failed");
+    }
+}

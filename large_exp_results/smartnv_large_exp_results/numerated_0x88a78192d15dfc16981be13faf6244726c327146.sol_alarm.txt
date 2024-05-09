@@ -1,0 +1,31 @@
+<\analyzed_contract\>
+contract SubscriptionManager {
+    struct Subscription {
+        address subscriber;
+        uint256 startTime;
+        uint256 nextPaymentDue;
+        uint256 paymentAmount;
+        bool active;
+    }
+
+    mapping(address => Subscription) public subscriptions;
+    address public owner;
+
+    function subscribe(uint256 _startTime, uint256 _paymentAmount) external {
+        require(!subscriptions[msg.sender].active, "Already subscribed");
+        subscriptions[msg.sender] = Subscription(msg.sender, _startTime, _startTime + 30 days, _paymentAmount, true);
+    }
+
+    function cancelSubscription() external {
+        require(subscriptions[msg.sender].active, "Not subscribed");
+        subscriptions[msg.sender].active = false;
+    }
+
+    function processPayment() external {
+        require(subscriptions[msg.sender].active, "Not subscribed");
+        require(subscriptions[msg.sender].nextPaymentDue <= block.timestamp, "Payment not due yet");
+        // process payment logic
+        subscriptions[msg.sender].nextPaymentDue += 30 days;
+    }
+}
+<\analyzed_contract\>

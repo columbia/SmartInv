@@ -1,0 +1,24 @@
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+
+    constructor(address _tokenAddress, uint _price) {
+        owner = msg.sender;
+        token = IERC20(_tokenAddress);
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= totalCost, "Insufficient balance");
+        
+        token.transferFrom(msg.sender, owner, totalCost);
+        token.transfer(msg.sender, _amount);
+    }
+} 
+
+The potential vulnerabilities in the contract include:
+3) business logic flaw - the calculation of totalCost may be incorrect or manipulated.
+7) ID uniqueness violation - there is no mechanism in place to ensure uniqueness of buyers when purchasing tokens.
+14) incorrect visibility/ownership - the owner address is public, which can potentially lead to unauthorized access and manipulation of the contract.

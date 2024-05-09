@@ -1,0 +1,29 @@
+<\contract\> 
+contract Escrow {
+     address public payer;
+     address public payee;
+     address public lawyer;
+     uint256 public amount;
+
+     constructor(address _payer, address _payee, address _lawyer, uint256 _amount) {
+          payer = _payer;
+          payee = _payee;
+          lawyer = _lawyer;
+          amount = _amount;
+     }
+
+     function deposit() public payable {
+          require(msg.sender == payer, "only payer can deposit");
+     }
+
+     function release() public {
+          require(msg.sender == lawyer, "only lawyer can release funds");
+          payable(payee).transfer(amount);
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership: the deposit function only checks if the caller is the payer, which could allow unauthorized users to deposit funds.
+2) inconsistent state update: there is no check to ensure that the release function cannot be called multiple times, potentially allowing multiple releases of the same funds.
+3) privilege escalation: the lawyer can release funds without any additional authorization once the contract is deployed, which could lead to unauthorized fund releases.

@@ -1,0 +1,28 @@
+<\contract_to_analyze\> 
+contract TokenSale {
+     address public admin;
+     IERC20 public token;
+     address public tokenWallet;
+     uint public tokenPrice;
+    
+    constructor(IERC20 _token, address _tokenWallet, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenWallet = _tokenWallet;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint amount) public {
+        uint cost = amount * tokenPrice;
+        require(token.balanceOf(tokenWallet) >= amount, "Not enough tokens in the wallet");
+        require(msg.value == cost, "Incorrect amount of ether sent");
+        
+        token.transfer(msg.sender, amount);
+        tokenWallet.transfer(msg.value);
+    }
+}
+<\contract_to_analyze\> 
+
+Output:
+1) price manipulation
+2) integer overflow/underflow

@@ -1,0 +1,25 @@
+<\contract\>
+contract PaymentContract {
+    address public owner;
+    uint public totalAmount;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    function deposit() public payable {
+        totalAmount += msg.value;
+    }
+
+    function withdraw(uint amount) public onlyOwner {
+        require(amount <= address(this).balance, "Insufficient balance in contract");
+        msg.sender.transfer(amount);
+        totalAmount -= amount;
+    }
+
+    function changeOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+}
+<\contract\>

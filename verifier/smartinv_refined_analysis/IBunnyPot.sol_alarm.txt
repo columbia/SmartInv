@@ -1,0 +1,13 @@
+This contract is vulnerable to the following potential vulnerabilities:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function by directly adding the transferred amount. This could lead to inconsistency in the state if multiple transfers are made simultaneously.
+
+2) Cross bridge inconsistency: The `startingBalanceList[proposal.addr]` is updated in the `startExecute` function, but it could potentially be manipulated from outside sources, leading to inconsistency in the data stored.
+
+3) ID uniqueness violation: There is no mechanism in place to ensure uniqueness of `proposal.addr`. This could potentially lead to conflicts or unexpected behavior if multiple proposals have the same address.
+
+4) Atomicity violation: There are multiple state changes happening in the `execute` function without using any atomicity mechanism, which could lead to incomplete or inconsistent updates if an error occurs during the function execution. 
+
+5) Business logic flaw: The check `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` in the `endExecute` function seems to have a flawed business logic, as it is not clear what the intended comparison is trying to achieve.
+
+Overall, this contract has multiple potential vulnerabilities that could be exploited to manipulate the state or behavior of the system.

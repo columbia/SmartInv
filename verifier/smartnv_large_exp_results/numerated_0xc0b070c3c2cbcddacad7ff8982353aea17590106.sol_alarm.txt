@@ -1,0 +1,25 @@
+<\contract\> 
+contract Crowdsale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public endTime;
+    
+    constructor(uint _endTime) {
+        owner = msg.sender;
+        endTime = _endTime;
+    }
+    
+    function buyTokens() public payable {
+        require(block.timestamp < endTime, "Crowdsale has ended");
+        require(msg.value > 0, "Value sent must be greater than 0");
+        
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\>

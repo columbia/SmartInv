@@ -1,0 +1,25 @@
+<\contract_to_be_analyzed\>
+contract TokenSwap {
+    IERC20 public token1; 
+    IERC20 public token2; 
+    uint public exchangeRate; 
+    address public owner;
+
+    constructor (address _token1, address _token2) {
+        token1 = IERC20(_token1); 
+        token2 = IERC20(_token2); 
+        exchangeRate = 2; 
+        owner = msg.sender;
+    }
+
+    function swap(uint amount) public {
+        require(token1.balanceOf(msg.sender) >= amount, "Insufficient balance of token1");
+        uint requiredAmount = amount * exchangeRate; 
+        token1.transferFrom(msg.sender, address(this), amount);
+        token2.transfer(msg.sender, requiredAmount);
+    }
+}
+<\contract_to_be_analyzed\> 
+
+Output:
+- integer overflow/underflow

@@ -1,0 +1,21 @@
+<\contract\>
+contract PaymentSplitter {
+    address public owner;
+    address[] public payees;
+    uint256[] public shares;
+    
+    constructor(address[] memory _payees, uint256[] memory _shares) {
+        owner = msg.sender;
+        payees = _payees;
+        shares = _shares;
+    }
+
+    function release() public {
+        require(msg.sender == owner, "Only owner can release funds");
+        for (uint i = 0; i < payees.length; i++) {
+            address payable payee = address(uint160(payees[i]));
+            payee.transfer(shares[i]);
+        }
+    }
+}
+<\contract\>

@@ -1,0 +1,27 @@
+<\contract\> 
+contract VotingSystem {
+     struct Voter {
+          address voterAddress; 
+          uint256 vote; 
+          bool voted; 
+          }
+     mapping(address => Voter) public voters;
+     uint256 public totalVotes;
+     address public owner;
+    
+     function vote(uint256 _choice) public {
+          require(voters[msg.sender].voted == false, "Already voted");
+          require(_choice == 1 || _choice == 2, "Invalid choice");
+          
+          voters[msg.sender].vote = _choice;
+          voters[msg.sender].voted = true;
+          totalVotes++;
+     }
+
+     function endVoting() public {
+          require(msg.sender == owner, "Only owner can end voting");
+          
+          // Count votes and determine the winner
+     }
+}
+<\contract\>

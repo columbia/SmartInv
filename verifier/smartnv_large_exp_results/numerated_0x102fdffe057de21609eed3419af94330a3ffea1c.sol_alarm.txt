@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The contract tracks `lockedFunds` and `proposal.votedAmount` without using atomic operations, which may result in inconsistent state updates if multiple functions access and modify these variables concurrently.
+
+2) Cross bridge inconsistency: The contract transfers tokens between addresses (`votingToken.transferFrom` in `execute` function) without properly handling potential inconsistencies between different token balances on different platforms.
+
+3) Incorrect visibility/ownership: The contract declares `votingToken` as a public variable, which may expose sensitive information or functions related to the `votingToken` token.
+
+Therefore, the vulnerabilities identified in the contract are inconsistent state update, cross bridge inconsistency, and incorrect visibility/ownership.

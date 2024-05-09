@@ -1,0 +1,42 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities identified in the contract:
+1) Incorrect visibility / Ownership: The internal owner address is not being utilized or set in the contract, which may lead to ownership-related vulnerabilities.
+2) ID uniqueness violation: The Proposal struct does not include a unique identifier for each proposal, which could lead to issues in managing and distinguishing multiple proposals.
+3) Business logic flaw: The execution criteria for proposals might be prone to manipulation and could potentially suffer from a business logic flaw.
+4) Inconsistent state update: The state updates within the execute function are not properly synchronized, which might lead to inconsistencies in the contract state.
+5) Missing access control: There seems to be a lack of access control mechanisms in place, which may expose the contract to unauthorized actions by external entities.

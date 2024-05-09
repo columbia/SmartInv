@@ -1,0 +1,38 @@
+The contract provided below contains potential vulnerabilities including privilege escalation and inconsistent state update.
+
+contract AutomatedMarketMaker {
+         IERC20 public token;
+         IERC20 public stablecoin;
+         uint public reserveToken;
+         uint public reserveStablecoin;
+         
+         function buy(uint amount) public {
+             uint cost = getCost(amount);
+             require(stablecoin.balanceOf(msg.sender) >= cost, "Insufficient funds");
+             token.transfer(msg.sender, amount);
+             stablecoin.transferFrom(msg.sender, address(this), cost);
+             reserveToken += amount;
+             reserveStablecoin -= cost;
+         }
+         
+         function sell(uint amount) public {
+             uint profit = getProfit(amount);
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient funds");
+             token.transferFrom(msg.sender, address(this), amount);
+             stablecoin.transfer(msg.sender, profit);
+             reserveToken -= amount;
+             reserveStablecoin += profit;
+         }
+         
+         function getCost(uint amount) public view returns (uint) {
+             return (reserveStablecoin * amount) / reserveToken;
+         }
+         
+         function getProfit(uint amount) public view returns (uint) {
+             return (reserveToken * amount) / reserveStablecoin;
+         }
+     } 
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Privilege escalation

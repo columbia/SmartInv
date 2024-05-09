@@ -1,0 +1,49 @@
+Contract Analysis:
+
+The contract provided for analysis:
+<\example_contract\>
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+<\example_contract\>
+
+Potential vulnerabilities in the contract:
+1) Cross bridge inconsistency: There is no visible connection to the bridge that ensures consistency in data flow between the contract and external systems.
+2) Incorrect visibility/ownership: The visibility and ownership of variables and functions are not explicitly defined, opening up the contract to potential unauthorized access or manipulation.
+3) Inconsistent state update: The state update in functions like startExecute(), execute(), and endExecute() may not be consistent, leading to unexpected behavior or loss of funds.
+4) Integer overflow/underflow: There is a possibility of integer overflow/underflow in operations involving uint256 variables, which can result in incorrect calculations or exploitation.
+5) Insufficient gas: Certain operations like transferring tokens may require more gas than allocated, leading to transaction failures or incomplete executions.
+6) Business logic flaw: The overall business logic of the contract may have flaws or inconsistencies that could be exploited by malicious actors for financial gain or disruption.
+
+Output: 
+Cross bridge inconsistency, incorrect visibility/ownership, inconsistent state update, integer overflow/underflow, insufficient gas, business logic flaw.

@@ -1,0 +1,19 @@
+Contract: 
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+
+         function swap(uint amount) public {
+             require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             tokenB.transfer(msg.sender, amount);
+         }
+     }
+     
+Potential vulnerabilities:
+1) Inconsistent state update: The contract does not update the balance of the sender after the transfer, leaving the balance in an inconsistent state.
+2) Incorrect visibility/ownership: The state variables tokenA and tokenB are declared as public, which exposes them to potential manipulation or unauthorized access.
+3) Insufficient gas: The swap function may fail if the sender does not have enough gas to complete the transfer operations.
+4) Reentrancy: The swap function does not include checks for reentrancy, which could allow an attacker to call malicious contracts before the transfer is completed.
+5) Ether leakage: The contract does not handle received ethers, which could lead to unintentional loss.
+6) Business logic flaw: The swap function does not include any logic to verify the exchange rate between tokenA and tokenB, which could lead to potential manipulation or loss for users.

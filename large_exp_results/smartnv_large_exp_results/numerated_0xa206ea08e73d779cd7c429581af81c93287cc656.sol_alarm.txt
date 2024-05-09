@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+```solidity
+contract Crowdsale {
+     address public owner;
+     address public token;
+     mapping(address => uint) public balances;
+
+     constructor(address _token) {
+         owner = msg.sender;
+         token = _token;
+     }
+
+     function deposit(uint amount) public {
+         require(amount > 0, "Amount must be greater than 0");
+         balances[msg.sender] += amount;
+         require(ERC20(token).transferFrom(msg.sender, address(this), amount), "Transfer failed");
+     }
+
+     function withdraw(uint amount) public {
+         require(amount <= balances[msg.sender], "Insufficient balance");
+         balances[msg.sender] -= amount;
+         require(ERC20(token).transfer(msg.sender, amount), "Transfer failed");
+     }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Privilege escalation
+2) Incorrect visibility/ownership

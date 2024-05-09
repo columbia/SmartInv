@@ -1,0 +1,20 @@
+Contract to analyze:
+contract SubscriptionService {
+         IERC20 public token;
+         mapping(address => uint) public subscriptionDuration;
+
+         function subscribe(uint months) public {
+             uint cost = 10 * months;
+             require(token.balanceOf(msg.sender) >= cost,
+                     "Insufficient balance to subscribe");
+             token.transferFrom(msg.sender, address(this), cost);
+             subscriptionDuration[msg.sender] += months;
+         }
+
+         function unsubscribe() public {
+             uint refund = 5 * subscriptionDuration[msg.sender];
+             require(refund > 0, "No subscription to refund");
+             token.transfer(msg.sender, refund);
+             subscriptionDuration[msg.sender] = 0;
+         }
+  }

@@ -1,0 +1,35 @@
+<\contract\> 
+contract TokenSale {
+         IERC20 public token; 
+         address public owner;
+         address public admin; 
+         uint public tokenPrice;
+         uint public tokenSupply;
+         mapping(address => uint) public balances;
+
+         constructor(IERC20 _token, uint _tokenPrice, uint _tokenSupply) {
+             token = _token; 
+             tokenPrice = _tokenPrice;
+             tokenSupply = _tokenSupply;
+             owner = msg.sender;
+             admin = address(0);
+         }
+
+         function buyTokens(uint _amount) public {
+             require(balances[msg.sender] + _amount <= tokenSupply, "exceeds token supply");
+             uint cost = _amount * tokenPrice;
+             token.transferFrom(msg.sender, address(this), cost);
+             balances[msg.sender] += _amount; 
+         }
+
+         function setTokenPrice(uint _newPrice) public {
+             require(msg.sender == owner || msg.sender == admin, "only owner or admin can set token price");
+             tokenPrice = _newPrice;
+         }
+
+         function setAdmin(address _newAdmin) public {
+             require(msg.sender == owner, "only owner can set admin");
+             admin = _newAdmin;
+         }
+}
+<\contract\>

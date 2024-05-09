@@ -1,0 +1,25 @@
+The contract provided for analysis is:
+
+contract TokenSale {
+    address public owner;
+    uint public price;
+    IERC20 public token;
+
+    constructor(address _token, uint _price) public {
+        owner = msg.sender;
+        token = IERC20(_token);
+        price = _price;
+    }
+  
+    function buyTokens(uint _amount) public {
+        uint totalPrice = price * _amount;
+        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient balance");
+        
+        token.transferFrom(msg.sender, owner, totalPrice);
+    }
+}
+
+The potential vulnerabilities in the TokenSale contract are:
+
+- price manipulation
+- insufficient balance vulnerability

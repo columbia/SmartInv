@@ -1,0 +1,38 @@
+<\contract\>
+contract Marketplace {
+         uint public productCount;
+         address public owner;
+
+         struct Product {
+             uint id;
+             string name;
+             uint price;
+             address payable owner;
+             bool purchased;
+         }
+
+         mapping(uint => Product) public products;
+
+         constructor() public {
+             owner = msg.sender;
+         }
+
+         function createProduct(string memory _name, uint _price) public {
+             require(bytes(_name).length > 0, "Product name cannot be empty");
+             require(_price > 0, "Product price must be greater than 0");
+             productCount ++;
+             products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+         }
+
+         function purchaseProduct(uint _id) public payable {
+             Product memory _product = products[_id];
+             require(_product.id > 0 && _product.id <= productCount, "Invalid product ID");
+             require(msg.value >= _product.price, "Not enough Ether sent for purchase");
+             require(!_product.purchased, "Product has already been purchased");
+             _product.owner.transfer(msg.value);
+             _product.owner = msg.sender;
+             _product.purchased = true;
+             products[_id] = _product;
+         }
+    }
+<\contract\>

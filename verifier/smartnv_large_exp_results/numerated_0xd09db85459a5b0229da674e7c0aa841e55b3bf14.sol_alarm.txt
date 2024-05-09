@@ -1,0 +1,39 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+         uint256 weight;
+         bool voted;
+         address delegate;
+         uint256 vote;
+     }
+
+     mapping(address => Voter) public voters;
+     address public chairperson;
+
+     function delegate(address to) public {
+         Voter storage sender = voters[msg.sender];
+         sender.voted = true;
+         if (voters[to].voted) {
+             sender.weight *= 2;
+         }
+         sender.delegate = to;
+     }
+
+     function vote(uint256 proposal) public {
+         Voter storage sender = voters[msg.sender];
+         require(sender.voted == false, "Already voted.");
+         sender.voted = true;
+         sender.vote = proposal;
+     }
+
+     function winningProposal() public view returns (uint256 winningProposal_) {
+         uint256 winningVoteCount = 0;
+         for (uint256 p = 0; p < voters[msg.sender].weight; p++) {
+             if (voters[p].vote > winningVoteCount) {
+                 winningVoteCount = voters[p].vote;
+                 winningProposal_ = p;
+             }
+         }
+     }
+}
+<\contract\>

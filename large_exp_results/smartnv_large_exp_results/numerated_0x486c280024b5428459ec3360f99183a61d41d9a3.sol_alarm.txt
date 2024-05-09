@@ -1,0 +1,33 @@
+Contract:
+
+contract Marketplace {
+    address public owner;
+    mapping(uint => string) public products;
+    mapping(address => bool) public isAdmin;
+
+    event ProductAdded(uint productId, string name);
+
+    constructor() {
+        owner = msg.sender;
+        isAdmin[msg.sender] = true;
+    }
+
+    function addProduct(uint productId, string memory name) public {
+        require(isAdmin[msg.sender], "Only admin can add products");
+        products[productId] = name;
+        emit ProductAdded(productId, name);
+    }
+
+    function updateProduct(uint productId, string memory newName) public {
+        require(isAdmin[msg.sender], "Only admin can update products");
+        products[productId] = newName;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+Output:
+1) No vulnerabilities detected. Healthy.

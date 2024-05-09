@@ -1,0 +1,22 @@
+<\contract\> 
+contract PaymentContract {
+     address public owner;
+     mapping(uint => bool) paymentStatus;
+     uint public totalPayments;
+     uint public totalAmount;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function makePayment(uint paymentID, uint amount) public {
+         require(msg.sender == owner, "Only owner can make payments");
+         require(!paymentStatus[paymentID], "Payment already made");
+         paymentStatus[paymentID] = true;
+         totalPayments++;
+         totalAmount += amount;
+     }
+}
+<\contract\> 
+<\output\> 
+- ID uniqueness violation

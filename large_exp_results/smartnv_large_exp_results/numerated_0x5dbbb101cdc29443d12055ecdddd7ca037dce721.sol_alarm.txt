@@ -1,0 +1,6 @@
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: There is a possibility of inconsistent state update as the 'votedAmount' in the 'proposal' struct is incremented without proper synchronization mechanisms.
+2) Incorrect visibility/ownership: The 'owner' variable is declared as internal, which might not be the intended visibility for managing ownership.
+3) Insufficient gas: The 'endExecute()' function may fail due to insufficient gas if the gas limit is reached while processing the transaction.
+4) ID uniqueness violation: There is no check for ensuring the uniqueness of proposal IDs, which could lead to unexpected behavior if multiple proposals with the same ID are created.
+5) Business logic flaw: The calculation in the 'liquidate' function may not correctly represent the intended business logic, as it uses a hardcoded percentage value for liquidation condition.

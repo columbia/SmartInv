@@ -1,0 +1,21 @@
+The contract below contains the following potential vulnerabilities:
+
+1) Inconsistent state update
+2) Integer overflow/underflow
+
+Contract:
+
+```
+contract TokenSale {
+    uint public totalTokens;
+    uint public tokensSold;
+    uint public tokenPrice;
+
+    function buyTokens(uint amount) external payable {
+        require(amount * tokenPrice == msg.value, "Incorrect amount of Ether sent");
+        require(tokensSold + amount <= totalTokens, "Not enough tokens available");
+
+        tokensSold += amount;
+    }
+}
+```

@@ -1,0 +1,28 @@
+<\contract_to_be_analyzed\>
+contract Crowdsale {
+    uint public totalTokens;
+    uint public tokenPrice;
+    address public tokenAddress;
+
+    constructor(uint _totalTokens, uint _tokenPrice, address _tokenAddress) public {
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+        tokenAddress = _tokenAddress;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect ether amount sent");
+
+        ERC20(tokenAddress).transfer(msg.sender, _amount);
+    }
+
+    function changePrice(uint _newPrice) public {
+        tokenPrice = _newPrice;
+    }
+
+    function transferOwnership(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = _newOwner;
+    }
+}
+<\contract_to_be_analyzed\>

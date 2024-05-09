@@ -1,0 +1,22 @@
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(IERC20 _token, uint _tokenPrice) public {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * tokenPrice;
+        token.transfer(msg.sender, _amount);
+        owner.transfer(cost);
+    }
+} 
+
+The potential vulnerabilities in the contract are:
+1) Integer Overflow/Underflow: There is a risk of integer overflow in the calculation of "cost" in the buyTokens function if _amount is extremely large.
+2) Price Manipulation: As the owner variable can transfer ETH based on the calculated cost, there is a potential vulnerability for price manipulation by the owner.
+3) Insufficient Gas: The owner.transfer(cost) can potentially lead to out-of-gas errors if the owner account does not have enough gas for the transaction.

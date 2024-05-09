@@ -1,0 +1,29 @@
+The contract provided for analysis: 
+
+contract Vault {
+    // state variables
+    mapping(address => uint) public balances;
+    address public owner;
+    
+    // constructor
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // deposit function
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    // withdraw function
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+The potential vulnerabilities in the given contract are:
+
+1) insufficient gas
+2) incorrect visibility/ownership

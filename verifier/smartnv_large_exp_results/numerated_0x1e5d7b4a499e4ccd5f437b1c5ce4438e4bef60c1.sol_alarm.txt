@@ -1,0 +1,29 @@
+<\analyzed_contract\>
+contract EscrowContract {
+    address public payer;
+    address public payee;
+    uint public balance;
+
+    constructor(address _payer, address _payee) {
+        payer = _payer;
+        payee = _payee;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == payee, "Only payee can withdraw funds");
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+    }
+
+    function refund() public {
+        require(msg.sender == payer, "Only payer can request a refund");
+        payee.transfer(balance);
+        balance = 0;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,33 @@
+<\contract_x\>
+contract Lottery {
+     uint public totalTickets;
+     address public winner;
+     mapping(address => uint) public tickets;
+
+     function buyTicket(uint _amount) public {
+         require(_amount > 0, "Must buy at least 1 ticket");
+         tickets[msg.sender] += _amount;
+         totalTickets += _amount;
+     }
+
+     function drawWinner() public {
+         require(totalTickets > 0, "No tickets purchased");
+         uint random = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets;
+         address selectedWinner;
+         uint count = 0;
+         for (uint i = 0; i < totalTickets; i++) {
+             count += tickets[address(i)];
+             if (count >= random) {
+                 selectedWinner = address(i);
+                 break;
+             }
+         }
+         winner = selectedWinner;
+     }
+
+     function claimPrize() public {
+         require(msg.sender == winner, "You are not the winner");
+         // Transfer prize to the winner
+     }
+}
+<\contract_x\>

@@ -1,0 +1,33 @@
+The contract below contains potential vulnerabilities: 
+
+contract TimelockController is IERC20 {
+    struct Proposal {
+        uint256 sTime;
+        uint256 votedAmount;
+        address addr;
+    }
+    address internal owner;
+    IERC20 votingToken;
+    
+    function startExecute() external {
+        uint256 startingBlance; //<-- spelling error, should be 'startingBalance'
+        require(proposal.sTime == 0,"on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender); //<-- 'proposal' not defined
+        startingBalance = getStartingBalance(proposal.addr); //<-- should be 'startingBalanceList'
+        startingBalanceList[proposal.addr] = startingBalance; 
+        
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this); //<-- missing closing parenthesis
+    }
+}
+
+Potential vulnerabilities: 
+3) business logic flaw - 'startingBlance' variable spelling error
+4) inconsistent state update - 'proposal' not defined in startExecute function
+6) cross bridge inconsistency - 'startingBalanceList' not used correctly in startExecute function
+8) reentrancy - missing closing parenthesis at the endExecute function

@@ -1,0 +1,69 @@
+The contract provided for analysis is:
+contract VotingSystem {
+     struct Voter {
+         uint256 weight; 
+         bool voted; 
+         address delegate;
+         uint256 vote;
+        }
+
+
+    address public chairperson;
+    mapping(address => Voter) public voters;
+
+    function giveRightToVote(address voter) public {
+        require(msg.sender == chairperson, "Only chairperson can give the right to vote.");
+        require(!voters[voter].voted, "The voter already voted.");
+        require(voters[voter].weight == 0, "The voter already has the right to vote.");
+        voters[voter].weight = 1;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+      
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(msg.sender != to, "Found loop in delegation.");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            voters[delegateTo.vote].weight += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Has no right to vote.");
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;   
+    }
+
+    function winningProposal() public view returns (uint256 winningProposal) {
+        uint256 winningCount = 0;
+        for (uint256 p = 0; p < 10; p++) {
+            uint256 count = 0;
+            for (uint256 v = 0; v < 10; v++) {
+                if (voters[v].vote == p) {
+                    count += voters[v].weight;
+                }
+            }
+            if (count > winningCount) {
+                winningCount = count;
+                winningProposal = p;
+            }
+        }
+    }
+}
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation: There is no check to ensure the uniqueness of voter IDs or addresses, which could lead to issues with voter identity.
+2) Incorrect visibility/ownership: The chairperson variable is public, exposing it to potential manipulation by external actors.
+3) Business logic flaw: The delegate function does not handle scenarios where the delegation leads to a loop, potentially causing unexpected behavior.
+4) Inconsistent state update: The delegate function updates the weight of the delegate's previous voter incorrectly, as it should update the weight of the new delegate instead.
+5) Atomicity violation: The vote function does not include any atomicity checks, leaving room for potential issues if multiple transactions try to update the same voter's state simultaneously.

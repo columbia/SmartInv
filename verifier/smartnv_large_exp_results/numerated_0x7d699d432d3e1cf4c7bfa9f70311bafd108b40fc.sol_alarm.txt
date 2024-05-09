@@ -1,0 +1,5 @@
+This contract may have the following potential vulnerabilities:
+1) Inconsistent state update: The function execute() updates the votedAmount in the proposal struct without using safe arithmetic operations, which might lead to inconsistent state updates in case of integer overflows.
+2) Incorrect visibility/ownership: The internal owner variable is not being used in the contract, which might indicate a potential ownership issue.
+3) Insufficient gas: The endExecute() function locks the funds based on the balance of the contract, which might lead to gas consumption issues if the contract holds a large amount of tokens and the gas limit is exceeded.
+4) Cross bridge inconsistency: The contract interacts with external contracts such as votingToken and may be vulnerable to inconsistencies or unexpected behavior in cross-contract interactions.

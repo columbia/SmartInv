@@ -1,0 +1,24 @@
+Contract Analysis: 
+
+The contract provided for analysis:
+
+contract Auction {
+     address public highestBidder;
+      uint public highestBid;
+
+     function bid() public payable {
+          require(msg.value > highestBid, "Bid not high enough.");
+          highestBidder.transfer(highestBid);
+          highestBidder = msg.sender;
+          highestBid = msg.value;
+     }
+
+     function endAuction() public {
+          require(msg.sender == owner, "Only owner can end auction.");
+          selfdestruct(owner);
+     }
+}
+
+Potential Vulnerabilities:
+1) Reentrancy: The bid function allows for a potential reentrancy vulnerability as the transfer of funds to the highestBidder is done before updating the state variables, which could allow an attacker to exploit and withdraw funds multiple times in a single transaction.
+2) Incorrect visibility/ownership: The endAuction function does not define the "owner" variable or include any ownership mechanism, potentially leading to an incorrect check for the auction end.

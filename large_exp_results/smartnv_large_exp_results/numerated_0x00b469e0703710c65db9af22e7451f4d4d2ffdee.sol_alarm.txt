@@ -1,0 +1,11 @@
+potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The contract does not update the state of 'proposal.votedAmount' properly in the 'execute' function, as it simply adds 'amount' to the existing value. This could lead to incorrect tracking of the voted amount.
+
+2) Incorrect visibility/ownership: The 'lockedFunds' variable is not defined in the contract or shared in the code snippet, making it unclear who can access or modify this variable, potentially leading to security risks.
+
+3) Insufficient gas: The 'execute' function relies on the 'votingToken' to perform a transfer, but there is no explicit check for sufficient gas to complete the transfer, which may result in the execution failing due to running out of gas.
+
+4) Integer overflow/underflow: The 'proposal.votedAmount' is incremented in the 'execute' function without any check for potential integer overflow, which could lead to unexpected behavior if the value exceeds the maximum limit for a uint256 variable. 
+
+5) Privilege escalation: The 'startExecute' function allows any external caller to initiate a new proposal, potentially leading to unauthorized users creating proposals and manipulating the contract state.

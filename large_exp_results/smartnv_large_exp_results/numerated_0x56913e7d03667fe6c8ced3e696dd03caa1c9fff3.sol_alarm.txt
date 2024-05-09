@@ -1,0 +1,35 @@
+<\contract\> 
+contract PaymentContract {
+    address public owner;
+    uint public totalPayments;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+        totalPayments = 0;
+    }
+
+    function makePayment(address _recipient, uint _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        
+        balances[msg.sender] -= _amount;
+        balances[_recipient] += _amount;
+        totalPayments++;
+    }
+
+    function withdrawBalance() public {
+        uint balance = balances[msg.sender];
+        balances[msg.sender] = 0;
+        msg.sender.transfer(balance);
+    }
+
+    function getBalance(address _account) public view returns (uint) {
+        return balances[_account];
+    }
+}
+<\contract\> 
+
+1) privilege escalation
+2) integer overflow/underflow
+3) incorrect visibility/ownership

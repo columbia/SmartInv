@@ -1,0 +1,29 @@
+The contract provided for analysis: 
+
+contract OrderBook {
+    mapping(uint256 => Order) public orders;
+    uint256 public orderCount;
+    
+    struct Order {
+        address user;
+        uint256 amount;
+        bool isFilled;
+    }
+    
+    function createOrder(uint256 _amount) public {
+        orders[orderCount] = Order(msg.sender, _amount, false);
+        orderCount++;
+    }
+    
+    function fillOrder(uint256 _orderId) public {
+        Order storage order = orders[_orderId];
+        require(!order.isFilled, "Order already filled");
+        
+        // Transfer tokens
+        // Update order status
+        order.isFilled = true;
+    }
+}
+
+Output: 
+1) No potential vulnerabilities identified. Healthy.

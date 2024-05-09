@@ -1,0 +1,35 @@
+<\contract\> 
+contract EscrowContract {
+         IERC20 public token;
+         address public buyer;
+         address public seller;
+         address public escrowAgent;
+         uint public amount;
+         bool public isPaid;
+
+         constructor(address _token, address _buyer, address _seller, uint _amount, address _escrowAgent) {
+             token = IERC20(_token);
+             buyer = _buyer;
+             seller = _seller;
+             amount = _amount;
+             escrowAgent = _escrowAgent;
+             isPaid = false;
+         }
+
+         function deposit() external {
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function release() external {
+             require(msg.sender == escrowAgent, "Only escrow agent can release funds");
+             token.transfer(seller, amount);
+             isPaid = true;
+         }
+
+         function refund() external {
+             require(msg.sender == escrowAgent, "Only escrow agent can refund funds");
+             token.transfer(buyer, amount);
+             isPaid = true;
+         }
+     }
+<\contract\>

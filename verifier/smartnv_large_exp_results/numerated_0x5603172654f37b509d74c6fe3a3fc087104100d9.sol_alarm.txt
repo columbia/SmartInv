@@ -1,0 +1,40 @@
+<\analyzed_contract\>
+contract VestingContract {
+    address public beneficiary;
+    uint public start;
+    uint public duration;
+    uint public amount;
+    bool public isVestingActive;
+
+    constructor(address _beneficiary, uint _start, uint _duration, uint _amount) {
+        beneficiary = _beneficiary;
+        start = _start;
+        duration = _duration;
+        amount = _amount;
+        isVestingActive = true;
+    }
+
+    function claim() public {
+        require(block.timestamp >= start, "Vesting period has not started yet");
+        require(isVestingActive, "Vesting has ended");
+        
+        uint claimableAmount = calculateClaimableAmount();
+        require(claimableAmount > 0, "No funds available to claim");
+
+        // Transfer claimable amount to beneficiary
+        payable(beneficiary).transfer(claimableAmount);
+    }
+
+    function calculateClaimableAmount() internal view returns (uint) {
+        uint currentTime = block.timestamp;
+        uint elapsedTime = currentTime - start;
+        uint vestedAmount = amount * elapsedTime / duration;
+
+        return vestedAmount;
+    }
+
+    function endVesting() public {
+        isVestingActive = false;
+    }
+}
+<\analyzed_contract\>

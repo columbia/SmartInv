@@ -1,0 +1,26 @@
+Contract: 
+```solidity
+contract CarDealership {
+    uint256 public carPrice;
+    address public owner;
+
+    constructor(uint256 _price) {
+        carPrice = _price;
+        owner = msg.sender;
+    }
+
+    function buyCar() public payable {
+        require(msg.value >= carPrice, "Not enough funds to buy the car");
+        address payable seller = payable(owner);
+        seller.transfer(msg.value);
+    }
+
+    function setCarPrice(uint256 _newPrice) public {
+        require(msg.sender == owner, "Only the owner can set the car price");
+        carPrice = _newPrice;
+    }
+}
+```
+
+Output:
+- incorrect visibility/ownership

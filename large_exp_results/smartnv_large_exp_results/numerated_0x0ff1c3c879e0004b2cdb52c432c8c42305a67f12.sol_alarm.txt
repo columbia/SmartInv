@@ -1,0 +1,34 @@
+The contract provided for analysis is as follows:
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+     mapping(address => uint) public balances;
+
+     constructor(IERC20 _token, uint _price) {
+         token = _token;
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint amount) public {
+         uint cost = amount * price;
+         require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+         balances[msg.sender] += amount;
+         token.transferFrom(owner, msg.sender, amount);
+     }
+
+     function withdrawFunds(uint amount) public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         require(address(this).balance >= amount, "Insufficient funds");
+         msg.sender.transfer(amount);
+     }
+}
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Incorrect visibility/ownership on the constructor function.
+2) Integer overflow/underflow in the buyTokens function when calculating the cost.
+3) Inconsistent state update in the buyTokens function when updating balances.
+4) Incorrect visibility/ownership on the withdrawFunds function.
+5) Insufficient gas in the withdrawFunds function when transferring funds.

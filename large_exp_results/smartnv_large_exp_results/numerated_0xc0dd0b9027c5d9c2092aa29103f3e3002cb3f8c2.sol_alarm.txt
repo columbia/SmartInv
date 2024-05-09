@@ -1,0 +1,35 @@
+<\the_contract\>
+contract VotingSystem {
+    struct Candidate {
+        string name;
+        uint voteCount;
+    }
+
+    mapping(address => bool) public voters;
+    mapping(uint => Candidate) public candidates;
+    uint public totalVotes;
+
+    function vote(uint _candidateId) public {
+        require(!voters[msg.sender], "You have already voted.");
+        require(_candidateId > 0 && _candidateId <= candidates.length, "Invalid candidate ID.");
+
+        voters[msg.sender] = true;
+        candidates[_candidateId].voteCount++;
+        totalVotes++;
+    }
+
+    function getWinner() public view returns (string memory) {
+        uint maxVotes = 0;
+        string memory winnerName;
+
+        for (uint i = 1; i <= candidates.length; i++) {
+            if (candidates[i].voteCount > maxVotes) {
+                maxVotes = candidates[i].voteCount;
+                winnerName = candidates[i].name;
+            }
+        }
+
+        return winnerName;
+    }
+}
+<\the_contract\>

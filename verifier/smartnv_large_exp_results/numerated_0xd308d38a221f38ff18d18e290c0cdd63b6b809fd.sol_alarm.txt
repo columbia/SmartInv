@@ -1,0 +1,9 @@
+Contract analysis:<\example_1\>
+1) Incorrect visibility/ownership: The `owner` variable is declared as internal, which may unintentionally give access to certain functions to other contracts within the same inheritance tree. Consider changing the visibility of `owner` to private.
+
+2) Inconsistent state update: The `lockedFunds` variable is being updated in the `endExecute` function, but there is no corresponding state update for this variable in the rest of the contract. Make sure to consistently update the state of variables throughout the contract.
+
+Contract analysis:<\example_2\>
+1) Price manipulation: The `liquidate` function uses a calculation based on the `getPrice()` function, which may be manipulated externally to exploit the liquidation process. Consider implementing safeguards to prevent potential price manipulation attacks.
+
+2) Arithmetic flaw: In the `calculatePrice` function, the division operation can potentially lead to division by zero if `WETH.balanceOf(address(pair))` is zero. Ensure proper checks are in place to handle such arithmetic flaws.

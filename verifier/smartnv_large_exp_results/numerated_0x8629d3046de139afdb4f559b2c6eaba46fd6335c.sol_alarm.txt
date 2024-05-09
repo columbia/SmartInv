@@ -1,0 +1,28 @@
+The contract for analysis:
+contract Auction {
+    Mapping(address => uint) bids;
+    address highestBidder;
+    uint highestBid;
+
+    function placeBid(uint bidAmount) public {
+        require(bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+        require(bidAmount > bids[msg.sender], "Bid amount must be higher than your previous bid");
+
+        if (bids[msg.sender] != 0) {
+            // Refund the previous bid
+            msg.sender.transfer(bids[msg.sender]);
+        }
+
+        bids[msg.sender] = bidAmount;
+        if (bidAmount > highestBid) {
+            highestBidder = msg.sender;
+            highestBid = bidAmount;
+        }
+    }
+
+    function withdrawBid() public {
+        require(msg.sender == highestBidder, "You cannot withdraw a bid if you are not the highest bidder");
+        msg.sender.transfer(bids[msg.sender]);
+        bids[msg.sender] = 0;
+    }
+}

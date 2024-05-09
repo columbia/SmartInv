@@ -1,0 +1,20 @@
+<\Given Contract\> 
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         uint public constant swapRatio = 2;
+         uint public totalSwapped;
+         
+         function swapTokens(uint amount) public {
+             require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             uint amountToReceive = amount * swapRatio;
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             tokenB.transfer(msg.sender, amountToReceive);
+             totalSwapped += amount;
+         }
+}
+<\Given Contract\> 
+
+The potential vulnerabilities in the given contract are:
+1) integer overflow/underflow: The multiplication operation in the line "uint amountToReceive = amount * swapRatio;" can potentially lead to an integer overflow if the calculated result exceeds the maximum value that a uint can hold.
+2) inconsistent state update: The update of the totalSwapped variable may be inconsistent because it is updated after the token transfer operations. This can lead to incorrect calculations of the total swapped amount.

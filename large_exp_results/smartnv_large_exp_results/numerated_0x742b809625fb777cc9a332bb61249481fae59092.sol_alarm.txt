@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+     address public admin;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+
+     function vote() external {
+         require(!hasVoted[msg.sender], "Already voted");
+         hasVoted[msg.sender] = true;
+         totalVotes++;
+     }
+
+     function resetVotes() external {
+         require(msg.sender == admin, "Not admin");
+         totalVotes = 0;
+         for(address voter : hasVoted) {
+             hasVoted[voter] = false;
+         }
+     }
+
+     function getTotalVotes() external view returns(uint) {
+         return totalVotes;
+     }
+}
+<\contract\>

@@ -1,0 +1,31 @@
+The contract being analyzed:
+
+contract TokenCrowdsale {
+    address public admin;
+    address public tokenAddress;
+    address public wallet;
+    uint public tokenPrice;
+
+    constructor(address _tokenAddress, address _wallet, uint _tokenPrice) {
+        admin = msg.sender;
+        tokenAddress = _tokenAddress;
+        wallet = _wallet;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect ETH amount");
+
+        ERC20(tokenAddress).transfer(msg.sender, _amount);
+        wallet.transfer(msg.value);
+    }
+
+    function changeTokenPrice(uint _newPrice) public {
+        require(msg.sender == admin, "Only admin can change token price");
+        tokenPrice = _newPrice;
+    }
+}
+
+Output: 
+1) Inconsistent state update: The buyTokens function should update the token balance of the buyer and the ETH balance of the contract wallet atomically to prevent inconsistent states.
+2) Incorrect visibility/ownership: The admin variable should have restricted access such that only the designated admin can change the token price to avoid unauthorized modifications.

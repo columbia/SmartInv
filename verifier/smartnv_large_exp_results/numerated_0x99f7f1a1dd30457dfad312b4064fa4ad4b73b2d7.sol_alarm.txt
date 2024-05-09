@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract Marketplace {
+         mapping(uint => uint) public items;
+         address public owner;
+         address public buyer;
+         uint public itemPrice;
+        
+         constructor() {
+             owner = msg.sender;
+         }
+         
+         function setItemPrice(uint price) public {
+             require(msg.sender == owner, "Only owner can set item price");
+             itemPrice = price;
+         }
+         
+         function buyItem(uint id) public payable {
+             require(msg.value >= itemPrice, "Insufficient funds");
+             items[id] += 1;
+             buyer = msg.sender;
+             owner.transfer(msg.value);
+         }
+    }
+<\contract_to_analyze\>

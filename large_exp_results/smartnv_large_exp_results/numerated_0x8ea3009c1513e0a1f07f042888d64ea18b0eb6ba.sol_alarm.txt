@@ -1,0 +1,21 @@
+The contract that needs to be analyzed for potential vulnerabilities is as follows:
+
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+}
+```
+
+The potential vulnerabilities in the above contract are:
+1) Reentrancy
+2) Inconsistent state update

@@ -1,0 +1,29 @@
+The contract provided for analysis: 
+
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    address public tokenAddress; 
+
+    constructor(address _tokenAddress) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+    }
+    
+    function buyTokens(uint _amount) public {
+        require(balances[msg.sender] + _amount >= balances[msg.sender], "Integer overflow");
+        balances[msg.sender] += _amount;
+        // Transfer tokens to the buyer
+        //tokenAddress.transfer(msg.sender, _amount);
+    }
+    
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Unauthorized access");
+        // Transfer all tokens from contract to owner
+        //tokenAddress.transfer(owner, tokenAddress.balanceOf(address(this)));
+    }
+}
+
+Output:
+1) integer overflow/underflow
+2) privilege escalation

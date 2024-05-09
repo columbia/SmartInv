@@ -1,0 +1,31 @@
+The contract to analyze is:
+
+```
+contract MyToken {
+         uint public totalSupply;
+         mapping(address => uint) public balanceOf;
+         address public owner;
+
+         function mint(address account, uint amount) public {
+             require(msg.sender == owner, "only owner can mint");
+             totalSupply += amount;
+             balanceOf[account] += amount;
+         }
+
+         function transfer(address to, uint amount) public {
+             require(balanceOf[msg.sender] >= amount, "insufficient balance");
+             balanceOf[msg.sender] -= amount;
+             balanceOf[to] += amount;
+         }
+
+         function transferOwnership(address newOwner) public {
+             require(msg.sender == owner, "only owner can transfer ownership");
+             owner = newOwner;
+         }
+     }
+```
+
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility/ownership
+2) Privilege escalation

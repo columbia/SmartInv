@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(token.balanceOf(msg.sender) >= _amount * price, "Insufficient balance");
+        token.transferFrom(owner, msg.sender, _amount);
+    }
+}
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership (owner is not properly secured, can be manipulated)
+- Atomicity violation (multiple token transfers are not under a single transaction)
+- Insufficient gas (if token transfer is expensive, users might run out of gas)
+- Inconsistent state update (price might change while transaction is being processed)
+- Integer overflow/underflow (potential vulnerabilities in balance comparison)

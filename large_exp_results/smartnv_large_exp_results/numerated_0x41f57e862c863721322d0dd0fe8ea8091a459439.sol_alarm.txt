@@ -1,0 +1,34 @@
+Contract:
+```solidity
+contract Escrow {
+    mapping(address => uint) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+
+    function destroy() public {
+        selfdestruct(payable(owner));
+    }
+}
+``` 
+
+Output: 
+- incorrect visibility/ownership

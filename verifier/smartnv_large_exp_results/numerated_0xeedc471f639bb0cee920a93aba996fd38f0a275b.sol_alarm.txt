@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract Insurance {
+         IERC20 public stablecoin;
+         address public beneficiary;
+         uint public payoutAmount;
+
+         function setBeneficiary(address _beneficiary) external {
+             require(msg.sender == owner, "only owner can set beneficiary");
+             beneficiary = _beneficiary;
+         }
+
+         function setPayoutAmount(uint _amount) external {
+             require(msg.sender == beneficiary, "only beneficiary can set payout amount");
+             payoutAmount = _amount;
+         }
+
+         function claimInsurance() external {
+             require(stablecoin.balanceOf(address(this)) >= payoutAmount, "insufficient funds for payout");
+             stablecoin.transfer(beneficiary, payoutAmount);
+         }
+}
+<\contract_to_analyze\>

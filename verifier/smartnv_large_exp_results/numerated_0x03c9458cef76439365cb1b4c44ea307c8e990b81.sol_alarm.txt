@@ -1,0 +1,24 @@
+<\contract\>
+contract Insurance {
+         address public owner;
+         uint public premium;
+         mapping(address => uint) public insuranceAmount;
+         
+         constructor() public {
+             owner = msg.sender;
+             premium = 1 ether;
+         }
+         
+         function buyInsurance() public payable {
+             require(msg.value == premium, "Incorrect premium amount paid");
+             insuranceAmount[msg.sender] += msg.value;
+         }
+         
+         function claimInsurance() public {
+             require(msg.sender == owner, "Only owner can claim insurance");
+             uint amount = insuranceAmount[msg.sender];
+             insuranceAmount[msg.sender] = 0;
+             payable(msg.sender).transfer(amount);
+         }
+}
+<\contract\>

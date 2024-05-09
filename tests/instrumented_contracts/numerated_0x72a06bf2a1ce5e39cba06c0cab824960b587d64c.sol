@@ -1,0 +1,27 @@
+1 {{
+2   "language": "Solidity",
+3   "sources": {
+4     "contracts/registration/Registration.sol": {
+5       "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.4;\n\nimport \"./IMX.sol\";\n\ncontract Registration {\n    IMX public imx;\n\n    constructor(IMX _imx) {\n        imx = _imx;\n    }\n\n    function registerAndDeposit(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType,\n        uint256 vaultId\n    ) external payable {\n        imx.registerUser(ethKey, starkKey, signature);\n        // the standard way to write this is: imx.deposit.value(msg.value)(starkKey, assetType, vaultId);\n        // but the Solidity compiler hates the overloading of deposit + the use of .value()\n        (bool success, ) = address(imx).call{value: msg.value}(\n            abi.encodeWithSignature(\n                \"deposit(uint256,uint256,uint256)\",\n                starkKey,\n                assetType,\n                vaultId\n            )\n        );\n        require(success, \"Deposit Failed\");\n    }\n\n    function registerAndDeposit(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType,\n        uint256 vaultId,\n        uint256 quantizedAmount\n    ) external {\n        imx.registerUser(ethKey, starkKey, signature);\n        imx.deposit(starkKey, assetType, vaultId, quantizedAmount);\n    }\n\n    function registerAndDepositNft(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType,\n        uint256 vaultId,\n        uint256 tokenId\n    ) external {\n        imx.registerUser(ethKey, starkKey, signature);\n        imx.depositNft(starkKey, assetType, vaultId, tokenId);\n    }\n\n    function registerAndWithdraw(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType\n    ) external {\n        imx.registerUser(ethKey, starkKey, signature);\n        imx.withdraw(starkKey, assetType);\n    }\n\n    function registerAndWithdrawTo(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType,\n        address recipient\n    ) external {\n        imx.registerUser(ethKey, starkKey, signature);\n        imx.withdrawTo(starkKey, assetType, recipient);\n    }\n\n    function registerAndWithdrawNft(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType,\n        uint256 tokenId\n    ) external {\n        imx.registerUser(ethKey, starkKey, signature);\n        imx.withdrawNft(starkKey, assetType, tokenId);\n    }\n\n    function registerAndWithdrawNftTo(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType,\n        uint256 tokenId,\n        address recipient\n    ) external {\n        imx.registerUser(ethKey, starkKey, signature);\n        imx.withdrawNftTo(starkKey, assetType, tokenId, recipient);\n    }\n\n    function regsiterAndWithdrawAndMint(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature,\n        uint256 assetType,\n        bytes calldata mintingBlob\n    ) external {\n        imx.registerUser(ethKey, starkKey, signature);\n        imx.withdrawAndMint(starkKey, assetType, mintingBlob);\n    }\n\n    function isRegistered(uint256 starkKey) public view returns (bool) {\n        return imx.getEthKey(starkKey) != address(0);\n    }\n}\n"
+6     },
+7     "contracts/registration/IMX.sol": {
+8       "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.4;\n\ninterface IMX {\n    function getEthKey(uint256 starkKey) external view returns (address);\n\n    function registerUser(\n        address ethKey,\n        uint256 starkKey,\n        bytes calldata signature\n    ) external;\n\n    function deposit(\n        uint256 starkKey,\n        uint256 assetType,\n        uint256 vaultId\n    ) external payable;\n\n    function deposit(\n        uint256 starkKey,\n        uint256 assetType,\n        uint256 vaultId,\n        uint256 quantizedAmount\n    ) external;\n\n    function depositNft(\n        uint256 starkKey,\n        uint256 assetType,\n        uint256 vaultId,\n        uint256 tokenId\n    ) external;\n\n    function withdraw(uint256 starkKey, uint256 assetType) external;\n\n    function withdrawTo(\n        uint256 starkKey,\n        uint256 assetType,\n        address recipient\n    ) external;\n\n    function withdrawNft(\n        uint256 starkKey,\n        uint256 assetType,\n        uint256 tokenId\n    ) external;\n\n    function withdrawNftTo(\n        uint256 starkKey,\n        uint256 assetType,\n        uint256 tokenId,\n        address recipient\n    ) external;\n\n    function withdrawAndMint(\n        uint256 starkKey,\n        uint256 assetType,\n        bytes calldata mintingBlob\n    ) external;\n}\n"
+9     }
+10   },
+11   "settings": {
+12     "optimizer": {
+13       "enabled": false,
+14       "runs": 200
+15     },
+16     "outputSelection": {
+17       "*": {
+18         "*": [
+19           "evm.bytecode",
+20           "evm.deployedBytecode",
+21           "abi"
+22         ]
+23       }
+24     },
+25     "libraries": {}
+26   }
+27 }}

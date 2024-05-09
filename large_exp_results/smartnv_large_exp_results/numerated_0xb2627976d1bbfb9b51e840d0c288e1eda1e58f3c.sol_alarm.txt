@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: There is a risk of inconsistent state update in the contract due to the "proposal.votedAmount += amount;" line in the execute function where the votedAmount is updated directly without any synchronization mechanisms.
+
+2) Integer overflow/underflow: There is a potential integer overflow in the liquidate function where the multiplication operation "getPrice() * cAmount * 80 / 100" could lead to an overflow if the values are large enough.
+
+3) Incorrect visibility/ownership: The visibility of functions and variables in the contract is not clearly defined, which may lead to unauthorized access or manipulation of the contract state by external entities. 
+
+4) Business logic flaw: The liquidate function relies on a calculation based on the getPrice() function, which may not accurately reflect the true value of the assets being liquidated, leading to potential loss for users.

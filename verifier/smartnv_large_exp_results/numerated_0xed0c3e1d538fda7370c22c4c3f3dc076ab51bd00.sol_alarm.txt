@@ -1,0 +1,36 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public releasedToSeller;
+    bool public releasedToBuyer;
+    bool public refunded;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _amount;
+    }
+
+    function releaseToSeller() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Not allowed to release to seller");
+        require(releasedToSeller == false, "Already released to seller");
+        releasedToSeller = true;
+    }
+
+    function releaseToBuyer() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Not allowed to release to buyer");
+        require(releasedToBuyer == false, "Already released to buyer");
+        releasedToBuyer = true;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can initiate refund");
+        require(refunded == false, "Already refunded");
+        refunded = true;
+    }
+}
+<\contract\>

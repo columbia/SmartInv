@@ -1,0 +1,17 @@
+The contract provided for analysis is:
+
+```solidity
+contract TransferTokens {
+         IERC20 public token;
+         
+         function transfer(address recipient, uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             token.transfer(recipient, amount);
+         }
+     }
+```
+
+The potential vulnerabilities in the given contract are:
+
+1) Insufficient gas
+2) Incorrect visibility/ownership

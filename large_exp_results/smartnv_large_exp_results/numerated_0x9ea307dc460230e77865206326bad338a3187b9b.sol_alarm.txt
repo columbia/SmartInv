@@ -1,0 +1,29 @@
+<\contract\> 
+contract TokenSale {
+    mapping(address => uint) public balance;
+    mapping(address => bool) public whitelist;
+    uint public saleEndTime;
+
+    modifier onlyWhitelist {
+        require(whitelist[msg.sender], "Sender is not whitelisted");
+        _;
+    }
+
+    function addToWhitelist(address _address) external {
+        whitelist[_address] = true;
+    }
+
+    function buyTokens(uint _amount) external onlyWhitelist {
+        require(block.timestamp < saleEndTime, "Sale has ended");
+        balance[msg.sender] += _amount;
+    }
+
+    function endSale() external {
+        saleEndTime = block.timestamp;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+1) insufficient gas
+2) inconsistent state update

@@ -1,0 +1,39 @@
+Contract to analyze:
+```solidity
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public amount;
+     bool public buyerOk;
+     bool public sellerOk;
+
+     function Escrow(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+     }
+
+     function init(uint _amount) {
+        amount = _amount;
+     }
+
+     function approve() {
+        if (msg.sender == buyer) {
+            buyerOk = true;
+        } else if (msg.sender == seller) {
+            sellerOk = true;
+        }
+     }
+
+     function refund() {
+        if (buyerOk && sellerOk) {
+            buyer.send(amount);
+        }
+     }
+}
+```
+
+Potential vulnerabilities:
+- incorrect visibility/ownership: The `approve` function allows any address to approve the transaction as either the buyer or seller, without proper authentication or access control mechanisms. This can lead to unauthorized parties manipulating the approval status.
+- inconsistent state update: The `refund` function transfers the funds to the buyer if both the buyer and seller have approved, however, there is no mechanism to prevent multiple calls to the `refund` function which can lead to funds being transferred multiple times.

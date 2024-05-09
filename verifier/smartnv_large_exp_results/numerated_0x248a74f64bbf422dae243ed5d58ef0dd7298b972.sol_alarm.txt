@@ -1,0 +1,27 @@
+<\contract\> 
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) public {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        ERC20(token).transfer(msg.sender, amount);
+    }
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "Unauthorized access");
+        price = _price;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the "TokenSale" contract are:
+1) Incorrect Visibility/Ownership: The "setPrice" function only checks if the caller is the contract owner but does not restrict access to only the owner.
+2) Insufficient Gas: The "buyTokens" function may run out of gas if the amount being bought is too large, which could potentially lead to an incomplete transaction.

@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Voter {
+          uint256 balance;
+          bool voted;
+          }
+     mapping(address => Voter) public voters;
+     address public admin;
+
+     constructor() {
+         admin = msg.sender;
+     }
+
+    function vote(address _voter, uint256 _amount) public {
+          require(msg.sender == admin, "only admin can call this function");
+          voters[_voter].balance += _amount;
+          voters[_voter].voted = true;
+    }
+
+    function checkVoteStatus(address _voter) public view returns (bool) {
+          return voters[_voter].voted;
+    }
+}
+<\contract_to_analyze\> 
+
+Output:
+1) privilege escalation
+2) incorrect visibility/ownership

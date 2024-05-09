@@ -1,0 +1,41 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public amount;
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    constructor(address _payer, address _payee, address _arbiter, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+        amount = _amount;
+        state = State.Created;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        require(state == State.Created, "Invalid state for deposit");
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(state == State.Locked, "Invalid state for release");
+        payee.transfer(amount);
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(state == State.Locked, "Invalid state for refund");
+        payer.transfer(amount);
+        state = State.Inactive;
+    }
+}
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The deposit function can be called by any address instead of just the payer, which can lead to unauthorized access to lock funds.
+- Incorrect state update: There is a potential inconsistency with the state transitions, as releasing or refunding funds may not always follow the expected sequence of Locked -> Released or Locked -> Inactive.
+- Insufficient gas: The functions release and refund may run out of gas if transferring funds fails, leaving the contract in an inconsistent state.

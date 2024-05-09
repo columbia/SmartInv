@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract are:
+
+1) Inconsistent State Update: The function `execute` updates the `votedAmount` of the `proposal` struct directly. It may lead to an inconsistent state if multiple transactions attempt to update the `votedAmount` simultaneously.
+
+2) Incorrect Visibility/Ownership: The `owner` variable is marked as `internal`, which may not provide the intended visibility or ownership control.
+
+3) Insufficient Gas: The `execute` function performs a transfer operation which may require substantial gas, potentially leading to out-of-gas errors during execution.
+
+4) Cross Bridge Inconsistency: The `endExecute` function checks the balance of the `votingToken` on the current contract (`address(this)`) and compares it against the total supply of the `votingToken`. This can cause inconsistencies if the `votingToken` is used in other contracts or interfaces concurrently.

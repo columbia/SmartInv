@@ -1,0 +1,30 @@
+The contract to analyze for potential vulnerabilities:
+
+contract SupplyChain {
+    address public owner;
+    mapping(address => uint) public inventory;
+
+    constructor() {
+        owner = msg.sender;
+        inventory[msg.sender] = 1000;
+    }
+
+    function restock(uint amount) public {
+        require(msg.sender == owner, "Only owner can restock inventory");
+        inventory[msg.sender] += amount;
+    }
+
+    function purchase(address buyer, uint amount) public {
+        require(inventory[msg.sender] >= amount, "Not enough inventory");
+        inventory[msg.sender] -= amount;
+        // Process purchase logic
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

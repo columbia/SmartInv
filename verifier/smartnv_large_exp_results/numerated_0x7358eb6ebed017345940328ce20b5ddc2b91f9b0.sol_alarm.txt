@@ -1,0 +1,38 @@
+Contract to be analyzed:
+
+contract Escrow {
+     address public seller;
+     address public buyer;
+     address public arbiter;
+     uint public amount;
+     enum State { Created, Locked, Inactive }
+     State public state;
+  
+     function Escrow(address _seller, address _buyer, address _arbiter) public {
+         seller = _seller;
+         buyer = _buyer;
+         arbiter = _arbiter;
+         state = State.Created;
+     }
+  
+     function confirmPayment() public payable {
+         require(msg.sender == buyer,"Only buyer can confirm payment");
+         require(state == State.Created,"Invalid state to confirm payment");
+         require(msg.value == amount,"Incorrect payment amount");
+         state = State.Locked;
+     }
+  
+     function confirmReceived() public {
+         require(msg.sender == buyer || msg.sender == seller,"Only seller or buyer can confirm receiving");
+         require(state == State.Locked,"Invalid state to confirm receiving");
+         buyer.transfer(amount);
+         state = State.Inactive;
+     }
+  
+     function refundPayment() public {
+         require(msg.sender == arbiter,"Only arbiter can refund payment");
+         require(state == State.Created,"Invalid state to refund payment");
+         buyer.transfer(amount);
+         state = State.Inactive;
+     }
+}

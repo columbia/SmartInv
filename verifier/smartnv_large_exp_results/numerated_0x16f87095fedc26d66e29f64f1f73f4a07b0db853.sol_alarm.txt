@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function execute() updates the votedAmount of the proposal without proper synchronization, which might lead to inconsistent data. 
+2) ID uniqueness violation: The contract does not have any mechanism to ensure the uniqueness of proposal IDs, which could result in conflicts or unexpected behavior.
+3) Insufficient gas: The endExecute() function may consume a large amount of gas if the condition of require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()) is met, potentially leading to out-of-gas errors.
+4) Incorrect visibility/ownership: The contract does not specify visibility for the proposal, startingBlance, and startingBalanceList variables which can lead to accessibility and ownership issues.

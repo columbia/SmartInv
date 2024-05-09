@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The execution of the `execute` function updates the `votedAmount` of the proposal without ensuring atomicity, which could lead to inconsistent state updates.
+
+2) Cross bridge inconsistency: The `endExecute` function checks if the total locked funds are more than twice the total supply of the voting token, without explicitly ensuring that the same token is being referred to in both cases. This inconsistency could lead to incorrect execution.
+
+3) ID uniqueness violation: The `startingBalanceList` is being updated with the `startingBalance` for a specific `proposal.addr`, but there's no mechanism to ensure the uniqueness of this ID, potentially leading to data conflicts.

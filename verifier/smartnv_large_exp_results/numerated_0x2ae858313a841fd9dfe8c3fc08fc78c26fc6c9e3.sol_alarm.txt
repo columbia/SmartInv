@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+```solidity
+contract TokenSale {
+    address public token;
+    address public buyer;
+    uint public price;
+    uint public quantity;
+
+    function buyTokens() external payable {
+        require(msg.sender == buyer, "Unauthorized");
+        require(msg.value >= price * quantity, "Insufficient funds");
+        
+        uint totalAmount = price * quantity;
+        
+        // Transfer tokens to buyer
+        IERC20(token).transfer(msg.sender, quantity);
+        
+        // Transfer funds to seller
+        payable(token.owner()).transfer(totalAmount);
+    }
+}
+```
+
+The potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The ownership of the token contract is assumed to be accessed directly through `token.owner()`, which may not be secure.
+
+Therefore, the identified vulnerability in the contract is "incorrect visibility/ownership".

@@ -1,0 +1,30 @@
+<\contract\>
+contract InsuranceContract {
+    mapping(address => uint) public policyHolders;
+    address public owner;
+    uint public totalPayout;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function purchasePolicy(uint premium) external {
+        require(policyHolders[msg.sender] == 0, "Policy already purchased");
+        require(premium > 0, "Invalid premium amount");
+        policyHolders[msg.sender] = premium;
+    }
+
+    function fileClaim() external {
+        require(policyHolders[msg.sender] > 0, "No policy purchased");
+        totalPayout += policyHolders[msg.sender] * 2;
+        policyHolders[msg.sender] = 0;
+    }
+
+    function withdrawPayout() external {
+        require(msg.sender == owner, "Only owner can withdraw");
+        uint amount = totalPayout;
+        totalPayout = 0;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\>

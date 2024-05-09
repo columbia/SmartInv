@@ -1,0 +1,18 @@
+contract PaymentProcessor {
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+} 
+
+Potential vulnerabilities:
+1) Integer overflow/underflow in the balances mapping.
+2) Insufficient gas in the withdraw function, leading to potential denial of service.
+3) Incorrect visibility/ownership of the balances mapping, allowing unauthorized access to balances.

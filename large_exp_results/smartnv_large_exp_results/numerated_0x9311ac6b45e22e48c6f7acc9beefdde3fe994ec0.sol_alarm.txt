@@ -1,0 +1,23 @@
+contract PaymentProcessor {  
+    address public admin;
+    address payable public merchant;
+    uint256 public totalPayments;
+
+    constructor(address _admin, address payable _merchant) {
+        admin = _admin;
+        merchant = _merchant;
+        totalPayments = 0;
+    }
+
+    function processPayment() external payable {
+        require(msg.value > 0, "Payment amount must be greater than 0");
+        totalPayments += msg.value;
+        merchant.transfer(msg.value);
+    }
+
+    function withdrawFunds() external {
+        require(msg.sender == admin, "Only admin can withdraw funds");
+        admin.transfer(address(this).balance);
+        totalPayments = 0;
+    }
+}

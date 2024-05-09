@@ -1,0 +1,29 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+    uint public totalSupply;
+
+    constructor(IERC20 _token, uint _price, uint _totalSupply) {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+        totalSupply = _totalSupply;
+    }
+
+    function buyTokens(uint amount) external {
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens in sale");
+        require(msg.value >= amount * price, "Insufficient payment");
+
+        token.transfer(msg.sender, amount);
+        totalSupply -= amount;
+    }
+
+    function endSale() external {
+        require(msg.sender == owner, "Not authorized to end the sale");
+        token.transfer(owner, token.balanceOf(address(this)));
+        selfdestruct(msg.sender);
+    }
+}
+<\contract_to_be_analyzed\>

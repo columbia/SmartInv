@@ -1,0 +1,20 @@
+The contract analyzed for potential vulnerabilities is as follows:
+
+contract Vault {
+     address public owner;
+     uint public balance;
+     
+     function deposit() public payable {
+         balance += msg.value;
+     }
+     
+     function withdraw(uint amount) public {
+         require(amount <= balance, "Insufficient balance");
+         balance -= amount;
+         msg.sender.transfer(amount);
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow in the balance variable.
+2) Insufficient gas issue in the withdraw function.

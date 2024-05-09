@@ -1,0 +1,20 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) hasVoted;
+    uint256 public totalVotes;
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+    
+    function getVotes() public view returns(uint256) {
+        return totalVotes;
+    }
+}
+<\contract\> 
+
+<\output\>
+healthy

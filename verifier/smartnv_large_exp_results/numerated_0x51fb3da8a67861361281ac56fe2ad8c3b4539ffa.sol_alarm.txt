@@ -1,0 +1,28 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+    bool public isPaid;
+
+    function deposit(uint _amount) public {
+        require(!isPaid, "Payment has already been made");
+        require(msg.sender == payer, "Only the payer can deposit");
+        amount = _amount;
+    }
+
+    function withdraw() public {
+        require(isPaid, "Payment has not been made yet");
+        require(msg.sender == payee, "Only the payee can withdraw");
+        uint transferAmount = amount;
+        amount = 0;
+        payee.transfer(transferAmount);
+    }
+
+    function makePayment() public {
+        require(!isPaid, "Payment has already been made");
+        require(msg.sender == payer, "Only the payer can make the payment");
+        isPaid = true;
+    }
+}
+<\contract\>

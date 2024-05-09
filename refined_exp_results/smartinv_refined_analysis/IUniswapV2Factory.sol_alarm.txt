@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract Bridge {
+     struct Transfer {
+          address sender;
+          uint256 amount;
+          string asset;
+     }
+     
+     mapping(uint256 => Transfer) public transfers;
+     uint256 public transferCount;
+
+     function addTransfer(address _sender, uint256 _amount, string memory _asset) public {
+          transferCount++;
+          transfers[transferCount] = Transfer(_sender, _amount, _asset);
+     }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Cross bridge inconsistency: The contract does not include any logic to verify the consistency of incoming transfers before adding them to the transfers mapping, which could lead to inconsistencies in the data stored.
+
+2) ID uniqueness violation: The contract uses a simple incrementing transferCount variable to generate unique IDs for transfers, which may potentially result in ID collisions as the contract scales.
+
+Therefore, the potential vulnerabilities in the contract are cross bridge inconsistency and ID uniqueness violation.

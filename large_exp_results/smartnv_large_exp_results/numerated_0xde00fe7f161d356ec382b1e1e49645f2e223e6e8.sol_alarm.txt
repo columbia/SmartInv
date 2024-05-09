@@ -1,0 +1,21 @@
+The contract:
+contract TokenSwap {
+    IERC20 public token1;
+    IERC20 public token2;
+
+    function swap(uint amount1, uint amount2) public {
+        require(token1.balanceOf(msg.sender) >= amount1);
+        require(token2.balanceOf(msg.sender) >= amount2);
+
+        token1.transferFrom(msg.sender, address(this), amount1);
+        token2.transferFrom(msg.sender, address(this), amount2);
+
+        token1.transfer(msg.sender, amount2);
+        token2.transfer(msg.sender, amount1);
+    }
+}
+
+Potential vulnerabilities:
+1) Inconsistent state update: The contract allows for swapping tokens but the transfer functions for the tokens are not done atomically. This can lead to inconsistent state if one transfer succeeds and the other fails.
+
+2) Incorrect visibility/ownership: The contract does not specify any access control mechanism, making it vulnerable to unauthorized access and potential misuse by unauthorized users.

@@ -1,0 +1,32 @@
+<\contract\> 
+contract StakingPool {
+    mapping(address => uint) public stakingBalance;
+    mapping(address => bool) public isStaking;
+    mapping(address => uint) public startTime;
+    mapping(address => uint) public rewards;
+
+    function stake(uint amount) public {
+        require(amount > 0, "Cannot stake 0 tokens");
+        require(isStaking[msg.sender] == false, "Cannot stake while already staking");
+        
+        // Transfer tokens to this contract for staking
+        Token.transferFrom(msg.sender, address(this), amount);
+        
+        stakingBalance[msg.sender] = amount;
+        startTime[msg.sender] = block.timestamp;
+        isStaking[msg.sender] = true;
+    }
+
+    function unstake() public {
+        require(isStaking[msg.sender] == true, "Cannot unstake when not staking");
+        
+        uint timeStaked = block.timestamp - startTime[msg.sender];
+        uint reward = timeStaked * rewards[msg.sender];
+        Token.transfer(msg.sender, stakingBalance[msg.sender] + reward);
+        
+        stakingBalance[msg.sender] = 0;
+        startTime[msg.sender] = 0;
+        isStaking[msg.sender] = false;
+    }
+}
+<\contract\>

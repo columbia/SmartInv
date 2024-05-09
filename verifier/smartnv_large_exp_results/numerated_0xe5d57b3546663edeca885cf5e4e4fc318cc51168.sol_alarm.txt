@@ -1,0 +1,40 @@
+<\contract\> 
+contract Marketplace {
+     IERC20 public token;
+     address public owner;
+     mapping(uint => Item) public items;
+     uint public nextItemId;
+
+     struct Item {
+          address seller;
+          uint price;
+          bool sold;
+     }
+
+     constructor(address _token) {
+          token = IERC20(_token);
+          owner = msg.sender;
+          nextItemId = 1;
+     }
+
+     function addItem(uint _price) public {
+          items[nextItemId] = Item(msg.sender, _price, false);
+          nextItemId++;
+     }
+
+     function buyItem(uint _itemId) public {
+          Item storage item = items[_itemId];
+          
+          require(item.sold == false, "Item is already sold");
+          require(token.balanceOf(msg.sender) >= item.price, "Insufficient balance");
+
+          token.transferFrom(msg.sender, item.seller, item.price);
+          item.sold = true;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership
+2) Insufficient gas
+3) Reentrancy

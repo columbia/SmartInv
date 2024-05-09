@@ -1,0 +1,35 @@
+The contract provided for analysis is as follows:
+```
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) public {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint total = _amount * price;
+        require(msg.value == total, "Incorrect payment amount");
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function changePrice(uint _newPrice) public {
+        require(msg.sender == owner, "Unauthorized");
+        price = _newPrice;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Unauthorized");
+        owner.transfer(address(this).balance);
+    }
+
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+1) privilege escalation
+2) incorrect visibility/ownership

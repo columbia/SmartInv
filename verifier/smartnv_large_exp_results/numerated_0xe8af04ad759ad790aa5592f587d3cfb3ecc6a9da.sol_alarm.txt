@@ -1,0 +1,36 @@
+Contract to be analyzed:
+contract MultiSigWallet {
+    mapping(uint => address) owners;
+    mapping(address => uint) ownerCount;
+    mapping(uint => bool) confirmed;
+    uint transactionCount;
+
+    function addOwner(address _owner) public {
+        require(ownerCount[_owner] == 0, "Owner already exists");
+        owners[ownerCount[_owner]] = _owner;
+        ownerCount[_owner]++;
+    }
+
+    function removeOwner(address _owner) public {
+        require(ownerCount[_owner] > 0, "Owner does not exist");
+        for (uint i = 0; i < ownerCount[_owner]; i++) {
+            if (owners[i] == _owner) {
+                for (uint j = i; j < ownerCount[_owner] - 1; j++) {
+                    owners[j] = owners[j + 1];
+                }
+                owners[ownerCount[_owner] - 1] = address(0);
+                ownerCount[_owner]--;
+            }
+        }
+    }
+
+    function confirmTransaction(uint _txId) public {
+        confirmed[_txId] = true;
+    }
+
+    function executeTransaction(uint _txId, address _to, uint _amount) public {
+        require(confirmed[_txId], "Transaction not confirmed");
+        // send _amount to _to address
+        transactionCount++;
+    }
+}

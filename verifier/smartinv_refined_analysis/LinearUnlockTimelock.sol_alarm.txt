@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract CrossBridge {
+    struct Bridge {
+        address sender;
+        address receiver;
+        uint256 amount;
+        bool completed;
+    }
+    
+    mapping(uint256 => Bridge) public bridges;
+    uint256 public bridgeCount;
+    
+    function createBridge(address _receiver, uint256 _amount) external {
+        uint256 bridgeId = bridgeCount++;
+        bridges[bridgeId] = Bridge(msg.sender, _receiver, _amount, false);
+    }
+    
+    function completeBridge(uint256 _bridgeId) external {
+        require(bridges[_bridgeId].sender == msg.sender, "Only the sender can complete the bridge");
+        require(!bridges[_bridgeId].completed, "Bridge has already been completed");
+        
+        bridges[_bridgeId].receiver.transfer(bridges[_bridgeId].amount);
+        bridges[_bridgeId].completed = true;
+    }
+}
+<\analyzed_contract\>

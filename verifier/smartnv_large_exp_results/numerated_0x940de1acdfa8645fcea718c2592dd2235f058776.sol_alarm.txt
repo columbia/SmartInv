@@ -1,0 +1,23 @@
+<\your_contract\>
+contract Escrow {
+         IERC20 public token;
+         address public owner;
+         mapping(address => uint) public deposits;
+
+         function deposit(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+             deposits[msg.sender] += amount;
+         }
+
+         function withdraw(uint amount) public {
+             require(deposits[msg.sender] >= amount, "Insufficient funds");
+             token.transfer(msg.sender, amount);
+             deposits[msg.sender] -= amount;
+         }
+
+         function changeOwner(address newOwner) public {
+             require(msg.sender == owner, "Only owner can change owner");
+             owner = newOwner;
+         }
+}
+<\your_contract\>

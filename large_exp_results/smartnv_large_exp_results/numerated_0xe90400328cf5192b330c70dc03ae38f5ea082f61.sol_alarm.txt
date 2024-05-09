@@ -1,0 +1,19 @@
+<\analyzed_contract\> 
+contract TokenAuction {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid(uint amount) public {
+             require(amount > highestBid, "Bid amount is lower than current highest bid");
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             if (highestBidder != address(0)) {
+                 tokenA.transfer(highestBidder, highestBid);
+             }
+             highestBidder = msg.sender;
+             highestBid = amount;
+         }
+      } 
+
+<\analyzed_contract\>

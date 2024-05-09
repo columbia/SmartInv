@@ -1,0 +1,25 @@
+The contract for analysis:
+<\contract_delta_bridge\> 
+contract DeltaBridge {
+     address public admin;
+     IERC20 public token;
+
+    event BridgeTransfer(address indexed from, address indexed to, uint256 amount);
+
+    constructor(address _token) {
+        admin = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function crossBridge(address _to, uint256 _amount) external {
+        require(msg.sender == admin, "admin only");
+        token.transfer(_to, _amount);
+        emit BridgeTransfer(address(this), _to, _amount);
+    }
+
+}
+<\contract_delta_bridge\> 
+
+Potential vulnerabilities in the contract for analysis:
+1) privilege escalation
+2) inconsistent state update

@@ -1,0 +1,19 @@
+The contract to analyze:
+
+contract TokenExchange {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function exchange(uint amountA, uint amountB) external {
+        require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance of token A");
+        require(tokenB.balanceOf(address(this)) >= amountB, "Insufficient balance of token B");
+
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transfer(msg.sender, amountB);
+    }
+}
+
+The potential vulnerabilities in the contract:
+1) atomicity violation
+2) insufficient gas
+3) incorrect visibility/ownership

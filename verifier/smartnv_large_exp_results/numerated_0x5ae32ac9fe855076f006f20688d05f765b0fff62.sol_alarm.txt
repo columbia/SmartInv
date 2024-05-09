@@ -1,0 +1,48 @@
+Contract to be analyzed:
+
+contract VotingSystem {
+     struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate; 
+          uint256 vote; 
+          }
+     mapping(address => Voter) public voters;
+     address public creator;
+     address[] public candidateList; 
+     mapping(address => uint256) public votesReceived;
+
+     function createCandidate(address candidate) external {
+          require(msg.sender == creator, "only creator can create candidate");
+          candidateList.push(candidate);
+        }
+     function giveRightToVote(address voter) external {
+          require(msg.sender == creator, "only creator can give right to vote");
+          voters[voter].weight = 1; 
+        }
+
+    function delegate(address to) external {
+          require(voters[msg.sender].weight > 0, "voter has no right to delegate");
+          require(to != msg.sender, "delegate to self");
+          voters[msg.sender].delegate = to; 
+        }
+     function vote(address candidate) external {
+          Voter memory sender = voters[msg.sender];
+          require(sender.weight > 0, "sender has no right to vote");
+          require(!sender.voted, "sender already voted");
+          sender.voted = true; 
+          sender.vote = 1; 
+          votesReceived[candidate] += sender.weight;
+        }
+    
+     function winningProposal() external view returns (address winner) {
+          uint256 winningVote = 0; 
+          for (uint256 i = 0; i < candidateList.length; i++) {
+                if (votesReceived[candidateList[i]] > winningVote) {
+                      winningVote = votesReceived[candidateList[i]];
+                      winner = candidateList[i];
+                    }
+            }
+         }
+}
+Healthy

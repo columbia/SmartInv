@@ -1,0 +1,28 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => uint256) public productIdToPrice;
+    mapping(uint256 => address) public productIdToSeller;
+    uint256 public totalSales;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createProduct(uint256 _productId, uint256 _price) public {
+        require(productIdToSeller[_productId] == address(0), "Product already exists");
+        productIdToPrice[_productId] = _price;
+        productIdToSeller[_productId] = msg.sender;
+    }
+
+    function buyProduct(uint256 _productId) public payable {
+        require(productIdToSeller[_productId] != address(0), "Product doesn't exist");
+        require(msg.value >= productIdToPrice[_productId], "Insufficient funds");
+        address seller = productIdToSeller[_productId];
+        productIdToSeller[_productId] = address(0);
+        totalSales += msg.value;
+        (bool success, ) = seller.call{value: msg.value}("");
+        require(success, "Transfer failed");
+    }
+}
+<\contract\>

@@ -1,0 +1,47 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the provided contract:
+1) Inconsistent state update: The contract does not include updating the proposal state after it has been executed, potentially leading to inconsistent data.
+2) Incorrect visibility/ownership: It is unclear who has ownership of the proposal and how access control is managed within the contract.
+3) Insufficient gas: The contract may run out of gas during complex executions, leading to incomplete transactions.
+4) ID uniqueness violation: The contract does not explicitly enforce uniqueness of proposal IDs, which could lead to conflicts or errors in data management.
+
+Therefore, the identified potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Incorrect visibility/ownership
+3) Insufficient gas
+4) ID uniqueness violation

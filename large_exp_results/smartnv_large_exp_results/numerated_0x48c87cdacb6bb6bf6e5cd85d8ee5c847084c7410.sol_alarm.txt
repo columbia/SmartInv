@@ -1,0 +1,40 @@
+<\contract_to_be_analyzed\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerApproval;
+    bool public sellerApproval;
+    
+    constructor(address _seller, address _arbiter, uint _price) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        buyerApproval = false;
+        sellerApproval = false;
+    }
+    
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorised");
+        require(buyerApproval && sellerApproval, "Both buyer and seller must approve before confirming");
+        
+        if (msg.sender == buyer) {
+            seller.transfer(price);
+        } else if (msg.sender == seller) {
+            buyer.transfer(price);
+        }
+    }
+    
+    function approve() public {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorised");
+        
+        if (msg.sender == buyer) {
+            buyerApproval = true;
+        } else if (msg.sender == seller) {
+            sellerApproval = true;
+        }
+    }
+}
+<\contract_to_be_analyzed\>

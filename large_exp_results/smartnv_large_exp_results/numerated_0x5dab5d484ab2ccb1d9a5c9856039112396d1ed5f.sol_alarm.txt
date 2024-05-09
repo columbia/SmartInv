@@ -1,0 +1,15 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The execution of the `execute` function may result in inconsistent state as the `proposal.votedAmount` is being updated without proper checking or validation.
+
+2) Insufficient gas: Depending on the gas limit set for transactions, there may be a risk of insufficient gas leading to a failure in executing certain functions within the contract.
+
+3) Incorrect visibility/ownership: The ownership and visibility of certain functions and variables within the contract are not clearly defined, which may pose a risk in terms of controlling access and ownership rights.
+
+4) Atomicity violation: The operations within the `execute` function are not atomic, which may lead to unexpected results in case of reentrancy or multi-party interactions.
+
+5) Reentrancy: The contract is susceptible to reentrancy attacks, particularly in the `execute` function where external calls to `votingToken.transferFrom` are made before updating the state variables.
+
+6) Ether leakage: There is a lack of handling Ether transactions within the contract, which may lead to unintended Ether transfers or loss of funds.
+
+7) Business logic flaw: The logic implemented in the `endExecute` function to check for execution failure based on the balance of `votingToken` may have flaws or inconsistencies.

@@ -1,0 +1,17 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        // Perform voting logic
+        
+        hasVoted[msg.sender] = true;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation
+- Incorrect visibility/ownership

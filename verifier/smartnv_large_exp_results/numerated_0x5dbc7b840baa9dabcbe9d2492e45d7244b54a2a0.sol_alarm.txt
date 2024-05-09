@@ -1,0 +1,54 @@
+<\contract\>
+contract MultiSigWallet {
+    mapping(address => bool) public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+    
+    struct Transaction {
+        address from;
+        address payable to;
+        uint amount;
+        bool executed;
+    }
+
+    modifier onlyOwner() {
+        require(owners[msg.sender], "Not an owner");
+        _;
+    }
+
+    function addOwner(address _newOwner) public onlyOwner {
+        owners[_newOwner] = true;
+    }
+
+    function removeOwner(address _owner) public onlyOwner {
+        require(owners[_owner], "Not an owner");
+        owners[_owner] = false;
+    }
+
+    function submitTransaction(address payable _to, uint _amount) public onlyOwner {
+        transactions[transactionCount] = Transaction(msg.sender, _to, _amount, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint _txIndex) public onlyOwner {
+        require(_txIndex < transactionCount, "Invalid transaction index");
+        Transaction storage transaction = transactions[_txIndex];
+        require(!transaction.executed, "Transaction already executed");
+        require(address(this).balance >= transaction.amount, "Insufficient balance");
+        transaction.to.transfer(transaction.amount);
+        transaction.executed = true;
+    }
+
+    function() external payable {}
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) inconsistent state update: The executed flag in the "executeTransaction" function is updated before transferring the amount which may lead to reentrancy attacks.
+2) insufficient gas: If the contract balance is not enough to cover the transaction amount, the transaction will fail without proper handling.
+3) incorrect visibility/ownership: The visibility of the "owners" mapping and the "transactionCount" variable may not be secure, allowing unauthorized access or manipulation.
+4) atomicity violation: The transfer of funds in the "executeTransaction" function is not done atomically, which can result in funds being stuck in the contract or accessible to unauthorized parties.
+5) reentrancy: If the contract interacts with unknown contracts, there might be reentrancy vulnerabilities in the functions that transfer funds.
+6) integer overflow/underflow: There is no check for potential integer overflows/underflows in the amount variables used in transactions.
+7) privilege escalation: Any owner can add or remove other owners, which may lead to unauthorized privileges being granted.
+8) ether leakage: Ether received by the fallback function may not be properly handled or accounted for in the contract, leading to potential ether leakage.

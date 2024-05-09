@@ -1,0 +1,23 @@
+<\contract_to_be_analyzed\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function withdrawAll() public {
+        require(msg.sender == owner, "You are not the owner");
+        uint amount = payments[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        msg.sender.transfer(amount);
+        payments[msg.sender] = 0;
+    }
+
+    function makePayment() public payable {
+        require(msg.value > 0, "Payment must be greater than 0");
+        payments[msg.sender] += msg.value;
+    }
+}
+<\contract_to_be_analyzed\>

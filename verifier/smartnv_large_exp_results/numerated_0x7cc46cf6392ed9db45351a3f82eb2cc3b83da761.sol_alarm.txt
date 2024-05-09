@@ -1,0 +1,24 @@
+<\contract\> 
+contract Insurance {
+         IERC20 public token;
+         mapping(address => uint) public policyAmounts;
+         address public owner;
+         
+         constructor(address _token) {
+             token = IERC20(_token);
+             owner = msg.sender;
+         }
+         
+         function purchasePolicy(uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient token balance");
+             token.transferFrom(msg.sender, address(this), amount);
+             policyAmounts[msg.sender] += amount;
+         }
+         
+         function claimPolicy() public {
+             require(policyAmounts[msg.sender] > 0, "No policy purchased");
+             token.transfer(msg.sender, policyAmounts[msg.sender]);
+             policyAmounts[msg.sender] = 0;
+         }
+     }
+<\contract\>

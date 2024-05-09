@@ -1,0 +1,27 @@
+Contract:
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+     uint public totalTokens;
+     uint public tokensSold;
+     
+     constructor(IERC20 _token, address _owner, uint _price, uint _totalTokens) {
+         token = _token;
+         owner = _owner;
+         price = _price;
+         totalTokens = _totalTokens;
+     }
+     
+     function buyTokens(uint _amount) external {
+         require(tokensSold + _amount <= totalTokens, "Not enough tokens available");
+         uint cost = _amount * price;
+         token.transferFrom(msg.sender, address(this), _amount);
+         token.transfer(owner, cost);
+         tokensSold += _amount;
+     }
+}
+Output:
+potential vulnerabilities: 
+2) price manipulation
+5) atomicity violation

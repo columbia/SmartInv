@@ -1,0 +1,28 @@
+<\Contract\>
+contract PurchaseContract {
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    constructor(address _seller, uint _price) {
+        seller = _seller;
+        price = _price;
+    }
+
+    function buy() public payable {
+        require(msg.value == price, "Incorrect payment amount");
+        seller.transfer(msg.value);
+        buyer = msg.sender;
+    }
+
+    function cancel() public {
+        require(msg.sender == seller, "You are not the seller");
+        selfdestruct(seller);
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer, "You are not the buyer");
+        //some action to confirm the transaction
+    }
+}
+<\Contract\>

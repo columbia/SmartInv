@@ -1,0 +1,38 @@
+<\analyzed_contract\>
+contract TokenSale {
+    address public owner;
+    mapping(address => uint256) public balances;
+    mapping(address => bool) public whitelist;
+    uint256 public tokenPrice;
+    IERC20 public token;
+
+    constructor(IERC20 _token, uint256 _price) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint256 _amount) public {
+        require(whitelist[msg.sender], "user not whitelisted");
+        uint256 cost = _amount * tokenPrice;
+        token.transferFrom(msg.sender, address(this), _amount);
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount;
+    }
+
+    function addToWhitelist(address _user) public {
+        require(msg.sender == owner, "only owner can whitelist");
+        whitelist[_user] = true;
+    }
+
+    function changeTokenPrice(uint256 _price) public {
+        require(msg.sender == owner, "only owner can change price");
+        tokenPrice = _price;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "only owner can withdraw");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\analyzed_contract\>

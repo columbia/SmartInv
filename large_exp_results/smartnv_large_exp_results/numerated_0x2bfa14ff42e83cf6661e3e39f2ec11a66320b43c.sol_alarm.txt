@@ -1,0 +1,39 @@
+Based on the contract provided:
+
+contract TimelockController is IERC20 {
+    struct Proposal {
+        uint256 sTime;
+        uint256 votedAmount;
+        address addr;
+    }
+    address internal owner;
+    IERC20 votingToken;
+
+    function startExecute() external {
+        uint256 startingBlance;
+        require(proposal.sTime == 0, "on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBlance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBlance;
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through");
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount;
+        votedProposal(proposal);
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+
+The potential vulnerabilities in the contract are:
+- Inconsistent state update: The structure of the Proposal in the startExecute function is misspelled as sTime instead of startTime, which may lead to inconsistent state updates.
+- Incorrect visibility/ownership: The owner variable is declared as internal instead of private, which may lead to improper handling of owner access control.
+- Business logic flaw: The endExecute function logic for checking if execution has failed may not be appropriate and could lead to issues with the contract's intended functionality.

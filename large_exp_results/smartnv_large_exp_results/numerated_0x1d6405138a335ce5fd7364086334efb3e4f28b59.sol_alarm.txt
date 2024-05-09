@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint256) public voteCount;
+
+    function vote(bool _vote) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        if (_vote) {
+            voteCount[msg.sender]++;
+        } else {
+            voteCount[msg.sender]--;
+        }
+
+        hasVoted[msg.sender] = true;
+    }
+
+    function getVoteCount(address _voter) public view returns (uint256) {
+        return voteCount[_voter];
+    }
+}
+<\contract_to_analyze\> 

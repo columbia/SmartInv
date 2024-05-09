@@ -1,0 +1,28 @@
+<\analyzed_contract\>
+contract VestingContract {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public releasedAmount;
+    uint public totalAmount;
+
+    constructor(address _beneficiary, uint _releaseTime, uint _totalAmount) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+        totalAmount = _totalAmount;
+    }
+
+    function release() external {
+        require(block.timestamp >= releaseTime, "Release time not reached yet");
+        uint amount = calculateReleaseAmount();
+        require(amount > 0, "No funds to release");
+        require(totalAmount >= releasedAmount + amount, "Exceeds total amount");
+        
+        releasedAmount += amount;
+        // Transfer funds to beneficiary
+    }
+
+    function calculateReleaseAmount() internal view returns (uint) {
+        // Some calculation based on time elapsed
+    }
+}
+<\analyzed_contract\>

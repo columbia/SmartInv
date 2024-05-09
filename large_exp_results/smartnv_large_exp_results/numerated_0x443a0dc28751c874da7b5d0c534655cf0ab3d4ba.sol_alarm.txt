@@ -1,0 +1,36 @@
+<\contract\> 
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+     uint public price;
+     uint public totalSold;
+     
+     mapping(address => uint) public purchasedAmount;
+
+     constructor(address _token, uint _price) {
+          owner = msg.sender;
+          token = IERC20(_token);
+          price = _price;
+          totalSold = 0;
+     }
+     
+     function buyTokens(uint _amount) public {
+          require(_amount > 0, "Invalid amount");
+          require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+
+          uint cost = _amount * price;
+          token.transferFrom(msg.sender, owner, cost);
+          purchasedAmount[msg.sender] += _amount;
+          totalSold += _amount;
+
+     }
+     
+     function changePrice(uint _newPrice) public {
+          require(msg.sender == owner, "Unauthorized");
+          price = _newPrice;
+     }
+}
+<\contract\> 
+
+1) incorrect visibility/ownership
+2) inconsistent state update

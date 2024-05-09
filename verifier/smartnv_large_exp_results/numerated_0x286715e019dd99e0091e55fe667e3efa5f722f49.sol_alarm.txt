@@ -1,0 +1,30 @@
+The contract provided for analysis: 
+
+contract Escrow {
+         IERC20 public token;
+         address public seller;
+         address public buyer;
+         uint public amount;
+
+         function deposit(uint _amount) public {
+             require(msg.sender == buyer, "Only buyer can deposit");
+             token.transferFrom(msg.sender, address(this), _amount);
+             amount += _amount;
+         }
+
+         function release() public {
+             require(msg.sender == buyer, "Only buyer can release funds");
+             token.transfer(seller, amount);
+             amount = 0;
+         }
+
+         function cancel() public {
+             require(msg.sender == seller, "Only seller can cancel");
+             token.transfer(seller, amount);
+             amount = 0;
+         }
+}
+
+Output: 
+- incorrect visibility/ownership
+- inconsistent state update

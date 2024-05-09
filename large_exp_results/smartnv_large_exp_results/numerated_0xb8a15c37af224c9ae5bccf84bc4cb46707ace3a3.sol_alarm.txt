@@ -1,0 +1,51 @@
+Contract you are going to analyze:
+contract VotingSystem {
+     struct Voter {
+         uint weight;
+         bool voted;
+         address delegate;
+         uint vote;
+     }
+     mapping(address => Voter) public voters;
+     address public chairperson;
+
+     modifier onlyChairperson {
+         require(msg.sender == chairperson, "Only chairperson can call this function");
+         _;
+     }
+
+     function delegate(address to) public {
+         Voter storage sender = voters[msg.sender];
+         require(!sender.voted, "You have already voted.");
+         require(to != msg.sender, "Self-delegation is disallowed.");
+
+         while (voters[to].delegate != address(0)) {
+             to = voters[to].delegate;
+             require(to != msg.sender, "Found loop in delegation.");
+         }
+
+         sender.voted = true;
+         sender.delegate = to;
+         Voter storage delegate_ = voters[to];
+
+         if (delegate_.voted) {
+             voters[delegate_.vote].weight += sender.weight;
+         } else {
+             delegate_.weight += sender.weight;
+         }
+     }
+
+     function vote(uint vote) public {
+         Voter storage sender = voters[msg.sender];
+         require(!sender.voted, "You have already voted.");
+
+         sender.voted = true;
+         sender.vote = vote;
+         voters[vote].weight += sender.weight;
+     }
+} 
+
+Output: 
+1) privilege escalation
+2) inconsistent state update
+3) atomicity violation

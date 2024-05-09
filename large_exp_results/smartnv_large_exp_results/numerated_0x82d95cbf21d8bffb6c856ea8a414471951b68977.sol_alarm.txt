@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract SafeTrade {
+     IERC20 public token1;
+     IERC20 public token2;
+     address public owner;
+
+     constructor(IERC20 _token1, IERC20 _token2) public {
+         token1 = _token1;
+         token2 = _token2;
+         owner = msg.sender;
+     }
+
+     function trade(uint amount1, uint amount2) public {
+         require(msg.sender == owner, "You are not the owner");
+         token1.transferFrom(msg.sender, address(this), amount1);
+         token2.transfer(msg.sender, amount2);
+     }
+}
+
+The potential vulnerabilities in the SafeTrade contract:
+
+1) privilege escalation: The trade function lacks proper authorization checks for the owner, allowing anyone to call the function and perform token transfers, which could lead to unauthorized trades.
+
+2) incorrect visibility/ownership: The owner variable is public, exposing the owner's address to the public, which may not be desired from a security perspective.
+
+Therefore, the identified potential vulnerabilities in the SafeTrade contract are privilege escalation and incorrect visibility/ownership.

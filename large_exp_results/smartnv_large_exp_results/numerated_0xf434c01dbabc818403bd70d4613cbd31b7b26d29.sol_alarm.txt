@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+     mapping(address => uint) public funds;
+
+     function bid() public payable {
+          require(msg.value > highestBid, "Bid not high enough");
+          returnFunds();
+          funds[msg.sender] += msg.value; 
+          highestBidder = msg.sender;
+          highestBid = msg.value; 
+     }
+
+     function returnFunds() internal {
+          uint amount = funds[msg.sender];
+          msg.sender.transfer(amount);
+          funds[msg.sender] = 0;
+     }
+
+     function endAuction() public {
+          require(msg.sender == owner, "Only the owner can end the auction");
+          highestBidder.transfer(highestBid);
+     }
+}
+<\contract_to_analyze\>

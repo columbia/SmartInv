@@ -1,0 +1,49 @@
+contract MultiSigWallet {
+     uint public transactionCount;
+     mapping(uint => Transaction) public transactions;
+     mapping(address => mapping(uint => bool)) public confirmations;
+
+     struct Transaction {
+         address destination;
+         uint value;
+         bytes data;
+         bool executed;
+     }
+
+     function submitTransaction(address destination, uint value, bytes memory data) public {
+         uint transactionId = transactionCount;
+         transactions[transactionId] = Transaction({
+             destination: destination,
+             value: value,
+             data: data,
+             executed: false
+         });
+         transactionCount++;
+     }
+
+     function confirmTransaction(uint transactionId) public {
+         confirmations[msg.sender][transactionId] = true;
+     }
+
+     function executeTransaction(uint transactionId) public {
+         Transaction storage transaction = transactions[transactionId];
+         require(!transaction.executed, "transaction already executed");
+         require(isConfirmed(transactionId), "transaction not confirmed");
+         (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+         require(success, "transaction execution failed");
+         transaction.executed = true;
+     }
+
+     function isConfirmed(uint transactionId) public view returns (bool) {
+         uint count = 0;
+         for (uint i = 0; i < transactionCount; i++) {
+             if (confirmations[msg.sender][i]) {
+                 count++;
+             }
+             if (count == 2) {
+                 return true;
+             }
+         }
+         return false;
+     }
+}

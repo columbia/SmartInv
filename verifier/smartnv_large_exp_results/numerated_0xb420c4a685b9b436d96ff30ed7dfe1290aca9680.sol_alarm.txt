@@ -1,0 +1,36 @@
+Contract to analyze: 
+
+contract MultiSigWallet {
+    address[] public owners;
+    uint public limit;
+
+    function setLimit(uint _limit) public {
+        limit = _limit;
+    }
+
+    function addOwner(address _owner) public {
+        owners.push(_owner);
+    }
+
+    function removeOwner(address _owner) public {
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == _owner) {
+                delete owners[i];
+            }
+        }
+    }
+
+    function withdraw(uint _amount) public {
+        require(owners.length >= limit, "Not enough owners");
+        for (uint i = 0; i < owners.length; i++) {
+            // perform withdrawal logic
+        }
+    }
+}
+
+Output:
+- ID uniqueness violation: There is no check or enforcement to ensure uniqueness when adding owners, potentially leading to duplicate owners in the list.
+- Incorrect visibility/ownership: The ownership and visibility of the owners array are public, which may expose sensitive information to unauthorized parties.
+- Inconsistent state update: The removeOwner function deletes an element from the owners array without updating the length or reorganizing the array, potentially resulting in an inconsistent state and unexpected behavior.
+- Insufficient gas: The withdraw function iterates over all owners to perform the withdrawal logic, which may consume a significant amount of gas and potentially lead to out-of-gas errors.
+- Business logic flaw: The logic for managing owners and their permissions is simplistic and may not provide sufficient security measures for a multi-signature wallet.

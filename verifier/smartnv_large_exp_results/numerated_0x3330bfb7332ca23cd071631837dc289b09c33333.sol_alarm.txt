@@ -1,0 +1,29 @@
+The contract to analyze for potential vulnerabilities:
+
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+
+    constructor(address _token) public {
+        admin = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) public {
+        token.transfer(msg.sender, _amount);
+    }
+
+    function changeAdmin(address _newAdmin) public {
+        require(msg.sender == admin, "only admin can change admin");
+        admin = _newAdmin;
+    }
+
+    function endSale() public {
+        require(msg.sender == admin, "only admin can end sale");
+        selfdestruct(msg.sender);
+    }
+}
+
+Output:
+1) incorrect visibility/ownership
+2) inconsistent state update

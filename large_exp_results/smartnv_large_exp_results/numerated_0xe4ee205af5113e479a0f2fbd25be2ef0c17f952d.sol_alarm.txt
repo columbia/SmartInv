@@ -1,0 +1,45 @@
+<\contract_to_be_analyzed\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    address public chairperson;
+
+    constructor() {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+    }
+
+    function delegate(address to) public {
+        require(voters[msg.sender].weight > 0, "Has no weight to delegate.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+        voters[msg.sender].weight = 0;
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "Has no weight to vote.");
+        require(!sender.voted, "Already voted.");
+
+        sender.voted = true;
+        sender.vote = proposal;
+    }
+
+    function winningProposal() public view returns (uint256 winningProposal_) {
+        uint256 winningVoteCount = 0;
+        for (uint256 p = 0; p < voters[msg.sender].weight; p++) {
+            if (voters[msg.sender].vote == winningVoteCount) {
+                winningProposal_ = voters[msg.sender].vote;
+            }
+        }
+    }
+}
+<\contract_to_be_analyzed\>

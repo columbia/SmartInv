@@ -1,0 +1,41 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+
+    mapping(address => uint) public balance;
+    mapping(address => bool) public hasPurchased;
+
+    constructor(uint _tokenPrice, uint _totalTokens) public {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        require(_numTokens <= totalTokens, "Not enough tokens left");
+
+        balance[msg.sender] += _numTokens;
+        hasPurchased[msg.sender] = true;
+
+        totalTokens -= _numTokens;
+
+        if (totalTokens == 0) {
+            selfdestruct(msg.sender);
+        }
+    }
+
+    function withdraw(uint _amount) public {
+        require(balance[msg.sender] >= _amount, "Insufficient balance");
+        
+        balance[msg.sender] -= _amount;
+        msg.sender.transfer(_amount * tokenPrice);
+    }
+}
+<\contract\> 
+
+Output:
+1) inconsistent state update
+2) insufficient gas

@@ -1,0 +1,15 @@
+<\Your Contract\>
+contract TokenExchange {
+         IERC20 public token1;
+         IERC20 public token2;
+         address public owner;
+
+         function exchangeTokens(uint amount1, uint amount2) public {
+             require(token1.balanceOf(msg.sender) >= amount1, "Insufficient balance of token1");
+             require(token2.balanceOf(msg.sender) >= amount2, "Insufficient balance of token2");
+
+             token1.transferFrom(msg.sender, owner, amount1);
+             token2.transferFrom(owner, msg.sender, amount2);
+         }
+}
+<\Your Contract\>

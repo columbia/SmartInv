@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid value must be higher than current highest bid");
+        if (highestBid > 0) {
+            address(uint160(highestBidder)).send(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        address(uint160(highestBidder)).send(highestBid);
+        highestBid = 0;
+    }
+}
+
+Output:
+1) reentrancy
+2) inconsistent state update

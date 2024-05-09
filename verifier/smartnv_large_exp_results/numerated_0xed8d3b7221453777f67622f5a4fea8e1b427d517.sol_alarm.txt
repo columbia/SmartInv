@@ -1,0 +1,44 @@
+<\the_contract\>
+contract VestingContract {
+    address public beneficiary;
+    uint public totalTokens;
+    uint public startTime;
+    uint public endTime;
+    uint public tokensClaimed;
+
+    mapping(address => uint) public tokenBalance;
+
+    constructor(address _beneficiary, uint _totalTokens, uint _startTime, uint _endTime) {
+        beneficiary = _beneficiary;
+        totalTokens = _totalTokens;
+        startTime = _startTime;
+        endTime = _endTime;
+        tokensClaimed = 0;
+    }
+
+    function claimTokens() public {
+        require(block.timestamp >= startTime, "Vesting period has not started yet");
+        require(block.timestamp <= endTime, "Vesting period has ended");
+        uint tokensAvailable = totalTokens - tokensClaimed;
+        require(tokensAvailable > 0, "No tokens available for claiming");
+
+        uint tokensToClaim = tokenBalance[msg.sender];
+        require(tokensToClaim <= tokensAvailable, "Trying to claim more tokens than available");
+        
+        tokensClaimed += tokensToClaim;
+        tokenBalance[msg.sender] -= tokensToClaim;
+
+        // Transfer tokens to beneficiary
+        // Transfer tokens to msg.sender
+    }
+
+    function addTokens(address user, uint amount) public {
+        tokenBalance[user] += amount;
+    }
+
+    function removeTokens(address user, uint amount) public {
+        require(tokenBalance[user] >= amount, "Not enough tokens to remove");
+        tokenBalance[user] -= amount;
+    }
+}
+<\the_contract\>

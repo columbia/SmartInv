@@ -1,0 +1,24 @@
+<\contract\>
+contract LoanContract {
+    mapping(address => uint) public loans;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function takeLoan(uint amount) public {
+        loans[msg.sender] += amount;
+    }
+
+    function repayLoan(uint amount) public {
+        require(loans[msg.sender] >= amount, "Not enough loan amount to repay.");
+        loans[msg.sender] -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership.");
+        owner = newOwner;
+    }
+}
+<\contract\>

@@ -1,0 +1,30 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    enum State { Initial, Locked, Released }
+    State public state;
+    
+    constructor(address _buyer, address _seller, uint _escrowAmount, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        state = State.Initial;
+    }
+    
+    function lockFunds() public {
+        require(msg.sender == buyer, "Only the buyer can lock the funds");
+        require(state == State.Initial, "Funds already locked or released");
+        state = State.Locked;
+    }
+    
+    function releaseFunds() public {
+        require(msg.sender == seller || msg.sender == arbiter, "Only the seller or arbiter can release the funds");
+        require(state == State.Locked, "Funds must be locked to be released");
+        state = State.Released;
+    }
+}
+<\contract\>

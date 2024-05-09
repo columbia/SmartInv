@@ -1,0 +1,30 @@
+<\contract\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint etherAmount = _amount * tokenPrice;
+        require(msg.value == etherAmount, "Incorrect ether amount");
+
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\> 
+
+Outputs:
+1) incorrect visibility/ownership
+2) integer overflow/underflow
+3) insufficient gas

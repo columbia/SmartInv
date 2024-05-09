@@ -1,0 +1,33 @@
+<\contract\>
+contract StakingContract {
+    struct Staker {
+        uint256 amount;
+        bool isStaking;
+    }
+    
+    mapping(address => Staker) public stakers;
+    
+    function stake(uint256 _amount) public {
+        require(_amount > 0, "Amount cannot be 0");
+        require(stakers[msg.sender].isStaking == false, "Already staking");
+        
+        // Transfer tokens to contract
+        token.transferFrom(msg.sender, address(this), _amount);
+        
+        // Update staker information
+        stakers[msg.sender].amount = _amount;
+        stakers[msg.sender].isStaking = true;
+    }
+    
+    function unstake() public {
+        require(stakers[msg.sender].isStaking == true, "Not currently staking");
+        
+        // Transfer tokens back to user
+        token.transfer(msg.sender, stakers[msg.sender].amount);
+        
+        // Reset staker information
+        stakers[msg.sender].amount = 0;
+        stakers[msg.sender].isStaking = false;
+    }
+}
+<\contract\>

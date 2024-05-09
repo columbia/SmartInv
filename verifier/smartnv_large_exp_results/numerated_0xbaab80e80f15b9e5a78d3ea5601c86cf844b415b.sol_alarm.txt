@@ -1,0 +1,38 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    enum State { Created, Locked, Released, InDispute }
+    State public state;
+
+    function init(address _seller, address _arbiter) public {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.Created;
+    }
+
+    function confirmPurchase() public payable {
+        require(msg.sender == buyer, "Only buyer can confirm purchase");
+        require(msg.value == price, "Incorrect payment amount");
+        state = State.Locked;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == buyer, "Only buyer can release funds");
+        require(state == State.Locked, "Funds are not locked");
+        payable(seller).transfer(price);
+        state = State.Released;
+    }
+
+    function claimPayment() public {
+        require(msg.sender == seller || msg.sender == arbiter,
+            "Only seller or arbiter can claim payment");
+        require(state == State.Locked, "Payment can only be claimed if funds are locked");
+        payable(seller).transfer(price);
+        state = State.Released;
+    }
+}
+<\contract\>

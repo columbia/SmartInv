@@ -1,0 +1,132 @@
+1 pragma solidity ^0.4.8;
+2 
+3 
+4   
+5 contract ESCARCE {
+6    
+7     event Transfer(address indexed _from, address indexed _to, uint256 _value);
+8     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+9     event Burn(address indexed from, uint256 value);
+10     
+11    
+12     string public constant symbol = "ESCARCE";
+13     string public constant name = "E-scarce";
+14     uint8 public constant decimals = 0;
+15     uint256 _totalSupply = 100000;    
+16     uint256 _totalBurned = 0;                            
+17      
+18    
+19     address public owner;
+20     mapping(address => uint256) balances;
+21     mapping(address => mapping (address => uint256)) allowed;
+22   
+23     function ESCARCE() 
+24     {
+25         owner = msg.sender;
+26         balances[owner] = _totalSupply;
+27     }
+28   
+29      function totalSupply() constant returns (uint256 l_totalSupply) 
+30      {
+31         l_totalSupply = _totalSupply;
+32      }
+33 
+34      function totalBurned() constant returns (uint256 l_totalBurned)
+35      {
+36         l_totalBurned = _totalBurned;
+37      }
+38   
+39      
+40      function balanceOf(address _owner) constant returns (uint256 balance) 
+41      {
+42         return balances[_owner];
+43      }
+44   
+45      
+46      function transfer(address _to, uint256 _amount) returns (bool success) 
+47      {
+48         if (_to == 0x0) throw;      
+49 
+50         if (balances[msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) 
+51         {
+52             balances[msg.sender] -= _amount;
+53             balances[_to] += _amount;
+54             Transfer(msg.sender, _to, _amount);
+55             return true;
+56          } 
+57          else 
+58          {
+59             return false;
+60          }
+61      }
+62   
+63      function transferFrom(address _from, address _to, uint256 _amount) returns (bool success) 
+64      {
+65         if (_to == 0x0) throw;      
+66 
+67         if (balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount > 0 && balances[_to] + _amount > balances[_to]) 
+68         {
+69             balances[_from] -= _amount;
+70             allowed[_from][msg.sender] -= _amount;
+71             balances[_to] += _amount;
+72             Transfer(_from, _to, _amount);
+73             return true;
+74          } 
+75          else 
+76          {
+77             return false;
+78          }
+79      }
+80   
+81     
+82      
+83      
+84      function approve(address _spender, uint256 _amount) returns (bool success) 
+85      {
+86         allowed[msg.sender][_spender] = _amount;
+87         Approval(msg.sender, _spender, _amount);
+88         return true;
+89      }
+90   
+91      
+92      function allowance(address _owner, address _spender) constant returns (uint256 remaining) 
+93      {
+94         return allowed[_owner][_spender];
+95      }
+96 
+97     function aidrop(address[] addresses,uint256 _amount) //onlyOwner 
+98     {   
+99        for (uint i = 0; i < addresses.length; i++) 
+100         {
+101              balances[msg.sender] -= _amount;
+102              balances[addresses[i]] += _amount;
+103              Transfer(msg.sender, addresses[i], _amount);
+104          }
+105      }
+106     
+107     
+108     function burn(uint256 _value) returns (bool success) 
+109     {
+110         if (balances[msg.sender] < _value) throw;            
+111         balances[msg.sender] -= _value;                      
+112         
+113         _totalSupply -= _value;          
+114         _totalBurned += _value;                             
+115         
+116         Burn(msg.sender, _value);
+117         return true;
+118     }
+119 
+120     function burnFrom(address _from, uint256 _value) returns (bool success) 
+121     {
+122         if (balances[_from] < _value) throw;                
+123         if (_value > allowed[_from][msg.sender]) throw;     
+124         balances[_from] -= _value;                          
+125         
+126         _totalSupply -= _value;                           
+127         _totalBurned += _value;
+128      
+129         Burn(_from, _value);
+130         return true;
+131     }
+132  }

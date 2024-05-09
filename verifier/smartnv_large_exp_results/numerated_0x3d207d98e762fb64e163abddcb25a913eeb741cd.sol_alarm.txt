@@ -1,0 +1,16 @@
+The contract being analyzed:
+
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         
+         function swapTokens(uint amount) public {
+             require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             tokenB.transfer(msg.sender, amount);
+         }
+}
+Potential vulnerabilities in the contract:
+
+- Incorrect visibility/ownership: The `tokenB.transfer` function allows anyone to call it, potentially leading to unauthorized transfers.
+- Insufficient gas: The `swapTokens` function does not include any gas stipend for token transfers, which could result in failed transactions due to running out of gas.

@@ -1,0 +1,30 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+     address public owner;
+     IERC20 public token;
+     uint public tokenPrice;
+     uint public totalTokens;
+     mapping(address => uint) public tokenBalances;
+
+     constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) public {
+         owner = msg.sender;
+         token = _token;
+         tokenPrice = _tokenPrice;
+         totalTokens = _totalTokens;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(_amount * tokenPrice <= token.balanceOf(msg.sender), "Insufficient balance");
+         require(tokenBalances[msg.sender] + _amount <= totalTokens, "Exceeds total tokens");
+         tokenBalances[msg.sender] += _amount;
+         token.transferFrom(owner, msg.sender, _amount * tokenPrice);
+     }
+
+     function withdrawTokens() public {
+         uint balance = tokenBalances[msg.sender];
+         require(balance > 0, "No tokens to withdraw");
+         tokenBalances[msg.sender] = 0;
+         token.transfer(msg.sender, balance);
+     }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,20 @@
+<\contract\> 
+contract Marketplace {
+     address public owner;
+     mapping(uint => address) public itemOwners;
+     mapping(address => uint) public itemPrices;
+     
+     function buyItem(uint itemId) public payable {
+         require(itemOwners[itemId] != msg.sender, "You cannot buy your own item");
+         require(msg.value >= itemPrices[itemId], "Insufficient funds");
+         address previousOwner = itemOwners[itemId];
+         itemOwners[itemId] = msg.sender;
+         previousOwner.transfer(msg.value);
+     }
+
+     function addItem(uint itemId, uint price) public {
+         itemOwners[itemId] = msg.sender;
+         itemPrices[itemId] = price;
+     }
+}
+<\contract\>  

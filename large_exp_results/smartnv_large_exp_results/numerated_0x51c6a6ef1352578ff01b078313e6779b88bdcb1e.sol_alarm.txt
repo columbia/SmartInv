@@ -1,0 +1,31 @@
+Contract:
+
+contract PaymentProcessor {
+    address public admin;
+    mapping(address => uint256) public balances;
+    
+    constructor() {
+        admin = msg.sender;
+    }
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+    
+    function transfer(address to, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Insufficient gas: The contract does not specify gas limits for certain functions, which could lead to out-of-gas errors and failed transactions.
+- Incorrect visibility/ownership: The admin is only set once during contract deployment and cannot be changed, potentially leading to a lack of control over contract management.
+- Integer overflow/underflow: There is a possibility of integer overflows/underflows in the calculations involving balances, which can result in incorrect values or unexpected behavior.

@@ -1,0 +1,29 @@
+<\analyzed_contract\>
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    
+    mapping(address => uint) public balances;
+
+    function swapTokens(address user, uint amountA, uint amountB) public {
+        require(amountA > 0 && amountB > 0, "Invalid amounts");
+        require(tokenA.balanceOf(user) >= amountA, "Not enough balance for tokenA");
+        require(tokenB.balanceOf(user) >= amountB, "Not enough balance for tokenB");
+
+        tokenA.transferFrom(user, address(this), amountA);
+        tokenB.transferFrom(user, address(this), amountB);
+
+        balances[user] += amountA;
+        balances[user] += amountB;
+    }
+
+    function withdrawTokens(address user, uint amount) public {
+        require(balances[user] >= amount, "Not enough balance to withdraw");
+        
+        tokenA.transfer(user, amount);
+        tokenB.transfer(user, amount);
+
+        balances[user] -= amount;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,22 @@
+Given contract:
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swap(uint amount, address recipient) public {
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(recipient, amount);
+    }
+
+    function getPrice() public view returns (uint) {
+        return tokenB.balanceOf(address(this)) / tokenA.balanceOf(address(this));
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: 
+- The swap function transfers tokens before updating the balance which could lead to inconsistent state if the transfer fails after the balance update.
+2) Integer overflow/underflow:
+- The calculation in getPrice() could result in integer underflow if the balance of tokenA is greater than the balance of tokenB leading to unexpected behavior.
+3) Incorrect visibility/ownership:
+- The ownership of the contract and visibility of functions could pose vulnerabilities if not properly managed and secured.

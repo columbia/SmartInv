@@ -1,0 +1,35 @@
+Contract being analyzed:
+
+contract TokenSale {
+    address public tokenAddress;
+    address public owner;
+    uint public price;
+    uint public tokensSold;
+
+    constructor(address _tokenAddress, uint _price) {
+        tokenAddress = _tokenAddress;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        require(tokensSold + _amount <= IERC20(tokenAddress).balanceOf(address(this)), "Not enough tokens left");
+        
+        IERC20(tokenAddress).transfer(msg.sender, _amount);
+        tokensSold += _amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function changePrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can change price");
+        price = _newPrice;
+    }
+}
+
+Output: 
+- No vulnerabilities identified. Healthy.

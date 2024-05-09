@@ -1,0 +1,32 @@
+<\contract\> 
+contract TokenSale {
+     uint public price;
+     address public tokenAddress;
+     address public owner;
+     mapping(address => uint) public balances;
+     
+     constructor(address _tokenAddress, uint _price) {
+         tokenAddress = _tokenAddress;
+         price = _price;
+         owner = msg.sender;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(msg.value == _amount * price, "Incorrect payment amount");
+         
+         balances[msg.sender] += _amount;
+         // Transfer tokens to buyer
+         ERC20(tokenAddress).transfer(msg.sender, _amount);
+     }
+
+     function withdrawEther() public {
+         require(msg.sender == owner, "Only owner can withdraw");
+         
+         payable(owner).transfer(address(this).balance);
+     }
+}
+<\contract\> 
+
+4) inconsistent state update
+6) cross bridge inconsistency
+14) incorrect visibility/ownership

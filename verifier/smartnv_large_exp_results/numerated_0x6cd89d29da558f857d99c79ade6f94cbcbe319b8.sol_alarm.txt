@@ -1,0 +1,36 @@
+<\analyzed_contract\>
+contract MultisigWallet {
+    address[] public owners;
+    mapping (address => bool) public isOwner;
+    uint public transactionCount;
+    mapping (uint => Transaction) public transactions;
+    
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    constructor(address[] memory _owners) {
+        owners = _owners;
+        for (uint i = 0; i < _owners.length; i++) {
+            isOwner[_owners[i]] = true;
+        }
+    }
+
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        require(isOwner[msg.sender], "Only owners can submit transactions");
+        transactions[transactionCount] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        Transaction storage txn = transactions[transactionId];
+        require(txn.executed == false, "Transaction already executed");
+        (bool success, ) = txn.destination.call{value: txn.value}(txn.data);
+        require(success, "Transaction execution failed");
+        txn.executed = true;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,31 @@
+<\contract\>
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public tokenBalances;
+
+    constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        require(tokenBalances[msg.sender] + _amount <= totalTokens, "Exceeds total tokens available");
+    
+        tokenBalances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        IERC20(tokenAddress).transfer(owner, tokenBalances[owner]);
+    }
+}
+<\contract\> 
+
+Output:
+- insufficient gas

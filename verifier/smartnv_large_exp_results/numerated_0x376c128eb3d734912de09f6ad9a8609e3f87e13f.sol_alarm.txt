@@ -1,0 +1,30 @@
+<\contract\> 
+contract VotingSystem {
+     address public admin;
+     mapping(address => bool) public voters;
+     uint public totalVotes;
+
+     constructor() {
+         admin = msg.sender;
+         totalVotes = 0;
+     }
+
+     function addVoter(address _voter) public {
+         require(msg.sender == admin, "only admin can add voter");
+         voters[_voter] = true;
+     }
+
+     function vote() public {
+         require(voters[msg.sender], "only registered voters can vote");
+         totalVotes++;
+     }
+
+     function endVoting() public {
+         require(msg.sender == admin, "only admin can end voting");
+         totalVotes = 0;
+     }
+}
+<\contract\> 
+
+<\output\>
+incorrect visibility/ownership

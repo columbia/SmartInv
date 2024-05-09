@@ -1,0 +1,22 @@
+The contract provided for analysis is:
+<\example_3\>
+contract TokenFarm {
+     IERC20 public token;
+     address public owner;
+
+     function deposit(uint amount) public {
+         require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+         token.transferFrom(msg.sender, address(this), amount);
+     }
+     function withdraw(uint amount) public {
+         require(token.balanceOf(address(this)) >= amount, "Insufficient balance");
+         token.transfer(msg.sender, amount);
+     }
+}
+<\example_3\>
+
+The potential vulnerabilities in the contract <\example_3\> are:
+1) Inconsistent state update: The contract doesn't properly update the state for the user's balance when depositing or withdrawing tokens.
+2) Incorrect visibility/ownership: The owner variable is public, which might expose the ownership details to all users.
+
+Therefore, the identified potential vulnerabilities in the contract <\example_3\> are inconsistent state update and incorrect visibility/ownership.

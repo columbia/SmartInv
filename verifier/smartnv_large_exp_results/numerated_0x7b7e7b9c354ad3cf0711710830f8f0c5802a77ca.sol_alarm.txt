@@ -1,0 +1,33 @@
+Contract provided for analysis:
+contract Insurance {
+    mapping(address => uint256) public policy;
+    address owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyPolicy(uint256 amount) public {
+        require(policy[msg.sender] == 0, "policy already exists");
+        policy[msg.sender] = amount;
+    }
+
+    function claimPolicy() public {
+        require(policy[msg.sender] > 0, "no policy exists");
+        // process claim logic
+        policy[msg.sender] = 0;
+    }
+
+    function cancelPolicy() public {
+        require(policy[msg.sender] > 0, "no policy exists");
+        policy[msg.sender] = 0;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "only owner can withdraw funds");
+        // logic to withdraw funds
+    }
+}
+output: potential vulnerabilities: 
+4) inconsistent state update
+8) reentrancy

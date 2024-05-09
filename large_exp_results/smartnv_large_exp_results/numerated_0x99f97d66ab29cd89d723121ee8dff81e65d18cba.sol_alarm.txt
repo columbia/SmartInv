@@ -1,0 +1,24 @@
+<\analyzed_contract\>
+contract Escrow {
+         address public seller;
+         address public buyer;
+         uint public price;
+         address public token;
+    
+         constructor(address _seller, address _buyer, uint _price, address _token) {
+              seller = _seller;
+              buyer = _buyer;
+              price = _price;
+              token = _token;
+         }
+    
+         function deposit(uint amount) public {
+              require(msg.sender == buyer, "Only buyer can deposit");
+              ERC20(token).transferFrom(buyer, address(this), amount);
+         }
+    
+         function release() public {
+              require(msg.sender == seller, "Only seller can release funds");
+              ERC20(token).transfer(seller, price);
+         }
+}

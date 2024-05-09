@@ -1,0 +1,25 @@
+<\contract\> 
+contract TokenSale {
+     address public tokenAddress;
+     address public owner;
+     uint public price;
+     mapping(address => uint) public balance;
+
+     constructor(address _tokenAddress, uint _price) public {
+         tokenAddress = _tokenAddress;
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(balance[msg.sender] + (_amount * price) >= balance[msg.sender], "integer overflow");
+         require(msg.value >= (_amount * price), "insufficient ether sent");
+         require(ERC20(tokenAddress).allowance(owner, address(this)) >= _amount, "allowance not set");
+         ERC20(tokenAddress).transferFrom(owner, msg.sender, _amount);
+         balance[msg.sender] += _amount * price;
+     }
+}
+Potential vulnerabilities: 
+1) integer overflow/underflow
+2) insufficient ether sent
+3) incorrect visibility/ownership

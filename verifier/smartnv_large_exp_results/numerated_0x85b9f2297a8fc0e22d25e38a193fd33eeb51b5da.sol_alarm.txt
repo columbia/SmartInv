@@ -1,0 +1,32 @@
+Contract: 
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    address public owner;
+    uint public totalVotes;
+    uint public totalVoters;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+        totalVoters++;
+    }
+
+    function resetVoting() public {
+        require(msg.sender == owner, "Only owner can reset");
+        
+        totalVotes = 0;
+        totalVoters = 0;
+    }
+}
+
+Output:
+- Incorrect visibility: The variables `totalVotes`, `totalVoters`, and `owner` are declared as public, which allows external contracts to read the state variables. It is recommended to use internal or private visibility based on the intended usage of the variables to prevent potential manipulation or unauthorized access.
+- Insufficient access control: The `resetVoting` function only checks if the caller is the owner but does not check for potential privilege escalation or unauthorized access. Adding additional access control checks or utilizing a more robust access control mechanism is advised to prevent unauthorized users from resetting the voting system.
+- ID uniqueness violation: There is no check for duplicate votes in the `vote` function, allowing the same address to vote multiple times. Implementing a mechanism to ensure unique voting rights for each address is essential to maintain the integrity of the voting system.

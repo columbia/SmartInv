@@ -1,0 +1,31 @@
+The contract provided for analysis:
+contract Lottery {
+         address public owner;
+         mapping(address => uint) public tickets;
+         uint public totalTickets;
+
+         constructor() {
+             owner = msg.sender;
+         }
+         function buyTicket(uint amount) public {
+             require(amount > 0, "Amount must be greater than 0");
+             IERC20 token = IERC20(0x123);
+             token.transferFrom(msg.sender, address(this), amount);
+             tickets[msg.sender] += amount;
+             totalTickets += amount;
+         }
+         function drawWinner() public {
+             require(msg.sender == owner, "Only owner can draw winner");
+             // Randomly select a winner
+             address winner = address(uint160(uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets));
+             IERC20 token = IERC20(0x123);
+             token.transfer(winner, totalTickets);
+             totalTickets = 0;
+         }
+     }
+
+Potential Vulnerabilities:
+1) privilege escalation
+2) inconsistent state update
+3) reentrancy
+4) incorrect visibility/ownership

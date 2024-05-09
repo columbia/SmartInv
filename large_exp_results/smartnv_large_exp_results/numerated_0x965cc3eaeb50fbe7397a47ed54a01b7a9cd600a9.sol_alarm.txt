@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract PaymentGateway {
+    address public owner;
+    mapping(address => uint256) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(address _to, uint256 _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_to] += _amount;
+    }
+
+    function withdrawPayment(address _to, uint256 _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        require(payments[_to] >= _amount, "Insufficient funds");
+        payments[_to] -= _amount;
+        payable(_to).transfer(_amount);
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership.

@@ -1,0 +1,27 @@
+Contract being analyzed:
+
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 endTime; 
+          uint256 voteCount; 
+          address proposer; 
+          }
+     address internal admin;
+     mapping(uint => Proposal) public proposals; 
+
+     function createProposal(uint _startTime, uint _endTime) public {
+          require(msg.sender != admin, "only admin can create proposals");
+          uint proposalId = proposals.length;
+          proposals[proposalId] = Proposal(_startTime, _endTime, 0, msg.sender);
+     }
+     
+     function vote(uint _proposalId) public {
+          require(msg.sender != proposals[_proposalId].proposer, "proposer cannot vote");
+          require(block.timestamp >= proposals[_proposalId].startTime && block.timestamp <= proposals[_proposalId].endTime, "voting period is over");
+          proposals[_proposalId].voteCount++;
+     }
+}
+Output: 
+1) privilege escalation
+2) incorrect visibility/ownership

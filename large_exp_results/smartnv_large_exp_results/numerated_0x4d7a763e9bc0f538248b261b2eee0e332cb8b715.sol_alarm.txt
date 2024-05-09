@@ -1,0 +1,36 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+       struct Voter {
+             uint256 votedProposals;
+             bool hasVoted;
+        }
+        mapping(address => Voter) public voters;
+        uint256 totalVotes;
+
+        function vote(uint256 proposalId) public {
+              require(!voters[msg.sender].hasVoted, "Already voted");
+              voters[msg.sender].hasVoted = true;
+              voters[msg.sender].votedProposals = proposalId;
+              totalVotes++;
+         }
+
+        function executeProposal() public {
+              require(totalVotes > 0, "No votes to execute proposal");
+              // execute proposal logic
+              totalVotes = 0;
+        }
+}
+
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update: The totalVotes variable is being updated without proper synchronization, potentially leading to an inconsistent state if multiple transactions occur simultaneously.
+
+2) ID uniqueness violation: There is no check for the uniqueness of the proposalId assigned to votedProposals, which could lead to issues if the same proposalId is assigned to multiple voters.
+
+3) Incorrect visibility/ownership: The voters mapping is public, allowing anyone to access and modify the data, which may not be intended. Consider using more restricted visibility levels such as private or internal.
+
+Therefore, the identified vulnerabilities in the contract are:
+- Inconsistent state update
+- ID uniqueness violation
+- Incorrect visibility/ownership

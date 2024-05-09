@@ -1,0 +1,7 @@
+The potential vulnerabilities in the given contract are:
+
+1) Inconsistent state update:
+- The execute function in the TimelockController contract updates the proposal.votedAmount by directly adding the input amount to it. This can lead to inconsistencies in the state if multiple executions happen concurrently, as the += operation is not atomic.
+
+2) Arithmetic flaw:
+- In the ExchangeTokens contract, the liquidate function performs a calculation using the getPrice() result that could result in an arithmetic flaw if not handled carefully.

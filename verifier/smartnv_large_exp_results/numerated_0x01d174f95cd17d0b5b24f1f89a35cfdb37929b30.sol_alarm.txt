@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract PaymentGateway {
+    address public owner;
+    mapping(address => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(address _recipient, uint _amount) external {
+        require(msg.sender == owner, "only owner can make payments");
+        payments[_recipient] += _amount;
+    }
+
+    function withdrawPayment() external {
+        uint amount = payments[msg.sender];
+        require(amount > 0, "no funds to withdraw");
+        payments[msg.sender] = 0;
+        bool success = msg.sender.send(amount);
+        require(success, "failed to send payment");
+    }
+}
+<\contract_to_analyze\>

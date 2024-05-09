@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) privilege escalation: the "startExecute" function allows any user to start a new proposal without proper permission checks or access control.
+2) inconsistent state update: in the "execute" function, the increment of "proposal.votedAmount" is not correctly updating the state of the contract, potentially leading to unexpected behavior.
+3) atomicity violation: the "execute" function transfers tokens and updates state variables without utilizing proper atomic operations, which may result in inconsistent state changes.
+4) reentrancy: there is a potential vulnerability to reentrancy attacks in the "endExecute" function, as the state variable "lockedFunds" is updated after executing external calls, opening the possibility for reentrancy exploits.
+5) incorrect visibility/ownership: the contract does not clearly define the visibility or ownership of certain variables and functions, which may lead to unexpected access or manipulation of critical contract data.

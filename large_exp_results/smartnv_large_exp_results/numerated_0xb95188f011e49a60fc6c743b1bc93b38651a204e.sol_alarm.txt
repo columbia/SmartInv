@@ -1,0 +1,17 @@
+<\contract_to_analyze\> 
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+
+         function bid() public payable {
+             require(msg.value > highestBid, "bid must be higher than current highest bid");
+             highestBidder.transfer(highestBid);
+             highestBidder = msg.sender;
+             highestBid = msg.value;
+         }
+}
+<\contract_to_analyze\> 
+
+The potential vulnerabilities in the contract Auction are:
+- Reentrancy: The transfer function is called before updating the highestBidder and highestBid values, which could allow a malicious bidder to call a fallback function in the highestBidder contract before the values are updated, leading to reentrancy attack.
+- Integer overflow/underflow: There is no protection against overflow or underflow when updating the highestBid value, which could lead to unexpected behavior if the value exceeds the maximum uint size.

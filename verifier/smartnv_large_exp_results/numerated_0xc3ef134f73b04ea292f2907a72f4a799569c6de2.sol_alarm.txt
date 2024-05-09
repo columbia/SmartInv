@@ -1,0 +1,30 @@
+<\contract\>
+contract TokenSale {
+    mapping(address => uint) public balances;
+    uint public salePrice;
+    address public owner;
+
+    constructor(uint _salePrice) {
+        owner = msg.sender;
+        salePrice = _salePrice;
+    }
+
+    function buyTokens(uint amount) public {
+        uint totalPrice = amount * salePrice;
+        require(msg.value >= totalPrice, "Insufficient funds provided");
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        (bool success,) = msg.sender.call{value: amount * salePrice}("");
+        require(success, "Transfer failed");
+    }
+
+    function setSalePrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only the owner can set the sale price");
+        salePrice = _newPrice;
+    }
+}
+<\contract\>

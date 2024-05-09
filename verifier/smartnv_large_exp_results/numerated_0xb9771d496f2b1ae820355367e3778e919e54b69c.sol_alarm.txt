@@ -1,0 +1,29 @@
+<\Analyzing_contract\> 
+contract SupplyChain {
+    uint public totalItems;
+    mapping(uint => Item) public items;
+    
+    struct Item {
+        uint itemId;
+        string itemName;
+        uint price;
+        address owner;
+    }
+    
+    function addItem(uint _itemId, string memory _itemName, uint _price) public {
+        Item memory newItem = Item(_itemId, _itemName, _price, msg.sender);
+        items[totalItems] = newItem;
+        totalItems++;
+    }
+    
+    function purchaseItem(uint _itemId) public payable {
+        require(items[_itemId].price == msg.value, "Incorrect payment amount");
+        items[_itemId].owner = msg.sender;
+    }
+    
+    function updatePrice(uint _itemId, uint _newPrice) public {
+        require(items[_itemId].owner == msg.sender, "Only the owner can update the price");
+        items[_itemId].price = _newPrice;
+    }
+}
+<\Analyzing_contract\>

@@ -1,0 +1,22 @@
+<\Your_Contract\>
+contract VotingSystem {
+     uint public totalVotes;
+     mapping(address => bool) public hasVoted;
+
+     function vote() public {
+         require(!hasVoted[msg.sender], "You have already voted");
+         totalVotes++;
+         hasVoted[msg.sender] = true;
+     }
+
+     function changeVote() public {
+         require(hasVoted[msg.sender], "You have not voted yet");
+         totalVotes--;
+         hasVoted[msg.sender] = false;
+     }
+}
+<\Your_Contract\> 
+
+Vulnerabilities:
+- ID uniqueness violation: There is no check for unique voter identification, which may allow multiple votes from the same address.
+- Inconsistent state update: The totalVotes count may become negative if changeVote is called multiple times without voting first.

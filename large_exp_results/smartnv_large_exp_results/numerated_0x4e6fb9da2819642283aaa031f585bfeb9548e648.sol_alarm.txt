@@ -1,0 +1,11 @@
+This contract contains the following potential vulnerabilities:
+
+1) Inconsistent state update: The function startExecute updates the state of the proposal by setting proposal.sTime and proposal.addr without properly checking if an existing proposal is on-going or not.
+
+2) Insufficient gas: The execute function may consume a significant amount of gas if the execution process involves a large number of token transfers, which could potentially lead to out-of-gas errors.
+
+3) Incorrect visibility/ownership: The ownership and visibility of certain variables and functions are not clearly specified, which could lead to unauthorized access or manipulation of critical data and functions.
+
+4) Atomicity violation: The execute function updates the votedAmount field of the proposal struct without using any locking mechanism, potentially leading to race conditions and inconsistent data updates.
+
+5) Integer overflow/underflow: There is a possibility of integer overflow in the calculatePrice function if the balance of USDC or WETH tokens exceeds the maximum uint value, leading to unexpected behavior.

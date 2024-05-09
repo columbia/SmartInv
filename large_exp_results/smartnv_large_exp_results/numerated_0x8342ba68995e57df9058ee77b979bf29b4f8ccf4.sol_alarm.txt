@@ -1,0 +1,17 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     mapping(address => uint) public votes;
+     
+     function vote(uint _amount) public {
+         votes[msg.sender] += _amount;
+     }
+     
+     function getTotalVotes() public view returns(uint) {
+         uint total = 0;
+         for (uint i = 0; i < votes.length; i++) {
+             total += votes[i];
+         }
+         return total;
+     }
+}
+<\contract_to_analyze\>

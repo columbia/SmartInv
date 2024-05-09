@@ -1,0 +1,307 @@
+1 pragma solidity ^0.4.24;
+2 
+3 contract Ownable {}
+4 contract AddressesFilterFeature is Ownable {}
+5 contract ERC20Basic {}
+6 contract BasicToken is ERC20Basic {}
+7 contract ERC20 {}
+8 contract StandardToken is ERC20, BasicToken {}
+9 contract MintableToken is AddressesFilterFeature, StandardToken {}
+10 
+11 contract Token is MintableToken {
+12   function mint(address, uint256) public returns (bool);
+13 }
+14 
+15 contract SixthBountyWPTpayoutPart02 {
+16   //storage
+17   address public owner;
+18   Token public company_token;
+19   address[] public addressOfBountyMembers;
+20   mapping(address => uint256) bountyMembersAmounts;
+21   uint currentBatch;
+22   uint addrPerStep;
+23 
+24   //modifiers
+25   modifier onlyOwner
+26   {
+27     require(owner == msg.sender);
+28     _;
+29   }
+30   
+31   
+32   //Events
+33   event Transfer(address indexed to, uint indexed value);
+34   event OwnerChanged(address indexed owner);
+35 
+36 
+37   //constructor
+38   constructor (Token _company_token) public {
+39     owner = msg.sender;
+40     company_token = _company_token;
+41     currentBatch = 0;
+42     addrPerStep = 25;
+43     setBountyAddresses();
+44     setBountyAmounts();
+45   }
+46 
+47 
+48   /// @dev Fallback function: don't accept ETH
+49   function()
+50     public
+51     payable
+52   {
+53     revert();
+54   }
+55 
+56   function setCountPerStep(uint _newValue) public onlyOwner {
+57 	addrPerStep = _newValue;
+58   }
+59 
+60   function setOwner(address _owner) 
+61     public 
+62     onlyOwner 
+63   {
+64     require(_owner != 0);
+65     
+66     owner = _owner;
+67     emit OwnerChanged(owner);
+68   }
+69 
+70   
+71   
+72   function makePayout() public onlyOwner {
+73     uint startIndex = currentBatch * addrPerStep;
+74     uint endIndex = (currentBatch + 1 ) * addrPerStep;
+75     for (uint i = startIndex; (i < endIndex && i < addressOfBountyMembers.length); i++)
+76     {
+77       company_token.mint(addressOfBountyMembers[i], bountyMembersAmounts[addressOfBountyMembers[i]]);
+78     }
+79     currentBatch++;
+80   }
+81 
+82   function setBountyAddresses() internal {
+83     addressOfBountyMembers.push(0x593699bd16480a398dfc5cbbc455dce627f156cb);
+84     addressOfBountyMembers.push(0x5B367be9bfD87391aCA778abcA4105A7A8C70616);
+85     addressOfBountyMembers.push(0x5cad022750b4f37730819c04bccc5aa828b445f6);
+86     addressOfBountyMembers.push(0x5cC19cfF6D3030303118925576Df83D4AA7A602C);
+87     addressOfBountyMembers.push(0x5e4B80c8EFF9D6f1eF6B3c46472EFf6A1CAd7fd4);
+88     addressOfBountyMembers.push(0x5FF1084C4AC881a86AE8CdfFF08FF0a846e56489);
+89     addressOfBountyMembers.push(0x632de0e68779CEc7E2dc3a336F89Da0618a03fdC);
+90     addressOfBountyMembers.push(0x63515D455393dDc5F8F321dd084d1bd000545573);
+91     addressOfBountyMembers.push(0x642c055FF4eDC984216a613a88E22c8f8fa8aB33);
+92     addressOfBountyMembers.push(0x6621159d53251c145e030ADeDF1B6e10f3E85DdA);
+93     addressOfBountyMembers.push(0x663942E76762d75d3fA47242A7C9D133005cf7e7);
+94     addressOfBountyMembers.push(0x66f2A3cf344fD0f4F987C341c774452B753fE684);
+95     addressOfBountyMembers.push(0x671BDddd4d5696868ccDEec369f69A4D653e81eD);
+96     addressOfBountyMembers.push(0x675491b1b3f70ee5e7e1a3ae4dd27dc6a8a91425);
+97     addressOfBountyMembers.push(0x69E56d1E036c74f1F31cdDDEC09D7085D49b2947);
+98     addressOfBountyMembers.push(0x6ae322828E573f06695Ac0E39490A9bd31B6498F);
+99     addressOfBountyMembers.push(0x6b72DB853D72B473Bed7AaBddA8ab90BFD4558eB);
+100     addressOfBountyMembers.push(0x6bfb350FcbE780bA6b18314Df92d886C01d74c6e);
+101     addressOfBountyMembers.push(0x6C0844F2737bB5986E3c95e89CcC2928bAc4702A);
+102     addressOfBountyMembers.push(0x6cB67CC2540541AF4633E195e2970956a815e720);
+103     addressOfBountyMembers.push(0x6Cd5Be6cAe6a37D3500E224117E93369928d51b0);
+104     addressOfBountyMembers.push(0x6d9fd31D93C7e4B43250e3E3D181c4393ce2cB99);
+105     addressOfBountyMembers.push(0x6E82fbC3AAAAF22E517842AEfdf957317386C537);
+106     addressOfBountyMembers.push(0x6e9c261D10575c87fE8724c54ccD26e59F77101a);
+107     addressOfBountyMembers.push(0x6eA012B7E536E51CF9149609Df775FadEf263b19);
+108     addressOfBountyMembers.push(0x71f51E7455B26D7C70467Cddfc5153Ca53a58CCb);
+109     addressOfBountyMembers.push(0x72Bf7B0ef8e2753493B22A1B6492359e432F819B);
+110     addressOfBountyMembers.push(0x72fF7EB7100cc0AdA5B114E1c78Cab287F44aB30);
+111     addressOfBountyMembers.push(0x733FF886E1B196e2Bd38829043efFE0971220479);
+112     addressOfBountyMembers.push(0x77d00c9F51669d5D5615f8902C9c3534c9ED8967);
+113     addressOfBountyMembers.push(0x78E934eBd3d7Fa0D703eb101baD0261dC0973238);
+114     addressOfBountyMembers.push(0x791Ab7014A7AD2892a55298CFEdd9A48c7Bc687D);
+115     addressOfBountyMembers.push(0x793a9F8b936AD8a66e018F6f62be9A235cDb3FfF);
+116     addressOfBountyMembers.push(0x7A791EFb0749e2B1B5f3EfD5588f04cF21265678);
+117     addressOfBountyMembers.push(0x7ba18657684d37053f9d84b305785d1c26b0c28d);
+118     addressOfBountyMembers.push(0x7bD19eBbA137BdFD4a55815AfAD06094030a680A);
+119     addressOfBountyMembers.push(0x7C2627Ac3c081e2Ac8d3aC2207B329003EddEAC0);
+120     addressOfBountyMembers.push(0x7ce5E965068c73f9F89e3c8C244666FB5cee3B60);
+121     addressOfBountyMembers.push(0x7De09DD2Ad9cdFe1143aabFD94106b7C1e4cB8cd);
+122     addressOfBountyMembers.push(0x7e0d6F45346539E08054B1fC49d03F5e3002d13A);
+123     addressOfBountyMembers.push(0x7e1F1bD14DCbcCAf268BFd067018812Da4cA4d5F);
+124     addressOfBountyMembers.push(0x7e5CeBeE3C4bEF1f2aa6ad06C9a9C4A5BfB5A74e);
+125     addressOfBountyMembers.push(0x7ed9916dd87032e998ced31d435d2971c9ce4e45);
+126     addressOfBountyMembers.push(0x7f500f8561f8282903f73663c57242b8feaF3572);
+127     addressOfBountyMembers.push(0x7FBD6d575142959c842BD5D590261F955a86E936);
+128     addressOfBountyMembers.push(0x80476f7A837aeA5619Ef7f7f38218A933F3DA572);
+129     addressOfBountyMembers.push(0x806403646EBF5503361aA6A84c70EfCd4C71678e);
+130     addressOfBountyMembers.push(0x80B832CA39D0be75b17b0194DCAB400D0a75C97f);
+131     addressOfBountyMembers.push(0x8178DD2579aC4059d76c745c263a9Dbc405BFb0c);
+132     addressOfBountyMembers.push(0x829d4C463D09B786Db8E22cB6Fda3a750C621a83);
+133     addressOfBountyMembers.push(0x82AF599aE8a62842dA38be6E5d4b14cD5882bddb);
+134     addressOfBountyMembers.push(0x82F383AD178C43F1a27B947432f43af8851798AA);
+135     addressOfBountyMembers.push(0x834997EEAD7B42445fc7A8e8c2139C8263e74b4E);
+136     addressOfBountyMembers.push(0x8556364917c9b36Cf2046f136604AA7193E696a9);
+137     addressOfBountyMembers.push(0x86f7FE5486E224108899f19A7094a5908EF2EffF);
+138     addressOfBountyMembers.push(0x8876DCD446beF809408b06746a1d2bd98a4db8c7);
+139     addressOfBountyMembers.push(0x89add593581d22c7e8690b15f6a4f1c738b4a3d1);
+140     addressOfBountyMembers.push(0x8BAB0aC53F3604b9dA57EA81Ad3cb2320CCF71b0);
+141     addressOfBountyMembers.push(0x8d3Ad35453104F55649fe5c0446005622b0A610e);
+142     addressOfBountyMembers.push(0x8ea28df1858D905dc25918357c5654301489F285);
+143     addressOfBountyMembers.push(0x8f6f9a2BA2130989F51D08138bfb72c4bfe873bd);
+144     addressOfBountyMembers.push(0x8Fb806f314D4853cD32a7Ca445870DC4dAD27993);
+145     addressOfBountyMembers.push(0x903e83be4592c4E30018eAB394d834026a89C26b);
+146     addressOfBountyMembers.push(0x907A577bC365Bf73c0429d5F2C4FB939517aDEbb);
+147     addressOfBountyMembers.push(0x9138d2a99b47fF2A98927fEBF620C622939a6E66);
+148     addressOfBountyMembers.push(0x9193eD9cbf94D109667c3D5659CafFe21b4197Bc);
+149     addressOfBountyMembers.push(0x93744bcc687bb217e6b55d8fcbcb0e92ddff4569);
+150     addressOfBountyMembers.push(0x94c30dBB7EA6df4FCAd8c8864Edfc9c59cB8Db14);
+151     addressOfBountyMembers.push(0x9624fb11531aa9352f301caa822f951f433e89a7);
+152     addressOfBountyMembers.push(0x96305fFC2C0E586c31aA28f2b76615D78CAB403c);
+153     addressOfBountyMembers.push(0x9674b04fcdff254b8c641cf79f44d2a5a8bddd2c);
+154     addressOfBountyMembers.push(0x96923a2a08089C16FfC588cfe57CB37842332D91);
+155     addressOfBountyMembers.push(0x96cCF043C91055d17461239A0872CD72aA1fD269);
+156     addressOfBountyMembers.push(0x972978353E8054e4CfF24dd7348ea2B2ec768d55);
+157     addressOfBountyMembers.push(0x98503A0114C0D6c6826dE2A9679a6E9f6DdC4a1f);
+158     addressOfBountyMembers.push(0x98A031B94A1857757b9E1f024cAb37B165EB3945);
+159     addressOfBountyMembers.push(0x99B0DAc5a9C03C38E61778acc99a392DAb760975);
+160     addressOfBountyMembers.push(0x9aA5cfa67d7E6c5Dd5F7c0D9d96636ae6adEE91c);
+161     addressOfBountyMembers.push(0x9CF3D0264cE6b49c854411FE23BB89179878AE3B);
+162     addressOfBountyMembers.push(0x9D1fc2DD56A9a318c3FAc488C1Fa1df25247B779);
+163     addressOfBountyMembers.push(0x9d2386eA6FF3FE82Cdc2EcceAE033bbA9347545a);
+164     addressOfBountyMembers.push(0x9D71EB0B6d716e8a12f2e895E6021B68846c0a6f);
+165     addressOfBountyMembers.push(0x9d9a53525F75bdB7AaBE33a4F6817e49d041348d);
+166     addressOfBountyMembers.push(0x9Ea2131Fb37dDF32aECb38219e84D4E2946585bf);
+167     addressOfBountyMembers.push(0x9eE59c11458D564f83c056aF679da378a1f990a2);
+168     addressOfBountyMembers.push(0x9ffcF2A3cC2663fb605620778573cc99AA924Cee);
+169     addressOfBountyMembers.push(0xA1e906c4910857C9c48cDcb404c81DAe87fCA460);
+170     addressOfBountyMembers.push(0xa2A60167389B6B3a68a375f3EA7232ED5218e1eE);
+171     addressOfBountyMembers.push(0xA33040835975F17E6D68F3BE3ccd46327dC35027);
+172     addressOfBountyMembers.push(0xA3bEE330Bc1C26699C332B4a816b8D2995B48A33);
+173     addressOfBountyMembers.push(0xA56FE8f2704aE10668e71106F5f21BCd5bAdc37F);
+174     addressOfBountyMembers.push(0xA577A90D8C8F4d6a928AdB4693B735002C2Ab314);
+175     addressOfBountyMembers.push(0xA6e152d33b48Fc8D5bb24Bf1bC4dE61928903657);
+176     addressOfBountyMembers.push(0xa86A37054550a30003c06D0027ea4A567322AAB8);
+177     addressOfBountyMembers.push(0xa887218360933fc94297ad6baeA5ccEf48Bf4Fac);
+178     addressOfBountyMembers.push(0xa8c73ee57c268872b9d2d7a90e5f2e31af8493fb);
+179     addressOfBountyMembers.push(0xa8D815a9aF99d9b68EC9F127274d9Ba844B2b95C);
+180     addressOfBountyMembers.push(0xA9E261F0fb6e1B895376c9010CF116a8470Eff58);
+181     addressOfBountyMembers.push(0xAA7f6eB4EAB1d514C292Ae0eCcECd9FccA21c280);
+182     addressOfBountyMembers.push(0xab3Dc75A6F90a5cA18dd2e8e8E8F06044567c0AC);
+183     addressOfBountyMembers.push(0xab71B03091c6f03a85B4cf61580cbca29c0bb889);
+184     addressOfBountyMembers.push(0xabCf615E500F26A31c5FB392C2558aC0B8e7Cb30);
+185     addressOfBountyMembers.push(0xAc042A8E61fBa338011508625E9416Bf1e4e6922);
+186     addressOfBountyMembers.push(0xac4c9c0d2931Fa5e29Baafbcaf4e5dB1cE8A1758);
+187     addressOfBountyMembers.push(0xaD1c78a822c8244D40DdA29407286c30cF5402d4);
+188     addressOfBountyMembers.push(0xae3fAAe6E6b380baa8839201C6EA13EF409f4151);
+189     addressOfBountyMembers.push(0xafcA10C2c2aDEE754b670a5A647ED2D788d1E2FC);
+190     addressOfBountyMembers.push(0xb03243Ac0E3F9f8a3Ff7D09F394a91214Cbb0f4E);
+191     addressOfBountyMembers.push(0xB28A5c7b8AbC65c67E36bA61C1961b971EbC0d7f);
+192     addressOfBountyMembers.push(0xB2C92bc929c28e6812E7E74dA3DDa6b529bFbCFc);
+193   }
+194 
+195   function setBountyAmounts() internal { 
+196     bountyMembersAmounts[0x593699bd16480a398dfc5cbbc455dce627f156cb] =  113000000000000000000;
+197     bountyMembersAmounts[0x5B367be9bfD87391aCA778abcA4105A7A8C70616] = 1671000000000000000000;
+198     bountyMembersAmounts[0x5cad022750b4f37730819c04bccc5aa828b445f6] =  250000000000000000000;
+199     bountyMembersAmounts[0x5cC19cfF6D3030303118925576Df83D4AA7A602C] =  109000000000000000000;
+200     bountyMembersAmounts[0x5e4B80c8EFF9D6f1eF6B3c46472EFf6A1CAd7fd4] =  114000000000000000000;
+201     bountyMembersAmounts[0x5FF1084C4AC881a86AE8CdfFF08FF0a846e56489] =  197000000000000000000;
+202     bountyMembersAmounts[0x632de0e68779CEc7E2dc3a336F89Da0618a03fdC] =  276000000000000000000;
+203     bountyMembersAmounts[0x63515D455393dDc5F8F321dd084d1bd000545573] =  200000000000000000000;
+204     bountyMembersAmounts[0x642c055FF4eDC984216a613a88E22c8f8fa8aB33] =  172000000000000000000;
+205     bountyMembersAmounts[0x6621159d53251c145e030ADeDF1B6e10f3E85DdA] =  184000000000000000000;
+206     bountyMembersAmounts[0x663942E76762d75d3fA47242A7C9D133005cf7e7] =  170000000000000000000;
+207     bountyMembersAmounts[0x66f2A3cf344fD0f4F987C341c774452B753fE684] =  210000000000000000000;
+208     bountyMembersAmounts[0x671BDddd4d5696868ccDEec369f69A4D653e81eD] =  202000000000000000000;
+209     bountyMembersAmounts[0x675491b1b3f70ee5e7e1a3ae4dd27dc6a8a91425] =  173000000000000000000;
+210     bountyMembersAmounts[0x69E56d1E036c74f1F31cdDDEC09D7085D49b2947] =  125000000000000000000;
+211     bountyMembersAmounts[0x6ae322828E573f06695Ac0E39490A9bd31B6498F] =  254000000000000000000;
+212     bountyMembersAmounts[0x6b72DB853D72B473Bed7AaBddA8ab90BFD4558eB] =  150000000000000000000;
+213     bountyMembersAmounts[0x6bfb350FcbE780bA6b18314Df92d886C01d74c6e] =  127000000000000000000;
+214     bountyMembersAmounts[0x6C0844F2737bB5986E3c95e89CcC2928bAc4702A] =  106000000000000000000;
+215     bountyMembersAmounts[0x6cB67CC2540541AF4633E195e2970956a815e720] =  100000000000000000000;
+216     bountyMembersAmounts[0x6Cd5Be6cAe6a37D3500E224117E93369928d51b0] =  136000000000000000000;
+217     bountyMembersAmounts[0x6d9fd31D93C7e4B43250e3E3D181c4393ce2cB99] =  272000000000000000000;
+218     bountyMembersAmounts[0x6E82fbC3AAAAF22E517842AEfdf957317386C537] =  100000000000000000000;
+219     bountyMembersAmounts[0x6e9c261D10575c87fE8724c54ccD26e59F77101a] =  808000000000000000000;
+220     bountyMembersAmounts[0x6eA012B7E536E51CF9149609Df775FadEf263b19] =  274000000000000000000;
+221     bountyMembersAmounts[0x71f51E7455B26D7C70467Cddfc5153Ca53a58CCb] =  167000000000000000000;
+222     bountyMembersAmounts[0x72Bf7B0ef8e2753493B22A1B6492359e432F819B] =  249000000000000000000;
+223     bountyMembersAmounts[0x72fF7EB7100cc0AdA5B114E1c78Cab287F44aB30] =  100000000000000000000;
+224     bountyMembersAmounts[0x733FF886E1B196e2Bd38829043efFE0971220479] =  118000000000000000000;
+225     bountyMembersAmounts[0x77d00c9F51669d5D5615f8902C9c3534c9ED8967] =  100000000000000000000;
+226     bountyMembersAmounts[0x78E934eBd3d7Fa0D703eb101baD0261dC0973238] =  261000000000000000000;
+227     bountyMembersAmounts[0x791Ab7014A7AD2892a55298CFEdd9A48c7Bc687D] =  159000000000000000000;
+228     bountyMembersAmounts[0x793a9F8b936AD8a66e018F6f62be9A235cDb3FfF] =  142000000000000000000;
+229     bountyMembersAmounts[0x7A791EFb0749e2B1B5f3EfD5588f04cF21265678] =  100000000000000000000;
+230     bountyMembersAmounts[0x7ba18657684d37053f9d84b305785d1c26b0c28d] =  328000000000000000000;
+231     bountyMembersAmounts[0x7bD19eBbA137BdFD4a55815AfAD06094030a680A] =  109000000000000000000;
+232     bountyMembersAmounts[0x7C2627Ac3c081e2Ac8d3aC2207B329003EddEAC0] =  154000000000000000000;
+233     bountyMembersAmounts[0x7ce5E965068c73f9F89e3c8C244666FB5cee3B60] =  100000000000000000000;
+234     bountyMembersAmounts[0x7De09DD2Ad9cdFe1143aabFD94106b7C1e4cB8cd] =  268000000000000000000;
+235     bountyMembersAmounts[0x7e0d6F45346539E08054B1fC49d03F5e3002d13A] =  243000000000000000000;
+236     bountyMembersAmounts[0x7e1F1bD14DCbcCAf268BFd067018812Da4cA4d5F] =  104000000000000000000;
+237     bountyMembersAmounts[0x7e5CeBeE3C4bEF1f2aa6ad06C9a9C4A5BfB5A74e] =  180000000000000000000;
+238     bountyMembersAmounts[0x7ed9916dd87032e998ced31d435d2971c9ce4e45] =  132000000000000000000;
+239     bountyMembersAmounts[0x7f500f8561f8282903f73663c57242b8feaF3572] =  310000000000000000000;
+240     bountyMembersAmounts[0x7FBD6d575142959c842BD5D590261F955a86E936] =  104000000000000000000;
+241     bountyMembersAmounts[0x80476f7A837aeA5619Ef7f7f38218A933F3DA572] =  153000000000000000000;
+242     bountyMembersAmounts[0x806403646EBF5503361aA6A84c70EfCd4C71678e] =  100000000000000000000;
+243     bountyMembersAmounts[0x80B832CA39D0be75b17b0194DCAB400D0a75C97f] =  200000000000000000000;
+244     bountyMembersAmounts[0x8178DD2579aC4059d76c745c263a9Dbc405BFb0c] =  220000000000000000000;
+245     bountyMembersAmounts[0x829d4C463D09B786Db8E22cB6Fda3a750C621a83] =  123000000000000000000;
+246     bountyMembersAmounts[0x82AF599aE8a62842dA38be6E5d4b14cD5882bddb] =  132000000000000000000;
+247     bountyMembersAmounts[0x82F383AD178C43F1a27B947432f43af8851798AA] =  105000000000000000000;
+248     bountyMembersAmounts[0x834997EEAD7B42445fc7A8e8c2139C8263e74b4E] =  104000000000000000000;
+249     bountyMembersAmounts[0x8556364917c9b36Cf2046f136604AA7193E696a9] =  117000000000000000000;
+250     bountyMembersAmounts[0x86f7FE5486E224108899f19A7094a5908EF2EffF] =  100000000000000000000;
+251     bountyMembersAmounts[0x8876DCD446beF809408b06746a1d2bd98a4db8c7] =  162000000000000000000;
+252     bountyMembersAmounts[0x89add593581d22c7e8690b15f6a4f1c738b4a3d1] =  200000000000000000000;
+253     bountyMembersAmounts[0x8BAB0aC53F3604b9dA57EA81Ad3cb2320CCF71b0] =  118000000000000000000;
+254     bountyMembersAmounts[0x8d3Ad35453104F55649fe5c0446005622b0A610e] =  214000000000000000000;
+255     bountyMembersAmounts[0x8ea28df1858D905dc25918357c5654301489F285] =  284000000000000000000;
+256     bountyMembersAmounts[0x8f6f9a2BA2130989F51D08138bfb72c4bfe873bd] =  117000000000000000000;
+257     bountyMembersAmounts[0x8Fb806f314D4853cD32a7Ca445870DC4dAD27993] =  108000000000000000000;
+258     bountyMembersAmounts[0x903e83be4592c4E30018eAB394d834026a89C26b] =  184000000000000000000;
+259     bountyMembersAmounts[0x907A577bC365Bf73c0429d5F2C4FB939517aDEbb] =  108000000000000000000;
+260     bountyMembersAmounts[0x9138d2a99b47fF2A98927fEBF620C622939a6E66] =  204000000000000000000;
+261     bountyMembersAmounts[0x9193eD9cbf94D109667c3D5659CafFe21b4197Bc] =  208000000000000000000;
+262     bountyMembersAmounts[0x93744bcc687bb217e6b55d8fcbcb0e92ddff4569] =  205000000000000000000;
+263     bountyMembersAmounts[0x94c30dBB7EA6df4FCAd8c8864Edfc9c59cB8Db14] =  114000000000000000000;
+264     bountyMembersAmounts[0x9624fb11531aa9352f301caa822f951f433e89a7] =  151000000000000000000;
+265     bountyMembersAmounts[0x96305fFC2C0E586c31aA28f2b76615D78CAB403c] =  107000000000000000000;
+266     bountyMembersAmounts[0x9674b04fcdff254b8c641cf79f44d2a5a8bddd2c] =  111000000000000000000;
+267     bountyMembersAmounts[0x96923a2a08089C16FfC588cfe57CB37842332D91] =  178000000000000000000;
+268     bountyMembersAmounts[0x96cCF043C91055d17461239A0872CD72aA1fD269] =  115000000000000000000;
+269     bountyMembersAmounts[0x972978353E8054e4CfF24dd7348ea2B2ec768d55] =  329000000000000000000;
+270     bountyMembersAmounts[0x98503A0114C0D6c6826dE2A9679a6E9f6DdC4a1f] =  231000000000000000000;
+271     bountyMembersAmounts[0x98A031B94A1857757b9E1f024cAb37B165EB3945] =  104000000000000000000;
+272     bountyMembersAmounts[0x99B0DAc5a9C03C38E61778acc99a392DAb760975] =  140000000000000000000;
+273     bountyMembersAmounts[0x9aA5cfa67d7E6c5Dd5F7c0D9d96636ae6adEE91c] =  104000000000000000000;
+274     bountyMembersAmounts[0x9CF3D0264cE6b49c854411FE23BB89179878AE3B] =  115000000000000000000;
+275     bountyMembersAmounts[0x9D1fc2DD56A9a318c3FAc488C1Fa1df25247B779] =  120000000000000000000;
+276     bountyMembersAmounts[0x9d2386eA6FF3FE82Cdc2EcceAE033bbA9347545a] =  171000000000000000000;
+277     bountyMembersAmounts[0x9D71EB0B6d716e8a12f2e895E6021B68846c0a6f] =  111000000000000000000;
+278     bountyMembersAmounts[0x9d9a53525F75bdB7AaBE33a4F6817e49d041348d] =  100000000000000000000;
+279     bountyMembersAmounts[0x9Ea2131Fb37dDF32aECb38219e84D4E2946585bf] =  193000000000000000000;
+280     bountyMembersAmounts[0x9eE59c11458D564f83c056aF679da378a1f990a2] =  174000000000000000000;
+281     bountyMembersAmounts[0x9ffcF2A3cC2663fb605620778573cc99AA924Cee] =  130000000000000000000;
+282     bountyMembersAmounts[0xA1e906c4910857C9c48cDcb404c81DAe87fCA460] =  142000000000000000000;
+283     bountyMembersAmounts[0xa2A60167389B6B3a68a375f3EA7232ED5218e1eE] =  179000000000000000000;
+284     bountyMembersAmounts[0xA33040835975F17E6D68F3BE3ccd46327dC35027] =  105000000000000000000;
+285     bountyMembersAmounts[0xA3bEE330Bc1C26699C332B4a816b8D2995B48A33] =  114000000000000000000;
+286     bountyMembersAmounts[0xA56FE8f2704aE10668e71106F5f21BCd5bAdc37F] =  180000000000000000000;
+287     bountyMembersAmounts[0xA577A90D8C8F4d6a928AdB4693B735002C2Ab314] =  100000000000000000000;
+288     bountyMembersAmounts[0xA6e152d33b48Fc8D5bb24Bf1bC4dE61928903657] =  200000000000000000000;
+289     bountyMembersAmounts[0xa86A37054550a30003c06D0027ea4A567322AAB8] =  163000000000000000000;
+290     bountyMembersAmounts[0xa887218360933fc94297ad6baeA5ccEf48Bf4Fac] =  129000000000000000000;
+291     bountyMembersAmounts[0xa8c73ee57c268872b9d2d7a90e5f2e31af8493fb] =  102000000000000000000;
+292     bountyMembersAmounts[0xa8D815a9aF99d9b68EC9F127274d9Ba844B2b95C] =  129000000000000000000;
+293     bountyMembersAmounts[0xA9E261F0fb6e1B895376c9010CF116a8470Eff58] =  100000000000000000000;
+294     bountyMembersAmounts[0xAA7f6eB4EAB1d514C292Ae0eCcECd9FccA21c280] =  148000000000000000000;
+295     bountyMembersAmounts[0xab3Dc75A6F90a5cA18dd2e8e8E8F06044567c0AC] =  141000000000000000000;
+296     bountyMembersAmounts[0xab71B03091c6f03a85B4cf61580cbca29c0bb889] =  100000000000000000000;
+297     bountyMembersAmounts[0xabCf615E500F26A31c5FB392C2558aC0B8e7Cb30] =  134000000000000000000;
+298     bountyMembersAmounts[0xAc042A8E61fBa338011508625E9416Bf1e4e6922] =  162000000000000000000;
+299     bountyMembersAmounts[0xac4c9c0d2931Fa5e29Baafbcaf4e5dB1cE8A1758] =  166000000000000000000;
+300     bountyMembersAmounts[0xaD1c78a822c8244D40DdA29407286c30cF5402d4] =  105000000000000000000;
+301     bountyMembersAmounts[0xae3fAAe6E6b380baa8839201C6EA13EF409f4151] =  146000000000000000000;
+302     bountyMembersAmounts[0xafcA10C2c2aDEE754b670a5A647ED2D788d1E2FC] =  386000000000000000000;
+303     bountyMembersAmounts[0xb03243Ac0E3F9f8a3Ff7D09F394a91214Cbb0f4E] =  122000000000000000000;
+304     bountyMembersAmounts[0xB28A5c7b8AbC65c67E36bA61C1961b971EbC0d7f] =  122000000000000000000;
+305     bountyMembersAmounts[0xB2C92bc929c28e6812E7E74dA3DDa6b529bFbCFc] =  114000000000000000000;
+306   } 
+307 }

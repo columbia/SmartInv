@@ -1,0 +1,20 @@
+<\contract\> 
+contract Marketplace {
+    mapping(uint256 => address) public items;
+    uint256 public itemCount;
+
+    function addItem(address _item) public {
+        items[itemCount] = _item;
+        itemCount++;
+    }
+
+    function buyItem(uint256 _itemId) public payable {
+        address itemAddress = items[_itemId];
+        require(itemAddress != address(0), "Item does not exist");
+        // Code to transfer payment to item owner
+        payable(itemAddress).transfer(msg.value);
+        // Code to remove item from mapping
+        delete items[_itemId]; 
+    }
+}
+<\contract\>

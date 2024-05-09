@@ -1,0 +1,19 @@
+<\contract\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        require(msg.sender != highestBidder, "You are already the highest bidder");
+
+        highestBidder.transfer(highestBid); 
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+4) inconsistent state update
+9) integer overflow/underflow

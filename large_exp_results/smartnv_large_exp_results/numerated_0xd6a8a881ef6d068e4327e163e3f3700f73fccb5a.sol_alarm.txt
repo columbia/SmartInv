@@ -1,0 +1,42 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+         struct Voter {
+             uint weight; 
+             bool voted; 
+             address delegate; 
+             uint vote; 
+         }
+         address public chairPerson;
+         mapping(address => Voter) public voters;
+         uint[] public proposals;
+
+         constructor() {
+             chairPerson = msg.sender;
+             voters[chairPerson].weight = 1;
+         }
+
+         function delegate(address to) public {
+             require(msg.sender != chairPerson, "Chairperson cannot delegate");
+             require(voters[to].voted == false, "Delegate has already voted");
+             voters[msg.sender].delegate = to;
+         }
+
+         function vote(uint proposal) public {
+             Voter storage sender = voters[msg.sender];
+             require(sender.voted == false, "Sender already voted");
+             sender.voted = true;
+             sender.vote = proposal;
+             voters[proposal].weight += sender.weight;
+         }
+
+         function winningProposal() public view returns(uint winningProposal_) {
+             uint winningCount = 0;
+             for (uint p = 0; p < proposals.length; p++) {
+                 if (proposals[p] > winningCount) {
+                     winningCount = proposals[p];
+                     winningProposal_ = p;
+                 }
+             }
+         }
+}
+<\contract_to_analyze\>

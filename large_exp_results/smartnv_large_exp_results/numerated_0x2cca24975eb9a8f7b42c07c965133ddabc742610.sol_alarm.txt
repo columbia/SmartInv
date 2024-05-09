@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract PaymentGateway {
+         address public owner;
+         mapping(uint => bool) payments;
+         uint public totalPayments;
+         
+         function makePayment(uint paymentId) public {
+             require(!payments[paymentId], "Payment already made");
+             payments[paymentId] = true;
+             totalPayments++;
+         }
+         
+         function withdrawFunds() public {
+             require(msg.sender == owner, "Only owner can withdraw funds");
+             // Withdraw funds logic
+         }
+}
+<\contract_to_analyze\>

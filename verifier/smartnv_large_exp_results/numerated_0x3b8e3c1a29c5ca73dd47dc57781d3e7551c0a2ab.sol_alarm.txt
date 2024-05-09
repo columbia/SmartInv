@@ -1,0 +1,54 @@
+The contract provided for analysis is:
+
+```solidity
+contract VotingSystem {
+     struct Candidate {
+          uint256 numVotes; 
+          bool isActive; 
+          }
+     mapping(address => Candidate) public candidates;
+     address public owner;
+     address[] public candidateList;
+     uint256 public totalVotes;
+     
+     constructor() {
+          owner = msg.sender;
+     }
+
+     function addCandidate(address _candidate) public {
+          require(msg.sender == owner, "only owner can add candidate");
+          require(!candidates[_candidate].isActive, "candidate already exists");
+          candidates[_candidate] = Candidate(0, true);
+          candidateList.push(_candidate);
+     }
+
+     function vote(address _candidate) public {
+          require(candidates[_candidate].isActive, "candidate doesn't exist");
+          candidates[_candidate].numVotes++;
+          totalVotes++;
+     }
+
+     function revokeVote(address _candidate) public {
+          require(candidates[_candidate].isActive, "candidate doesn't exist");
+          candidates[_candidate].numVotes--;
+          totalVotes--;
+     }
+
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+
+1) Insufficient gas: The contract may run out of gas when executing functions with multiple operations.
+
+2) ID uniqueness violation: There is no unique identifier for candidates, which could lead to issues in managing and tracking candidates.
+
+3) Incorrect visibility/ownership: The `owner` variable is publicly accessible, which may expose sensitive ownership information.
+
+4) Inconsistent state update: The `totalVotes` variable is incremented and decremented directly without proper checks, leading to inconsistent state updates.
+
+5) Business logic flaw: There is no restriction on revoking votes, potentially allowing for vote manipulation.
+
+6) Cross bridge inconsistency: Interactions with external contracts are not properly managed, leading to potential inconsistencies.
+
+Therefore, the potential vulnerabilities in the provided contract are: Insufficient gas, ID uniqueness violation, Incorrect visibility/ownership, Inconsistent state update, Business logic flaw, Cross bridge inconsistency.

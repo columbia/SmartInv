@@ -1,0 +1,21 @@
+<\the_contract\>
+contract VestingContract {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public amount;
+
+    constructor(address _beneficiary, uint _releaseTime, uint _amount) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+        amount = _amount;
+    }
+
+    function release() public {
+        require(block.timestamp >= releaseTime, "release time has not arrived yet");
+        require(msg.sender == beneficiary, "only beneficiary can release");
+        
+        address payable wallet = payable(beneficiary);
+        wallet.transfer(amount);
+    }
+}
+<\the_contract\>

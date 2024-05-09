@@ -1,0 +1,19 @@
+<\contract_to_analyze\>
+contract DEX {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         uint public price;
+
+         function swap(uint amountA, uint amountB) public {
+             require(amountA > 0 && amountB > 0, "Invalid amounts");
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transferFrom(msg.sender, address(this), amountB);
+             uint totalBought = calculateTotalBought(amountA, amountB);
+             msg.sender.transfer(totalBought);
+         }
+
+         function calculateTotalBought(uint amountA, uint amountB) internal view returns (uint) {
+             return amountA * price / amountB;
+         }
+}
+<\contract_to_analyze\>

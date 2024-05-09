@@ -1,0 +1,30 @@
+<\analyzed_contract\> 
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public {
+        require(balances[msg.sender] + (_numTokens * tokenPrice) <= msg.sender.balance, "Insufficient balance");
+        balances[msg.sender] += _numTokens;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        owner.transfer(address(this).balance);
+    }
+}
+<\analyzed_contract\> 
+
+Potential vulnerabilities:
+1) Integer overflow/underflow: The function buyTokens could potentially allow for integer overflow if a user tries to purchase a very large number of tokens, causing unexpected behavior.
+2) Inconsistent state update: The function buyTokens updates the balance of tokens without deducting the purchased tokens from the totalTokens variable, potentially leading to an inconsistent state.
+3) Incorrect visibility/ownership: The withdraw function does not check if the caller is the owner, allowing anyone to call the function and withdraw funds from the contract.
+4) Insufficient gas: If the contract holds a large amount of funds, the transfer in the withdraw function may require more gas than the block gas limit, causing the transaction to fail.

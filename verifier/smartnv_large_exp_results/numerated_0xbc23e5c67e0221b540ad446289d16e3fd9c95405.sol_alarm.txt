@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+-  Incorrect visibility/ownership: The visibility of the variables `votingToken`, `proposal`, and `startingBalanceList` are not specified, which could lead to unintended access and modification.
+-  Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without checking if the address has already voted, which can lead to inconsistent state.
+-  Insufficient gas: The `endExecute` function may fail if there is insufficient gas to execute the transaction due to the potentially large token transfers and calculations.
+-  Integer overflow: There is a risk of integer overflow in the calculation `getPrice() * cAmount * 80 / 100` in the `liquidate` function, which can result in unexpected behavior.

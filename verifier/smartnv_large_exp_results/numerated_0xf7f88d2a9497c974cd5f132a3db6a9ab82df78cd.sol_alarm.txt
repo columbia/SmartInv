@@ -1,0 +1,26 @@
+The contract:
+contract MyContract {
+    address public owner;
+    uint public balance;
+    mapping(address => uint) public userBalances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+        userBalances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(userBalances[msg.sender] >= amount, "Insufficient balance");
+        msg.sender.transfer(amount);
+        balance -= amount;
+        userBalances[msg.sender] -= amount;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) reentrancy: The withdraw function is vulnerable to reentrancy attack as the state is updated after transferring funds to the user. This allows malicious users to re-enter the function and withdraw funds multiple times before the state is updated.
+2) incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to everyone. This could potentially lead to privilege escalation if the owner address is compromised.

@@ -1,0 +1,28 @@
+Contract:
+
+contract ExchangeTokens {
+         IERC20 public WETH;
+         IERC20 public USDC;
+         IUniswapV2Pair public pair; 
+         mapping(address => uint) public debt;
+         mapping(address => uint) public collateral;
+
+         function liquidate(address user) public {
+             uint dAmount = debt[user];
+             uint cAmount = collateral[user];
+             require(getPrice() * cAmount * 80 / 100 < dAmount,
+             "the given user’s fund cannot be liquidated");
+             address _this = address(this);
+             USDC.transferFrom(msg.sender, _this, dAmount);
+             WETH.transferFrom(_this, msg.sender, cAmount);
+         }
+         function  calculatePrice() public payable returns (uint) {
+             
+            return (USDC.balanceOf(address(pair)) /
+             WETH.balanceOf(address(pair)));
+      }
+  }
+
+Potential Vulnerabilities:
+1) Price Manipulation
+2) Arithmetic Flaw

@@ -1,0 +1,57 @@
+<\analyzed_contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum EscrowState { Created, Locked, Released, InDispute }
+    EscrowState public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        _;
+    }
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = EscrowState.Created;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(state == EscrowState.Created, "Escrow is not in the correct state for deposit");
+        state = EscrowState.Locked;
+    }
+
+    function release() public onlyBuyer {
+        require(state == EscrowState.Locked, "Funds are not locked");
+        (bool success, ) = payable(seller).call{value: address(this).balance}("");
+        require(success, "Transfer to seller failed");
+        state = EscrowState.Released;
+    }
+
+    function refund() public onlySeller {
+        require(state == EscrowState.Locked, "Funds are not locked");
+        (bool success, ) = payable(buyer).call{value: address(this).balance}("");
+        require(success, "Transfer to buyer failed");
+        state = EscrowState.Released;
+    }
+
+    function dispute() public onlyArbiter {
+        require(state == EscrowState.Locked, "Funds are not locked");
+        state = EscrowState.InDispute;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,21 @@
+<\contract\>
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+    
+    function vote(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+    
+    function redeemVotes() external {
+        uint256 userVoteAmount = userVotes[msg.sender];
+        require(userVoteAmount > 0, "No votes to redeem");
+        
+        msg.sender.transfer(userVoteAmount);
+        totalVotes -= userVoteAmount;
+        userVotes[msg.sender] = 0;
+    }
+}
+<\contract\>

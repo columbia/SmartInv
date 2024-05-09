@@ -1,0 +1,18 @@
+<\contract_to_be_analyzed\>
+contract DigitalAsset {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         mapping(address => uint) public balances;
+
+         function swapTokens(address user, uint amountA, uint amountB) public {
+             require(tokenA.balanceOf(msg.sender) >= amountA, "insufficient balance of tokenA");
+             require(tokenB.balanceOf(msg.sender) >= amountB, "insufficient balance of tokenB");
+
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transferFrom(msg.sender, address(this), amountB);
+
+             balances[user] += amountA;
+             balances[user] += amountB;
+         }
+}
+<\contract_to_be_analyzed\>

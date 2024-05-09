@@ -1,0 +1,29 @@
+The contract to analyze:
+
+contract TokenSale {
+    IERC20 public token; 
+    address public owner;
+    uint public tokenPrice;
+    uint public totalSold;
+    
+    constructor(IERC20 _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) external {
+        require(_amount > 0, "Amount must be greater than 0");
+        
+        uint totalPrice = _amount * tokenPrice;
+        token.transferFrom(msg.sender, address(this), totalPrice);
+        token.transfer(msg.sender, _amount);
+        
+        totalSold += _amount;
+    }
+}
+ 
+The potential vulnerabilities in the contract:
+1) price manipulation
+2) inconsistent state update
+3) integer overflow/underflow.

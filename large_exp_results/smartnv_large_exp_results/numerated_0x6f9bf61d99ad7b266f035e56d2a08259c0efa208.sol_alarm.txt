@@ -1,0 +1,28 @@
+<\contract_to_be_analyzed\>
+contract PaymentContract {
+    address public owner;
+    uint public totalBalance;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint amount) public {
+        balances[msg.sender] += amount;
+        totalBalance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract_to_be_analyzed\>

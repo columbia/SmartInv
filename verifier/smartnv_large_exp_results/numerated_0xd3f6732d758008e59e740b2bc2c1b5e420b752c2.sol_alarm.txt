@@ -1,0 +1,29 @@
+The contract provided for analysis is:
+
+```
+contract VotingSystem {
+     struct Candidate {
+         address candidateAddress;
+         uint voteCount;
+     }
+     mapping(address => bool) public hasVoted;
+     mapping(address => Candidate) public candidates;
+     address public owner;
+
+     function vote(address _candidateAddress) public {
+         require(!hasVoted[msg.sender], "Already voted");
+         require(candidates[_candidateAddress].candidateAddress != address(0), "Candidate does not exist");
+         candidates[_candidateAddress].voteCount++;
+         hasVoted[msg.sender] = true;
+     }
+
+     function addCandidate(address _candidateAddress) public {
+         require(msg.sender == owner, "Only the owner can add a candidate");
+         candidates[_candidateAddress].candidateAddress = _candidateAddress;
+     }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Privilege Escalation (owner is the only one who can add a candidate, which may lead to privilege escalation if not properly secured)
+2) Incorrect Visibility/Ownership (owner is publicly accessible, which may reveal sensitive information or allow unauthorized access)

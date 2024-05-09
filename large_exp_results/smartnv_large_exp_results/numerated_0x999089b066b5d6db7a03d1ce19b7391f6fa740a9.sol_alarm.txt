@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    mapping(address => uint256) public released;
+    uint256 public totalReleased;
+
+    function release(address payable account) public {
+        require(msg.sender == account, "Can only release your own shares");
+        require(shares[msg.sender] > released[msg.sender], "All shares released");
+        
+        uint256 payment = calculatePayment(msg.sender);
+        released[msg.sender] += payment;
+        totalReleased += payment;
+
+        account.transfer(payment);
+    }
+
+    function calculatePayment(address payee) internal view returns (uint256) {
+        uint256 totalShares = 0;
+        for (uint256 i = 0; i < shares.length; i++) {
+            totalShares += shares[i];
+        }
+
+        uint256 payment = address(this).balance * shares[payee] / totalShares;
+        return payment;
+    }
+}
+<\contract_to_analyze\>

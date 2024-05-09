@@ -1,0 +1,27 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    uint public price;
+    mapping(address => uint) public balances;
+
+    constructor(uint _price) public {
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+2) price manipulation
+5) atomicity violation
+14) incorrect visibility/ownership

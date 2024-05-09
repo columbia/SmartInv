@@ -1,0 +1,20 @@
+<\contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    address public wallet;
+    uint public rate;
+
+    constructor(address _token, address _wallet, uint _rate) public {
+        admin = msg.sender;
+        token = IERC20(_token);
+        wallet = _wallet;
+        rate = _rate;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * rate;
+        token.transferFrom(msg.sender, wallet, cost);
+    }
+}
+<\contract\>

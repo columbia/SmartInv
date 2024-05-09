@@ -1,0 +1,24 @@
+<\contract\> 
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+
+    function bid(uint bidAmount) public {
+        require(bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = bidAmount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        highestBidder = address(0);
+        highestBid = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the Auction contract are:
+1) Price manipulation
+2) Inconsistent state update
+3) Incorrect visibility/ownership

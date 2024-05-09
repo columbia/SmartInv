@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+contract Insurance {
+    uint public insuranceAmount;
+    address public insuredParty;
+    mapping(address => uint) public pendingClaims;
+
+    function setInsuranceAmount(uint _amount) external {
+        insuranceAmount = _amount;
+    }
+
+    function fileClaim(uint _claimAmount) external {
+        require(_claimAmount <= insuranceAmount, "Claim amount exceeds insurance coverage");
+        pendingClaims[msg.sender] = _claimAmount;
+    }
+
+    function processClaims() external {
+        require(pendingClaims[msg.sender] > 0, "No pending claims");
+        // Process the claim
+        delete pendingClaims[msg.sender];
+    }
+}
+
+Output: 
+1) inconsistent state update
+3) business logic flaw

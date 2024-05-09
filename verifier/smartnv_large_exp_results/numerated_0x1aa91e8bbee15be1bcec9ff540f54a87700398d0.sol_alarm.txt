@@ -1,0 +1,34 @@
+Contract Analyzed:
+
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) external payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens() external {
+        require(msg.sender == owner, "Unauthorized");
+        uint tokenBalance = IERC20(tokenAddress).balanceOf(address(this));
+        IERC20(tokenAddress).transfer(owner, tokenBalance);
+    }
+
+    function withdrawEther() external {
+        require(msg.sender == owner, "Unauthorized");
+        uint etherBalance = address(this).balance;
+        payable(owner).transfer(etherBalance);
+    }
+}
+
+Output:
+- incorrect visibility/ownership

@@ -1,0 +1,31 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public isConfirmed;
+    
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        isConfirmed = false;
+    }
+    
+    function confirm() public {
+        require(msg.sender == buyer, "Only buyer can confirm");
+        isConfirmed = true;
+        // Transfer price to seller
+        payable(seller).transfer(price);
+    }
+    
+    function cancel() public {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorized");
+        if (msg.sender == buyer) {
+            // Refund price to buyer
+            payable(buyer).transfer(price);
+        }
+        selfdestruct(payable(seller));
+    }
+}
+<\contract_to_analyze\>

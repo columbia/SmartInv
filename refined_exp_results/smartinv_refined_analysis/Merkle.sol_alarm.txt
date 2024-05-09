@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The contract has functions that update the state variables like `proposal` and `lockedFunds` based on certain conditions, but there may be inconsistencies in the state update logic.
+
+2) Atomicity violation: The functions `execute` and `endExecute` update the `proposal` state variable based on certain conditions, but there might be a lack of atomicity in these operations which can lead to unexpected behavior.
+
+3) Cross bridge inconsistency: The contract interacts with other contracts through the `votingToken` interface, which can potentially introduce inconsistencies in the state of both contracts.
+
+4) ID uniqueness violation: There is no explicit check for ID uniqueness in the `Proposal` struct, which might lead to unforeseen issues if duplicate IDs are assigned to different proposals.

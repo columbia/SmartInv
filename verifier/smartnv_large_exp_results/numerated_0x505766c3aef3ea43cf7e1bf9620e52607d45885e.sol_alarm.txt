@@ -1,0 +1,30 @@
+contract Escrow {
+    address public arbiter;
+    address public depositor;
+    address public beneficiary;
+    uint public funds;
+
+    constructor(address _arbiter, address _beneficiary) {
+        arbiter = _arbiter;
+        beneficiary = _beneficiary;
+    }
+
+    function deposit(address _depositor) public payable {
+        require(msg.sender == _depositor, "Only depositor can deposit funds");
+        funds += msg.value;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(funds > 0, "No funds to release");
+        payable(beneficiary).transfer(funds);
+        funds = 0;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(funds > 0, "No funds to refund");
+        payable(depositor).transfer(funds);
+        funds = 0;
+    }
+}

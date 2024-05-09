@@ -1,0 +1,45 @@
+<\contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public voteCount;
+
+    address public owner;
+    uint256 public totalVotes;
+
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You have already voted");
+        
+        voters[msg.sender].delegate = to;
+        voters[to].weight += voters[msg.sender].weight;
+    }
+
+    function vote(uint256 option) public {
+        require(!voters[msg.sender].voted, "You have already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+        voteCount[option] += voters[msg.sender].weight;
+        totalVotes += voters[msg.sender].weight;
+    }
+
+    function endVoting() public {
+        require(msg.sender == owner, "Only the owner can end the voting");
+
+        // Calculate and announce the winner
+    }
+}
+<\contract\> 
+
+3) business logic flaw

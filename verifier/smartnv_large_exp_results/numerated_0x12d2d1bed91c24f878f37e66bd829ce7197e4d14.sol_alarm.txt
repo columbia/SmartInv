@@ -1,0 +1,17 @@
+The provided contract is:
+
+```solidity
+contract KYCContract {
+    mapping(address => bool) public isVerified;
+
+    function verify(address user) external {
+        require(msg.sender == owner, "Only owner can verify users");
+        isVerified[user] = true;
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The `owner` variable is not defined in the contract, so the `require` statement checking for ownership in the `verify` function won't work as intended.
+
+Therefore, the identified potential vulnerability in the contract is incorrect visibility/ownership.

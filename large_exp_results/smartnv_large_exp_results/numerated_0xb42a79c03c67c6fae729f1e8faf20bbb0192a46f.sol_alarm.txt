@@ -1,0 +1,25 @@
+contract TokenSale {
+         address public tokenAddress;
+         address public owner;
+         uint public tokenPrice;
+         uint public tokensSold;
+
+         constructor(address _tokenAddress, uint _tokenPrice) {
+             tokenAddress = _tokenAddress;
+             tokenPrice = _tokenPrice;
+             owner = msg.sender;
+         }
+
+         function buyTokens(uint _amount) public payable {
+             uint totalCost = _amount * tokenPrice;
+             require(msg.value >= totalCost, "Insufficient funds sent");
+
+             ERC20(tokenAddress).transfer(msg.sender, _amount);
+             tokensSold += _amount;
+         }
+
+         function withdrawFunds() public {
+             require(msg.sender == owner, "Only owner can withdraw funds");
+             payable(owner).transfer(address(this).balance);
+         }
+  }

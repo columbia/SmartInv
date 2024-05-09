@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function startExecute() sets the proposal state without checking for any existing ongoing proposals. This could lead to inconsistent states if multiple proposals are created without completing the previous ones.
+
+2) ID uniqueness violation: There is no check for unique proposal IDs in the contract, which could result in conflicts if multiple proposals are created with the same ID.
+
+3) Atomicity violation: The function execute() updates the votedAmount state variable without using any atomic operation, opening up the possibility of race conditions and inconsistent data.
+
+4) Cross bridge inconsistency: The contract uses external calls to interact with the votingToken contract, which can introduce inconsistencies and potential vulnerabilities if the external contract behaves unexpectedly or maliciously.
+
+Overall, the contract exhibits vulnerabilities related to state management, ID uniqueness, atomicity, and external contract interactions.

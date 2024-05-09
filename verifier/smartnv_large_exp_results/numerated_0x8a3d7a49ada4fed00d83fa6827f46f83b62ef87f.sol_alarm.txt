@@ -1,0 +1,37 @@
+Contract being analyzed:
+
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+
+    function setEscrow(address _buyer, address _seller, address _arbiter, uint _price) external {
+        require(msg.sender == owner, "Only owner can set escrow details");
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function approveSeller() external {
+        require(msg.sender == buyer, "Only buyer can approve seller");
+        sellerApproved = true;
+    }
+
+    function approveArbiter() external {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can approve arbiter");
+        arbiterApproved = true;
+    }
+
+    function releaseFunds() external {
+        require(sellerApproved, "Seller must approve before funds can be released");
+        require(arbiterApproved, "Arbiter must approve before funds can be released");
+        // Transfer funds to seller
+    }
+}
+
+Output: 
+1) Healthly.

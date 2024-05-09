@@ -1,0 +1,37 @@
+The contract below has the potential vulnerabilities:
+
+1) incorrect visibility/ownership
+2) inconsistent state update
+3) insufficient gas
+
+Contract:
+```solidity
+contract TokenContract {
+     mapping(address => uint256) balances;
+     address public owner;
+
+     constructor() {
+          owner = msg.sender;
+     }
+     
+     function transfer(address to, uint256 amount) public {
+          require(balances[msg.sender] >= amount, "Insufficient balance");
+          balances[msg.sender] -= amount;
+          balances[to] += amount;
+     }
+
+     function getBalance(address user) public view returns(uint256) {
+          return balances[user];
+     }
+
+     function changeOwner(address newOwner) public {
+          require(msg.sender == owner, "Only owner can change owner");
+          owner = newOwner;
+     }
+}
+```
+
+Output:
+- incorrect visibility/ownership
+- inconsistent state update
+- insufficient gas

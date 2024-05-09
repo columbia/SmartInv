@@ -1,0 +1,32 @@
+<\analyzed_contract\> 
+contract TokenSale {
+    address public admin;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        admin = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+
+        ERC20(tokenAddress).transfer(msg.sender, _numTokens);
+        tokensSold += _numTokens;
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == admin, "Only admin can change token price");
+
+        tokenPrice = _newPrice;
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Incorrect visibility/ownership: The setTokenPrice function allows any caller to change the token price, which should only be allowed for the admin.
+2) Ether leakage: The buyTokens function transfers tokens to the buyer but does not handle any potential issues with transferring ether, which could lead to ether being stuck in the contract.
+3) Inconsistent state update: The tokensSold variable is updated in the buyTokens function, but there is no check or limit on the total number of tokens sold, which could potentially lead to integer overflow/underflow.

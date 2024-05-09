@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) incorrect visibility/ownership - The contract does not define explicit visibility for its functions and variables, potentially leading to unexpected behavior.
+
+2) inconsistent state update - The function `endExecute` updates the `lockedFunds` variable without initiating any further actions, which could lead to an inconsistent state.
+
+3) integer overflow/underflow - There is a potential for integer overflow in the calculation `getPrice() * cAmount * 80 / 100` in the `liquidate` function.
+
+4) privilege escalation - Access control mechanisms are not implemented, allowing any address to potentially call the `endExecute` function and manipulate the `lockedFunds`.
+
+5) business logic flaw - The `endExecute` function checks if the contract balance is greater than twice the total supply of the token, which might not accurately represent a successful execution condition.

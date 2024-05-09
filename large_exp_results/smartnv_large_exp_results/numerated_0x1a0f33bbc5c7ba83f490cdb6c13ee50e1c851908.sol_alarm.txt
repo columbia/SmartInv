@@ -1,0 +1,25 @@
+<\your_contract\>
+contract Auction {
+     uint public endTime;
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() public payable {
+         require(block.timestamp < endTime, "Auction has ended");
+         require(msg.value > highestBid, "Must send higher value than current highest bid");
+         if (highestBid != 0) {
+             payable(highestBidder).transfer(highestBid);
+         }
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+
+     function withdraw() public {
+         require(block.timestamp >= endTime, "Auction is still ongoing");
+         require(msg.sender != highestBidder, "Highest bidder cannot withdraw");
+         uint amount = highestBid;
+         highestBid = 0;
+         highestBidder.transfer(amount);
+     }
+}
+<\your_contract\>

@@ -1,0 +1,20 @@
+<\contract\>
+contract Vesting {
+    uint256 public totalTokens;
+    address public beneficiary;
+    uint256 public start;
+    uint256 public cliff;
+    uint256 public duration;
+
+    function release() external {
+        require(block.timestamp > start + cliff, "Cliff period has not passed yet");
+        uint256 vested = (totalTokens * (block.timestamp - start)) / duration;
+        totalTokens -= vested;
+        _transferTokens(beneficiary, vested);
+    }
+
+    function _transferTokens(address to, uint256 amount) internal {
+        // transfer tokens to the specified address
+    }
+}
+<\contract\>

@@ -1,0 +1,27 @@
+The contract in question is: 
+
+contract VestingVault {
+    address public owner;
+    mapping(address => uint) public vestingAmounts;
+    mapping(address => bool) public hasVested;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createVesting(address beneficiary, uint amount) public {
+        require(msg.sender == owner, "only owner can create vesting");
+        vestingAmounts[beneficiary] = amount;
+    }
+
+    function releaseVesting(address beneficiary) public {
+        require(hasVested[beneficiary] == false, "beneficiary has already vested");
+        require(vestingAmounts[beneficiary] > 0, "beneficiary has no vesting amount");
+
+        hasVested[beneficiary] = true;
+        // transfer vested amount to beneficiary
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

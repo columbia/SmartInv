@@ -1,0 +1,14 @@
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) external {
+        require(amount > highestBid, "Bid amount too low");
+        require(amount > 0, "Bid amount must be greater than 0");
+        if (highestBidder != address(0)) {
+            highestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+}

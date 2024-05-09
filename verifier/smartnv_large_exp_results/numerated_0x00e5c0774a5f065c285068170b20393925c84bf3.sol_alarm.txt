@@ -1,0 +1,19 @@
+Contract being analyzed:
+
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function resetVotes() public {
+        totalVotes = 0;
+    }
+}
+
+Output:
+healthy

@@ -1,0 +1,16 @@
+Contract AnalyzeContract {
+     uint  public totalSupply;
+     mapping(address => uint) public balances;
+
+     function transfer(address to, uint value) public {
+         require(balances[msg.sender] >= value, "Insufficient balance");
+         balances[msg.sender] -= value;
+         balances[to] += value;
+     }
+
+     function mint(uint value) public {
+         require(totalSupply + value > totalSupply, "Integer overflow");
+         totalSupply += value;
+         balances[msg.sender] += value;
+     }
+}

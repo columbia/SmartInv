@@ -1,0 +1,21 @@
+<\contract\>
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+    
+    function vote(uint256 amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function withdrawVotes(uint256 amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(userVotes[msg.sender] >= amount, "Insufficient votes to withdraw");
+        
+        totalVotes -= amount;
+        userVotes[msg.sender] -= amount;
+    }
+}
+<\contract\>

@@ -1,0 +1,18 @@
+<\contract\>
+contract VotingSystem {
+     uint256 public totalVotes;
+     mapping(address => bool) public hasVoted;
+
+     function vote() external {
+          require(!hasVoted[msg.sender], "Already voted");
+          totalVotes++;
+          hasVoted[msg.sender] = true;
+     }
+
+     function unvote() external {
+          require(hasVoted[msg.sender], "Has not voted yet");
+          totalVotes--;
+          hasVoted[msg.sender] = false;
+     }
+}
+<\contract\>

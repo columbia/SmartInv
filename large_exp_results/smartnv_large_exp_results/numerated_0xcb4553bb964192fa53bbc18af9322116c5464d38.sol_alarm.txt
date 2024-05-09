@@ -1,0 +1,30 @@
+Contract to be analyzed:
+
+contract Lottery {
+     address public owner; 
+     uint public totalTickets;
+     
+     mapping(address => uint) public ticketsBought;
+
+     constructor() {
+          owner = msg.sender;
+          totalTickets = 0;
+     }
+
+     function buyTicket(uint _numTickets) public payable {
+          require(msg.value == _numTickets * 0.01 ether, "Incorrect ticket price");
+          ticketsBought[msg.sender] += _numTickets;
+          totalTickets += _numTickets;
+     }
+
+     function pickWinner() public {
+          require(msg.sender == owner, "Only owner can pick winner");
+          uint winningNum = uint(keccak256(abi.encodePacked(block.timestamp))) % totalTickets;
+          address winner;
+          // logic to determine winner based on winning number
+          // award Ether to winner
+     }
+}
+
+Output:
+1) incorrect visibility/ownership

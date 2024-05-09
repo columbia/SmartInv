@@ -1,0 +1,35 @@
+The contract provided for analysis is:
+
+```solidity
+contract MyContract {
+    address public owner;
+    uint public balance;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint _amount) public {
+        balance += _amount;
+        balances[msg.sender] += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balance -= _amount;
+        balances[msg.sender] -= _amount;
+    }
+}
+```
+
+The potential vulnerabilities in the given contract are:
+
+1) Integer overflow/underflow: The `deposit` and `withdraw` functions are susceptible to integer overflow/underflow if the amount deposited or withdrawn exceeds the maximum or minimum uint value.
+
+2) Ether leakage: There is no function to withdraw Ether from the contract, so Ether sent to the contract will be stuck indefinitely, leading to ether leakage.
+
+3) Incorrect visibility/ownership: The `owner` variable is public, which may expose the owner's address to unauthorized parties.
+
+Therefore, the potential vulnerabilities in the contract are integer overflow/underflow, ether leakage, and incorrect visibility/ownership.

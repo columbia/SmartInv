@@ -1,0 +1,24 @@
+<\contract\>
+contract PaymentProcessor {
+    address public admin;
+    mapping(uint => uint) public paymentAmounts;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function processPayment(uint paymentId, uint amount) public {
+        require(msg.sender == admin, "Only admin can process payments");
+        paymentAmounts[paymentId] = amount;
+    }
+
+    function updateAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can update admin address");
+        admin = newAdmin;
+    }
+
+    function getPaymentAmount(uint paymentId) public view returns (uint) {
+        return paymentAmounts[paymentId];
+    }
+}
+<\contract\>

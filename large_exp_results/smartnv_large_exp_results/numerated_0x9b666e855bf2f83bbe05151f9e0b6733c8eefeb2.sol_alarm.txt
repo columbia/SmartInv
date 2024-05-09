@@ -1,0 +1,30 @@
+<\contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     address public admin;
+
+     constructor(address _token) {
+         token = IERC20(_token);
+         owner = msg.sender;
+         admin = msg.sender;
+     }
+
+     function setAdmin(address _admin) external {
+         require(msg.sender == owner, "Only owner can set admin");
+         admin = _admin;
+     }
+
+     function buyTokens(uint amount) external {
+         require(token.balanceOf(address(this)) >= amount, "Insufficient token balance");
+         token.transfer(msg.sender, amount);
+     }
+
+     function withdrawFunds() external {
+         require(msg.sender == owner || msg.sender == admin, "Only owner or admin can withdraw funds");
+         uint balance = address(this).balance;
+         address payable recipient = msg.sender;
+         recipient.transfer(balance);
+     }
+}
+<\contract\>

@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+- Inconsistent state update: The `proposal.votedAmount` is directly incremented in the `execute` function without checking for potential re-entrancy attacks or ensuring atomicity of the operation.
+- Incorrect visibility/ownership: It is not clear whether the `votingToken` should be publicly accessible or if it should have restricted access. This could lead to potential unauthorized access or manipulation of the token.
+- Arithmetic flaw: There is a potential arithmetic flaw in the `liquidate` function of the `ExchangeTokens` contract where the calculation `getPrice() * cAmount * 80 / 100 < dAmount` may result in unexpected behavior due to order of operations or overflow/underflow issues.

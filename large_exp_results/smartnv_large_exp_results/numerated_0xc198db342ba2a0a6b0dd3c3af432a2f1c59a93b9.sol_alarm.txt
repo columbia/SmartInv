@@ -1,0 +1,29 @@
+The contract that you will be analyzing is:
+
+```solidity
+contract Insurance {
+    address public owner;
+    uint public premium;
+    
+    constructor(uint _premium) {
+        owner = msg.sender;
+        premium = _premium;
+    }
+    
+    function setPremium(uint _newPremium) public {
+        require(msg.sender == owner, "Only owner can set premium");
+        premium = _newPremium;
+    }
+    
+    function claim() public {
+        // Process insurance claim
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+```
+
+Please provide the output based on identifying any potential vulnerabilities in this contract.

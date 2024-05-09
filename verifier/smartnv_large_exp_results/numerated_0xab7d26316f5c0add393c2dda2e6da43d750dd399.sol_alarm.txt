@@ -1,0 +1,47 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+     struct Voter {
+         uint256 weight;
+         bool voted;
+         address delegate;
+         uint vote;
+     }
+     mapping(address => Voter) public voters;
+     address public winner;
+     uint256 public winningProposalId;
+     uint256 public totalVotes;
+     bool public votingEnded;
+
+     function delegate(address to) public {
+         require(!voters[to].voted, "delegate already voted");
+         require(to != msg.sender, "self-delegation");
+         require(voters[msg.sender].voted, "delegator hasn't voted");
+
+         voters[msg.sender].delegate = to;
+         voters[to].weight += voters[msg.sender].weight;
+     }
+
+     function vote(uint proposal) public {
+         require(!voters[msg.sender].voted, "already voted");
+         voters[msg.sender].voted = true;
+         voters[msg.sender].vote = proposal;
+         voters[msg.sender].weight = 1;
+         totalVotes += 1;
+     }
+
+     function endVoting() public {
+         require(!votingEnded, "voting already ended");
+         require(msg.sender == winner, "only winner can end voting");
+         
+         uint256 winningVoteCount = 0;
+         for (uint256 p = 0; p < totalProposals; p++) {
+             if (proposalVoteCount[p] > winningVoteCount) {
+                 winningVoteCount = proposalVoteCount[p];
+                 winningProposalId = p;
+             }
+         }
+
+         votingEnded = true;
+     }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    address internal owner;
+
+    function setPayees(address[] memory _payees, uint256[] memory _shares) public {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        payees = _payees;
+        shares = _shares;
+    }
+
+    function release() public {
+        for (uint i = 0; i < payees.length; i++) {
+            payees[i].transfer(shares[i]);
+        }
+    }
+
+    function setOwner(address _owner) public {
+        require(msg.sender == owner, "Unauthorized");
+        owner = _owner;
+    }
+}
+<\contract_to_analyze\>

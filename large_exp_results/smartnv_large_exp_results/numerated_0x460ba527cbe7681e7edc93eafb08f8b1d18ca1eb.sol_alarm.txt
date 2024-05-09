@@ -1,0 +1,40 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public amount;
+     bool public buyerOk;
+     bool public sellerOk;
+     bool public arbiterOk;
+
+     function escrow(uint _amount, address _seller, address _arbiter) public {
+         buyer = msg.sender;
+         seller = _seller;
+         arbiter = _arbiter;
+         amount = _amount;
+     }
+
+     function accept() public {
+         if(msg.sender == buyer){
+             buyerOk = true;
+         } else if(msg.sender == seller){
+             sellerOk = true;
+         } else if(msg.sender == arbiter){
+             arbiterOk = true;
+         }
+     }
+
+     function paySeller() public {
+         if(buyerOk && sellerOk){
+             seller.transfer(amount);
+         }
+     }
+
+     function refundBuyer() public {
+         if(buyerOk && arbiterOk){
+             buyer.transfer(amount);
+         }
+     }
+ }
+<\contract\>

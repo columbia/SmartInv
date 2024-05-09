@@ -1,0 +1,30 @@
+<\contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    mapping(address => uint) public tokenBalance;
+
+    constructor(IERC20 _token, uint _initialTokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _initialTokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(tokenBalance[msg.sender] >= _amount * tokenPrice, "Insufficient token balance");
+
+        token.transfer(msg.sender, _amount);
+        tokenBalance[msg.sender] -= _amount * tokenPrice;
+        tokensSold += _amount;
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == admin, "Only admin can set token price");
+
+        tokenPrice = _newPrice;
+    }
+}
+<\contract\>

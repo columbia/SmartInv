@@ -1,0 +1,36 @@
+Given the contract provided for analysis:
+
+<\contract_to_be_analyzed\>
+contract Crowdsale {
+    uint public totalTokens;
+    uint public tokenPrice;
+    
+    mapping(address => uint) public balances;
+    
+    constructor(uint _totalTokens, uint _tokenPrice) {
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _numTokens) public payable {
+        require(_numTokens > 0, "Token amount must be greater than 0");
+        require(msg.value == _numTokens * tokenPrice, "Incorrect Ether value sent");
+        
+        balances[msg.sender] += _numTokens;
+        totalTokens -= _numTokens;
+    }
+    
+    function refundTokens(uint _numTokens) public {
+        require(balances[msg.sender] >= _numTokens, "Insufficient token balance");
+        
+        balances[msg.sender] -= _numTokens;
+        totalTokens += _numTokens;
+        
+        payable(msg.sender).transfer(_numTokens * tokenPrice);
+    }
+}
+<\contract_to_be_analyzed\>
+
+The potential vulnerabilities in the contract are:
+- Inconsistent state update: The totalTokens variable is being updated in the buyTokens and refundTokens functions without proper checks, potentially leading to inconsistencies.
+- Integer underflow: Subtraction operations in refundTokens function could result in an integer underflow if the _numTokens value is greater than the existing balance of the sender.

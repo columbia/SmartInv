@@ -1,0 +1,40 @@
+The contract provided for analysis:
+
+contract TimeLockedController is IERC20 {
+    struct Proposal {
+        uint256 startTime;
+        uint256 votedAmount;
+        address proposer;
+    }
+    address internal owner;
+    IERC20 votingToken;
+    
+    function startExecute() external {
+        uint256 startingBalance;
+        require(proposal.startTime == 0, "ongoing proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalance = getStartingBalance(proposal.proposer);
+        startingBalanceList[proposal.proposer] = startingBalance;
+    }
+    
+    function execute(uint256 amount) external {
+        require(proposal.startTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through");
+        votingToken.transferFrom(proposal.proposer, address(this), amount);
+        proposal.votedAmount += amount;
+        votedProposal(proposal);
+    }
+    
+    function endExecute() external {
+        require(proposal.startTime != 0, "no proposal");
+        require(proposal.startTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+
+There are two potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The "proposal" struct is being modified in functions startExecute and execute but does not seem to have a clear initialization or resetting mechanism. This can lead to inconsistent states and unexpected behavior as values might carry over between different proposals.
+
+2) Incorrect visibility/ownership: The internal variable "owner" is defined but not used within the contract. It is unclear if this variable serves any purpose or if there should be access control based on this owner variable. This inconsistency can lead to incorrect assumptions about the ownership or access control in the contract.

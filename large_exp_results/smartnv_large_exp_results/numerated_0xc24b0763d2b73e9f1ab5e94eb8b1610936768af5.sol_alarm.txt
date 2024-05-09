@@ -1,0 +1,25 @@
+<\contract_3\>
+contract Escrow {
+     address public seller;
+     address public buyer;
+     address public arbiter;
+     bool public sellerApproved;
+     bool public buyerApproved;
+     bool public arbiterApproved;
+     uint public price;
+     bool public buyerPaid;
+
+     function deposit() public payable {
+         require(msg.value == price, "Incorrect amount sent");
+     }
+
+     function finalize() public {
+         require(msg.sender == arbiter && arbiterApproved, "Only arbitrator can finalize");
+         if (sellerApproved && buyerApproved) {
+             seller.transfer(price);
+         } else {
+             buyer.transfer(price);
+         }
+     }
+}
+<\contract_3\>

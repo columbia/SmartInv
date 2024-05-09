@@ -1,0 +1,16 @@
+<\contract\>
+contract SupplyChain {
+    uint public totalItems;
+    mapping(uint => address) public itemOwners;
+    
+    function addItem(address itemOwner) public {
+        totalItems++;
+        itemOwners[totalItems] = itemOwner;
+    }
+    
+    function updateOwner(uint itemID, address newOwner) public {
+        require(itemID <= totalItems, "Item does not exist");
+        itemOwners[itemID] = newOwner;
+    }
+}
+<\contract\>

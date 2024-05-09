@@ -1,0 +1,30 @@
+<\contract_3\>
+contract PaymentSplitter {
+     address[] public payees;
+     uint256[] public shares;
+     uint256 public totalShares;
+     mapping(address => uint256) public released;
+     address public owner;
+
+     constructor(address[] memory _payees, uint256[] memory _shares) {
+         require(_payees.length == _shares.length, "Payees and shares length mismatch");
+         require(_payees.length > 0, "No payees provided");
+         owner = msg.sender;
+         for (uint i = 0; i < _payees.length; i++) {
+             payees.push(_payees[i]);
+             shares.push(_shares[i]);
+             totalShares += _shares[i];
+         }
+     }
+
+     function release() public {
+         require(msg.sender == owner, "Not authorized");
+         for (uint i = 0; i < payees.length; i++) {
+             address payee = payees[i];
+             uint256 payment = (shares[i] * totalShares) / (totalShares - released[payee]);
+             released[payee] += shares[i];
+             // Send payment to payee
+         }
+     }
+}
+<\contract_3\>

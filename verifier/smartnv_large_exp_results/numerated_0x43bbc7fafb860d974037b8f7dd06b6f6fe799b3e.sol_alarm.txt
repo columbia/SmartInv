@@ -1,0 +1,19 @@
+contract VotingSystem {
+     mapping(address => uint) public voteCount;
+     uint public totalVotes;
+     address public admin;
+     
+     modifier onlyAdmin {
+          require(msg.sender == admin, "Only admin can call this function");
+          _;
+     }
+     
+     function vote() public {
+          voteCount[msg.sender]++;
+          totalVotes++;
+     }
+     
+     function changeAdmin(address newAdmin) public onlyAdmin {
+          admin = newAdmin;
+     }
+}

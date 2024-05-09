@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract UserProfile {
+    mapping(address => uint) public userIds;
+    uint public totalUsers;
+
+    function createUser(address userAddress) public {
+        userIds[userAddress] = totalUsers + 1;
+        totalUsers++;
+    }
+
+    function updateUser(address userAddress, uint newUserId) public {
+        require(userIds[userAddress] != 0, "User does not exist");
+        userIds[userAddress] = newUserId;
+    }
+
+    function deleteUser(address userAddress) public {
+        require(userIds[userAddress] != 0, "User does not exist");
+        delete userIds[userAddress];
+    }
+}
+
+Output: 
+1) ID uniqueness violation
+2) Inconsistent state update

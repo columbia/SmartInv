@@ -1,0 +1,22 @@
+Contract you are going to analyze:
+contract VestingContract {
+    address public beneficiary;
+    uint public startTime;
+    uint public duration;
+    uint public totalAmount;
+    uint public amountClaimed;
+
+    function claim() public {
+        require(msg.sender == beneficiary, "only beneficiary can claim");
+        require(block.timestamp >= startTime, "vesting period has not started yet");
+
+        uint elapsedTime = block.timestamp - startTime;
+        uint vestingAmount = (totalAmount * elapsedTime) / duration;
+        uint claimableAmount = vestingAmount - amountClaimed;
+
+        require(claimableAmount > 0, "no funds available for claiming");
+        
+        amountClaimed += claimableAmount;
+        beneficiary.transfer(claimableAmount);
+    }
+}

@@ -1,0 +1,29 @@
+<\contract\> 
+contract VotingSystem {
+     mapping(address => uint) public votes;
+     uint public totalVotes;
+     address public owner;
+
+     modifier onlyOwner() {
+         require(msg.sender == owner, "Only owner can call this function");
+         _;
+     }
+
+     function vote(uint amount) public {
+         require(amount > 0, "Amount must be greater than 0");
+         votes[msg.sender] += amount;
+         totalVotes += amount;
+     }
+
+     function withdraw() public onlyOwner {
+         uint amount = votes[msg.sender];
+         require(amount > 0, "No votes to withdraw");
+         totalVotes -= amount;
+         votes[msg.sender] = 0;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract above are:
+- ID uniqueness violation
+- Incorrect visibility/ownership

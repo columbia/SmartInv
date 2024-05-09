@@ -1,0 +1,40 @@
+The contract provided for analysis:
+
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State { Created, Locked, Inactive }
+    State public state;
+
+    modifier inState(State expectedState) {
+        require(state == expectedState, "Invalid state for this action");
+        _;
+    }
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.Created;
+    }
+
+    function confirmPurchase() public inState(State.Created) {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm the purchase");
+        state = State.Locked;
+    }
+
+    function confirmReceived() public inState(State.Locked) {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm receiving");
+        state = State.Inactive;
+    }
+
+    function refundBuyer() public inState(State.Locked) {
+        require(msg.sender == arbiter, "Only arbiter can refund the buyer");
+        state = State.Inactive;
+    }
+}
+
+Output:
+1) healthy

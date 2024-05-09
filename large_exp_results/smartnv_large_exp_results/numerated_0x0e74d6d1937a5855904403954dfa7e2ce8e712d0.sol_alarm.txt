@@ -1,0 +1,33 @@
+<\contract\> 
+contract Marketplace {
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address seller;
+        bool isSold;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function createProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+    }
+
+    function buyProduct(uint _id) public payable {
+        Product storage product = products[_id];
+        require(product.id != 0, "Product does not exist");
+        require(!product.isSold, "Product has already been sold");
+        require(msg.value >= product.price, "Insufficient funds");
+
+        product.seller.transfer(msg.value);
+        product.isSold = true;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the Marketplace contract are:
+1) Price manipulation: The price of the product is set by the seller when creating a new product, allowing potential price manipulation.
+2) Incorrect visibility/ownership: The 'products' mapping is public, exposing product details to anyone, which may not be intended.

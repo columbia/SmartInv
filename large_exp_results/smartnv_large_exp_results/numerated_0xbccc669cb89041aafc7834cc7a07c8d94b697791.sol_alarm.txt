@@ -1,0 +1,38 @@
+Contract:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    function deposit(address _arbiter) public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value > 0, "Deposit amount should be greater than 0");
+        arbiter = _arbiter;
+        amount = msg.value;
+    }
+
+    function approve(bool _buyerApproved) public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can approve");
+        if (msg.sender == buyer) {
+            buyerApproved = _buyerApproved;
+        } else {
+            sellerApproved = _buyerApproved;
+        }
+    }
+
+    function releaseFunds() public {
+        require(sellerApproved == true, "Seller has not approved release of funds");
+        require(buyerApproved == true, "Buyer has not approved release of funds");
+        uint transferAmount = amount;
+        recipient = seller;
+        seller.transfer(transferAmount);
+    }
+}
+
+Output: 
+Business logic flaw
+Inconsistent state update

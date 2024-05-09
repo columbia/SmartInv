@@ -1,0 +1,28 @@
+The contract to analyze:
+
+contract TokenSale {
+    mapping(address => uint256) public tokenBalances;
+    address public owner;
+    uint256 public tokenPrice;
+
+    constructor(uint256 price) {
+        owner = msg.sender;
+        tokenPrice = price;
+    }
+
+    function buyTokens(uint256 amount) external {
+        require(tokenBalances[msg.sender] >= amount * tokenPrice, "Insufficient token balance");
+        tokenBalances[msg.sender] -= amount * tokenPrice;
+        tokenBalances[owner] += amount * tokenPrice;
+    }
+
+    function setTokenPrice(uint256 newPrice) external {
+        require(msg.sender == owner, "Only owner can set token price");
+        tokenPrice = newPrice;
+    }
+}
+
+Output: 
+1) Price manipulation 
+3) Business logic flaw 
+8) Reentrancy

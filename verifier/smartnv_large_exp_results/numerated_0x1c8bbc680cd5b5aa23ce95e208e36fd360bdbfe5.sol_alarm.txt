@@ -1,0 +1,26 @@
+Contract:
+```solidity
+contract PaymentChannel {
+    address public sender;
+    address public receiver;
+    uint public depositAmount;
+
+    function openChannel(address _receiver) public payable {
+        sender = msg.sender;
+        receiver = _receiver;
+        depositAmount = msg.value;
+    }
+
+    function closeChannel(uint amount) public {
+        require(msg.sender == receiver, "Only receiver can close the channel");
+        require(amount <= depositAmount, "Amount exceeds deposit");
+        
+        address(uint160(receiver)).transfer(amount);
+        depositAmount -= amount;
+    }
+}
+```
+
+Output:
+- atomicity violation
+- inconsistent state update

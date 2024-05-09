@@ -1,0 +1,21 @@
+<\contract\>
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+
+     constructor(IERC20 _token, uint _tokenPrice) public {
+         token = _token;
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public {
+         uint totalCost = _amount * tokenPrice;
+         token.transferFrom(msg.sender, address(this), _amount);
+         token.transfer(msg.sender, _amount);
+         address _this = address(this);
+         owner.transfer(totalCost);
+     }
+}
+<\contract\>

@@ -1,0 +1,23 @@
+<\contract\> 
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == owner, "Only owner can reset votes");
+        for (uint i = 0; i < totalVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+        totalVotes = 0;
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

@@ -1,0 +1,10 @@
+potential vulnerabilities in the contract:
+
+3) business logic flaw: 
+- In the endExecute function, the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` could potentially have a flaw in the business logic, leading to incorrect execution outcomes.
+
+5) atomicity violation:
+- The execute function updates the proposal.votedAmount without using any synchronization mechanism, which could lead to atomicity violations if multiple calls to execute are made simultaneously.
+
+14) incorrect visibility/ownership:
+- The contract TimelockController is missing the visibility specifier for the proposal variable, making it public by default, which can lead to issues related to data leakage and unauthorized access.

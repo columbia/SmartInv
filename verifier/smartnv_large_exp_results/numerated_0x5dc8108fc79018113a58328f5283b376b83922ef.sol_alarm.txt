@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The state variables `debt` and `collateral` are updated in the `liquidate` function without proper synchronization, which may lead to inconsistent state if multiple transactions try to access and update these variables concurrently.
+2) Arithmetic flaw: There is a potential arithmetic flaw in the `liquidate` function where the calculation `getPrice() * cAmount * 80 / 100 < dAmount` may result in integer overflow/underflow if the values are large enough.
+3) Incorrect visibility/ownership: The state variables `debt` and `collateral` are declared as public, which could expose sensitive information to external parties. It is also unclear about the ownership and access control of these variables.

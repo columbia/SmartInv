@@ -1,0 +1,20 @@
+<\contract\> 
+contract PaymentHandler {
+    mapping(address => uint) public balance;
+
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) integer overflow/underflow - There is a potential for integer underflow if the user tries to withdraw a larger amount than their balance, causing unexpected behavior.
+2) Insufficient gas - The "withdraw" function's transfer of funds to the user's address might fail if the gas limit is exceeded or if the user's address cannot receive funds, potentially locking user funds in the contract.
+3) Incorrect visibility/ownership - The "balance" mapping being public allows external parties to access and potentially manipulate user balances, compromising the security of the contract.

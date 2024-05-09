@@ -1,0 +1,27 @@
+<\analyzed_contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint256 => uint256) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint256 invoiceId, uint256 amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[invoiceId] += amount;
+    }
+
+    function withdrawPayment(uint256 invoiceId) public {
+        require(payments[invoiceId] > 0, "No payment for this invoice");
+        uint256 amount = payments[invoiceId];
+        payments[invoiceId] = 0;
+        msg.sender.transfer(amount);
+    }
+
+    function updateOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can update owner");
+        owner = newOwner;
+    }
+}
+<\analyzed_contract\>

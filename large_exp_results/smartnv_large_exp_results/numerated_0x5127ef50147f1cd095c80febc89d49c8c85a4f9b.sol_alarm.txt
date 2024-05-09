@@ -1,0 +1,37 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate;
+          uint256 vote;
+      }
+     mapping(address => Voter) public voters;
+     address public admin;
+
+    function delegate(address to) public {
+              Voter storage sender = voters[msg.sender];
+              sender.delegate = to; 
+              sender.weight = 0; 
+        }
+
+    function vote(uint256 proposal) public {
+              Voter storage sender = voters[msg.sender];
+              require(!sender.voted, "already voted");
+              sender.voted = true;
+              sender.vote = proposal; 
+        }
+
+    function tallyVotes() public {
+              uint256 totalVotes = 0;
+              for (uint256 i = 0; i < voters.length; i++) {
+                  totalVotes += voters[i].vote;
+               }
+              return totalVotes;
+        }
+}
+
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

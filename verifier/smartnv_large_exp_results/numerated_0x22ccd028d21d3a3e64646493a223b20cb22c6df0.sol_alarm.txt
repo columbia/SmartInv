@@ -1,0 +1,23 @@
+<\contract\>
+contract Escrow {
+    mapping(address => uint) public balances;
+    address public owner;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Withdrawal amount must be greater than 0");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transferOwnership(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = _newOwner;
+    }
+}
+<\contract\>

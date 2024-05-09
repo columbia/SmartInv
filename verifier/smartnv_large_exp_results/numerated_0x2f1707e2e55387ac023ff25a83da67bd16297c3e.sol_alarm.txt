@@ -1,0 +1,26 @@
+<\contract\>
+contract TokenMarket {
+    address public owner;
+    uint public totalSupply;
+
+    constructor(uint _totalSupply) public {
+        owner = msg.sender;
+        totalSupply = _totalSupply;
+    }
+
+    function buyTokens(uint amount) external payable {
+        require(msg.value == amount, "Incorrect payment amount");
+        totalSupply += amount;
+    }
+
+    function transferOwnership(address newOwner) external {
+        require(msg.sender == owner, "Not authorized");
+        owner = newOwner;
+    }
+
+    function withdrawFunds() external {
+        require(msg.sender == owner, "Not authorized");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract\>

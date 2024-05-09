@@ -1,0 +1,26 @@
+<\analyzed_contract\> 
+contract PaymentContract {
+    mapping(address => uint) public payments;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(address _recipient, uint _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_recipient] += _amount;
+    }
+
+    function withdrawPayment(address _recipient) public {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        uint payment = payments[_recipient];
+        payments[_recipient] = 0;
+        payable(_recipient).transfer(payment);
+    }
+}
+<\analyzed_contract\> 
+
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

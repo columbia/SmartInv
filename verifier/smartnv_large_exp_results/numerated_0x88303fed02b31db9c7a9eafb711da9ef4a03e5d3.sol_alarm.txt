@@ -1,0 +1,22 @@
+The contract being analyzed: 
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        votes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function unvote() public {
+        require(votes[msg.sender] > 0, "No votes to unvote");
+        votes[msg.sender]--;
+        totalVotes--;
+    }
+}
+
+The potential vulnerabilities in the contract are: 
+4) inconsistent state update
+7) ID uniqueness violation
+11) suicidal contracts

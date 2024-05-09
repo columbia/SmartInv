@@ -1,0 +1,82 @@
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: GreenPillNFT
+Function name: withdraw()
+PC address: 4379
+Estimated Gas Usage: 2281 - 37175
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x6bcc69e59e5b9e31b386a9d29186bfc1d0411255.sol:535
+
+payable(msg.sender).call{
+            value: address(this).balance
+        }("")
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transferOwnership(address), txdata: 0xf2fde38b000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: ('0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',), value: 0x0
+Caller: [ATTACKER], function: withdraw(), txdata: 0x3ccfd60b, value: 0x0
+
+==== Unprotected Ether Withdrawal ====
+SWC ID: 105
+Severity: High
+Contract: GreenPillNFT
+Function name: withdraw()
+PC address: 4379
+Estimated Gas Usage: 2281 - 37175
+Any sender can withdraw Ether from the contract account.
+Arbitrary senders other than the contract creator can profitably extract Ether from the contract account. Verify the business logic carefully and make sure that appropriate security controls are in place to prevent unexpected loss of funds.
+--------------------
+In file: /tmp/0x6bcc69e59e5b9e31b386a9d29186bfc1d0411255.sol:535
+
+payable(msg.sender).call{
+            value: address(this).balance
+        }("")
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x20000400a8020940, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transferOwnership(address), txdata: 0xf2fde38b000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: ('0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',), value: 0x0
+Caller: [ATTACKER], function: withdraw(), txdata: 0x3ccfd60b, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: GreenPillNFT
+Function name: devMint(address,uint256)
+PC address: 6976
+Estimated Gas Usage: 40643 - 159082
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0x6bcc69e59e5b9e31b386a9d29186bfc1d0411255.sol:321
+
+IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: devMint(address,uint256), txdata: 0x627804af000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef0000000000000000000000000000000000000000000000000000000000000003, decoded_data: ('0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef', 3), value: 0x0
+
+

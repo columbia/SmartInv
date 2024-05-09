@@ -1,0 +1,26 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint => uint) public listings;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createListing(uint _id, uint _price) public {
+        require(msg.sender == owner, "Only owner can create listings");
+        listings[_id] = _price;
+    }
+
+    function purchaseListing(uint _id, uint _amount) public payable {
+        require(listings[_id] > 0, "Listing does not exist");
+        require(msg.value >= listings[_id] * _amount, "Insufficient funds");
+        payable(owner).transfer(msg.value);
+    }
+
+    function updateListingPrice(uint _id, uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can update listing price");
+        listings[_id] = _newPrice;
+    }
+}
+<\contract\>

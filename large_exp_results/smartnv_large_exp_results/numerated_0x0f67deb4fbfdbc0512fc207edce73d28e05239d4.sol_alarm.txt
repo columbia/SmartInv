@@ -1,0 +1,26 @@
+Contract:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint amount) external {
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens in contract");
+        token.transfer(msg.sender, amount);
+    }
+
+    function withdrawTokens(uint amount) external {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(owner, amount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The contract doesn't have proper checks for when tokens are transferred out, leaving the balance in an inconsistent state.
+2) Incorrect visibility/ownership: The owner variable should be declared as public so that it can be accessed externally for verification.
+3) Insufficient gas: If the contract holds a large amount of tokens, executing the buyTokens function may run out of gas due to the token transfer operation consuming too much gas.

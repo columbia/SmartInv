@@ -1,0 +1,22 @@
+<\analyzed_contract\> 
+contract CrossBridge {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+
+    function swapTokens(uint amount, address recipient) external {
+          require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+          tokenA.transferFrom(msg.sender, address(this), amount);
+          tokenB.transfer(recipient, amount);
+    }
+
+    function updateBridge(address newTokenA, address newTokenB) external {
+          require(msg.sender == owner, "Unauthorized");
+          tokenA = IERC20(newTokenA);
+          tokenB = IERC20(newTokenB);
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the analyzed contract are:
+- cross bridge inconsistency
+- inconsistent state update

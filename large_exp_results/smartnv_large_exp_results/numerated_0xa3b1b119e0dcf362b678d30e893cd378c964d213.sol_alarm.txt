@@ -1,0 +1,17 @@
+Contract to analyze:
+contract VotingSystem {
+         mapping(address => uint) public votes;
+         
+         function vote(uint amount) public {
+             votes[msg.sender] += amount;
+         }
+         
+         function getVotes(address user) public view returns (uint) {
+             return votes[user];
+         }
+         
+         function withdrawVotes(uint amount) public {
+             require(votes[msg.sender] >= amount, "not enough votes to withdraw");
+             votes[msg.sender] -= amount;
+         }
+}

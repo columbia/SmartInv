@@ -1,0 +1,21 @@
+<\Contract\>
+contract Crowdsale {
+    IERC20 public token;
+    address public owner;
+    uint public rate;
+
+    constructor(IERC20 _token, uint _rate) {
+        token = _token;
+        owner = msg.sender;
+        rate = _rate;
+    }
+
+    function buyTokens(uint amount) external {
+        uint cost = amount * rate;
+        token.transferFrom(msg.sender, owner, cost);
+    }
+}
+<\Contract\> 
+
+<\Output\>
+insufficient gas

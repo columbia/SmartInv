@@ -1,0 +1,44 @@
+<\contract\>
+contract Escrow {
+    IERC20 public token;
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerConfirmed;
+    bool public sellerConfirmed;
+
+    constructor(
+        address _token,
+        address _buyer,
+        address _seller,
+        address _arbiter,
+        uint _amount
+    ) {
+        token = IERC20(_token);
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        buyerConfirmed = false;
+        sellerConfirmed = false;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller, "Caller is not buyer or seller");
+        if (msg.sender == buyer) {
+            buyerConfirmed = true;
+        } else {
+            sellerConfirmed = true;
+        }
+
+        if (buyerConfirmed && sellerConfirmed) {
+            token.transfer(seller, amount);
+        }
+    }
+}
+<\contract\> 
+
+Output:
+- inconsistent state update
+- incorrect visibility/ownership

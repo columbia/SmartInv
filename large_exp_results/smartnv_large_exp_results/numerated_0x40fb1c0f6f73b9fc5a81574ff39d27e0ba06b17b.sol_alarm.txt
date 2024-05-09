@@ -1,0 +1,45 @@
+The contract provided for analysis:
+
+contract Marketplace {
+    struct Product {
+        uint productId;
+        string name;
+        uint price;
+        address seller;
+        bool isSold;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createProduct(string memory _name, uint _price) public {
+        require(msg.sender == owner, "Only owner can create product");
+        productCount++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender, false);
+    }
+
+    function buyProduct(uint _productId) public payable {
+        Product storage product = products[_productId];
+        require(product.productId != 0, "Product does not exist");
+        require(!product.isSold, "Product already sold");
+        require(msg.value >= product.price, "Insufficient funds");
+
+        product.seller.transfer(product.price);
+        product.isSold = true;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Output:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

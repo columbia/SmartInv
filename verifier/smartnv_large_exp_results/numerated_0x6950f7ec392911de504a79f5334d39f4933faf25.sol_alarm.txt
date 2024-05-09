@@ -1,0 +1,25 @@
+Contract to be analyzed:
+contract Wallet {
+    address owner;
+    uint balance;
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- privilege escalation
+- inconsistent state update
+- incorrect visibility/ownership

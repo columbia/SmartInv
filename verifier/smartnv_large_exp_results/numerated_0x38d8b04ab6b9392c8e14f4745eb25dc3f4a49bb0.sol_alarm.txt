@@ -1,0 +1,22 @@
+<\contract\> 
+contract PaymentChannel {
+
+    address public sender;
+    address public recipient;
+    uint256 public expiration;
+    uint256 public amount;
+
+    constructor(address _recipient, uint256 _duration, uint256 _amount) {
+        sender = msg.sender;
+        recipient = _recipient;
+        expiration = block.timestamp + _duration;
+        amount = _amount;
+    }
+
+    function closeChannel() public {
+        require(msg.sender == recipient, "Only the recipient can close the channel");
+        require(block.timestamp < expiration, "Channel has expired");
+        payable(recipient).transfer(amount);
+    }
+}
+<\contract\>

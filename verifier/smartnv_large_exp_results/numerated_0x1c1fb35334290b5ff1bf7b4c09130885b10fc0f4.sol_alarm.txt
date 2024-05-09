@@ -1,0 +1,21 @@
+<\contract\>
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    constructor(address _tokenA, address _tokenB) {
+        tokenA = IERC20(_tokenA);
+        tokenB = IERC20(_tokenB);
+    }
+
+    function swap(uint amount) public {
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+<\contract\>
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The contract swaps tokens without checking if the transfer is successful, which may lead to an inconsistent state if one of the transfers fails.
+2) Insufficient gas: If the contract encounters a situation where gas costs exceed the specified amount, the swap function may not be completed successfully.
+3) Incorrect visibility/ownership: The contract does not specify the visibility of the constructor, which may lead to potential issues related to contract ownership and visibility.

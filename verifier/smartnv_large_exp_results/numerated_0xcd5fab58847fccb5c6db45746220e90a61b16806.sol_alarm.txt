@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `lockedFunds` variable is updated in the `endExecute` function without any check on whether the calling address has permission to update this variable, possibly leading to unauthorized changes in the contract state.
+
+2) Incorrect visibility/ownership: The `debt` and `collateral` variables are declared as public, which allows anyone to access and modify these variables directly, potentially leading to unauthorized manipulation of user debt and collateral amounts. 
+
+3) Insufficient gas: The `calculatePrice` function returns a value without using the `view` or `pure` modifier, which may consume unnecessary gas if called externally. 
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and insufficient gas.

@@ -1,0 +1,51 @@
+Given the contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address internal owner;
+     IERC20 votingToken;
+     mapping(address => uint) startingBalanceList;
+     Proposal proposal;
+
+    function startExecute() external {
+              uint256 startingBalance;
+              require(proposal.sTime == 0, "on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The 'proposal' struct is being modified throughout different functions, which may lead to inconsistent state updates.
+
+2) Insufficient gas: Performing multiple state changes in the functions may lead to increased gas consumption and potential gas limit issues.
+
+3) Incorrect visibility/ownership: The 'owner' variable is not used in the contract, and its visibility is set to internal, which could potentially lead to confusion or unintended consequences.
+
+4) ID uniqueness violation: The contract does not have a mechanism to ensure unique proposal IDs, which may lead to conflicts or unexpected behavior.
+
+5) Business logic flaw: There may be potential business logic flaws depending on the specific requirements and intended functionality of the contract that are not apparent from the provided snippet.
+
+Therefore, the potential vulnerabilities in the contract are Inconsistent state update, Insufficient gas, Incorrect visibility/ownership, ID uniqueness violation, and Business logic flaw.

@@ -1,0 +1,28 @@
+The contract to analyze:
+
+contract TokenMarket {
+         IERC20 public token;
+         address public owner;
+         uint public price;
+
+         constructor(address _token, uint _price) public {
+             token = IERC20(_token);
+             owner = msg.sender;
+             price = _price;
+         }
+
+         function buyTokens(uint _amount) public {
+             require(token.balanceOf(address(this)) >= _amount * price, "Insufficient token balance");
+             token.transfer(msg.sender, _amount);
+         }
+
+         function updatePrice(uint _newPrice) public {
+             require(msg.sender == owner, "Only owner can update price");
+             price = _newPrice;
+         }
+}
+
+The potential vulnerabilities identified in the TokenMarket contract are:
+
+- incorrect visibility/ownership
+- privilege escalation

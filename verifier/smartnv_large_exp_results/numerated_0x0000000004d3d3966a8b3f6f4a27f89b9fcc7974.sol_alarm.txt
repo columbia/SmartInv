@@ -1,0 +1,31 @@
+<\contract\> 
+contract Crowdsale {
+    address public owner;
+    uint public goal;
+    uint public endTime;
+    mapping(address => uint) public contributions;
+    
+    constructor(uint _goal, uint _endTime) public {
+        owner = msg.sender;
+        goal = _goal;
+        endTime = _endTime;
+    }
+    
+    function contribute() public payable {
+        require(now < endTime, "Crowdsale has ended");
+        contributions[msg.sender] += msg.value;
+    }
+    
+    function withdrawFunds() public {
+        require(now >= endTime, "Crowdsale is still ongoing");
+        require(address(this).balance >= goal, "Goal not reached");
+        
+        if(msg.sender == owner) {
+            msg.sender.transfer(address(this).balance);
+        }
+    }
+}
+<\contract\> 
+
+Output:
+- Incorrect ownership control: The owner can withdraw funds regardless of whether the goal has been reached or not, potentially allowing the owner to take funds prematurely. This could lead to misuse of funds or unfair distribution.

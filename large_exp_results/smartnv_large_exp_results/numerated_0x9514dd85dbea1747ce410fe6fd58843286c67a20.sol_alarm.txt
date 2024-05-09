@@ -1,0 +1,29 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function buyTokens() public payable {
+        require(msg.value > 0, "Value must be greater than 0");
+
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+
+        uint amount = balances[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+
+        msg.sender.transfer(amount);
+        balances[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+Output: 
+healthy

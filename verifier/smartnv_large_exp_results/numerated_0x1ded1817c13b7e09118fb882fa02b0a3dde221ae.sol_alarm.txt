@@ -1,0 +1,24 @@
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public price;
+    IERC20 public token;
+
+    constructor(uint _price, address _token) {
+        owner = msg.sender;
+        price = _price;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint amount) public {
+        require(balances[msg.sender] + amount >= balances[msg.sender], "Integer overflow/underflow");
+        require(balances[msg.sender] + amount >= amount * price, "Insufficient funds");
+        balances[msg.sender] += amount;
+        token.transfer(msg.sender, amount);
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Incorrect ownership");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}

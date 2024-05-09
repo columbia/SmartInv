@@ -1,0 +1,45 @@
+The contract to analyze for potential vulnerabilities is:
+
+```solidity
+contract VestingToken is IERC20 {
+    mapping(address => uint) public vestingBalance;
+    
+    function vest(address _beneficiary, uint _amount, uint _start, uint _cliff, uint _duration) external {
+        require(_beneficiary != address(0), "Invalid beneficiary address");
+        require(_amount > 0, "Invalid vesting amount");
+        
+        uint end = _start + _duration;
+        vestingBalance[_beneficiary] += _amount;
+        
+        VestingSchedule memory newSchedule = VestingSchedule(_amount, _start, _cliff, _duration, end, false);
+        schedule[_beneficiary].push(newSchedule);
+    }
+    
+    function release(address _beneficiary) external {
+        for (uint i = 0; i < schedule[_beneficiary].length; i++) {
+            VestingSchedule storage s = schedule[_beneficiary][i];
+            if (s.end <= block.timestamp && !s.released) {
+                uint amount = s.amount;
+                vestingBalance[_beneficiary] -= amount;
+                s.released = true;
+                
+                _transfer(address(this), _beneficiary, amount);
+            }
+        }
+    }
+    
+    struct VestingSchedule {
+        uint amount;
+        uint start;
+        uint cliff;
+        uint duration;
+        uint end;
+        bool released;
+    }
+    mapping(address => VestingSchedule[]) public schedule;
+}
+```
+
+Output: 
+- atomicity violation
+- inconsistent state update

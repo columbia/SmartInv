@@ -1,0 +1,28 @@
+<\contract\>
+contract InsuranceContract {
+    address public owner;
+    mapping(uint => address) public clients;
+    mapping(address => uint) public clientPolicies;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addClient(uint clientId, address clientAddress) public {
+        require(msg.sender == owner, "Only owner can add clients");
+        clients[clientId] = clientAddress;
+    }
+
+    function buyPolicy(uint policyId) public payable {
+        require(clientPolicies[msg.sender] == 0, "Client already has a policy");
+        require(msg.value > 0, "Payment required to buy policy");
+        clientPolicies[msg.sender] = policyId;
+    }
+
+    function claimInsurance() public {
+        require(clientPolicies[msg.sender] != 0, "No policy bought by client");
+        // Process insurance claim
+        // Send payment to client
+    }
+}
+<\contract\>

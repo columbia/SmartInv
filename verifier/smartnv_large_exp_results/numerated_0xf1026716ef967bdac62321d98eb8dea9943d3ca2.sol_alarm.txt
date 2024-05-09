@@ -1,0 +1,17 @@
+<\contract\>
+contract PaymentGateway {
+         IERC20 public token;
+         mapping(address => uint) public balances;
+
+         function deposit(uint amount) public {
+             balances[msg.sender] += amount;
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             token.transfer(msg.sender, amount);
+         }
+}
+<\contract\>

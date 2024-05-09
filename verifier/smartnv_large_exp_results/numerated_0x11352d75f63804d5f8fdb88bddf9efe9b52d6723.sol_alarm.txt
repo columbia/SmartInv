@@ -1,0 +1,28 @@
+Contract to analyze:
+
+contract SubscriptionService {
+    IERC20 public token;
+    mapping(address => bool) public subscribers;
+    uint public subscriptionFee;
+
+    constructor(IERC20 _token, uint _subscriptionFee) {
+        token = _token;
+        subscriptionFee = _subscriptionFee;
+    }
+
+    function subscribe() external {
+        require(subscribers[msg.sender] == false, "Already subscribed");
+        token.transferFrom(msg.sender, address(this), subscriptionFee);
+        subscribers[msg.sender] = true;
+    }
+
+    function unsubscribe() external {
+        require(subscribers[msg.sender] == true, "Not subscribed");
+        token.transfer(msg.sender, subscriptionFee);
+        subscribers[msg.sender] = false;
+    }
+}
+
+Output:
+
+- correct visibility/ownership

@@ -1,0 +1,30 @@
+<\contract\>
+contract Marketplace {
+     address public owner;
+     mapping(uint => bool) public itemsSold;
+     uint public totalPrice;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function sellItem(uint itemId, uint price) public {
+         require(msg.sender == owner, "Only owner can sell items");
+         totalPrice += price;
+         itemsSold[itemId] = true;
+     }
+
+     function buyItem(uint itemId, uint amount) public {
+         require(totalPrice >= amount, "Not enough funds");
+         require(!itemsSold[itemId], "Item already sold");
+         totalPrice -= amount;
+         itemsSold[itemId] = true;
+     }
+
+     function withdraw() public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         msg.sender.transfer(totalPrice);
+         totalPrice = 0;
+     }
+}
+<\contract\>

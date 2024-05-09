@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) ID uniqueness violation: The contract does not have any mechanism to ensure that each proposal has a unique ID, which could lead to issues with data integrity and potential conflicts if multiple proposals are created with the same ID.
+
+2) Incorrect visibility/ownership: The `owner` variable is declared as `internal` which could potentially lead to issues with the visibility of the owner variable and ownership rights within the contract.
+
+3) Inconsistent state update: The `proposal.votedAmount += amount;` line in the `execute` function directly updates the `votedAmount` without additional checks or validations, which could lead to inconsistent state updates and unexpected behavior.
+
+4) Insufficient gas: The `endExecute` function checks if the total balance of the `votingToken` in the contract is greater than half of the total supply, which could potentially consume a lot of gas and lead to out-of-gas exceptions if the token balance is significantly large.
+
+5) Atomicity violation: There are multiple state-changing operations within the `execute` function (`votingToken.transferFrom` and `proposal.votedAmount += amount`) which are not wrapped in a single transaction, potentially leading to atomicity violations and reentrancy attacks.
+
+6) Ether leakage: The contract does not have any mechanisms to handle or prevent ether leakage, which could potentially result in loss of ether if a vulnerability is exploited.
+
+7) Arithmetic flaw: The calculation `getPrice() * cAmount * 80 / 100 < dAmount` in the `liquidate` function uses arithmetic operations that may lead to unexpected results if not handled carefully, potentially resulting in vulnerabilities related to arithmetic flaws.

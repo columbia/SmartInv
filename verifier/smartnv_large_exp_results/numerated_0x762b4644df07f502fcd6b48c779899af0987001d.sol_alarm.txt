@@ -1,0 +1,41 @@
+<\contract\> 
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint[] public proposals;
+
+    function vote(uint proposal) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = proposal;
+        proposals[proposal]++;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Circular delegation is not allowed.");
+        }
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = to;
+
+        if (voters[to].voted) {
+            proposals[voters[to].vote]++;
+        }
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The function "delegate" updates the state of voters without proper synchronization potentially causing inconsistent data.
+2) ID uniqueness violation: There is a possibility for multiple voters to delegate their votes to the same target, leading to ID uniqueness violation.
+3) Incorrect visibility/ownership: The visibility of the voters mapping is set to public, which may expose sensitive information to unauthorized parties. An assessment of ownership control is necessary.

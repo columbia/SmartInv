@@ -1,0 +1,30 @@
+<\contract\>
+contract PaymentContract {
+     address public owner;
+     uint public totalPayments;
+    
+     mapping(address => uint) public payments;
+    
+     constructor() {
+         owner = msg.sender;
+     }
+    
+     function makePayment(address _recipient, uint _amount) public {
+         require(msg.sender == owner, "Only owner can make payments");
+         require(_amount > 0, "Payment amount must be greater than 0");
+         
+         payments[_recipient] += _amount;
+         totalPayments += _amount;
+     }
+    
+     function withdrawPayments() public {
+         uint amount = payments[msg.sender];
+         require(amount > 0, "No payments to withdraw");
+         
+         payments[msg.sender] = 0;
+         totalPayments -= amount;
+         
+         msg.sender.transfer(amount);
+     }
+}
+<\contract\>

@@ -1,0 +1,26 @@
+<\contract\> 
+contract PaymentGateway {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+
+    function getBalance() public view returns (uint) {
+        return balances[msg.sender];
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+8) reentrancy
+13) insufficient gas
+
+Output: reentrancy, insufficient gas

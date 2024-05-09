@@ -1,0 +1,24 @@
+<\contract_to_analyze\> 
+contract TokenSale {
+    address public owner;
+    uint public price;
+    mapping(address => uint) public balances;
+
+    constructor(uint _price) {
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        uint balance = balances[msg.sender];
+        require(balance > 0, "No tokens to withdraw");
+        balances[msg.sender] = 0;
+        payable(msg.sender).transfer(balance * price);
+    }
+}
+<\contract_to_analyze\>

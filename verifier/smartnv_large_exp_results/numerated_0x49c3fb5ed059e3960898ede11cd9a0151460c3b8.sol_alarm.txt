@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract: 
+
+1) Inconsistent state update: The execute function in the TimelockController contract allows for updating the votedAmount in the proposal struct without proper synchronization or locking mechanisms, which can lead to inconsistent state updates if multiple transactions are executed concurrently.
+
+2) Atomicity violation: The execute function in the TimelockController contract involves multiple state changes (transferFrom and updating votedAmount) without using proper atomicity measures, which can result in partial state changes if the execution is interrupted midway.
+
+3) Insufficient gas: The endExecute function in the TimelockController contract locks funds based on a condition involving the balanceOf the contract and the totalSupply of votingToken. This operation may require an excessive amount of gas if the token balances are large, potentially causing out-of-gas errors.
+
+4) Incorrect visibility/ownership: The TimelockController contract implements the IERC20 interface but does not properly define the visibility and ownership of certain functions and state variables, which can lead to unexpected behavior or access control issues.

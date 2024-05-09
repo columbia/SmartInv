@@ -1,0 +1,25 @@
+<\contract\> 
+contract Escrow {
+    address public beneficiary;
+    address public depositor;
+    uint public amount;
+
+    function deposit(address _beneficiary) public payable {
+        require(msg.value > 0, "Amount should be greater than 0");
+        beneficiary = _beneficiary;
+        depositor = msg.sender;
+        amount = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == beneficiary, "Only beneficiary can withdraw");
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The `beneficiary` and `depositor` variables are publicly accessible, which could lead to unauthorized access or manipulation of funds.
+- Insufficient gas: The `withdraw` function uses `transfer`, which has a gas limit that could lead to a denial of service attack if the beneficiary account's fallback function consumes too much gas.
+- Atomicity violation: The `deposit` function sets multiple state variables in sequence, which could lead to inconsistencies if an external call interferes between the assignments.
+- ID uniqueness violation: There are no checks to ensure that the `_beneficiary` address is unique, which could lead to confusion if multiple deposits are made for the same beneficiary address.

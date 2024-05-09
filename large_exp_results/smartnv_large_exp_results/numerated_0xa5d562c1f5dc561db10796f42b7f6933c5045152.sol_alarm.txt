@@ -1,0 +1,21 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    mapping(uint => address) public itemIdToOwner;
+    mapping(address => uint) public ownerItemCount;
+
+    function addItem(uint _itemId) public {
+        require(ownerItemCount[msg.sender] < 5, "exceeded maximum items per owner");
+        itemIdToOwner[_itemId] = msg.sender;
+        ownerItemCount[msg.sender]++;
+    }
+
+    function buyItem(uint _itemId) public {
+        address itemOwner = itemIdToOwner[_itemId];
+        require(itemOwner != address(0), "item does not exist");
+        require(itemOwner != msg.sender, "cannot buy own item");
+        itemIdToOwner[_itemId] = msg.sender;
+        ownerItemCount[msg.sender]++;
+        ownerItemCount[itemOwner]--;
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,28 @@
+<\contract\> 
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint256) public payments;
+    uint256 public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+        totalPayments = 0;
+    }
+
+    function processPayment() public payable {
+        payments[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Unauthorized withdrawal");
+        address payable recipient = msg.sender;
+        recipient.transfer(address(this).balance);
+        totalPayments = 0;
+    }
+}
+<\contract\> 
+
+Output:
+- reentrancy
+- incorrect visibility/ownership

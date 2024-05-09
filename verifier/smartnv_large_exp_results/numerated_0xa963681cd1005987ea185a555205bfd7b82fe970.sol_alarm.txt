@@ -1,0 +1,30 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+    uint public totalTokens;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(uint _totalTokens, uint _tokenPrice) {
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public {
+        require(totalTokens >= amount, "Not enough tokens available");
+        uint cost = amount * tokenPrice; 
+        require(msg.value >= cost, "Insufficient funds sent");
+        
+        balances[msg.sender] += amount;
+        totalTokens -= amount;
+    }
+    
+    function withdrawFunds() external {
+        uint amount = balances[msg.sender] * tokenPrice;
+        require(amount > 0, "No funds to withdraw");
+        
+        balances[msg.sender] = 0;
+        totalTokens += amount; 
+        msg.sender.transfer(amount);
+    }
+}
+<\contract_to_be_analyzed\>

@@ -1,0 +1,58 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public deposit;
+
+    enum State { Created, Paid, Delivered, Refunded, Disputed }
+    State public state;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.Created;
+    }
+
+    function depositFunds() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(state == State.Created, "Deposit already made");
+
+        deposit = msg.value;
+        state = State.Paid;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm delivery");
+        require(state == State.Paid, "Cannot confirm delivery yet");
+
+        if (msg.sender == buyer) {
+            seller.transfer(deposit);
+            state = State.Delivered;
+        } else if (msg.sender == seller) {
+            buyer.transfer(deposit);
+            state = State.Refunded;
+        }
+    }
+
+    function dispute() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can dispute");
+        require(state == State.Paid || state == State.Delivered, "Cannot dispute in current state");
+
+        state = State.Disputed;
+    }
+
+    function settleDispute(bool favorBuyer) public {
+        require(msg.sender == arbiter, "Only arbiter can settle dispute");
+        require(state == State.Disputed, "Cannot settle dispute yet");
+
+        if (favorBuyer) {
+            buyer.transfer(deposit);
+        } else {
+            seller.transfer(deposit);
+        }
+        state = State.Refunded;
+    }
+}
+<\contract\>

@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    mapping(address => uint) public tokenBalance;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+        
+        token.transferFrom(admin, msg.sender, _amount);
+        tokenBalance[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(tokenBalance[msg.sender] >= _amount, "Insufficient tokens");
+        
+        tokenBalance[msg.sender] -= _amount;
+        token.transfer(admin, _amount);
+    }
+}
+
+Output: 
+- integer overflow/underflow
+- inconsistent state update

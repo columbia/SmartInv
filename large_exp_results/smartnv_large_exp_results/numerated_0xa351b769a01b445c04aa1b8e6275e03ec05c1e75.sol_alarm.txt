@@ -1,0 +1,22 @@
+<\contract\>
+contract PaymentChannel {
+    address public payer;
+    address public payee;
+    uint public amount;
+    bool public closed;
+
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+        closed = false;
+    }
+
+    function close() public {
+        require(msg.sender == payer || msg.sender == payee, "only payer or payee can close the channel");
+        require(!closed, "channel already closed");
+        payee.transfer(amount);
+        closed = true;
+    }
+}
+<\contract\>

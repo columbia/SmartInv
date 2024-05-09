@@ -1,0 +1,26 @@
+Contract being analyzed:
+
+contract Shopping {
+         uint public totalItems;
+         mapping(uint => address) public itemOwner;
+         mapping(address => uint) public itemQuantity;
+
+         function buyItem(uint _itemId, uint _quantity) public payable {
+             require(msg.value >= 0.1 ether * _quantity, "Insufficient payment");
+             totalItems += _quantity;
+             itemOwner[_itemId] = msg.sender;
+             itemQuantity[msg.sender] += _quantity;
+         }
+
+         function sellItem(uint _itemId, uint _quantity) public {
+             require(itemOwner[_itemId] == msg.sender, "You don't own this item");
+             require(itemQuantity[msg.sender] >= _quantity, "Insufficient quantity to sell");
+             totalItems -= _quantity;
+             itemQuantity[msg.sender] -= _quantity;
+             payable(msg.sender).transfer(0.1 ether * _quantity);
+         }
+}
+
+Output:
+- atomicity violation
+- ether leakage

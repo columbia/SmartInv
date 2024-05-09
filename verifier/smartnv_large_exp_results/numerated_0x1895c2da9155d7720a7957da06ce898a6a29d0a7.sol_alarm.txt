@@ -1,0 +1,33 @@
+The contract to analyze:
+
+contract TokenSale {
+         IERC20 public token;
+         address public beneficiary;
+         address public admin;
+         uint public tokenPrice;
+         uint public tokensSold;
+
+         constructor(IERC20 _token, address _beneficiary, uint _tokenPrice) public {
+             token = _token;
+             beneficiary = _beneficiary;
+             admin = msg.sender;
+             tokenPrice = _tokenPrice;
+             tokensSold = 0;
+         }
+
+         function buyTokens(uint _amount) public {
+             require(msg.value == _amount * tokenPrice, "Incorrect token amount");
+             require(token.transfer(msg.sender, _amount), "Token transfer failed");
+             tokensSold += _amount;
+         }
+
+         function withdrawTokens() public {
+             require(msg.sender == beneficiary || msg.sender == admin, "Unauthorized");
+             require(token.transfer(beneficiary, token.balanceOf(address(this))), "Token transfer failed");
+         }
+  }
+
+Potential vulnerabilities in the TokenSale contract:
+- Incorrect visibility/ownership: The `withdrawTokens` function allows both the beneficiary and the admin to withdraw tokens. However, the admin may not have the authorization to withdraw tokens, which could lead to unauthorized access to funds.
+- Insufficient gas: If the `buyTokens` function requires a significant amount of gas to execute, users may run out of gas midway through the transaction, leading to a failed transaction and a potential loss of funds.
+- Integer overflow/underflow: There is no explicit check for integer overflow/underflow in the contract, which could lead to unexpected behavior if large values are passed to functions that perform arithmetic operations.

@@ -1,0 +1,47 @@
+<\contract_1\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public buyerPaid;
+    bool public sellerPaid;
+    bool public arbitrated;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        buyerPaid = false;
+        sellerPaid = false;
+        arbitrated = false;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == buyer && !buyerPaid, "Only buyer can deposit and not already paid");
+        require(msg.value == escrowAmount, "Deposit amount must match escrow amount");
+        buyerPaid = true;
+    }
+    
+    function confirmPayment() public {
+        require(msg.sender == seller && buyerPaid, "Only seller can confirm payment after buyer has paid");
+        sellerPaid = true;
+    }
+    
+    function releaseAmountToSeller() public {
+        require(sellerPaid && !arbitrated, "Seller must have confirmed payment and arbitration is not in progress");
+        payable(seller).transfer(escrowAmount);
+    }
+    
+    function refundAmountToBuyer() public {
+        require(buyerPaid && !arbitrated, "Buyer must have paid and arbitration is not in progress");
+        payable(buyer).transfer(escrowAmount);
+    }
+    
+    function arbitrate() public {
+        require(msg.sender == arbiter, "Only arbiter can arbitrate");
+        arbitrated = true;
+    }
+}
+<\contract_1\>

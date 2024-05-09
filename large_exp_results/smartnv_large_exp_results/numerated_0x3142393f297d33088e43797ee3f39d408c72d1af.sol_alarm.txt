@@ -1,0 +1,38 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public releasedToSeller;
+    bool public releasedToBuyer;
+
+    function setup(address _seller, address _arbiter) external {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        releasedToSeller = false;
+        releasedToBuyer = false;
+    }
+
+    function deposit() external payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == price, "Incorrect amount deposited");
+    }
+
+    function confirmReception() external {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm reception");
+        if (msg.sender == buyer) {
+            releasedToSeller = true;
+        } else {
+            releasedToBuyer = true;
+        }
+    }
+
+    function releaseFunds() external {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(releasedToSeller && releasedToBuyer, "Both parties must confirm reception");
+        payable(seller).transfer(price);
+    }
+}
+<\contract_to_analyze\>

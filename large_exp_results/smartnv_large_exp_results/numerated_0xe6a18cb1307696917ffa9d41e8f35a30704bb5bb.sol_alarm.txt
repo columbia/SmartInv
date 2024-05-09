@@ -1,0 +1,37 @@
+<\contract\> 
+contract MultiSigWallet {
+    mapping(address => uint8) public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    modifier isOwner() {
+        require(owners[msg.sender] == 1, "Not an owner");
+        _;
+    }
+
+    function submitTransaction(address destination, uint value, bytes memory data) public isOwner {
+        transactions[transactionCount] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public isOwner {
+        Transaction storage t = transactions[transactionId];
+        require(t.executed == false, "Transaction already executed");
+        
+        (bool success, ) = t.destination.call{value: t.value}(t.data);
+        require(success, "Transaction execution failed");
+
+        t.executed = true;
+    }
+} 
+
+Output:
+- Privilege Escalation
+- Inconsistent State Update

@@ -1,0 +1,22 @@
+<\contract_to_be_analyzed\> 
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCount;
+    uint public totalVotes;
+
+    function vote(bool inFavor) public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        if(inFavor) {
+            voteCount[msg.sender]++;
+            totalVotes++;
+        } else {
+            voteCount[msg.sender]--;
+            totalVotes--;
+        }
+        hasVoted[msg.sender] = true;
+    }
+} 
+
+The potential vulnerabilities in the contract are:
+1) inconsistent state update
+2) integer overflow/underflow

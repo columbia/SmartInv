@@ -1,0 +1,18 @@
+<\your_contract\>
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() external payable{
+         require(msg.value > highestBid, "bid is lower than the current highest bid");
+         highestBidder.transfer(highestBid);
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+
+     function endAuction() external{
+         require(msg.sender == highestBidder, "only the highest bidder can end the auction");
+         selfdestruct(msg.sender);
+     }
+}
+<\your_contract\>

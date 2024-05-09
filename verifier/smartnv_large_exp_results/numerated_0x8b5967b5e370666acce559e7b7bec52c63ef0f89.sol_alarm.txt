@@ -1,0 +1,29 @@
+The contract below may have the following vulnerabilities:
+- Inconsistent state update
+- Incorrect visibility/ownership
+- Business logic flaw
+
+```solidity
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public items;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(uint itemId, uint price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        items[itemId] = price;
+    }
+
+    function purchaseItem(uint itemId) public {
+        uint itemPrice = items[itemId];
+        require(itemPrice > 0, "Item not found");
+        require(msg.value >= itemPrice, "Insufficient funds");
+
+        payable(owner).transfer(itemPrice);
+        items[itemId] = 0; // Set price to 0 to mark item as sold
+    }
+}
+```

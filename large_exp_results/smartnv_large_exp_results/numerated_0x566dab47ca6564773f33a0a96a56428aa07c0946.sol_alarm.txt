@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Business logic flaw in the "endExecute" function where the execution of the proposal is deemed successful if the balance of locked funds is greater than half of the total token supply, which may lead to incorrect decision-making.
+
+2) Inconsistent state update in the "execute" function where the value of "proposal.votedAmount" is updated directly, which can lead to inconsistent state if multiple transactions are processed simultaneously or if reentrancy occurs.
+
+3) Incorrect visibility/ownership issue in the "startExecute" function where the starting balance of a proposal is stored in "startingBalanceList" without proper access control, potentially allowing unauthorized parties to manipulate the data.

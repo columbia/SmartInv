@@ -1,0 +1,25 @@
+Contract to be analyzed:
+
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function buyTokens() public payable {
+        require(msg.value > 0);
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner);
+        payable(owner).transfer(address(this).balance);
+    }
+}
+
+Potential vulnerabilities in the TokenSale contract:
+1) Incorrect visibility/ownership: The 'owner' variable is public, making it accessible to everyone. This could potentially lead to privilege escalation if an attacker is able to manipulate the 'owner' address.
+2) Insufficient gas: In the withdraw function, transferring the contract balance to the owner using 'payable(owner).transfer(address(this).balance)' could fail if the gas limit is exceeded, resulting in funds being stuck in the contract. 
+3) Integer overflow/underflow: The 'balances' mapping is susceptible to integer overflow if a user repeatedly buys tokens, leading to unexpected behavior or loss of funds.

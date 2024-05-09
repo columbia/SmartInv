@@ -1,0 +1,19 @@
+<\your_contract\>
+contract Crowdsale {
+    uint public deadline;
+    uint public goal;
+    mapping(address => uint) public contributions;
+
+    function contribute() public payable {
+        require(block.timestamp < deadline, "Crowdsale has ended");
+        contributions[msg.sender] += msg.value;
+    }
+
+    function withdrawFunds() public {
+        require(block.timestamp > deadline && address(this).balance >= goal, "Crowdsale is still ongoing or goal not reached");
+        uint amount = contributions[msg.sender];
+        contributions[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+<\your_contract\>

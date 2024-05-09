@@ -1,0 +1,22 @@
+Contract:
+
+```solidity
+contract VotingSystem {
+    mapping(address => uint256) public voteCount;
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        voteCount[msg.sender]++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function doubleVote() public {
+        voteCount[msg.sender]++;
+    }
+}
+```
+
+Potential vulnerabilities:
+- ID uniqueness violation
+- Incorrect visibility/ownership

@@ -1,0 +1,28 @@
+Contract to be analyzed:
+contract TokenSale {
+    uint public totalSupply;
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor(uint _totalSupply) {
+        totalSupply = _totalSupply;
+        owner = msg.sender;
+        balances[owner] = totalSupply;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount <= balances[owner], "Not enough tokens to sell");
+        balances[msg.sender] += amount;
+        balances[owner] -= amount;
+    }
+
+    function transferTokens(address to, uint amount) public {
+        require(amount <= balances[msg.sender], "Not enough tokens to transfer");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+
+Output:
+- atomicity violation
+- incorrect visibility/ownership

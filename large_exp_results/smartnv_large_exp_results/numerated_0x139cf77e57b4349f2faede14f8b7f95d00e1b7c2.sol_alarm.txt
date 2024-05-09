@@ -1,0 +1,25 @@
+<\contract\> 
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address public winner;
+
+    function vote() public {
+        votes[msg.sender]++;
+    }
+
+    function countVotes() public {
+        uint maxVotes = 0;
+        address potentialWinner;
+        for (uint i = 0; i < address.length; i++) {
+            if (votes[i] > maxVotes) {
+                potentialWinner = i;
+                maxVotes = votes[i];
+            }
+        }
+        winner = potentialWinner;
+    }
+} 
+
+Output: 
+1) Inconsistent state update
+2) Business logic flaw

@@ -1,0 +1,16 @@
+The contract provided for analysis:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+}
+
+Output: 
+- Reentrancy vulnerability: The function bid() transfers funds to the highestBidder before updating the highestBidder address and highestBid value, allowing a malicious user to reenter the function before the state is updated and potentially manipulate the outcome of the auction.

@@ -1,0 +1,18 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    mapping(uint => address) public voters;
+    mapping(address => bool) public hasVoted;
+
+    function vote(uint proposalId) external {
+        require(voters[proposalId] == msg.sender, "You are not eligible to vote");
+        require(!hasVoted[msg.sender], "You have already voted");
+        
+        // Update state
+        hasVoted[msg.sender] = true;
+    }
+}
+
+The potential vulnerabilities identified in the contract are:
+4) inconsistent state update
+7) ID uniqueness violation

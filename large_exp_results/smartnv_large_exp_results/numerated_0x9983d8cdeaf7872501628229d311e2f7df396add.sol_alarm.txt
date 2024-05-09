@@ -1,0 +1,10 @@
+The contract you provided contains potential vulnerabilities: 
+
+1) Inconsistent state update: 
+   - In the function `startExecute`, `startingBalanceList[proposal.addr]` is updated without initializing `startingBalanceList`. This can lead to inconsistent state updates.
+
+2) Incorrect visibility/ownership: 
+   - The interface `IERC20` is used in the contract without specifying its visibility, which can lead to incorrect visibility.
+
+3) Insufficient gas: 
+   - The function `endExecute` performs a complex calculation `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` which may require significant gas. If the contract runs out of gas during this calculation, it can lead to insufficient gas vulnerability.

@@ -1,0 +1,21 @@
+<\Your_Contract\>
+contract InsuranceContract {
+         IERC20 public DAI;
+         uint public insuranceAmount;
+         address public insured;
+         address public insurer;
+
+         function buyInsurance(uint amount) external {
+             require(DAI.balanceOf(msg.sender) >= amount, "Insufficient DAI balance");
+             DAI.transferFrom(msg.sender, address(this), amount);
+             insuranceAmount = amount;
+             insured = msg.sender;
+         }
+
+         function claimInsurance() external {
+             require(msg.sender == insured, "Only the insured can claim insurance");
+             DAI.transfer(insurer, insuranceAmount);
+         }
+}
+Output:
+- insufficient gas

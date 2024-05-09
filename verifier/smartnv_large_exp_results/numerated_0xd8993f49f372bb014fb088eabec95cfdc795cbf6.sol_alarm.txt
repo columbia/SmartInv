@@ -1,0 +1,22 @@
+<\your_contract\>
+contract PaymentContract {
+         address public payer;
+         address public payee;
+         uint public amount;
+         bool public isPaid;
+
+         function makePayment(address _payee, uint _amount) public {
+             require(!isPaid, "Payment has already been made");
+             payer = msg.sender;
+             payee = _payee;
+             amount = _amount;
+             isPaid = true;
+         }
+
+         function releasePayment() public {
+             require(msg.sender == payee, "Only the payee can release the payment");
+             require(isPaid, "Payment has not been made yet");
+             payee.transfer(amount);
+         }
+}
+<\your_contract\>

@@ -1,0 +1,31 @@
+<\contract\> 
+contract Escrow {
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public price;
+         bool public fundsDisbursed;
+
+         function depositFunds() external payable {
+             require(msg.sender == buyer, "only buyer can deposit funds");
+             require(msg.value == price, "incorrect amount deposited");
+         }
+
+         function releaseFunds() external {
+             require(msg.sender == arbiter, "only arbiter can release funds");
+             require(!fundsDisbursed, "funds already disbursed");
+             fundsDisbursed = true;
+             seller.transfer(price);
+         }
+
+         function refundFunds() external {
+             require(msg.sender == arbiter, "only arbiter can refund funds");
+             require(!fundsDisbursed, "funds already disbursed");
+             fundsDisbursed = true;
+             buyer.transfer(price);
+         }
+}
+<\contract\> 
+
+Output:
+insufficient gas

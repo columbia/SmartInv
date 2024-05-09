@@ -1,0 +1,45 @@
+The contract provided for analysis is:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the provided contract are:
+
+1) Business logic flaw: There may be potential issues related to the logic of handling proposals, executions, and ending executions, such as not properly checking certain conditions or executing functions in the correct order.
+
+2) Insufficient gas: There is a possibility of running out of gas during the execution of these functions, especially when dealing with external calls to transfer tokens.
+
+3) Incorrect visibility/ownership: The visibility of variables and functions within the contract could lead to unexpected behavior or unauthorized access.
+
+Therefore, the identified potential vulnerabilities in the contract are business logic flaw, insufficient gas, and incorrect visibility/ownership.

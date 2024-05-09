@@ -1,0 +1,20 @@
+<\contract\>
+contract TokenEscrow {
+    address public token; 
+    mapping(address => uint) public escrowedTokens;
+    
+    function deposit(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        escrowedTokens[msg.sender] += amount;
+        require(ERC20(token).transferFrom(msg.sender, address(this), amount), "Transfer failed");
+    }
+    
+    function withdraw(uint amount) external {
+        require(escrowedTokens[msg.sender] >= amount, "Insufficient funds");
+        escrowedTokens[msg.sender] -= amount;
+        require(ERC20(token).transfer(msg.sender, amount), "Transfer failed");
+    }
+}
+<\contract\>
+Output:
+- ID uniqueness violation

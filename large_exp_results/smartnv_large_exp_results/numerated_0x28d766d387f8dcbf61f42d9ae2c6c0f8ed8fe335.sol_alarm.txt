@@ -1,0 +1,39 @@
+Contract TimelockController {
+    struct Proposal {
+        uint256 sTime;
+        uint256 votedAmount;
+        address addr;
+    }
+    
+    address internal owner;
+    IERC20 votingToken;
+    mapping(address => uint256) startingBalanceList;
+    Proposal proposal;
+
+    function startExecute() external {
+        require(proposal.sTime == 0, "on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        uint256 startingBalance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBalance;
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through");
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount;
+        votedProposal(proposal);
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");
+        uint256 lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+Potential vulnerabilities in the contract above:
+- Inconsistent state update: The `proposal` struct is updated in `startExecute()` and `execute()` functions without setting `votedAmount` to `0` in `startExecute()` which could lead to inconsistent data.
+- Incorrect visibility/ownership: The `proposal` struct is public which may expose sensitive data to external parties.
+- Insufficient gas: The operations performed in `endExecute()` require a significant amount of gas which may cause the function to fail if there is insufficient gas provided.
+- Business logic flaw: The requirement `require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");` may not accurately determine the execution status based on fund availability.

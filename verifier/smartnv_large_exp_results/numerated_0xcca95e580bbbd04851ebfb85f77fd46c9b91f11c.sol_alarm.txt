@@ -1,0 +1,28 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+    }
+    mapping(address => Voter) public voters;
+    uint public totalVotes;
+
+    function vote(address delegate) public {
+        require(!voters[msg.sender].voted, "Already voted");
+        voters[msg.sender].delegate = delegate;
+        voters[msg.sender].voted = true;
+        totalVotes++;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == owner, "Only owner can reset votes");
+        totalVotes = 0;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The `owner` variable is not defined in the contract, so the `resetVotes` function will fail as it references an undefined `owner`.
+- Insufficient gas: The `vote` function does not have any limit on gas consumption, which could potentially lead to out-of-gas errors.
+- ID uniqueness violation: There is no check for duplicate addresses when voting, which could lead to multiple votes from the same address.
+- Business logic flaw: There is a potential logical flaw in the `vote` function where voters can change their delegate multiple times, leading to potential manipulation of the voting system.

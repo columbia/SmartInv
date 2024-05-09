@@ -1,0 +1,28 @@
+<\contract\> 
+contract VestingContract {
+    address public owner;
+    mapping(address => uint) public vestingAmounts;
+    mapping(address => uint) public vestingStartTimes;
+    mapping(address => uint) public vestingDurations;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function createVesting(address beneficiary, uint amount, uint startTime, uint duration) external {
+        require(msg.sender == owner, "only owner can create vesting schedule");
+        vestingAmounts[beneficiary] = amount;
+        vestingStartTimes[beneficiary] = startTime;
+        vestingDurations[beneficiary] = duration;
+    }
+
+    function releaseVestedAmount(address beneficiary) external {
+        require(block.timestamp >= vestingStartTimes[beneficiary], "vesting period has not started yet");
+        require(block.timestamp < vestingStartTimes[beneficiary] + vestingDurations[beneficiary], "vesting period has ended");
+        // release vested amount to beneficiary
+    }
+}
+<\contract\> 
+
+Output:
+- insufficient gas

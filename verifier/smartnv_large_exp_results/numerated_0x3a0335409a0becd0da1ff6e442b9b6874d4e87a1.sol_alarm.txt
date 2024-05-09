@@ -1,0 +1,47 @@
+The contract to analyze:
+
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    mapping(uint => mapping(address => bool)) public isConfirmed;
+    mapping(uint => address[]) public confirmedSigners;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    function submitTransaction(address _to, uint _value, bytes memory _data) public {
+        uint txId = transactions.length;
+        transactions[txId] = Transaction(_to, _value, _data, false);
+        isConfirmed[txId][msg.sender] = true;
+        confirmedSigners[txId].push(msg.sender);
+    }
+
+    function confirmTransaction(uint txId) public {
+        require(isOwner[msg.sender], "Not an owner");
+        require(isConfirmed[txId][msg.sender] == false, "Already confirmed");
+        isConfirmed[txId][msg.sender] = true;
+        confirmedSigners[txId].push(msg.sender);
+    }
+
+    function executeTransaction(uint txId) public {
+        require(isOwner(msg.sender), "Not an owner");
+        require(transactions[txId].executed == false, "Already executed");
+        require(confirmedSigners[txId].length == owners.length, "Not enough confirmations");
+        // execute transaction
+        transactions[txId].executed = true;
+    }
+
+    function addOwner(address newOwner) public {
+        owners.push(newOwner);
+        isOwner[newOwner] = true;
+    }
+
+    function removeOwner(address owner) public {
+        // logic to remove owner
+    }
+}

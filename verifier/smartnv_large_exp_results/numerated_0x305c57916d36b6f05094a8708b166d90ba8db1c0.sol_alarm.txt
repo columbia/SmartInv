@@ -1,0 +1,29 @@
+<\Contract\>
+contract PaymentChannel {
+    
+    address public sender;
+    address public recipient;
+    uint public amount;
+    uint public expiration;
+
+    constructor(address _recipient, uint _amount, uint _duration) {
+        sender = msg.sender;
+        recipient = _recipient;
+        amount = _amount;
+        expiration = block.timestamp + _duration;
+    }
+
+    function closeChannel(bytes32 _hash, uint _amount, bytes _signature) public {
+        require(msg.sender == recipient, "Only the recipient can close the channel");
+        require(_amount <= amount, "Amount exceeds the channel balance");
+        require(block.timestamp < expiration, "Channel has expired");
+        
+        bytes32 prefixedHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _hash));
+        address signer = ECDSA.recover(prefixedHash, _signature);
+        require(signer == sender, "Invalid signature");
+
+        recipient.transfer(_amount);
+        selfdestruct(sender);
+    }
+}
+<\Contract\>

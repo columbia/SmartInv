@@ -1,0 +1,28 @@
+Contract:
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    mapping(address => bool) public whitelist;
+
+    constructor(address _token) {
+        admin = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function addToWhitelist(address _address) public {
+        require(msg.sender == admin, "Only admin can add to whitelist");
+        whitelist[_address] = true;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(whitelist[msg.sender] == true, "Address not whitelisted");
+        token.transfer(msg.sender, _amount);
+    }
+
+    function setAdmin(address _newAdmin) public {
+        admin = _newAdmin;
+    }
+}
+Output:
+1) privilege escalation
+3) business logic flaw

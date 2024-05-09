@@ -1,0 +1,27 @@
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+     uint public price;
+     uint public totalTokens;
+     uint public tokensSold;
+     
+     constructor(address _token, uint _price, uint _totalTokens) {
+         owner = msg.sender;
+         token = IERC20(_token);
+         price = _price;
+         totalTokens = _totalTokens;
+     }
+     
+     function buyTokens(uint _amount) public {
+         require(_amount <= totalTokens - tokensSold, "Not enough tokens left");
+         
+         uint cost = _amount * price;
+         require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+         
+         token.transferFrom(msg.sender, address(this), cost);
+         token.transfer(msg.sender, _amount);
+         tokensSold += _amount;
+     }
+} 
+
+0) healthy, as there is no vulnerable code present in the given contract.

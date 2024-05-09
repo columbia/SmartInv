@@ -1,0 +1,37 @@
+Contract:
+```solidity
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    address public beneficiary;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, address _beneficiary, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        beneficiary = _beneficiary;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) external payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent");
+        token.transfer(msg.sender, _numTokens);
+        totalTokensSold += _numTokens;
+        balances[msg.sender] += _numTokens;
+    }
+
+    function withdrawFunds() external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(beneficiary).transfer(address(this).balance);
+    }
+}
+```
+
+Output:
+This contract contains potential vulnerabilities: 
+1) incorrect visibility/ownership - The `owner` variable is publicly accessible, which can lead to privilege escalation vulnerabilities. 
+2) insufficient gas - The `withdrawFunds` function uses the transfer method, which can fail if the recipient runs out of gas. 
+
+Overall, the contract should be reviewed and improved to address these vulnerabilities.

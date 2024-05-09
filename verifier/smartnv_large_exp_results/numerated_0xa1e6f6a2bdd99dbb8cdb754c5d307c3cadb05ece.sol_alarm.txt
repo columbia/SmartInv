@@ -1,0 +1,28 @@
+<\contract\> 
+contract Auction {
+    mapping(address => uint) public bids;
+    uint public highestBid;
+    address public highestBidder;
+    address public owner;
+
+    function placeBid(uint amount) public {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        require(msg.sender != highestBidder, "You are already the highest bidder");
+        highestBidder = msg.sender;
+        highestBid = amount;
+        bids[msg.sender] += amount;
+    }
+
+    function withdrawBid() public {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+        uint amount = bids[msg.sender];
+        bids[msg.sender] = 0;
+        highestBidder = address(0);
+        highestBid = 0;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\> 
+
+Output:
+- Incorrect visibility/ownership

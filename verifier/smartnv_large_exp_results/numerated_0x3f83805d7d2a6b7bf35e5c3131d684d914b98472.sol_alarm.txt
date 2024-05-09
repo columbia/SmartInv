@@ -1,0 +1,35 @@
+Contract to analyze:
+
+contract SafeVoting {
+     struct Voter {
+          uint256 tokens;
+          bool hasVoted;
+          address delegate;
+          }
+     mapping(address => Voter) public voters;
+     IERC20 public token;
+     address public owner;
+
+    function delegate(address to) public {
+             require(to != msg.sender, "cannot delegate to yourself");
+             require(voters[msg.sender].hasVoted == false, "already voted");
+             voters[msg.sender].delegate = to;
+        }
+
+    function vote(uint256 amount) public {
+             require(voters[msg.sender].tokens >= amount, "not enough tokens to vote");
+             require(voters[msg.sender].hasVoted == false, "already voted");
+             voters[msg.sender].tokens -= amount;
+             voters[msg.sender].hasVoted = true;
+        }
+
+    function endVoting() public {
+             require(msg.sender == owner, "only owner can end voting");
+             // logic to calculate the result and end the voting process
+        }
+}
+
+Potential vulnerabilities in the contract are:
+3) business logic flaw: The endVoting function does not implement the logic to calculate the result and end the voting process, leaving the contract vulnerable to manipulation or incorrect outcomes.
+8) reentrancy: The contract is susceptible to reentrancy attacks, as there are no checks in place to prevent reentrant calls in the delegate and vote functions.
+14) incorrect visibility/ownership: The owner variable is public, which exposes ownership information and potentially allows unauthorized access to sensitive functions like endVoting. Consider changing the visibility of owner to private to enhance security.

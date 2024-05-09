@@ -1,0 +1,35 @@
+<\contract\>
+contract Crowdsale {
+     address public owner;
+     IERC20 public token;
+     uint public rate;
+     uint public minInvestment;
+     mapping(address => uint) public investments;
+
+     constructor(IERC20 _token, uint _rate, uint _minInvestment) {
+          owner = msg.sender;
+          token = _token;
+          rate = _rate;
+          minInvestment = _minInvestment;
+     }
+
+     function buyTokens(uint amount) public {
+         require(amount >= minInvestment, "investment amount is below minimum");
+         uint cost = amount * rate;
+         token.transfer(msg.sender, cost);
+         investments[msg.sender] += amount;
+     }
+
+     function withdrawInvestment() public {
+         require(investments[msg.sender] > 0, "no investment to withdraw");
+         uint amount = investments[msg.sender] * rate;
+         token.transferFrom(msg.sender, address(this), amount);
+         investments[msg.sender] = 0;
+     }
+
+     function changeRate(uint newRate) public {
+         require(msg.sender == owner, "only owner can change rate");
+         rate = newRate;
+     }
+}
+<\contract\>

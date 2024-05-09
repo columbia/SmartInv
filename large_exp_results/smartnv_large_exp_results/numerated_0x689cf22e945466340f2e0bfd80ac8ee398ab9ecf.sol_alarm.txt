@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproved;
+     bool public sellerApproved;
+     bool public arbiterApproved;
+     bool public isActive;
+
+     function initiateTransaction(address _seller, address _arbiter) public {
+          require(!isActive, "Transaction is already active");
+          buyer = msg.sender;
+          seller = _seller;
+          arbiter = _arbiter;
+          isActive = true;
+     }
+
+     function approveTransaction(bool _buyerApproved, bool _sellerApproved, bool _arbiterApproved) public {
+          require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Only involved parties can approve");
+          buyerApproved = _buyerApproved;
+          sellerApproved = _sellerApproved;
+          arbiterApproved = _arbiterApproved;
+     }
+}
+<\analyzed_contract\>

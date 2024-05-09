@@ -1,0 +1,15 @@
+Contract ExampleContract {
+    address public owner;
+    uint public balance;
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+}

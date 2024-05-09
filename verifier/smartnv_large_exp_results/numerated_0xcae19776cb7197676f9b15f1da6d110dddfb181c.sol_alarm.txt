@@ -1,0 +1,29 @@
+Contract:
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        
+        if (highestBid != 0) {
+            payable(highestBidder).transfer(highestBid); 
+        }
+
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+        uint amount = highestBid;
+        highestBid = 0;
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "Withdrawal failed");
+    }
+}
+
+Output: 
+Potential vulnerabilities:
+6) Cross bridge inconsistency (When transferring funds, bridges are not maintained correctly)
+8) Reentrancy (Withdraw function is susceptible to reentrancy attacks)

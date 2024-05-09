@@ -1,0 +1,29 @@
+The contract under analysis:
+
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        string productName;
+        uint quantity;
+        address owner;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function addProduct(string memory _name, uint _quantity) public {
+        productCount++;
+        products[productCount] = Product(productCount, _name, _quantity, msg.sender);
+    }
+
+    function updateProductQuantity(uint _productId, uint _newQuantity) public {
+        require(products[_productId].owner == msg.sender, "You are not the owner of this product");
+        products[_productId].quantity = _newQuantity;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Insufficient access control in updateProductQuantity can lead to privilege escalation.
+- Business logic flaw: The contract doesn't have checks for quantity manipulation or validation.
+- ID uniqueness violation: The productCount variable might not provide unique productIds if not properly managed.
+- Incorrect visibility/ownership: Lack of proper visibility for the products mapping may result in unexpected behavior.

@@ -1,0 +1,42 @@
+The contract provided for analysis:
+
+```solidity
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public winningOption;
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "You have no right to vote");
+        require(!sender.voted, "Already voted");
+        
+        sender.voted = true;
+        sender.vote = option;
+        sender.weight -= 1;
+    }
+
+    function tallyVotes() public {
+        uint256 option1Votes = 0;
+        uint256 option2Votes = 0;
+
+        for (uint256 i = 0; i < 10; i++) {
+            if (voters[i].vote == 1) {
+                option1Votes += voters[i].weight;
+            } else if (voters[i].vote == 2) {
+                option2Votes += voters[i].weight;
+            }
+        }
+
+        winningOption = (option1Votes > option2Votes) ? 1 : 2;
+    }
+}
+```
+
+Please carefully study the contract above and identify potential vulnerabilities in the contract from the list of possible vulnerabilities provided at the beginning.

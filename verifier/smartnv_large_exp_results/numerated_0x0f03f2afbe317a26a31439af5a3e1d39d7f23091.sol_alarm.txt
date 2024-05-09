@@ -1,0 +1,44 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {CREATED, FUNDED, RELEASED, REFUNDED}
+    State public state;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        state = State.CREATED;
+    }
+
+    function fund() public payable {
+        require(msg.sender == buyer, "Only buyer can fund the escrow");
+        require(state == State.CREATED, "Escrow has already been funded");
+        state = State.FUNDED;
+    }
+
+    function release() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can release funds");
+        require(state == State.FUNDED, "Funds haven't been released yet");
+        address payable _seller = payable(seller);
+        _seller.transfer(address(this).balance);
+        state = State.RELEASED;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund the buyer");
+        require(state == State.FUNDED, "Funds haven't been refunded yet");
+        address payable _buyer = payable(buyer);
+        _buyer.transfer(address(this).balance);
+        state = State.REFUNDED;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+7) ID uniqueness violation - The contract does not have a mechanism to ensure that each party involved (buyer, seller, arbiter) has a unique identification to prevent impersonation or confusion.
+9) Integer overflow/underflow - There are potential risks of integer overflow or underflow in calculations involving balances or transfers of funds.
+14) Incorrect visibility/ownership - The visibility of functions and variables should be carefully considered to prevent unauthorized access or manipulation of the escrow state.

@@ -1,0 +1,26 @@
+1 {{
+2   "language": "Solidity",
+3   "sources": {
+4     "src/BoneShards.sol": {
+5       "content": "\n/// @notice Modern and gas efficient ERC20 + EIP-2612 implementation.\n/// @author Modified from Uniswap (https://github.com/Uniswap/uniswap-v2-core/blob/master/contracts/UniswapV2ERC20.sol)\n/// Taken from Solmate: https://github.com/Rari-Capital/solmate\n\ncontract BoneShards {\n    /*///////////////////////////////////////////////////////////////\n                                  EVENTS\n    //////////////////////////////////////////////////////////////*/\n\n    event Transfer(address indexed from, address indexed to, uint256 value);\n    event Approval(address indexed owner, address indexed spender, uint256 value);\n\n    /*///////////////////////////////////////////////////////////////\n                             METADATA STORAGE\n    //////////////////////////////////////////////////////////////*/\n\n    string public constant name     = \"BoneShards\";\n    string public constant symbol   = \"BONESHARDS\";\n    uint8  public constant decimals = 18;\n\n    /*///////////////////////////////////////////////////////////////\n                             ERC20 STORAGE\n    //////////////////////////////////////////////////////////////*/\n\n    uint256 public totalSupply;\n\n    mapping(address => uint256) public balanceOf;\n\n    mapping(address => mapping(address => uint256)) public allowance;\n\n    mapping(address => bool) public isMinter;\n\n    address public ruler;\n\n    /*///////////////////////////////////////////////////////////////\n                              ERC20 LOGIC\n    //////////////////////////////////////////////////////////////*/\n\n    constructor() { ruler = msg.sender;}\n\n    function approve(address spender, uint256 value) external returns (bool) {\n        allowance[msg.sender][spender] = value;\n\n        emit Approval(msg.sender, spender, value);\n\n        return true;\n    }\n\n    function transfer(address to, uint256 value) external returns (bool) {\n        balanceOf[msg.sender] -= value;\n\n        // This is safe because the sum of all user\n        // balances can't exceed type(uint256).max!\n        unchecked {\n            balanceOf[to] += value;\n        }\n\n        emit Transfer(msg.sender, to, value);\n\n        return true;\n    }\n\n    function transferFrom(\n        address from,\n        address to,\n        uint256 value\n    ) external returns (bool) {\n        if (allowance[from][msg.sender] != type(uint256).max) {\n            allowance[from][msg.sender] -= value;\n        }\n\n        balanceOf[from] -= value;\n\n        // This is safe because the sum of all user\n        // balances can't exceed type(uint256).max!\n        unchecked {\n            balanceOf[to] += value;\n        }\n\n        emit Transfer(from, to, value);\n\n        return true;\n    }\n\n    /*///////////////////////////////////////////////////////////////\n                             ORC PRIVILEGE\n    //////////////////////////////////////////////////////////////*/\n\n    function mint(address to, uint256 value) external {\n        require(isMinter[msg.sender], \"FORBIDDEN TO MINT\");\n        _mint(to, value);\n    }\n\n    function burn(address from, uint256 value) external {\n        require(isMinter[msg.sender], \"FORBIDDEN TO BURN\");\n        _burn(from, value);\n    }\n\n    /*///////////////////////////////////////////////////////////////\n                         Ruler Function\n    //////////////////////////////////////////////////////////////*/\n\n    function setMinter(address minter, bool status) external {\n        require(msg.sender == ruler, \"NOT ALLOWED TO RULE\");\n\n        isMinter[minter] = status;\n    }\n\n    function setRuler(address ruler_) external {\n        require(msg.sender == ruler ||ruler == address(0), \"NOT ALLOWED TO RULE\");\n\n        ruler = ruler_;\n    }\n\n\n    /*///////////////////////////////////////////////////////////////\n                          INTERNAL UTILS\n    //////////////////////////////////////////////////////////////*/\n\n    function _mint(address to, uint256 value) internal {\n        totalSupply += value;\n\n        // This is safe because the sum of all user\n        // balances can't exceed type(uint256).max!\n        unchecked {\n            balanceOf[to] += value;\n        }\n\n        emit Transfer(address(0), to, value);\n    }\n\n    function _burn(address from, uint256 value) internal {\n        balanceOf[from] -= value;\n\n        // This is safe because a user won't ever\n        // have a balance larger than totalSupply!\n        unchecked {\n            totalSupply -= value;\n        }\n\n        emit Transfer(from, address(0), value);\n    }\n}\n"
+6     }
+7   },
+8   "settings": {
+9     "optimizer": {
+10       "enabled": true,
+11       "runs": 200
+12     },
+13     "outputSelection": {
+14       "*": {
+15         "*": [
+16           "evm.bytecode",
+17           "evm.deployedBytecode",
+18           "devdoc",
+19           "userdoc",
+20           "metadata",
+21           "abi"
+22         ]
+23       }
+24     }
+25   }
+26 }}

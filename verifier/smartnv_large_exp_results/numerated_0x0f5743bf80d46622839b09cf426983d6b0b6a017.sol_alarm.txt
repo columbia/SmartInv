@@ -1,0 +1,32 @@
+<\contract_to_analyze\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    address public owner;
+
+    constructor(address[] memory _payees, uint256[] memory _shares) {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        require(_payees.length > 0, "No payees provided");
+
+        for (uint256 i = 0; i < _payees.length; i++) {
+            payees.push(_payees[i]);
+            shares.push(_shares[i]);
+        }
+        owner = msg.sender;
+    }
+
+    function release() public {
+        for (uint256 i = 0; i < payees.length; i++) {
+            address payable payee = address(uint160(payees[i]));
+            uint256 amount = shares[i];
+            payee.transfer(amount);
+        }
+    }
+
+    function addPayee(address _payee, uint256 _shares) public {
+        require(msg.sender == owner, "Only owner can add payee");
+        payees.push(_payee);
+        shares.push(_shares);
+    }
+}
+<\contract_to_analyze\>

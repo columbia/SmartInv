@@ -1,0 +1,21 @@
+Contract:
+
+contract PaymentProcessor {
+    mapping(address => uint) public balances;
+    
+    function deposit() public payable {
+        require(msg.value > 0, "Zero value deposit");
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output:
+Potential vulnerabilities in the PaymentProcessor contract:
+- Insufficient gas
+- Integer overflow/underflow

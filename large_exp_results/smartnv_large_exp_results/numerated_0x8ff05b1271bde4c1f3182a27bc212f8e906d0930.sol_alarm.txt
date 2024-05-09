@@ -1,0 +1,20 @@
+<\contract\> 
+contract MultiSigWallet {
+       mapping(address => bool) public owners;
+       uint public transactionCount;
+       
+       function submitTransaction(address to, uint value, bytes memory data) public returns (uint) {
+           require(owners[msg.sender], "Not an owner");
+           uint transactionId = transactionCount;
+           transactionCount += 1;
+           return transactionId;
+       }
+
+       function executeTransaction(uint transactionId) public {
+           // Code to execute the transaction
+       }
+
+       function revokeTransaction(uint transactionId) public {
+           // Code to revoke the transaction
+       }
+}

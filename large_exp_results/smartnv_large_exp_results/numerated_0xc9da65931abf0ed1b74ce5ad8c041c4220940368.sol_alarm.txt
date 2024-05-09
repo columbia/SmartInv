@@ -1,0 +1,22 @@
+<\input_contract\>
+pragma solidity ^0.8.0;
+
+contract SimpleContract {
+    address public owner;
+    uint public value;
+
+    constructor() {
+        owner = msg.sender;
+        value = 0;
+    }
+
+    function updateValue(uint _newValue) public {
+        require(msg.sender == owner, "Only the owner can update the value");
+        value = _newValue;
+    }
+
+    function getValue() public view returns (uint) {
+        return value;
+    }
+}
+<\input_contract\>

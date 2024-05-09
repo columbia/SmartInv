@@ -1,0 +1,15 @@
+contract PaymentContract {
+    address internal owner;
+    mapping(address => uint256) public payments;
+    
+    function makePayment(address _to, uint256 _amount) external {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_to] += _amount;
+    }
+    
+    function withdrawPayment(uint256 _amount) external {
+        require(payments[msg.sender] >= _amount, "Insufficient funds");
+        msg.sender.transfer(_amount);
+        payments[msg.sender] -= _amount;
+    }
+}

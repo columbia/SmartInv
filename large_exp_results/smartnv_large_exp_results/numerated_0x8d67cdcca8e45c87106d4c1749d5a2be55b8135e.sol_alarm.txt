@@ -1,0 +1,25 @@
+<\contract\> 
+contract VotingSystem {
+    struct Candidate {
+        address candidateAddress;
+        uint votesReceived;
+    }
+    
+    mapping(address => bool) public voters;
+    mapping(address => Candidate) public candidates;
+    
+    function vote(address _candidateAddress) public {
+        require(!voters[msg.sender], "You have already voted");
+        require(candidates[_candidateAddress].candidateAddress != address(0), "Invalid candidate");
+        
+        voters[msg.sender] = true;
+        candidates[_candidateAddress].votesReceived++;
+    }
+    
+    function getTotalVotes(address _candidateAddress) public view returns(uint) {
+        return candidates[_candidateAddress].votesReceived;
+    }
+}
+Output:
+1) ID uniqueness violation; 
+2) Inconsistent state update;

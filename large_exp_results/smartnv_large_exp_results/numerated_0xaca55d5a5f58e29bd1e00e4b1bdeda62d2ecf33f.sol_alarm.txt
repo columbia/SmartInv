@@ -1,0 +1,23 @@
+The contract provided for analysis:
+
+contract Market {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function trade(uint amountA, uint amountB) public {
+        require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance for tokenA");
+        require(tokenB.balanceOf(msg.sender) >= amountB, "Insufficient balance for tokenB");
+
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+
+        // Perform trade logic
+        
+        tokenA.transfer(msg.sender, amountB);
+        tokenB.transfer(msg.sender, amountA);
+    }
+}
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

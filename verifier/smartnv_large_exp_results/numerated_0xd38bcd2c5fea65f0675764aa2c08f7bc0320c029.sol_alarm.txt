@@ -1,0 +1,37 @@
+<\contract\>
+contract MultiSigWallet {
+    mapping(address => bool) public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address from;
+        address to;
+        uint amount;
+        bool executed;
+        uint confirmations;
+    }
+
+    constructor(address[] memory _owners) public {
+        for (uint i = 0; i < _owners.length; i++) {
+            owners[_owners[i]] = true;
+        }
+    }
+
+    function submitTransaction(address _to, uint _amount) public {
+        Transaction memory newTransaction = Transaction(msg.sender, _to, _amount, false, 1);
+        transactions[transactionCount] = newTransaction;
+        transactionCount++;
+    }
+
+    function confirmTransaction(uint _txIndex, uint _amount) public {
+        require(owners[msg.sender], "only owners can confirm");
+        require(transactions[_txIndex].executed == false, "transaction already executed");
+        transactions[_txIndex].confirmations++;
+        if (transactions[_txIndex].confirmations >= 2) {
+            transactions[_txIndex].executed = true;
+            address(msg.sender).transfer(_amount);
+        }
+    }
+}
+<\contract\>

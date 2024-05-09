@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function startExecute() updates the state without checking if the proposal is already ongoing.
+
+2) Integer overflow/underflow: There is no check for potential integer overflows or underflows in the calculations involving balances and amounts.
+
+3) Incorrect visibility/ownership: The internal owner variable is not specified with any visibility modifier, which could lead to potential issues in ownership control.
+
+4) Insufficient gas: The execute() function performs multiple operations, including a transfer of tokens, which could potentially run out of gas and fail.
+
+5) Cross bridge inconsistency: The endExecute() function compares the balance of the contract with total supply without considering the potential inconsistency in balances due to external transactions.

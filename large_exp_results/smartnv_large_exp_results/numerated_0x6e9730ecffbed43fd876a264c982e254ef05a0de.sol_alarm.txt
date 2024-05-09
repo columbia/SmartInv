@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract InsurancePolicy {
+    uint public policyID;
+    address public policyHolder;
+    uint public premiumAmount;
+    uint public policyCoverage;
+
+    constructor(uint _policyID, address _policyHolder, uint _premiumAmount, uint _policyCoverage) {
+        policyID = _policyID;
+        policyHolder = _policyHolder;
+        premiumAmount = _premiumAmount;
+        policyCoverage = _policyCoverage;
+    }
+
+    function claimInsurance() public {
+        require(msg.sender == policyHolder, "Only policy holder can claim insurance");
+        // Claim process logic
+    }
+
+    function updateCoverage(uint _newCoverage) public {
+        require(msg.sender == policyHolder, "Only policy holder can update coverage");
+        policyCoverage = _newCoverage;
+    }
+}
+<\contract_to_analyze\>

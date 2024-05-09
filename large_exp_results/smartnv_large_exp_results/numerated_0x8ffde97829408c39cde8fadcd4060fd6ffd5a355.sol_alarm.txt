@@ -1,0 +1,45 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerAgreed;
+    bool public sellerAgreed;
+    bool public arbiterAgreed;
+    bool public releaseFundsAllowed;
+
+    constructor(address _seller, address _arbiter, uint _price) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function agreeAsBuyer() public {
+        require(msg.sender == buyer, "Only buyer can agree");
+        buyerAgreed = true;
+    }
+
+    function agreeAsSeller() public {
+        require(msg.sender == seller, "Only seller can agree");
+        sellerAgreed = true;
+    }
+
+    function agreeAsArbiter() public {
+        require(msg.sender == arbiter, "Only arbiter can agree");
+        arbiterAgreed = true;
+    }
+
+    function releaseFunds() public {
+        require(buyerAgreed && sellerAgreed || arbiterAgreed, "All parties must agree");
+        require(address(this).balance >= price, "Insufficient funds in escrow");
+        if (arbiterAgreed) {
+            payable(buyer).transfer(price);
+        } else {
+            payable(seller).transfer(price);
+        }
+        releaseFundsAllowed = true;
+    }
+}
+<\contract_to_analyze\>

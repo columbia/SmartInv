@@ -1,0 +1,34 @@
+Contract to be analyzed: 
+
+```solidity
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+
+    constructor(address _payer, address _payee, address _arbiter) {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        address payable _payee = payable(payee);
+        _payee.transfer(address(this).balance);
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        address payable _payer = payable(payer);
+        _payer.transfer(address(this).balance);
+    }
+}
+```
+
+Output: 
+- incorrect visibility/ownership

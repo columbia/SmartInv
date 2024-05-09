@@ -1,0 +1,29 @@
+<\contract\>
+contract Vesting {
+    struct VestingSchedule {
+        address beneficiary;
+        uint256 amount;
+        uint256 startTime;
+        uint256 endTime;
+        bool isVesting;
+    }
+
+    mapping(uint256 => VestingSchedule) public vestingSchedules;
+    uint256 public nextScheduleId;
+
+    function createVestingSchedule(address _beneficiary, uint256 _amount, uint256 _startTime, uint256 _endTime, bool _isVesting) public {
+        vestingSchedules[nextScheduleId] = VestingSchedule(_beneficiary, _amount, _startTime, _endTime, _isVesting);
+        nextScheduleId++;
+    }
+
+    function release(uint256 _scheduleId) public {
+        VestingSchedule storage schedule = vestingSchedules[_scheduleId];
+        require(schedule.beneficiary == msg.sender, "You are not the beneficiary of this vesting schedule");
+        require(block.timestamp >= schedule.endTime, "Vesting schedule has not ended yet");
+        require(schedule.isVesting, "This is not a vesting schedule");
+        
+        // Transfer tokens to beneficiary
+        // Code for transferring tokens
+    }
+}
+<\contract\>

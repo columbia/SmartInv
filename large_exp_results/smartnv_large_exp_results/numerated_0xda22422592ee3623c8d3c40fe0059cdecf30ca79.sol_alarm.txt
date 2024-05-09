@@ -1,0 +1,21 @@
+The contract to analyze for potential vulnerabilities is:
+contract DeFiProtocol {
+    uint256 public totalSupply;
+    mapping(address => uint) public balances;
+
+    function deposit(uint amount) public {
+        require(amount > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += amount;
+        totalSupply += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Withdrawal amount must be greater than 0");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalSupply -= amount;
+    }
+}
+
+Output:
+- Healthy

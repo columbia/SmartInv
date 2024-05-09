@@ -1,0 +1,26 @@
+<\contract\>
+contract VotingSystem {
+    address public owner;
+    uint public totalVotes;
+    mapping(address => uint) public userVotes;
+    
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+    
+    function vote(uint amount) external {
+        require(amount > 0, "Invalid vote amount");
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function redeemVotes() external {
+        require(msg.sender != owner, "Owner cannot redeem votes");
+        uint userVoteAmount = userVotes[msg.sender];
+        totalVotes -= userVoteAmount;
+        userVotes[msg.sender] = 0;
+        // redeeming votes logic
+    }
+}
+<\contract\>

@@ -1,0 +1,48 @@
+The contract provided for analysis is:
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    enum State {Created, Locked, Inactive}
+    State public state;
+    
+    constructor() {
+        seller = msg.sender;
+        state = State.Created;
+    }
+    
+    function setBuyer(address _buyer) public {
+        require(msg.sender == seller, "Only seller can set the buyer");
+        buyer = _buyer;
+    }
+    
+    function setArbiter(address _arbiter) public {
+        require(msg.sender == seller || msg.sender == buyer, "Only seller or buyer can set the arbiter");
+        arbiter = _arbiter;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == price, "Incorrect amount sent");
+        state = State.Locked;
+    }
+    
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(state == State.Locked, "Funds are not locked");
+        payable(seller).transfer(price);
+        state = State.Inactive;
+    }
+    
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund buyer");
+        require(state == State.Locked, "Funds are not locked");
+        payable(buyer).transfer(price);
+        state = State.Inactive;
+    }
+}
+
+Output: 
+1) incorrect visibility/ownership

@@ -1,0 +1,7 @@
+Contract TimelockController is missing critical logic for protecting the execution of proposals such as a require statement to check the execution condition, function execute allows for multiple executions within the set time frame, a nested reentrancy bug because of proposal.votedAmount += amount with a value that could be manipulated, a business logic flaw as execute is allowing to add votes without proper validation, and atomicity violation since the multiple state updates in functions startExecute, execute, and endExecute are not grouped in a single transaction.
+
+Therefore, the potential vulnerabilities in the TimelockController contract are:
+1) privilege escalation
+2) business logic flaw
+3) reentrancy
+4) atomicity violation

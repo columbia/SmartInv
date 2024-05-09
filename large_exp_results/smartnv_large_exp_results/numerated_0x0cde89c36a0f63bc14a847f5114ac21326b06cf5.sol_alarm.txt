@@ -1,0 +1,38 @@
+The contract below has the potential vulnerabilities of:
+1) business logic flaw
+2) inconsistent state update
+
+Contract:
+contract Escrow {
+   address public buyer;
+   address public seller;
+   bool public buyerApproval;
+   bool public sellerApproval;
+   
+   function initiate(address _seller) public {
+      require(buyer == address(0), "Escrow already initiated");
+      buyer = msg.sender;
+      seller = _seller;
+   }
+   
+   function approveBuyer() public {
+      require(msg.sender == buyer, "Only buyer can approve");
+      buyerApproval = true;
+      if (buyerApproval && sellerApproval) {
+         releaseFunds();
+      }
+   }
+   
+   function approveSeller() public {
+      require(msg.sender == seller, "Only seller can approve");
+      sellerApproval = true;
+      if (buyerApproval && sellerApproval) {
+         releaseFunds();
+      }
+   }
+
+   function releaseFunds() private {
+      require(buyerApproval && sellerApproval, "Both parties must approve");
+      // Transfer funds to seller
+   }
+}

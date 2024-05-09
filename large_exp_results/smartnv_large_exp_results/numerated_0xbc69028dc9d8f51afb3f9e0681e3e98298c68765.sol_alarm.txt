@@ -1,0 +1,44 @@
+<\The_Contract\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public availableTokens;
+
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _tokenPrice, uint _availableTokens) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+        availableTokens = _availableTokens;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(_amount <= availableTokens, "Not enough tokens available");
+        
+        uint totalPrice = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient balance");
+
+        balances[msg.sender] += _amount;
+        availableTokens -= _amount;
+        token.transferFrom(msg.sender, address(this), totalPrice);
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient tokens balance");
+
+        balances[msg.sender] -= _amount;
+        availableTokens += _amount;
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdrawEther() public {
+        require(msg.sender == admin, "Only admin can withdraw ether");
+        
+        address _this = address(this);
+        uint etherBalance = _this.balance;
+        admin.transfer(etherBalance);
+    }
+}
+<\The_Contract\>

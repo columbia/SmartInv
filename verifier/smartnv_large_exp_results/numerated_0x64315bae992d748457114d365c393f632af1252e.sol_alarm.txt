@@ -1,0 +1,33 @@
+The contract to analyze:
+
+contract Marketplace {
+    address public owner;
+    mapping(uint => Item) public items;
+    
+    struct Item {
+        uint id;
+        string name;
+        uint price;
+        address payable seller;
+    }
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function addItem(uint _id, string memory _name, uint _price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        Item memory newItem = Item(_id, _name, _price, msg.sender);
+        items[_id] = newItem;
+    }
+    
+    function buyItem(uint _id) public payable {
+        Item storage item = items[_id];
+        require(msg.value >= item.price, "Insufficient payment");
+        item.seller.transfer(msg.value);
+        delete items[_id];
+    }
+}
+
+Output: 
+healthy

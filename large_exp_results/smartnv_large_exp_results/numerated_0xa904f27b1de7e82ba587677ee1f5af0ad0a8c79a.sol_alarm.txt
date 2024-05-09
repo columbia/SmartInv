@@ -1,0 +1,40 @@
+Contract TimelockController {
+    struct Proposal {
+        uint256 sTime; 
+        uint256 votedAmount; 
+        address addr; 
+    }
+    
+    address internal owner;
+    IERC20 votingToken;
+    
+    function startExecute() external {
+        uint256 startingBlance;
+        require(proposal.sTime == 0,"on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBalance; 
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount; 
+        votedProposal(proposal); 
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+
+Potential Vulnerabilities:
+1) Inconsistent state update: Missing initialization of proposal before accessing its properties in startExecute function.
+2) Incorrect visibility/ownership: The owner variable is declared but not used or assigned any value.
+3) Privilege escalation: The startExecute function allows anyone to start a new proposal.
+4) Business logic flaw: Execution of the proposal can happen within a 24-hour window irrespective of the stakeholder's intention.
+5) Incorrect visibility: The visibility of startingBalanceList is not specified, which can expose it to external manipulation.

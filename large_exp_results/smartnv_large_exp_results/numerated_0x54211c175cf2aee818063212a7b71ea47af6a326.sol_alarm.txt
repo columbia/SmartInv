@@ -1,0 +1,38 @@
+<\contract_to_analyze\>
+contract PaymentSplitter {
+    address[] payees;
+    uint[] shares;
+    mapping(address => uint) released;
+    uint totalReleased;
+    constructor(address[] memory _payees, uint[] memory _shares) payable {
+        require(_payees.length > 0, "No payees");
+        require(_payees.length == _shares.length, "Length mismatch");
+        require(msg.value > 0, "No value provided");
+        payees = _payees;
+        shares = _shares;
+        uint totalShares = 0;
+        for (uint i = 0; i < shares.length; i++) {
+            totalShares += shares[i];
+        }
+        require(totalShares == 100, "Total shares must equal 100");
+    }
+    
+    function release(address payable _payee) public {
+        require(msg.sender == _payee, "Sender is not payee");
+        uint totalReceived = address(this).balance + totalReleased;
+        uint payment = (totalReceived * shares[payeeIndex(_payee)]) / 100 - released[_payee];
+        released[_payee] += payment;
+        totalReleased += payment;
+        _payee.transfer(payment);
+    }
+    
+    function payeeIndex(address _payee) internal view returns(uint) {
+        for (uint i = 0; i < payees.length; i++) {
+            if (payees[i] == _payee) {
+                return i;
+            }
+        }
+        revert("Payee not found");
+    }
+}
+<\contract_to_analyze\>

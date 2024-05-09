@@ -1,0 +1,26 @@
+<\contract\> 
+contract Marketplace {
+     address public owner;
+     mapping(uint => address) public tokenIdToOwner;
+     mapping(uint => uint) public tokenIdToPrice;
+     IERC20 public token;
+
+     function buyToken(uint tokenId) external {
+         require(tokenIdToPrice[tokenId] > 0, "token not for sale");
+         require(token.allowance(msg.sender, address(this)) >= tokenIdToPrice[tokenId], "allowance not enough");
+         token.transferFrom(msg.sender, tokenIdToOwner[tokenId], tokenIdToPrice[tokenId]);
+         tokenIdToOwner[tokenId] = msg.sender;
+         tokenIdToPrice[tokenId] = 0;
+     }
+
+     function listToken(uint tokenId, uint price) external {
+         require(tokenIdToOwner[tokenId] == msg.sender, "you do not own this token");
+         tokenIdToPrice[tokenId] = price;
+     }
+
+     function changeOwner(address newOwner) external {
+         require(msg.sender == owner, "only owner can call this function");
+         owner = newOwner;
+     }
+}
+<\contract\>

@@ -1,0 +1,26 @@
+The contract to be analyzed:
+
+contract Marketplace {
+     address public owner;
+     uint public totalSupply;
+
+     constructor(uint _totalSupply) {
+          owner = msg.sender;
+          totalSupply = _totalSupply;
+     }
+
+     function purchase(uint quantity) public payable {
+          require(msg.value >= quantity * 100 wei, "Insufficient payment");
+          totalSupply -= quantity;
+          payable(owner).transfer(quantity * 100 wei);
+     }
+
+     function withdraw() public {
+          require(msg.sender == owner, "Unauthorized");
+          msg.sender.transfer(address(this).balance);
+     }
+}
+
+Potential vulnerabilities in the contract:
+1) integer overflow/underflow
+2) inconsistent state update

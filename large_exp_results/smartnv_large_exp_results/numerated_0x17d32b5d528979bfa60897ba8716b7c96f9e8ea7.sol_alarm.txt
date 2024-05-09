@@ -1,0 +1,24 @@
+contract PaymentSystem {
+    address public owner;
+    mapping(address => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(address recipient, uint amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[recipient] += amount;
+    }
+
+    function withdrawPayment() public {
+        uint amount = payments[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        payments[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+} 
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership: The makePayment function can only be called by the owner, but the visibility of the payments mapping is public, which exposes payment information to anyone.
+2) Atomicity violation: There is a possibility of a race condition in the makePayment function which could lead to inconsistent state updates if multiple transactions try to update the same payments mapping simultaneously.

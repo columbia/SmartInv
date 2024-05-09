@@ -1,0 +1,24 @@
+<\contract\> 
+contract TokenSwapper {
+   address public tokenA;
+   address public tokenB;
+   address public owner;
+   
+   
+   function swapTokens(uint amount) public {
+       require(msg.sender == owner, "only owner can swap tokens");
+       
+       Token(tokenA).transferFrom(msg.sender, address(this), amount);
+       Token(tokenB).transfer(msg.sender, amount);
+   }
+   
+   function changeOwner(address newOwner) public {
+       require(msg.sender == owner, "only owner can change owner");
+       
+       owner = newOwner;
+   }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership

@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Insufficient gas: The contract may run out of gas during execution, especially in functions such as liquidate() that involve multiple external function calls and operations.
+
+2) Incorrect visibility/ownership: The visibility and ownership of functions and variables in the contract are not specified, which could lead to unexpected behavior or unauthorized access.
+
+3) Atomicity violation: There are operations in functions like liquidate() that involve multiple state changes but are not executed atomically, leaving room for inconsistent state updates in case of failure midway through the execution. 
+
+4) Cross bridge inconsistency: The contract interacts with external tokens (USDC and WETH), which could introduce inconsistencies or unpredictable behavior if the external token contracts are changed or manipulated.
+
+5) Arithmetic flaw: The calculatePrice() function involves mathematical operations that may result in arithmetic flaws, such as integer overflow or underflow, if the inputs are not properly validated or checked.
+
+6) Inconsistent state update: There are multiple state variables being updated in different functions, which could lead to inconsistent state updates if the order of function execution is not controlled or synchronized properly.

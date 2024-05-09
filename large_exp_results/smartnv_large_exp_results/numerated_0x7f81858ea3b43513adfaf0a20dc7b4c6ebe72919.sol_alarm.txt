@@ -1,0 +1,27 @@
+The contract to analyze:
+
+contract SimpleTokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public price;
+
+    constructor(uint initialSupply, uint tokenPrice) {
+        owner = msg.sender;
+        balances[msg.sender] = initialSupply;
+        price = tokenPrice;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect amount sent");
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        uint amount = address(this).balance;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output:
+- Incorrect visibility/ownership

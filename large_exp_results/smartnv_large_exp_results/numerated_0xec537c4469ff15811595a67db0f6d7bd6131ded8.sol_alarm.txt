@@ -1,0 +1,26 @@
+Contract:
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() public payable {
+          require(msg.value > highestBid, "Insufficient bid amount");
+          require(msg.sender != highestBidder, "You are already the highest bidder");
+
+          if (highestBidder != address(0)) {
+              address prevHighestBidder = highestBidder;
+              uint prevHighestBid = highestBid;
+
+              highestBidder = msg.sender;
+              highestBid = msg.value;
+
+              prevHighestBidder.transfer(prevHighestBid); 
+          } else {
+              highestBidder = msg.sender;
+              highestBid = msg.value;
+          }
+     }
+}
+Potential vulnerabilities in the contract:
+1) reentrancy
+2) inconsistent state update

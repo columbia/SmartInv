@@ -1,0 +1,20 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    mapping(uint => address) public productOwners;
+    mapping(uint => uint) public productPrices;
+    mapping(address => uint) public balances;
+
+    function buyProduct(uint productId) public {
+        require(productOwners[productId] != msg.sender, "Cannot buy your own product");
+        require(balances[msg.sender] >= productPrices[productId], "Insufficient balance");
+
+        address seller = productOwners[productId];
+        uint price = productPrices[productId];
+
+        balances[msg.sender] -= price;
+        balances[seller] += price;
+
+        productOwners[productId] = msg.sender;
+    }
+}
+<\contract_to_analyze\>

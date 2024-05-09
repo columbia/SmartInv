@@ -1,0 +1,31 @@
+<\contract\> 
+contract Crowdsale {
+    address public owner;
+    uint public totalTokens;
+    uint public tokenPrice;
+
+    mapping(address => uint) public balances;
+
+    constructor(uint _totalTokens, uint _tokenPrice) {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) external payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent");
+
+        balances[msg.sender] += _numTokens;
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "Only owner can withdraw");
+        address payable recipient = msg.sender;
+        recipient.transfer(address(this).balance);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the Crowdsale contract are:
+1) Atomicity violation in the buyTokens() function where the token transfer and balance update are not done atomically.
+2) Incorrect visibility/ownership in the withdraw() function as any address can call this function and withdraw the contract balance.

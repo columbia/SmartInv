@@ -1,0 +1,24 @@
+<\contract\>
+contract EscrowContract {
+    address public payer;
+    address public payee;
+    address public arbitrator;
+
+    function deposit() external payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+    }
+
+    function release() external {
+        require(msg.sender == payee, "Only payee can release funds");
+        payable(payee).transfer(address(this).balance);
+    }
+
+    function refund() external {
+        require(msg.sender == payer || msg.sender == arbitrator, "Only payer or arbitrator can initiate refund");
+        if (msg.sender == arbitrator) {
+            // additional logic for refund
+        }
+        payable(payer).transfer(address(this).balance);
+    }
+}
+<\contract\>

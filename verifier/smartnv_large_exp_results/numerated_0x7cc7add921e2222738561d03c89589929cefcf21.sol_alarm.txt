@@ -1,0 +1,38 @@
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public releasedToSeller;
+    bool public releasedToArbiter;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        releasedToSeller = false;
+        releasedToArbiter = false;
+    }
+    
+    function releaseToSeller() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "You are not authorized to release funds");
+        require(releasedToSeller == false, "Funds have already been released to seller");
+        
+        releasedToSeller = true;
+    }
+    
+    function releaseToArbiter() public {
+        require(msg.sender == seller || msg.sender == arbiter, "You are not authorized to release funds");
+        require(releasedToArbiter == false, "Funds have already been released to arbiter");
+        
+        releasedToArbiter = true;
+    }
+    
+    function releaseToAddress(address _recipient) public {
+        require(msg.sender == arbiter, "You are not authorized to release funds");
+        require(releasedToSeller == true && releasedToArbiter == true, "Funds can only be released once all parties agree");
+        
+        payable(_recipient).transfer(escrowAmount);
+    }
+}

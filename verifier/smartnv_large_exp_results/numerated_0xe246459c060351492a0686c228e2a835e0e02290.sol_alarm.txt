@@ -1,0 +1,22 @@
+<\contract_to_be_analyzed\> 
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only the buyer can deposit funds");
+        require(msg.value == price, "Incorrect amount deposited");
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only the seller can release funds");
+        payable(seller).transfer(address(this).balance);
+    }
+}

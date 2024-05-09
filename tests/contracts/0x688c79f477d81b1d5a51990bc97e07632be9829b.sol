@@ -1,0 +1,324 @@
+pragma solidity ^0.5.0;
+
+
+// ----------------------------------------------------------------------------
+// Safe maths
+// ----------------------------------------------------------------------------
+library SafeMath {
+    function add(uint a, uint b) internal pure returns (uint c) {
+        c = a + b;
+        require(c >= a);
+    }
+    function sub(uint a, uint b) internal pure returns (uint c) {
+        require(b <= a);
+        c = a - b;
+    }
+    function mul(uint a, uint b) internal pure returns (uint c) {
+        c = a * b;
+        require(a == 0 || c / a == b);
+    }
+    function div(uint a, uint b) internal pure returns (uint c) {
+        require(b > 0);
+        c = a / b;
+    }
+} 
+
+
+// ----------------------------------------------------------------------------
+// ERC Toke n Standard #20 Interface
+// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md
+// ----------------------------------------------------------------------------
+contract ERC20Interface {
+    function totalSupply() public view returns (uint);
+    function balanceOf(address tokenOwner) public view returns (uint balance);
+    function allowance(address tokenOwner, address spender) public view returns (uint remaining);
+    function transfer(address to, uint tokens) public returns (bool success);
+    function approve(address spender, uint tokens) public returns (bool success);
+    function transferFrom(address from, address to, uint tokens) public returns (bool success);
+
+    event Transfer(address indexed from, address indexed to, uint tokens);
+    event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+}
+
+
+// ----------------------------------------------------------------------------
+// Contract function to receive approval and execute function in one call
+//
+// Borrowed from MiniMeToken
+// ----------------------------------------------------------------------------
+contract ApproveAndCallFallBack {
+    function receiveApproval(address from, uint256 tokens, address token, bytes memory data) public;
+}
+
+
+// ----------------------------------------------------------------------------
+// Owned contract
+// ----------------------------------------------------------------------------
+contract Owned {
+    address payable owner;
+    address payable newOwner;
+
+    event OwnershipTransferred(address indexed _from, address indexed _to);
+
+    constructor() public {
+        owner = 0x8dDd950AFd7F21e59198049bb98d0BB2897508D9;
+    }
+
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+    /*
+    function transferOwnership(address _newOwner) public onlyOwner {
+        newOwner = _newOwner;
+    }
+    */
+    function acceptOwnership() public {
+        require(msg.sender == newOwner);
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+        newOwner = address(0);
+    }
+}
+
+
+// ----------------------------------------------------------------------------
+// ERC20 Token, with the addition of symbol, name and decimals and a
+// fixed supply
+// ----------------------------------------------------------------------------
+contract Token is ERC20Interface, Owned {
+    using SafeMath for uint;
+
+    string public symbol;
+    string public  name;
+    uint8 public decimals;
+    uint256 _totalSupply;
+    uint256 sale;
+    uint256 reserve;
+    uint public phase;
+
+    mapping(address => uint) public balances;
+    mapping(address => mapping(address => uint)) allowed;
+    
+
+
+    // ------------------------------------------------------------------------
+    // Constructor
+    // ------------------------------------------------------------------------
+    constructor() public {
+        name = "4um.io";
+        symbol = "4UM";
+        decimals = 18;
+        phase = 1;
+        
+        _totalSupply = 20000000 * 10**uint(decimals);
+        sale = 10000000 * 10**uint(decimals);
+        reserve = 10000000 * 10**uint(decimals);
+        
+        balances[owner] = reserve;
+        emit Transfer(address(0), owner, reserve);
+        
+        
+        balances[address(this)] = sale;
+        emit Transfer(address(0), address(this), sale);
+    }
+    // ------------------------------------------------------------------------
+    
+  
+    
+    function phasechange(uint256 number) onlyOwner public{
+        //require(msg.sender==owner,"Only Owner Can Change Phase!");
+        phase = number ;
+    } 
+    
+    function() external payable {
+        buyTokens(address(0));
+    }
+    
+    
+    function buyTokens(address payable reffer) public payable {
+        //require(beneficiary != address(0),"Invalid Address!");
+        //require(amount >= 1*1e17 && amount <= 50*1e18 , "Invalid Amount!");
+        uint256 tokens;
+        uint256 refpercent;
+        uint256 weiAmount = msg.value;
+        
+       
+        if(phase == 1){
+            tokens = weiAmount * 2355;
+            refpercent = 5;
+        }
+        else if(phase == 2){
+            tokens = weiAmount * 1175;
+            refpercent = 5;
+        }
+        else if(phase ==3){
+            tokens = weiAmount * 588;
+            refpercent = 5;
+        }
+        else{
+            revert("Sale Not Started!");
+        }
+            
+        require(balances[address(this)] >=tokens , "Tokens Not Available!");
+        
+            
+        balances[msg.sender] = balances[msg.sender] + tokens;
+        balances[address(this)] = balances[address(this)] - tokens;
+        emit Transfer(address(this), msg.sender , tokens);
+        
+       if(reffer != address(0) && reffer != msg.sender){
+           uint256 am = (msg.value*refpercent)/100;
+           reffer.transfer(am);
+           
+           uint256 rt = (tokens*refpercent)/100;
+           balances[reffer] = balances[reffer] + rt;
+           balances[address(this)] = balances[address(this)] - rt;
+           emit Transfer(address(this), reffer , rt);
+       }
+       
+       
+       //
+        
+        forwardFunds();
+    }
+    
+    function forwardFunds() internal {
+        owner.transfer(address(this).balance);
+        
+    }
+    
+    
+    //-------------------------------------------------------------------------
+
+
+    // ------------------------------------------------------------------------
+    // Total supply
+    // ------------------------------------------------------------------------
+    function totalSupply() public view returns (uint) {
+        return _totalSupply.sub(balances[address(0)]);
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Get the token balance for account `tokenOwner`
+    // ------------------------------------------------------------------------
+    function balanceOf(address tokenOwner) public view returns (uint balance) {
+        return balances[tokenOwner];
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Transfer the balance from token owner's account to `to` account
+    // - Owner's account must have sufficient balance to transfer
+    // - 0 value transfers are allowed
+    // ------------------------------------------------------------------------
+    function transfer(address to, uint tokens) public returns (bool success) {
+        balances[msg.sender] = balances[msg.sender].sub(tokens);
+        balances[to] = balances[to].add(tokens);
+        emit Transfer(msg.sender, to, tokens);
+        return true;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Token owner can approve for `spender` to transferFrom(...) `tokens`
+    // from the token owner's account
+    //
+    // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
+    // recommends that there are no checks for the approval double-spend attack
+    // as this should be implemented in user interfaces
+    // ------------------------------------------------------------------------
+    function approve(address spender, uint tokens) public returns (bool success) {
+        allowed[msg.sender][spender] = tokens;
+        emit Approval(msg.sender, spender, tokens);
+        return true;
+    }
+
+
+    // ------------------------------------------------------------------------  
+    // Transfer `tokens` from the `from` account to the `to` account
+    //
+    // The calling account must already have sufficient tokens approve(...)-d
+    // for spending from the `from` account and
+    // - From account must have sufficient balance to transfer
+    // - Spender must have sufficient allowance to transfer
+    // - 0 value transfers are allowed
+    // ------------------------------------------------------------------------
+    function transferFrom(address from, address to, uint tokens) public returns (bool success) {
+        balances[from] = balances[from].sub(tokens);
+        allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
+        balances[to] = balances[to].add(tokens);
+        emit Transfer(from, to, tokens);
+        return true;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Returns the amount of tokens approved by the owner that can be
+    // transferred to the spender's account
+    // ------------------------------------------------------------------------
+    function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
+        return allowed[tokenOwner][spender];
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Token owner can approve for `spender` to transferFrom(...) `tokens`
+    // from the token owner's account. The `spender` contract function
+    // `receiveApproval(...)` is then executed
+    // ------------------------------------------------------------------------
+    function approveAndCall(address spender, uint tokens, bytes memory data) public returns (bool success) {
+        allowed[msg.sender][spender] = tokens;
+        emit Approval(msg.sender, spender, tokens);
+        ApproveAndCallFallBack(spender).receiveApproval(msg.sender, tokens, address(this), data);
+        return true;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Don't accept ETH
+    // ------------------------------------------------------------------------
+/*    function () external payable {
+        revert();
+    }
+*/
+
+    // ------------------------------------------------------------------------
+    // Owner can transfer out any accidentally sent ERC20 tokens
+    // ------------------------------------------------------------------------
+    function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {
+        return ERC20Interface(tokenAddress).transfer(owner, tokens);
+    }
+    
+    
+     function mint(address account, uint256 amount) onlyOwner public returns (bool) {
+        require(account != address(0), "ERC20: mint to the zero address");
+        _totalSupply = _totalSupply.add(amount);
+        balances[account] = balances[account].add(amount);
+        emit Transfer(address(0), account, amount);
+    }
+    
+    /**
+     * @dev Destroys `amount` tokens from `account`, reducing the
+     * total supply.
+     *
+     * Emits a {Transfer} event with `to` set to the zero address.
+     *
+     * Requirements
+     *
+     * - `account` cannot be the zero address.
+     * - `account` must have at least `amount` tokens.
+     */
+     
+    function burn(address account, uint256 amount) onlyOwner public returns (bool) {
+        require(account != address(0), "ERC20: burn from the zero address");
+        balances[account] = balances[account].sub(amount);
+        _totalSupply = _totalSupply.sub(amount);
+        emit Transfer(account, address(0), amount);
+    }
+   
+    
+    
+
+}

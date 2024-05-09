@@ -1,0 +1,30 @@
+<\contract\>
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+     mapping(address => uint) public fundsByBidder;
+     bool public auctionEnded;
+
+     function bid() public payable {
+          require(!auctionEnded, "Auction has ended");
+          require(msg.value > highestBid, "Bid not high enough");
+          if(highestBid != 0) {
+               fundsByBidder[highestBidder] += highestBid;
+          }
+          highestBidder = msg.sender;
+          highestBid = msg.value;
+     }
+
+     function withdraw() public {
+          require(auctionEnded, "Auction is still ongoing");
+          uint amount = fundsByBidder[msg.sender];
+          fundsByBidder[msg.sender] = 0;
+          msg.sender.transfer(amount);
+     }
+
+     function endAuction() public {
+          require(!auctionEnded, "Auction already ended");
+          auctionEnded = true;
+     }
+}
+<\contract\>

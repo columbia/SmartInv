@@ -1,0 +1,365 @@
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: setBlacklistEnabledMultiple(address[],bool)
+PC address: 4262
+Estimated Gas Usage: 1985 - 2693
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:303
+
+require(_owner == _msgSender(), "Caller =/= owner.")
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x10, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: setBlacklistEnabledMultiple(address[],bool), txdata: 0x05bbedb600000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000, decoded_data: ([], False), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: setSwapSettings(uint256,uint256,uint256,uint256,uint256)
+PC address: 8146
+Estimated Gas Usage: 2044 - 2469
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:303
+
+require(_owner == _msgSender(), "Caller =/= owner.")
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setSwapSettings(uint256,uint256,uint256,uint256,uint256), txdata: 0x34cd826000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000102040101010101010101010101010101010101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, decoded_data: (0, 5753941051981435387033180816309520742456819969, 0, 0, 0), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: decreaseAllowance(address,uint256)
+PC address: 20940
+Estimated Gas Usage: 1995 - 2470
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:423
+
+require(sender != address(0), "ERC20: Zero Address")
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: decreaseAllowance(address,uint256), txdata: 0xa457c2d700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, decoded_data: ('0x0000000000000000000000000000000000000000', 0), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 22899
+Estimated Gas Usage: 5598 - 7723
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:662
+
+if(_hasLimits(from, to)) {
+            if(!tradingEnabled) {
+                revert("Trading not yet enabled!");
+            }
+            if(lpPairs[from] || lpPairs[to]){
+                if (!_isExcludedFromLimits[from] && !_isExcludedFromLimits[to]) {
+                    require(amount <= _maxTxAmount, "Transfer amount exceeds the maxTxAmount.");
+                }
+            }
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: transfer(address,uint256), txdata: 0xa9059cbb00000000000000000000000000000000000000000000000000000000000000020101080401020101018001010000000000000001200000000000000000000101, decoded_data: ('0x0000000000000000000000000000000000000002', 454135017564742423014910167088542567565286843946785638450832317083096711425), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 23853
+Estimated Gas Usage: 6525 - 8980
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:648
+
+from != _owner
+            && to != _owner
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000affeaffeaffeaffeaffeaffeaffeaffeaffeaffe0210010101010101010180010000000000000000000000000000000000000000, decoded_data: ('0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe', 932902179015005664782105393972863452324293722283738241627789553790930124800), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 23940
+Estimated Gas Usage: 6545 - 9000
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:648
+
+from != _owner
+            && to != _owner
+            && tx.origin != _owner
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb0000000000000000000000000000000000010000da00000000800000000100000400014080100101800201010400000001000200000100010000010004000000, decoded_data: ('0x0000000000010000da0000000080000000010000', 1809260035002556009856524455349365507678949687482388031553457543677315383296), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 24027
+Estimated Gas Usage: 3539 - 4624
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:648
+
+from != _owner
+            && to != _owner
+            && tx.origin != _owner
+            && !_liquidityHolders[to]
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: transfer(address,uint256), txdata: 0xa9059cbb0000000000000000000000000901d12ebe1b195e5aa8748e62bd7734ae19b51f0101010404010102010101010000000001000000000001000000000100000000, decoded_data: ('0x0901d12ebe1b195e5aa8748e62bd7734ae19b51f', 454086705655840394199676934411779740166390917100734122704289731033811648512), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 24110
+Estimated Gas Usage: 6585 - 9040
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:648
+
+from != _owner
+            && to != _owner
+            && tx.origin != _owner
+            && !_liquidityHolders[to]
+            && !_liquidityHolders[from]
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000affeaffeaffeaffeaffeaffeaffeaffeaffeaffe0101100001012001010101010000010000000000000000000000000000000000, decoded_data: ('0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe', 454190123695368517850528010299760588518673548827527200357760945432096145408), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 24193
+Estimated Gas Usage: 6605 - 9060
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:648
+
+from != _owner
+            && to != _owner
+            && tx.origin != _owner
+            && !_liquidityHolders[to]
+            && !_liquidityHolders[from]
+            && to != DEAD
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb000000000000000000000000affeaffeaffeaffeaffeaffeaffeaffebffeaffe0102010120010801010201010000000000000000000000010000000000000000, decoded_data: ('0xaffeaffeaffeaffeaffeaffeaffeaffebffeaffe', 455853474789534186086245933969734320717273618639202358321822669465418989568), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 24251
+Estimated Gas Usage: 6625 - 9080
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:648
+
+from != _owner
+            && to != _owner
+            && tx.origin != _owner
+            && !_liquidityHolders[to]
+            && !_liquidityHolders[from]
+            && to != DEAD
+            && to != address(0)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb00000000000000000000000000000000010000000000000000000000000000010110010101080201010810010000000001000000000000000000000000000000, decoded_data: ('0x0000000001000000000000000000000000000001', 480589330434620516322766165970906325032415817998541633190508344342078291968), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 24307
+Estimated Gas Usage: 6645 - 9100
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:648
+
+from != _owner
+            && to != _owner
+            && tx.origin != _owner
+            && !_liquidityHolders[to]
+            && !_liquidityHolders[from]
+            && to != DEAD
+            && to != address(0)
+            && from != address(this)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb00000000000000000000000000000000000000000000000000000040040102010101010180010201040201040001001004000000020800000000000000000000, decoded_data: ('0x0000000000000000000000000000004004010201', 454086637834726160383446795873558691450196315636835359592636042361635340288), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 26176
+Estimated Gas Usage: 9507 - 12952
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:792
+
+if (!_hasLiqBeenAdded && _hasLimits(from, to)) {
+                revert("Only owner can transfer at this time.");
+            }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x10, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb00000000000000000000000000000108010180010101011001010101010180000120010104040001000101010000000000000000000000000000010004000100, decoded_data: ('0x0000010801018001010101100101010101018000', 508858883785362822143164754434570652452124365070723288845047922814114332928), value: 0x0
+
+==== Dependence on tx.origin ====
+SWC ID: 115
+Severity: Low
+Contract: Serenity
+Function name: transfer(address,uint256)
+PC address: 27133
+Estimated Gas Usage: 6692 - 9147
+Use of tx.origin as a part of authorization control.
+The tx.origin environment variable has been found to influence a control flow decision. Note that using tx.origin as a security control might cause a situation where a user inadvertently authorizes a smart contract to perform an action on their behalf. It is recommended to use msg.sender instead.
+--------------------
+In file: /tmp/0x33d6064f0dfb62462a74049f30909ddd4f683ba2.sol:735
+
+!_hasLimits(from, to) && to == lpPair
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x1, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: transfer(address,uint256), txdata: 0xa9059cbb00000000000000000000000000000000000000000000000000000000000000010102010101010102010001020200000000000000000000000000000000000000, decoded_data: ('0x0000000000000000000000000000000000000001', 455853471524841902071573508319338815389889055696660493391679079778978103296), value: 0x0
+
+

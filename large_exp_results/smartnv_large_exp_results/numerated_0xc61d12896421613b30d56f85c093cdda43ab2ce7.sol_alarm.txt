@@ -1,0 +1,8 @@
+<\TimelockController\>
+1) Business logic flaw: The function endExecute does not check for the possibility of division by zero when calculating if the execution failed, which could potentially lead to an inconsistent state update.
+2) Inconsistent state update: The function startExecute updates the startingBalanceList without properly initializing it, potentially causing an inconsistent state.
+3) Incorrect visibility/ownership: The contract TimelockController implements the interface IERC20 but does not define the required functions, potentially leading to incorrect visibility or ownership issues.
+
+<\ExchangeTokens\>
+1) Price manipulation: The function liquidate allows for potential manipulation of the debt and collateral amounts based on the price returned by the getPrice() function, which could lead to fraudulent liquidation of funds.
+2) Arithmetic flaw: The liquidate function performs arithmetic operations on potentially untrusted inputs (getPrice() * cAmount * 80 / 100), which could lead to arithmetic flaws such as overflowing or underflowing.

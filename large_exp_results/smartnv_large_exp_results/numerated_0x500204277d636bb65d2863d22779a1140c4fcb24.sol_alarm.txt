@@ -1,0 +1,33 @@
+<\contract\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    address public buyer;
+    uint public price;
+    bool public isOpen;
+
+    constructor(address _token, uint _price) {
+        token = _token;
+        price = _price;
+        owner = msg.sender;
+        isOpen = true;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(isOpen, "Sale is not open");
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        require(ERC20(token).balanceOf(owner) >= _amount, "Insufficient tokens");
+        
+        // Transfer tokens to buyer
+        ERC20(token).transferFrom(owner, msg.sender, _amount);
+        
+        // Transfer payment to owner
+        payable(owner).transfer(msg.value);
+    }
+
+    function closeSale() public {
+        require(msg.sender == owner, "Only owner can close the sale");
+        isOpen = false;
+    }
+}
+<\contract\>

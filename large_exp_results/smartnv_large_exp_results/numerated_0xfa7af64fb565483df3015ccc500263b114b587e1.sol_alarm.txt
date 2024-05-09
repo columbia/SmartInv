@@ -1,0 +1,37 @@
+The contract provided for analysis:
+
+```solidity
+contract Payment {
+    address public owner;
+    uint public totalPayments;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(address _recipient, uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        
+        balances[msg.sender] -= _amount;
+        balances[_recipient] += _amount;
+        
+        totalPayments += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        
+        balances[msg.sender] -= _amount;
+        msg.sender.transfer(_amount);
+    }
+}
+```
+
+Based on the analysis of the provided contract, the potential vulnerabilities identified are:
+
+1) `insufficient gas`: The `withdraw` function transfers funds to the caller using `msg.sender.transfer(_amount)`, which could potentially lead to out-of-gas errors if the gas stipend is not enough for the recipient to handle the incoming transfer.
+
+2) `incorrect visibility/ownership`: The `owner` variable is declared as public, which exposes it to all users. It is advisable to make this variable `private` or to provide a function to access the owner address rather than having it public.
+
+Therefore, the potential vulnerabilities in the provided contract are insufficient gas and incorrect visibility/ownership.

@@ -1,0 +1,51 @@
+<\contract\> 
+contract Escrow {
+         address public seller;
+         address public buyer;
+         address public arbiter;
+         uint public value;
+         uint public startTime;
+         enum State {Created, Locked, Inactive}
+         State public state;
+
+         modifier onlyBuyer() {
+             require(msg.sender == buyer, "Only buyer can call this function");
+             _;
+         }
+         modifier inState(State _state) {
+             require(state == _state, "Invalid state");
+             _;
+         }
+
+         constructor(address _seller, address _buyer, address _arbiter, uint _value) {
+             seller = _seller;
+             buyer = _buyer;
+             arbiter = _arbiter;
+             value = _value;
+             state = State.Created;
+             startTime = block.timestamp;
+         }
+
+         function deposit() public payable onlyBuyer inState(State.Created) {
+             require(msg.value == value, "Invalid value");
+             state = State.Locked;
+         }
+
+         function confirmReceived() public onlyBuyer inState(State.Locked) {
+             seller.transfer(value);
+             state = State.Inactive;
+         }
+
+         function refund() public onlyBuyer inState(State.Locked) {
+             buyer.transfer(value);
+             state = State.Inactive;
+         }
+
+         function withdraw() public {
+             require(msg.sender == arbiter, "Only arbiter can call this function");
+             require(state == State.Inactive && startTime + 2 weeks < block.timestamp, "Invalid state/time");
+             arbiter.transfer(address(this).balance);
+             state = State.Inactive;
+         }
+     }
+<\contract\>

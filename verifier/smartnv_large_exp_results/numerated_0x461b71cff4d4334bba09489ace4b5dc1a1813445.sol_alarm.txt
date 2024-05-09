@@ -1,0 +1,35 @@
+<\contract\> 
+contract TokenSale {
+    ERC20 public token;
+    address public owner;
+    address public beneficiary;
+    uint public tokenPrice;
+    uint public tokenAmount;
+
+    constructor(address _token, uint _tokenPrice, uint _tokenAmount, address _beneficiary) {
+        token = ERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        tokenAmount = _tokenAmount;
+        beneficiary = _beneficiary;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalPrice = _amount * tokenPrice;
+        require(token.balanceOf(owner) >= _amount, "Not enough tokens left for sale");
+        require(token.transferFrom(msg.sender, owner, totalPrice), "Token transfer failed");
+        require(token.transfer(msg.sender, _amount), "Token transfer to buyer failed");
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(beneficiary, tokenAmount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract TokenSale are:
+
+1) inconsistent state update - The tokenAmount is directly transferred to the beneficiary regardless of the availability of tokens in the contract, which may lead to an inconsistent state if tokens are not sufficient.
+
+2) incorrect visibility/ownership - The withdrawTokens function can be called by any address, not just the owner, due to the lack of access control, potentially leading to unauthorized token withdrawals.

@@ -1,0 +1,27 @@
+The contract being analyzed:
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+
+    function Escrow(address _buyer, address _arbiter) public {
+        seller = msg.sender;
+        buyer = _buyer;
+        arbiter = _arbiter;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        // Code to release funds to seller
+    }
+
+    function refundFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        // Code to refund funds to buyer
+    }
+}
+
+Output: 
+1) incorrect visibility/ownership; 
+2) privilege escalation;

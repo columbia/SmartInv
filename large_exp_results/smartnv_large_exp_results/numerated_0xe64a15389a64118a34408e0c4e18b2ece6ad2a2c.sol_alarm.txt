@@ -1,0 +1,59 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+     struct Voter {
+         uint weight; 
+         bool voted; 
+         address delegate; 
+         uint vote;
+         }
+
+    address public chairperson;
+    mapping(address => Voter) public voters;
+    uint[] public proposals;
+
+    modifier onlyChairperson() {
+        require(msg.sender == chairperson, "Only chairperson can call this function");
+        _;
+    }
+
+    function giveRightToVote(address voter) public onlyChairperson {
+        voters[voter].weight = 1; 
+    }
+
+    function delegate(address to) public {
+        require(to != msg.sender, "Self-delegation is not allowed");
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+
+        if (voters[to].delegate == address(0)) {
+            sender.voted = true;
+            sender.delegate = to;
+            Voter storage delegateTo = voters[to];
+            if (delegateTo.voted) {
+                proposals[delegateTo.vote] += sender.weight;
+            } else {
+                delegateTo.weight += sender.weight;
+            }
+        }
+    }
+
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "You don't have the right to vote");
+        require(!sender.voted, "You have already voted");
+
+        sender.voted = true;
+        sender.vote = proposal;
+        proposals[proposal] += sender.weight;
+    }
+
+    function winningProposal() public view returns (uint winningProposal_) {
+        uint winningProposal = 0;
+        for (uint p = 0; p < proposals.length; p++) {
+            if (proposals[p] > proposals[winningProposal]) {
+                winningProposal = p;
+            }
+        }
+        winningProposal_ = winningProposal;
+    }
+}

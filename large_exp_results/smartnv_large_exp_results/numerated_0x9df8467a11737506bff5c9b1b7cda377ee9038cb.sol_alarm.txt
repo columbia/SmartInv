@@ -1,0 +1,27 @@
+The contract given for analysis is:
+
+contract VotingSystem {
+     address public admin;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+
+     constructor() {
+          admin = msg.sender;
+          totalVotes = 0;
+     }
+
+     function vote() public {
+          require(hasVoted[msg.sender] == false, "Already voted");
+          hasVoted[msg.sender] = true;
+          totalVotes++;
+     }
+
+     function changeAdmin(address newAdmin) public {
+          require(msg.sender == admin, "Only admin can change admin");
+          admin = newAdmin;
+     }
+}
+
+The potential vulnerabilities in the given contract are:
+1) privilege escalation
+2) incorrect visibility/ownership

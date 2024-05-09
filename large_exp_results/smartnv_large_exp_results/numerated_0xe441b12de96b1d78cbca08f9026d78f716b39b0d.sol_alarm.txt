@@ -1,0 +1,23 @@
+<\analyzed_contract\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function placeBid(uint _amount) external {
+        require(_amount > highestBid, "Bid amount is not higher than current highest bid");
+        require(msg.sender != highestBidder, "You are already the highest bidder");
+        
+        highestBidder = msg.sender;
+        highestBid = _amount;
+    }
+
+    function withdrawBid() external {
+        require(msg.sender == highestBidder, "You are not the highest bidder");
+        
+        // Code to refund the bidder
+        
+        highestBidder = address(0);
+        highestBid = 0;
+    }
+}
+<\analyzed_contract\>

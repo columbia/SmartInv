@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility/ownership: The `lockedFunds` variable is not defined in the contract, which might lead to visibility issues or ownership concerns.
+
+2) Business logic flaw: The condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` in the `endExecute` function might have a business logic flaw, as it is checking a condition that might not accurately represent the expected behavior.
+
+3) Inconsistent state update: The `proposal.votedAmount += amount;` statement in the `execute` function might lead to inconsistent state updates, as it directly modifies the `votedAmount` without proper checks or validations.
+
+4) Insufficient gas: There could be potential vulnerabilities related to insufficient gas, particularly in functions that involve transferring tokens (e.g., `votingToken.transferFrom`, `USDC.transferFrom`, `WETH.transferFrom`), which might result in transaction failures or unexpected behavior.

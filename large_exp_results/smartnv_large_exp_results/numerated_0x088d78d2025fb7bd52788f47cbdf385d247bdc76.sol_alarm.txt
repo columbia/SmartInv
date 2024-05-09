@@ -1,0 +1,25 @@
+The contract under analysis is:
+```
+contract TokenSale {
+    IERC20 public token;
+    uint public price;
+    address payable public beneficiary;
+
+    constructor(IERC20 _token, uint _price, address payable _beneficiary) {
+        token = _token;
+        price = _price;
+        beneficiary = _beneficiary;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect amount");
+        token.transfer(msg.sender, amount);
+        beneficiary.transfer(msg.value);
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Arithmetic flaw: In the `buyTokens` function, the calculation `msg.value == amount * price` could potentially lead to arithmetic flaws if the price or amount values are manipulated.
+2) Ether leakage: Transferring `msg.value` directly to the `beneficiary` without additional checks or safeguards can potentially lead to ether leakage.
+3) Insufficient gas: If the `buyTokens` function consumes a large amount of gas, it could potentially result in insufficient gas for the transaction to be completed successfully.

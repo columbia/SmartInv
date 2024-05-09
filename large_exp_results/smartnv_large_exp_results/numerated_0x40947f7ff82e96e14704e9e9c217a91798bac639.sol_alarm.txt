@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+    
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect amount sent");
+
+        balances[msg.sender] += _amount;
+        
+        // Transfer tokens
+        IERC20(tokenAddress).transfer(msg.sender, _amount);
+    }
+    
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,49 @@
+<\contract\> 
+contract VotingSystem {
+    struct Proposal {
+        uint256 id;
+        string description;
+        address creator;
+        uint256 forVotes;
+        uint256 againstVotes;
+        bool executed;
+    }
+
+    mapping(uint256 => Proposal) public proposals;
+    mapping(address => bool) public hasVoted;
+
+    function createProposal(uint256 _id, string memory _description) public {
+        require(proposals[_id].id == 0, "Proposal ID already exists");
+        Proposal memory newProposal = Proposal(_id, _description, msg.sender, 0, 0, false);
+        proposals[_id] = newProposal;
+    }
+
+    function vote(uint256 _id, bool _support) public {
+        require(proposals[_id].id != 0, "Proposal does not exist");
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        if (_support) {
+            proposals[_id].forVotes += 1;
+        } else {
+            proposals[_id].againstVotes += 1;
+        }
+
+        hasVoted[msg.sender] = true;
+    }
+
+    function executeProposal(uint256 _id) public {
+        require(proposals[_id].id != 0, "Proposal does not exist");
+        require(!proposals[_id].executed, "Proposal already executed");
+        
+        if (proposals[_id].forVotes > proposals[_id].againstVotes) {
+            // Execute proposal logic
+            proposals[_id].executed = true;
+        }
+    }
+}
+<\contract\> 
+
+Output:
+- Potential Vulnerabilities: 
+1) inconsistent state update
+2) incorrect visibility/ownership

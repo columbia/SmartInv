@@ -1,0 +1,68 @@
+<\contract\>
+contract VotingSystem {
+      struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate;
+          uint256 vote; 
+          }
+      struct Proposal {
+          uint256 voteCount;
+          string description;
+          address recipient;
+          }
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+
+    constructor() public {
+         chairperson = msg.sender;
+         voters[chairperson].weight = 1;
+    }
+
+    function giveRightToVote(address voter) public {
+        require(msg.sender == chairperson, "only chairperson can give right to vote");
+        require(!voters[voter].voted, "the voter has already voted");
+        voters[voter].weight = 1;
+    }
+
+    function vote(uint256 proposalIndex) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "sender has no right to vote");
+        require(!sender.voted, "sender already voted");
+        sender.voted = true;
+        sender.vote = proposalIndex;
+        proposals[proposalIndex].voteCount += sender.weight;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "you already voted");
+        require(to != msg.sender, "self-delegation is disallowed");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "looped delegation found");
+        }
+        
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            proposals[delegateTo.vote].voteCount += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+    
+    function winningProposal() public view returns (uint256 winningProposal_) {
+        uint256 winningVoteCount = 0;
+        for (uint256 i = 0; i < proposals.length; i++) {
+            if (proposals[i].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[i].voteCount;
+                winningProposal_ = i;
+            }
+        }
+    }
+}
+<\contract\>

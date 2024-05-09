@@ -1,0 +1,38 @@
+Contract to analyze:
+
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public participants;
+    uint public totalJackpot;
+    
+    constructor() {
+        owner = msg.sender;
+        totalJackpot = 0;
+    }
+
+    function participate() external payable {
+        require(msg.value > 0, "You must send some ether to participate");
+        
+        participants[msg.sender] += msg.value;
+        totalJackpot += msg.value;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "only the owner can pick the winner");
+        require(totalJackpot > 0, "there must be some jackpot to pick a winner");
+
+        address winner = randomlySelectWinner();
+        uint winnings = participants[winner];
+        totalJackpot -= winnings;
+        delete participants[winner];
+        payable(winner).transfer(winnings);
+    }
+
+    function randomlySelectWinner() internal view returns (address) {
+        uint index = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % participants.length;
+        return participants[index];
+    }
+}
+Output:
+- inconsistent state update
+- potential vulnerabilities: 4) inconsistent state update.

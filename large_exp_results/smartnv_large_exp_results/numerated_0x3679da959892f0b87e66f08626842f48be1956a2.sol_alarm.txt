@@ -1,0 +1,56 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, AWAITING_CONFIRMATION, COMPLETE }
+    State public currentState;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        _;
+    }
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function makePayment() public payable onlyBuyer {
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public onlyBuyer {
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state for this action");
+        currentState = State.AWAITING_CONFIRMATION;
+    }
+
+    function releasePayment() public onlySeller {
+        require(currentState == State.AWAITING_CONFIRMATION, "Invalid state for this action");
+        msg.sender.transfer(address(this).balance);
+        currentState = State.COMPLETE;
+    }
+
+    function refundPayment() public onlyArbiter {
+        require(currentState == State.AWAITING_CONFIRMATION, "Invalid state for this action");
+        buyer.transfer(address(this).balance);
+        currentState = State.AWAITING_PAYMENT;
+    }
+}
+<\contract\> 
+The potential vulnerabilities in the EscrowContract are:
+1) Inconsistent state update: There is a possibility of inconsistent state update in the contract where the currentState variable might not be updated correctly in all functions, leading to unexpected behavior.
+2) Incorrect visibility/ownership: The visibility and ownership of the functions may not be properly set, allowing unintended users to access certain functions and potentially disrupt the escrow process.

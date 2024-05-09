@@ -1,0 +1,24 @@
+Contract: 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    function deposit(address _buyer, address _seller) public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        amount = msg.value;
+        buyer = _buyer;
+        seller = _seller;
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        address(uint160(buyer)).transfer(amount);
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can refund funds");
+        address(uint160(seller)).transfer(amount);
+    }
+}
+Output: privilege escalation, inconsistent state update

@@ -1,0 +1,13 @@
+Contract TimelockController:
+1) Inconsistent state update: The startingBalanceList is being updated in the startExecute function without proper validation or synchronization with the proposal struct.
+2) Incorrect visibility/ownership: The owner variable is declared as internal, which might lead to potential ownership vulnerabilities if not properly handled.
+3) ID uniqueness violation: The proposal struct does not have a unique identifier, which could lead to potential issues if multiple proposals are created at the same time.
+4) Integer overflow/underflow: There are multiple calculations involving uint256 variables, such as startingBalanceList, votedAmount, which might be susceptible to integer overflow or underflow if not properly checked.
+5) Insufficient gas: The endExecute function checks for the balance of the contract against the total supply without ensuring that enough gas is available for the operation.
+
+Therefore, the potential vulnerabilities in the TimelockController contract are:
+- Inconsistent state update
+- Incorrect visibility/ownership
+- ID uniqueness violation
+- Integer overflow/underflow
+- Insufficient gas

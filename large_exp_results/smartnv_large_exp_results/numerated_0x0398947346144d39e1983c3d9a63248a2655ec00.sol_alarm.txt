@@ -1,0 +1,8 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function `calculatePrice` updates the state by returning the price, but it does not explicitly update any state variables within the contract.
+2) Incorrect visibility/ownership: State variables `WETH`, `USDC`, and `pair` are defined as public, which exposes sensitive information. Consider making these variables private and providing only necessary getters.
+3) Business logic flaw: In the `liquidate` function, the condition for liquidation may not be appropriately defined, which could lead to incorrect liquidation decisions.
+4) Integer overflow/underflow: There is a potential for integer overflow in the calculation within the `liquidate` function when multiplying `getPrice()` with `cAmount`. Ensure proper validation is in place to prevent overflow.
+
+Therefore, the identified potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, business logic flaw, and integer overflow/underflow.

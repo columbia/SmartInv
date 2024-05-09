@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: 
+   - The execute function updates the votedAmount of the proposal without using safe arithmetic operations, which can lead to incorrect state changes in case of integer overflow.
+
+2) Incorrect visibility/ownership:
+   - The owner variable is defined as internal, which might lead to unexpected behavior and potentially allow unauthorized access to certain functions or variables.
+
+3) Insufficient gas:
+   - The endExecute function contains a require statement that checks if the execution has failed, potentially causing out-of-gas errors if the contract does not have enough gas to process the transaction.
+
+4) ID uniqueness violation:
+   - The code does not appear to have any mechanism to ensure unique identifiers for proposals or addresses, which can lead to conflicts and vulnerabilities related to identity verification.

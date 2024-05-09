@@ -1,0 +1,44 @@
+<\Your_contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 id;
+        uint256 votedProposalId;
+        bool hasVoted;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint256 => string) public proposals;
+    mapping(uint256 => uint256) public votes;
+
+    uint256 public totalVotes;
+
+    function createProposal(uint256 proposalId, string memory proposalName) public {
+        proposals[proposalId] = proposalName;
+    }
+
+    function vote(uint256 proposalId) public {
+        require(voters[msg.sender].hasVoted == false, "You have already voted");
+
+        votes[proposalId]++;
+        totalVotes++;
+
+        voters[msg.sender].id = totalVotes;
+        voters[msg.sender].votedProposalId = proposalId;
+        voters[msg.sender].hasVoted = true;
+    }
+
+    function getWinner() public view returns (string memory) {
+        uint256 maxVotes = 0;
+        uint256 winningProposalId;
+
+        for (uint256 i = 1; i <= totalVotes; i++) {
+            if (votes[i] > maxVotes) {
+                maxVotes = votes[i];
+                winningProposalId = i;
+            }
+        }
+
+        return proposals[winningProposalId];
+    }
+}
+<\Your_contract\>

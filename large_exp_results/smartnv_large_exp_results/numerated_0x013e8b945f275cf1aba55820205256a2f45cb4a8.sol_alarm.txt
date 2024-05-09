@@ -1,0 +1,36 @@
+<\analyzing_contract\>
+contract VotingSystem {
+    address public owner;
+    uint public totalVotes;
+    mapping(address => uint) public userVotes;
+
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+
+    function vote(uint amount) external {
+        require(amount > 0, "Invalid amount");
+        userVotes[msg.sender] += amount;
+        totalVotes += amount;
+    }
+
+    function withdrawVotes() external {
+        require(msg.sender == owner, "Only owner can withdraw votes");
+        // Withdraw all votes and reset totalVotes
+        // Reentrancy could occur here
+        uint votesToWithdraw = totalVotes;
+        totalVotes = 0;
+        msg.sender.transfer(votesToWithdraw);
+    }
+
+    function updateOwner(address newOwner) external {
+        require(msg.sender == owner, "Only owner can update owner");
+        owner = newOwner;
+    }
+
+    function getVoteBalance(address user) external view returns(uint) {
+        return userVotes[user];
+    }
+}
+<\analyzing_contract\>

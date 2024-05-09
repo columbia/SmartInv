@@ -1,0 +1,32 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint) public voteCount;
+    uint public totalVotes;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint _choice) public {
+        require(_choice == 1 || _choice == 2, "Invalid choice");
+        voteCount[msg.sender] = _choice;
+        totalVotes++;
+    }
+
+    function tallyVotes() public view returns (uint countChoice1, uint countChoice2) {
+        for (uint i = 0; i < totalVotes; i++) {
+            if (voteCount[msg.sender] == 1) {
+                countChoice1++;
+            } else {
+                countChoice2++;
+            }
+        }
+    }
+
+    function endVoting() public {
+        require(msg.sender == owner, "Only owner can end the voting");
+        selfdestruct(msg.sender);
+    }
+}
+<\contract\>

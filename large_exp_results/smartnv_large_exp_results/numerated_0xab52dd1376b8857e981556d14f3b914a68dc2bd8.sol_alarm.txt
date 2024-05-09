@@ -1,0 +1,29 @@
+The contract provided for analysis is:
+
+```solidity
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+
+    constructor(IERC20 _token, uint _price) public {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Unauthorized withdrawal");
+        owner.transfer(address(this).balance);
+    }
+}
+```
+
+Output: 
+The potential vulnerabilities present in the contract are:
+1) Incorrect visibility/ownership: The `withdraw` function should have more strict visibility and access control mechanisms to prevent unauthorized withdrawals.

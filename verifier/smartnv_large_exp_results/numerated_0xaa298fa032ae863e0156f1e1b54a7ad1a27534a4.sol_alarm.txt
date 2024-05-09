@@ -1,0 +1,28 @@
+Contract:
+
+contract TokenSale {
+    struct Sale {
+        address buyer;
+        uint amount;
+    }
+    
+    mapping(uint => Sale) public sales;
+    uint public totalSales;
+    
+    function buyTokens(uint _amount) public {
+        require(_amount <= 100, "Exceeded maximum purchase amount");
+        totalSales++;
+        sales[totalSales] = Sale(msg.sender, _amount);
+    }
+    
+    function refund(uint _saleId) public {
+        require(msg.sender == sales[_saleId].buyer, "Only the buyer can request a refund");
+        // refund logic
+    }
+}
+
+Potential Vulnerabilities:
+- Business logic flaw: The contract allows for unlimited purchases of tokens without any price setting mechanism or consideration of available token supply, which could lead to potential issues with token pricing and inflation.
+- ID uniqueness violation: The sales are indexed by the total number of sales, which could lead to potential conflicts if multiple purchases happen simultaneously and share the same totalSales count.
+- Incorrect visibility/ownership: The sales mapping is public, exposing sensitive buyer information to anyone who interacts with the contract.
+- Insufficient gas: The refund function does not include any gas stipend, which could lead to potential out-of-gas errors during the refund process.

@@ -1,0 +1,23 @@
+The contract mentioned for analysis is:
+
+```solidity
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+
+    function vote(uint256 numVotes) public {
+        totalVotes += numVotes;
+        userVotes[msg.sender] += numVotes;
+    }
+
+    function redeemVotes() public {
+        uint256 redeemAmount = userVotes[msg.sender];
+        totalVotes -= redeemAmount;
+        userVotes[msg.sender] = 0;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Integer overflow/underflow

@@ -1,0 +1,20 @@
+<\contract\>
+contract TokenSwap {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         uint public tokenARate;
+         uint public tokenBRate;
+
+         function swap(uint amount, address recipient) public {
+             require(tokenA.balanceOf(msg.sender) >= amount, "insufficient balance");
+             uint amountB = amount * tokenARate / tokenBRate;
+             tokenA.transferFrom(msg.sender, address(this), amount);
+             tokenB.transfer(recipient, amountB);
+         }
+
+         function setRates(uint rateA, uint rateB) public {
+             tokenARate = rateA;
+             tokenBRate = rateB;
+         }
+     }
+<\contract\>

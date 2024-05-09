@@ -1,0 +1,28 @@
+<\contract\> 
+contract StakeToken {
+    address public owner;
+    mapping(address => uint) public stakes;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function stake(uint amount) public {
+        require(amount > 0, "Invalid amount");
+        stakes[msg.sender] += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(stakes[msg.sender] >= amount, "Insufficient balance");
+        stakes[msg.sender] -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+<\contract\> 
+
+Output:
+- healthy

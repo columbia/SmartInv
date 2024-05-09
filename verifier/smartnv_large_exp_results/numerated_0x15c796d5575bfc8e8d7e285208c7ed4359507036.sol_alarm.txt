@@ -1,0 +1,33 @@
+<\contract\>
+contract Escrow {
+     address public partyA;
+     address public partyB;
+     uint public amount;
+     bool public partyA_approved;
+     bool public partyB_approved;
+
+     function initiate(address _partyA, address _partyB, uint _amount) public {
+         require(msg.sender == owner, "Only owner can initiate");
+         partyA = _partyA;
+         partyB = _partyB;
+         amount = _amount;
+     }
+     
+     function approve() public {
+         if (msg.sender == partyA) {
+             partyA_approved = true;
+         }
+         if (msg.sender == partyB) {
+             partyB_approved = true;
+         }
+         if (partyA_approved && partyB_approved) {
+             transfer();
+         }
+     }
+
+     function transfer() private {
+         require(partyA_approved && partyB_approved, "Both parties must approve");
+         // logic to transfer funds from partyA to partyB
+     }
+}
+<\contract\>

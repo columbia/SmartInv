@@ -1,0 +1,20 @@
+<\contract\> 
+contract UserWallet {
+         address public owner;
+         mapping(uint => uint) public balances;
+
+         function deposit(uint _amount) public {
+             balances[msg.sender] += _amount;
+         }
+
+         function withdraw(uint _amount) public {
+             require(balances[msg.sender] >= _amount, "Insufficient balance");
+             balances[msg.sender] -= _amount;
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) ID uniqueness violation (multiple users can have the same ID leading to conflicts).
+2) Inconsistent state update (balances are directly modified without proper checks or validations).
+3) Insufficient gas (if the contract grows in size, gas costs for depositing or withdrawing funds may become high).

@@ -1,0 +1,53 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address internal owner;
+     IERC20 votingToken;
+     mapping(address => uint) startingBalanceList;
+     Proposal proposal;
+     uint lockedFunds;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalanceList[proposal.addr] = getStartingBalance(proposal.addr);
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              //votedProposal(proposal); 
+        }
+
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+
+    function getStartingBalance(address _user) internal view returns(uint){
+              //Get user's starting balance
+        }
+
+    //Other functions and modifiers
+}
+
+Output: 
+1) Inconsistent state update: The "votedProposal(proposal);" function is commented out in the "execute" function, possibly leading to the state not being updated as expected.
+
+2) Atomicity violation: The operations in the "execute" function are not atomic, meaning that multiple transactions could interfere with each other and lead to unexpected behavior.
+
+3) ID uniqueness violation: The "proposal" struct does not include a unique ID for each proposal, which could lead to potential conflicts or confusion when managing multiple proposals.
+
+4) Incorrect visibility/ownership: The "owner" variable is marked as internal, which may not provide the intended visibility level or ownership control.
+
+Therefore, the identified potential vulnerabilities in the contract are inconsistent state update, atomicity violation, ID uniqueness violation, and incorrect visibility/ownership.

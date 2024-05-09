@@ -1,0 +1,36 @@
+Contract analyzed: 
+
+contract Insurance {
+    struct Policy {
+        uint256 policyID;
+        address policyHolder;
+        uint256 coverageAmount;
+        uint256 premiumAmount;
+        bool isPolicyActive;
+    }
+
+    mapping(uint256 => Policy) public policies;
+    uint256 public numPolicies;
+
+    function createPolicy(address _policyHolder, uint256 _coverageAmount, uint256 _premiumAmount) public {
+        require(_policyHolder != address(0), "Invalid policy holder address");
+        require(_coverageAmount > 0, "Coverage amount must be greater than 0");
+        require(_premiumAmount > 0, "Premium amount must be greater than 0");
+
+        Policy memory newPolicy = Policy(numPolicies, _policyHolder, _coverageAmount, _premiumAmount, true);
+        policies[numPolicies] = newPolicy;
+        numPolicies++;
+    }
+
+    function cancelPolicy(uint256 _policyID) public {
+        require(policies[_policyID].policyHolder == msg.sender, "You are not the policy holder");
+        policies[_policyID].isPolicyActive = false;
+    }
+
+    function claimInsurance(uint256 _policyID) public {
+        require(policies[_policyID].isPolicyActive, "Policy is not active");
+        // process insurance claim logic
+    }
+}
+Potential vulnerabilities in contract Insurance:
+1) No vulnerability detected in this contract. Healthy.

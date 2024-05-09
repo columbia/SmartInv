@@ -1,0 +1,12 @@
+The contract provided contains the following potential vulnerabilities:
+
+1) Integer Overflow/Underflow: 
+   - In the function `liquidate(address user)`, there is a potential for integer underflow in the calculation `getPrice() * cAmount * 80 / 100` if `cAmount` is greater than `dAmount`.
+
+2) Incorrect Visibility/Ownership:
+   - The variables `debt`, `collateral`, `WETH`, `USDC`, and `pair` are declared as public, which exposes sensitive data and can be accessed by anyone. It would be more secure to restrict access to these variables.
+
+3) Insufficient Gas:
+   - In the `calculatePrice()` function, the calculation may consume a significant amount of gas, potentially leading to an out-of-gas error.
+
+Therefore, the potential vulnerabilities in the contract are Integer Overflow/Underflow, Incorrect Visibility/Ownership, and Insufficient Gas.

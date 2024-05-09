@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function startExecute() updates the proposal state, but it doesn't check if the proposal is already ongoing, potentially allowing a user to create multiple proposals at the same time.
+2) Atomicity violation: The execute() function transfers tokens and updates the proposal state in multiple steps, which could lead to issues if one step fails and leaves the contract in an inconsistent state.
+3) Incorrect visibility/ownership: The contract implements the IERC20 interface but doesn't provide implementations for the required functions, which could lead to unexpected behavior when interacting with other contracts that rely on the interface.

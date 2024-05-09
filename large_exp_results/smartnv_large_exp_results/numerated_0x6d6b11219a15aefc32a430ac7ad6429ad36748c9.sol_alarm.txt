@@ -1,0 +1,28 @@
+The contract to analyze:
+
+contract VotingSystem {
+         mapping(address => uint) public votes;
+         address public winner;
+
+         function vote(address _candidate) public {
+             require(votes[msg.sender] == 0, "Already voted");
+             votes[msg.sender] += 1;
+             if (votes[_candidate] > votes[winner]) {
+                 winner = _candidate;
+             }
+         }
+
+         function getWinner() public view returns (address) {
+             return winner;
+         }
+     } 
+
+Potential vulnerabilities:
+- Integer overflow/underflow: 
+  - The votes mapping allows for multiple votes from the same address without limit, which could lead to an overflow if the number of votes exceeds the maximum value allowed for uint.
+- Inconsistent state update:
+  - The logic within the vote function that updates the winner based on the number of votes could lead to inconsistent state updates if multiple transactions occur simultaneously and affect the winner calculation.
+- Incorrect visibility/ownership:
+  - The winner variable is public, meaning it can be accessed and potentially manipulated by external contracts or users, compromising the integrity of the voting system. 
+
+Therefore, the potential vulnerabilities in the VotingSystem contract are integer overflow/underflow, inconsistent state update, and incorrect visibility/ownership.

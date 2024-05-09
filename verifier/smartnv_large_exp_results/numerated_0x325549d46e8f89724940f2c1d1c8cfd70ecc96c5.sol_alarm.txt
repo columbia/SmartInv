@@ -1,0 +1,23 @@
+The contract provided for analysis is:
+
+```solidity
+contract Ecommerce {
+    mapping(address => uint) public balances;
+
+    function purchase() public payable {
+        uint price = 100;
+        require(msg.value == price, "Incorrect payment amount");
+        balances[msg.sender] += 1;
+    }
+
+    function withdraw() public {
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        payable(msg.sender).transfer(amount * 100);
+    }
+}
+```
+
+The potential vulnerabilities in the given contract are:
+1) integer overflow/underflow
+2) inconsistent state update

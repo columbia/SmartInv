@@ -1,0 +1,22 @@
+<\contract_to_analyze\>
+contract TokenMarket {
+    uint public price;
+    IERC20 public token;
+    address public owner;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function setPrice(uint _price) external {
+        require(msg.sender == owner, "only owner can set price");
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(price * _amount <= token.balanceOf(owner), "not enough tokens available");
+        token.transfer(msg.sender, _amount);
+    }
+}
+<\contract_to_analyze\>

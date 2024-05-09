@@ -1,0 +1,24 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint256) public voteCount;
+    uint256 public totalVotes;
+    address public admin;
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    function submitVote(uint256 numVotes) public {
+        voteCount[msg.sender] += numVotes;
+        totalVotes += numVotes;
+    }
+
+    function resetVotes() public onlyAdmin {
+        totalVotes = 0;
+        for (uint256 i = 0; i < totalVotes; i++) {
+            voteCount[msg.sender] = 0;
+        }
+    }
+}
+<\contract\>

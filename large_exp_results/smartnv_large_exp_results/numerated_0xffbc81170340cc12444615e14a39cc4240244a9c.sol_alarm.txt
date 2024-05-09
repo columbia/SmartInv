@@ -1,0 +1,28 @@
+Contract to analyze:
+
+contract TokenSale {
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens(address _recipient, uint _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        require(balances[_recipient] >= _amount, "Insufficient balance");
+
+        balances[_recipient] -= _amount;
+    }
+}
+
+Output: 
+1) incorrect visibility/ownership

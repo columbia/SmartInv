@@ -1,0 +1,31 @@
+Contract to be analyzed:
+
+contract Lottery {
+     mapping(address => uint) public tickets;
+     address[] public participants;
+     uint public ticketPrice = 1 ether;
+     uint public jackpot;
+     
+     function buyTicket(uint numTickets) public payable {
+         require(msg.value == numTickets * ticketPrice, "Incorrect payment amount");
+         for(uint i=0; i<numTickets; i++) {
+             participants.push(msg.sender);
+             tickets[msg.sender]++;
+         }
+         jackpot += msg.value;
+     }
+     
+     function drawWinner() public {
+         require(participants.length > 0, "No participants in the lottery");
+         uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % participants.length;
+         address winner = participants[winnerIndex];
+         uint winnings = jackpot;
+         delete participants;
+         jackpot = 0;
+         winner.transfer(winnings);
+     }
+}
+
+Output:
+1) integer overflow/underflow
+2) insufficient gas

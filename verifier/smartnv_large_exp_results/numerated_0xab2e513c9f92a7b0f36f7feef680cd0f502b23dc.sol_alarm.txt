@@ -1,0 +1,32 @@
+Contract TimelockController {
+    struct Proposal {
+        uint256 sTime; 
+        uint256 votedAmount; 
+        address addr; 
+    }
+    
+    address internal owner;
+    IERC20 votingToken;
+    
+    function startExecute() external {
+        uint256 startingBalance;
+        require(proposal.sTime == 0, "on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount; 
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");
+    }
+}
+Potential vulnerabilities:
+1) Inconsistent state update: The value of the startingBalance variable is stored in the startingBalanceList mapping, but the startingBalance variable is not updated in the execute or endExecute functions. This can lead to inconsistent state between the variables and the mapping.
+2) Incorrect visibility/ownership: The owner variable is declared as internal, which means it can be accessed by contracts that inherit from TimelockController. Depending on the intended functionality, this could lead to incorrect visibility and ownership control.

@@ -1,0 +1,23 @@
+<\contract_to_be_analyzed\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+    }
+
+    function release() public {
+        require(msg.sender == payer, "Only payer can release funds");
+        payable(payee).transfer(amount);
+    }
+
+    function cancel() public {
+        require(msg.sender == payer, "Only payer can cancel transaction");
+        payable(payer).transfer(amount);
+    }
+}
+<\contract_to_be_analyzed\>

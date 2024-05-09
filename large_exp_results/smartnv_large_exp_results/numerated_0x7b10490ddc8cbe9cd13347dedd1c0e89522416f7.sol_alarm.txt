@@ -1,0 +1,12 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The state variables debt and collateral are updated in the liquidate function without proper checks or validation, which could lead to inconsistencies.
+
+2) Arithmetic flaw: The calculation in the liquidate function could potentially lead to an arithmetic flaw since it involves multiplication and division with integers, which might overflow or underflow.
+
+3) Incorrect visibility/ownership: The visibility of the calculatePrice function is public, but it performs internal calculations and returns the result without any restriction, which could expose sensitive information to external parties. 
+
+4) Insufficient gas: The liquidate function transfers tokens without using proper gas limits, which could lead to a situation where the transaction fails due to running out of gas.
+
+5) Ether leakage: The contract does not handle ether transactions, but if there are any unintended ether transfers or interactions, it could lead to ether leakage vulnerabilities.  
+
+6) ID uniqueness violation: The contract does not implement any uniqueness checks for addresses used as identifiers, which could potentially lead to ID uniqueness violations.

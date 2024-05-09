@@ -1,0 +1,14 @@
+<\contract\> 
+contract PaymentSystem {
+     mapping(address => uint) public payments;
+
+     function makePayment(address _to, uint _amount) public {
+          require(_amount > 0, "Invalid payment amount");
+          payments[_to] += _amount;
+     }
+
+     function withdrawPayment(uint _amount) public {
+          require(payments[msg.sender] >= _amount, "Insufficient funds");
+          payments[msg.sender] -= _amount;
+     }
+}

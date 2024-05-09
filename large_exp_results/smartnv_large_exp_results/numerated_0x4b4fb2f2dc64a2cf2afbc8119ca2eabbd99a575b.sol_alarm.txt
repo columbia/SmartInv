@@ -1,0 +1,19 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint256 public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function getVoteCount() public view returns (uint256) {
+        return totalVotes;
+    }
+}
+<\contract_to_analyze\> 
+
+1) ID uniqueness violation
+2) Incorrect visibility/ownership

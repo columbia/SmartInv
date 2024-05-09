@@ -1,0 +1,28 @@
+The contract below is secure and does not contain any vulnerabilities:
+
+contract SafeContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only the owner can deposit funds");
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(amount <= balance, "Insufficient funds");
+        balance -= amount;
+    }
+
+    function getBalance() public view returns (uint) {
+        return balance;
+    }
+}
+
+Output: healthy

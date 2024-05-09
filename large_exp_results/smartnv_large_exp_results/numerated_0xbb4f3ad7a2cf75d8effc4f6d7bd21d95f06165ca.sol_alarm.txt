@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The contract is updating the state variable `proposal.votedAmount` in the `execute` function, but there is no check to ensure that the same proposal is not voted multiple times, leading to inconsistent state.
+
+2) Incorrect visibility/ownership: The `votingToken` variable is not marked as `private`, making it externally accessible. This could potentially expose sensitive token information to unauthorized users.
+
+3) Insufficient gas: The `endExecute` function checks for a condition that involves calculating the balance of the contract, which may require more gas than available in a single transaction. This could lead to the function failing due to insufficient gas.
+
+4) Integer overflow/underflow: There is a mathematical operation in the `liquidate` function that involves multiplying three variables (`getPrice()`, `cAmount`, and `80`) that could potentially result in an integer overflow if the values are not properly constrained. 
+
+5) Incorrect visibility/ownership: The `pair` variable is marked as `public`, which means that anyone can access the pair address. This could potentially lead to unauthorized access and manipulation of the pair contract.
+
+6) Business logic flaw: The `liquidate` function has a condition that checks if the given user's fund can be liquidated based on a calculation involving debt and collateral. However, the logic may not accurately reflect the intended behavior, leading to potential issues with fund liquidation.

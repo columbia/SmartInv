@@ -1,0 +1,14 @@
+The contract provided for analysis:
+
+contract PaymentContract {
+    uint public totalPayments;
+    mapping(address => uint) public payments;
+
+    function makePayment() public payable {
+        totalPayments += msg.value;
+        payments[msg.sender] += msg.value;
+    }
+}
+Potential vulnerabilities identified in the contract:
+1) Integer overflow/underflow
+2) Inconsistent state update

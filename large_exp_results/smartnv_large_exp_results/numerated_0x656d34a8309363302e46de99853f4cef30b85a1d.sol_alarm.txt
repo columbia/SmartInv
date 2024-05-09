@@ -1,0 +1,30 @@
+The contract below contains the following potential vulnerabilities:
+
+1) Integer overflow/underflow in the function calculatePrice(): The division operation in the calculatePrice function may result in integer overflow or underflow if the values are not properly checked.
+
+2) Price manipulation in the function liquidate(): The comparison in the liquidate function for liquidation may allow an attacker to manipulate the price in their favor to avoid liquidation.
+
+Therefore, the identified vulnerabilities in the contract are Integer overflow/underflow and Price manipulation.
+
+contract YourContract {
+         IERC20 public WETH;
+         IERC20 public USDC;
+         IUniswapV2Pair public pair; 
+         mapping(address => uint) public debt;
+         mapping(address => uint) public collateral;
+
+         function liquidate(address user) public {
+             uint dAmount = debt[user];
+             uint cAmount = collateral[user];
+             require(getPrice() * cAmount * 80 / 100 < dAmount,
+             "the given user’s fund cannot be liquidated");
+             address _this = address(this);
+             USDC.transferFrom(msg.sender, _this, dAmount);
+             WETH.transferFrom(_this, msg.sender, cAmount);
+         }
+         function  calculatePrice() public payable returns (uint) {
+             
+            return (USDC.balanceOf(address(pair)) /
+             WETH.balanceOf(address(pair)));
+      }
+}

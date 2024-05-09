@@ -1,0 +1,29 @@
+contract PaymentGateway {
+    address public owner;
+    uint public totalBalance;
+
+    constructor() {
+        owner = msg.sender;
+        totalBalance = 0;
+    }
+
+    function deposit() public payable {
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(amount <= totalBalance, "Insufficient funds");
+        totalBalance -= amount;
+        payable(owner).transfer(amount);
+    }
+
+    function transfer(address payable recipient, uint amount) public {
+        require(amount <= totalBalance, "Insufficient funds");
+        totalBalance -= amount;
+        recipient.transfer(amount);
+    }
+} 
+
+Output: 
+healthy

@@ -1,0 +1,30 @@
+<\analyzed_contract\>
+contract InvestmentManagement {
+    address public owner;
+    uint public totalInvestment;
+    mapping(address => uint) public investments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function invest() public payable {
+        require(msg.value > 0, "Investment amount must be greater than 0");
+        investments[msg.sender] += msg.value;
+        totalInvestment += msg.value;
+    }
+
+    function withdrawInvestment() public {
+        require(investments[msg.sender] > 0, "No investment to withdraw");
+        uint amount = investments[msg.sender];
+        investments[msg.sender] = 0;
+        totalInvestment -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+<\analyzed_contract\>

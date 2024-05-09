@@ -1,0 +1,44 @@
+Contract: 
+
+contract VotingSystem {
+     struct Voter {
+          address addr;
+          bool hasVoted;
+          uint256 vote;
+      }
+     mapping(address => Voter) public voters;
+     uint256 public totalVotes;
+     address public admin;
+
+     function vote(uint256 option) external {
+          require(!voters[msg.sender].hasVoted, "voter has already voted");
+          require(option == 1 || option == 2, "invalid option");
+          voters[msg.sender].hasVoted = true;
+          voters[msg.sender].vote = option;
+          totalVotes++;
+      }
+
+     function tallyVotes() external view returns (uint256, uint256) {
+          uint256 option1Count = 0;
+          uint256 option2Count = 0;
+
+          for (uint i = 0; i < totalVotes; i++) {
+               if (voters[msg.sender].vote == 1) {
+                    option1Count++;
+               } else {
+                    option2Count++;
+               }
+          }
+          
+          return (option1Count, option2Count);
+      }
+
+     function setAdmin(address _admin) external {
+          require(msg.sender == admin, "not admin");
+          admin = _admin;
+      }
+}
+
+Poential Vulnerabilities: 
+7) ID uniqueness violation: The contract does not ensure uniqueness of voter addresses, which may lead to inconsistencies in the voter data.
+14) Incorrect visibility/ownership: The `admin` variable can be changed by any address, not just the designated admin, allowing unauthorized access to admin functions.

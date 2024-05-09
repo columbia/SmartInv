@@ -1,0 +1,37 @@
+Contract:
+<\example_3\>
+contract Crowdsale {
+    address public owner;
+    IERC20 public token;
+    uint public rate;
+    uint public cap;
+    uint public raisedAmount;
+
+    constructor(IERC20 _token, uint _rate, uint _cap) {
+        owner = msg.sender;
+        token = _token;
+        rate = _rate;
+        cap = _cap;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(amount * rate <= msg.value, "Insufficient ether provided");
+        require(raisedAmount + amount <= cap, "Cap reached");
+        
+        uint tokens = amount * rate;
+        token.transfer(msg.sender, tokens);
+        raisedAmount += amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        owner.transfer(address(this).balance);
+    }
+}
+<\example_3\>
+
+Potential vulnerabilities in the contract:
+1) insufficient gas
+2) atomicity violation
+3) incorrect visibility/ownership

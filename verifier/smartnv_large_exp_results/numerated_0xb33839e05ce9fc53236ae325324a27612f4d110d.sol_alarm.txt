@@ -1,0 +1,26 @@
+Contract you are asked to analyze:
+contract TokenSale {
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+    
+    constructor(uint _tokenPrice, uint _totalTokens) {
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint _amount) public {
+        require(_amount * tokenPrice <= msg.value, "Insufficient payment");
+        balances[msg.sender] += _amount;
+    }
+    
+    function sellTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Not enough tokens to sell");
+        
+        uint valueToSend = _amount * tokenPrice;
+        balances[msg.sender] -= _amount;
+        msg.sender.transfer(valueToSend);
+    }
+}
+Output: 
+potential vulnerabilities: 5) atomicity violation; 14) incorrect visibility/ownership.

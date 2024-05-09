@@ -1,0 +1,45 @@
+Contract to analyze:
+contract PaymentSplitter {
+    address[] public payees;
+    uint[] public shares;
+    mapping(address => uint) public released;
+    uint public totalShares;
+    uint public totalReleased;
+
+    function Payees() external view returns(address[] memory) {
+        return payees;
+    }
+
+    function PayeeShares() external view returns(uint[] memory) {
+        return shares;
+    }
+
+    function release(address payable _payee) public {
+        require(totalShares > 0, "No shares to release");
+        uint payment = pendingPayment(_payee);
+        released[_payee] += payment;
+        totalReleased += payment;
+        _payee.transfer(payment);
+    }
+
+    function pendingPayment(address _payee) public view returns (uint) {
+        uint totalReceived = address(this).balance + totalReleased;
+        uint payment = shares[payeeIndex[_payee]] * totalReceived / totalShares - released[_payee];
+        return payment;
+    }
+
+    function addPayee(address _payee, uint _shares) public {
+        require(_payee != address(0), "Invalid payee address");
+        require(_shares > 0, "Shares must be greater than 0");
+        require(payeeIndex[_payee] == 0, "Payee already exists");
+        payees.push(_payee);
+        shares.push(_shares);
+        totalShares += _shares;
+    }
+} 
+
+Output: 
+1) inconsistent state update
+2) atomicity violation
+3) integer overflow/underflow
+4) incorrect visibility/ownership

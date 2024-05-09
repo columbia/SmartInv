@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The contract uses the `proposal` struct to store important data related to proposals, such as start time, voted amount, and address. However, the `execute` function updates the `proposal.votedAmount` without considering other potential scenarios that could affect the proposal's state integrity.
+
+2) Atomicity violation: The `execute` function performs multiple state changes (e.g., transferring tokens, updating voted amount) without ensuring that all state changes occur atomically. This could lead to issues if some state changes succeed while others fail, leaving the contract in an inconsistent state.
+
+3) ID uniqueness violation: The contract does not have a mechanism to ensure uniqueness of proposal IDs. This could lead to confusion or conflicts if multiple proposals are initiated with the same ID.
+
+Overall, the contract has vulnerabilities related to inconsistent state update, atomicity violation, and ID uniqueness violation.

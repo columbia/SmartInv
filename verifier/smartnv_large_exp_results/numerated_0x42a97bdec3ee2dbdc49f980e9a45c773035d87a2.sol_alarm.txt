@@ -1,0 +1,23 @@
+<\contract\>
+contract TokenVesting {
+   IERC20 public token;
+   address public beneficiary;
+   uint public releaseTime;
+   uint public totalReleased;
+   uint public totalToRelease;
+
+   constructor(IERC20 _token, address _beneficiary, uint _releaseTime, uint _totalToRelease) {
+      token = _token;
+      beneficiary = _beneficiary;
+      releaseTime = _releaseTime;
+      totalToRelease = _totalToRelease;
+   }
+
+   function release() public {
+      require(block.timestamp >= releaseTime, "Release time has not come yet");
+      uint amount = totalToRelease - totalReleased; 
+      token.transfer(beneficiary, amount);
+      totalReleased += amount;
+   }
+}
+<\contract\>

@@ -1,0 +1,34 @@
+Contract to be analyzed:
+
+contract PaymentContract {
+    address public owner;
+    mapping(uint256 => uint256) public payments;
+    uint256 public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint256 paymentAmount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[totalPayments] = paymentAmount;
+        totalPayments++;
+    }
+
+    function getPaymentTotal() public view returns (uint256) {
+        return totalPayments;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        uint256 totalAmount = 0;
+        for (uint i = 0; i < totalPayments; i++) {
+            totalAmount += payments[i];
+            payments[i] = 0;
+        }
+        payable(owner).transfer(totalAmount);
+    }
+}
+
+Output:
+- cross bridge inconsistency

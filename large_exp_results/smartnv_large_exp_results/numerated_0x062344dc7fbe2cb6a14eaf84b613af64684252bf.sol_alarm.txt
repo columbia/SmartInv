@@ -1,0 +1,30 @@
+The contract to be analyzed for potential vulnerabilities:
+contract MultiSignatureWallet {
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+          balances[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+          require(balances[msg.sender] >= amount, "Insufficient balance");
+          (bool sent, ) = msg.sender.call{value: amount}("");
+          require(sent, "Failed to send Ether");
+          balances[msg.sender] -= amount;
+     }
+
+     function transfer(address to, uint amount) public {
+          require(balances[msg.sender] >= amount, "Insufficient balance");
+          balances[to] += amount;
+          balances[msg.sender] -= amount;
+     }
+
+     function getBalance() public view returns (uint) {
+          return balances[msg.sender];
+     }
+}
+
+Output:
+potential vulnerabilities:
+- Insufficient gas
+- Incorrect visibility/ownership

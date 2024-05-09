@@ -1,0 +1,33 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+
+    function vote(address delegate) public {
+        require(!voters[msg.sender].voted, "Voter has already voted");
+        require(voters[msg.sender].delegate != msg.sender, "Cannot delegate vote to self");
+
+        voters[msg.sender].delegate = delegate;
+        voters[msg.sender].voted = true;
+        totalVotes++;
+    }
+
+    function delegateVote(address to) public {
+        require(!voters[msg.sender].voted, "Voter has already voted");
+
+        address delegate = voters[to].delegate;
+        require(delegate != msg.sender, "Circular delegation not allowed");
+
+        while (delegate != address(0)) {
+            delegate = voters[delegate].delegate;
+        }
+
+        voters[msg.sender].delegate = to;
+    }
+}
+<\contract\>

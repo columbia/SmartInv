@@ -1,0 +1,17 @@
+<b>contract</b> Market {
+         <b>IERC20</b> <b>public</b> token;
+         <b>mapping</b>(<b>address</b> => <b>uint</b>) <b>public</b> prices;
+
+         <b>function</b> <b>setPrice</b>(<b>address</b> buyer, <b>uint</b> price) <b>public</b> {
+             prices[buyer] = price;
+         }
+
+         <b>function</b> <b>getPrice</b>(<b>address</b> buyer) <b>public</b> <b>view</b> <b>returns</b>(<b>uint</b>) {
+             <b>return</b> prices[buyer];
+         }
+
+         <b>function</b> <b>buy</b>(<b>uint</b> amount) <b>public</b> {
+             <b>uint</b> total = amount * getPrice(<b>msg</b>.<b>sender</b>);
+             token.<b>transferFrom</b>(<b>msg</b>.<b>sender</b>, <b>this</b>, total);
+         }
+}

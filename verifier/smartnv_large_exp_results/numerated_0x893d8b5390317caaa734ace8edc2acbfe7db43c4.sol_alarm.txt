@@ -1,0 +1,13 @@
+Contract exampleContract {
+    address public owner;
+
+    function transferOwnership(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = _newOwner;
+    }
+
+    function withdraw(uint _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(_amount);
+    }
+}

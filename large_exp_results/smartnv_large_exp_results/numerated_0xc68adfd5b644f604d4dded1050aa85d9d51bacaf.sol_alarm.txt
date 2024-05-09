@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Integer overflow/underflow: There is a risk of integer underflow in the function liquidate() where the calculation getPrice() * cAmount * 80 / 100 < dAmount can result in an underflow if the values are not properly checked.
+2) Inconsistent state update: There may be an issue of inconsistent state update in the function liquidate() where debt and collateral mappings are updated without proper synchronization.
+3) Incorrect visibility/ownership: The mappings debt and collateral are public, which exposes sensitive data to all external parties, potentially leading to unauthorized access.
+4) Insufficient gas: The function liquidate() may require more gas than available due to multiple external calls, which can result in the transaction failing to complete successfully.
+5) Business logic flaw: The logic in the liquidate function may not fully capture all possible scenarios leading to incorrect liquidation of funds.
+6) Cross bridge inconsistency: There could be an inconsistency between the balances of USDC and WETH when transferring funds which can lead to possible attacks or loss of funds.
+7) Atomicity violation: The liquidate function is not atomic, which could lead to unexpected outcomes if the function execution is interrupted midway.

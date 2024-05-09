@@ -1,0 +1,30 @@
+<\contract\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+
+    constructor(IERC20 _token, uint _price) public {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * tokenPrice;
+        token.transfer(msg.sender, _amount);
+        address(this).transfer(cost);
+    }
+
+    function setTokenPrice(uint _price) public {
+        require(msg.sender == admin, "only admin can set token price");
+        tokenPrice = _price;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+- incorrect visibility/ownership in the `admin` variable, allowing potential privilege escalation.
+- insufficient gas in the `buyTokens` function, potentially leading to failed transactions.
+- inconsistent state update in the `buyTokens` function, where the transfer of tokens and Ether is not done atomically, which could lead to issues.
+- price manipulation in the `setTokenPrice` function, where the admin can change the token price without proper validation or restrictions.

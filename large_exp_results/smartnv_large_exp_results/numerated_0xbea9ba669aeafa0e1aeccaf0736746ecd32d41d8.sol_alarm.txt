@@ -1,0 +1,34 @@
+<\contract\> 
+contract TokenSale {
+     address public admin;
+     address public tokenAddress;
+     mapping(address => uint) public contributions;
+     uint public totalContributions;
+     bool public saleOpen;
+
+     constructor(address _tokenAddress) {
+         admin = msg.sender;
+         tokenAddress = _tokenAddress;
+         saleOpen = true;
+     }
+
+     function purchaseTokens(uint _amount) public {
+         require(saleOpen, "Sale is not open");
+         require(_amount > 0, "Amount must be greater than 0");
+         Token token = Token(tokenAddress);
+         uint tokenPrice = token.getPrice();
+         uint totalCost = tokenPrice * _amount;
+         token.transferFrom(msg.sender, address(this), _amount);
+         contributions[msg.sender] += totalCost;
+         totalContributions += totalCost;
+     }
+
+     function closeSale() public {
+         require(msg.sender == admin, "Only admin can close the sale");
+         saleOpen = false;
+     }
+}
+<\contract\> 
+Output:
+- inconsistent state update
+- incorrect visibility/ownership

@@ -1,0 +1,41 @@
+Contract being analyzed:
+
+contract Lottery {
+    address public owner;
+    uint public totalParticipants;
+    mapping(address => bool) public participants;
+    
+    constructor() {
+        owner = msg.sender;
+        totalParticipants = 0;
+    }
+
+    function joinLottery() public {
+        participants[msg.sender] = true;
+        totalParticipants++;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "Only the owner can pick a winner");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalParticipants;
+        address winner = getAddressAtIndex(winnerIndex);
+        // Send prize money to the winner
+    }
+
+    function getAddressAtIndex(uint index) private view returns (address) {
+        uint i = 0;
+        for (i = 0; i < totalParticipants; i++) {
+            if (participants[address(i)]) {
+                if (index == 0) {
+                    return address(i);
+                }
+                index--;
+            }
+        }
+        revert("Index out of bounds");
+    }
+}
+
+Output:
+1) consistency violation
+2) reentrancy

@@ -1,0 +1,29 @@
+<\contract\> 
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        uint votedProposalId;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint => uint) public proposalVotes;
+
+    function vote(uint proposalId) public {
+        require(!voters[msg.sender].hasVoted, "Voter has already voted");
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].votedProposalId = proposalId;
+        proposalVotes[proposalId]++;
+    }
+
+    function executeProposal(uint proposalId) public {
+        require(proposalVotes[proposalId] > 100, "Proposal doesn't have enough votes");
+        // Execute the proposal
+    }
+}
+<\contract\> 
+
+Here are the potential vulnerabilities identified in the contract:
+1) ID uniqueness violation - There is no check to ensure that a voter cannot vote multiple times for different proposals, potentially skewing the results.
+2) Inconsistent state update - The state of the voters hasVoted status and votedProposalId is updated without atomicity checks, which could lead to inconsistent data.
+3) Business logic flaw - There is no validation for the voter's eligibility or the validity of the proposal, allowing incorrect or unauthorized votes to be cast.
+4) Insufficient gas - If there are a large number of voters or proposals, the gas limit may be exceeded, causing transaction failures.

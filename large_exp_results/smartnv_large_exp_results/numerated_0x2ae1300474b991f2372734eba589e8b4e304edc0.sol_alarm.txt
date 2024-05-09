@@ -1,0 +1,23 @@
+Contract:
+
+contract PaymentGateway {
+    mapping(address => uint) balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        msg.sender.transfer(amount);
+        balances[msg.sender] -= amount;
+    }
+
+    function getBalance() public view returns (uint) {
+        return balances[msg.sender];
+    }
+}
+
+Output:
+- Integer overflow/underflow
+- Insufficient gas

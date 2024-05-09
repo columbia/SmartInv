@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility/ownership: The `startExecute` function and `execute` function are marked as external, but they are accessing internal variables like `proposal`. This may expose the contract to unauthorized access or manipulation.
+
+2) Inconsistent state update: In the `execute` function, the `votedAmount` of the proposal is updated with `proposal.votedAmount += amount;` without any checks or validations, which may lead to inconsistent state updates.
+
+3) Insufficient gas: The `endExecute` function may fail to execute if there is not enough gas provided, especially when the `require` condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` is costly to compute.

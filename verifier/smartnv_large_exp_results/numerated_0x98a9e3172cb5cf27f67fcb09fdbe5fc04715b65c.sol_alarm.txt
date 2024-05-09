@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract Insurance {
+    address public owner;
+    mapping(address => uint) public policyAmounts;
+    uint public totalPayouts;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function purchasePolicy() public payable {
+        require(msg.value > 0, "Amount must be greater than 0");
+        policyAmounts[msg.sender] = msg.value;
+    }
+
+    function claimInsurance() public {
+        require(policyAmounts[msg.sender] > 0, "No policy purchased");
+        uint payout = policyAmounts[msg.sender];
+        totalPayouts += payout;
+        msg.sender.transfer(payout);
+        policyAmounts[msg.sender] = 0;
+    }
+}
+
+Output:
+- ID uniqueness violation

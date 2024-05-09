@@ -1,0 +1,32 @@
+<\analyzed_contract\>
+contract TokenExchange {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         mapping(address => uint) public balanceA;
+         mapping(address => uint) public balanceB;
+
+         function exchange(uint amountA, uint amountB) public {
+             require(balanceA[msg.sender] >= amountA, "Insufficient balance of token A");
+             require(balanceB[msg.sender] >= amountB, "Insufficient balance of token B");
+
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transferFrom(msg.sender, address(this), amountB);
+
+             balanceA[msg.sender] -= amountA;
+             balanceB[msg.sender] -= amountB;
+
+             balanceA[address(this)] += amountA;
+             balanceB[address(this)] += amountB;
+         }
+
+         function withdraw(uint amountA, uint amountB) public {
+             require(balanceA[msg.sender] >= amountA, "Insufficient balance of token A");
+             require(balanceB[msg.sender] >= amountB, "Insufficient balance of token B");
+
+             tokenA.transfer(msg.sender, amountA);
+             tokenB.transfer(msg.sender, amountB);
+
+             balanceA[msg.sender] -= amountA;
+             balanceB[msg.sender] -= amountB;
+         }
+}

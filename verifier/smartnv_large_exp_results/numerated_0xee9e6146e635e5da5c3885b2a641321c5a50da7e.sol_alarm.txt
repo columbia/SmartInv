@@ -1,0 +1,32 @@
+<\contract\> 
+contract Escrow {
+    address public owner;
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    constructor(address _seller) public {
+        owner = msg.sender;
+        buyer = msg.sender;
+        seller = _seller;
+        amount = 0;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "You are not the buyer");
+        amount += msg.value;
+    }
+
+    function release() public {
+        require(msg.sender == owner, "You are not the owner");
+        seller.transfer(amount);
+        amount = 0;
+    }
+    
+    function cancel() public {
+        require(msg.sender == owner, "You are not the owner");
+        buyer.transfer(amount);
+        amount = 0;
+    }
+}
+<\contract\>

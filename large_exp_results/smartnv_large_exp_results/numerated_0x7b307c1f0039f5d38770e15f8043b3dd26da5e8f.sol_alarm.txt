@@ -1,0 +1,27 @@
+Contract to analyze: 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    
+    constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(owner) >= _amount * tokenPrice, "Not enough tokens for sale");
+        token.transferFrom(owner, msg.sender, _amount);
+    }
+    
+    function endSale() public {
+        require(msg.sender == owner, "Only owner can end the sale");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+} 
+
+Output: 
+ID uniqueness violation

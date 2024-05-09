@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract Escrow {
+     address public seller;
+     address public buyer;
+     uint public escrowAmount;
+
+     function deposit(uint amount) public {
+         require(msg.sender == buyer, "only buyer can deposit");
+         escrowAmount += amount;
+     }
+
+     function release() public {
+         require(msg.sender == buyer, "only buyer can release funds");
+         seller.transfer(escrowAmount);
+         escrowAmount = 0;
+     }
+
+     function cancel() public {
+         require(msg.sender == seller, "only seller can cancel transaction");
+         buyer.transfer(escrowAmount);
+         escrowAmount = 0;
+     }
+}
+
+Output: 
+1) incorrect visibility/ownership

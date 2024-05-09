@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract SupplyChain {
+    address public owner;
+    mapping(uint => uint) public inventory;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function buyItem(uint itemId, uint quantity, uint totalPrice) public payable {
+        require(msg.value == totalPrice, "Incorrect payment amount");
+        require(inventory[itemId] >= quantity, "Not enough inventory");
+        
+        uint256 totalPricePaid = quantity * totalPrice;
+        owner.transfer(totalPricePaid);
+        inventory[itemId] -= quantity;
+    }
+
+    function addItem(uint itemId, uint quantity) public {
+        require(msg.sender == owner, "Only owner can add items to inventory");
+        inventory[itemId] += quantity;
+    }
+}
+
+Output:
+1) inconsistent state update
+2) reentrancy

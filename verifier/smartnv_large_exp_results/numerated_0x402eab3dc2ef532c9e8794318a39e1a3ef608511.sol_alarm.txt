@@ -1,0 +1,24 @@
+``` solidity
+contract Marketplace {
+    IERC20 public token;
+    mapping(address => uint256) public balances;
+
+    function buy(uint256 amount) external {
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw(uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        token.transfer(msg.sender, amount);
+    }
+}
+```
+
+The potential vulnerabilities in the Marketplace contract are:
+1) Atomicity violation: If the transferFrom in the buy function fails after deducting the amount from the user's balance but before adding it to the contract's balance, the user's balance will show as deducted without the corresponding increase in the contract balance.
+2) Incorrect visibility/ownership: The token's ownership and visibility are not explicitly specified, which could lead to potential access control issues.
+3) Insufficient gas: There is a risk of running out of gas during the transfer operations, leading to potential failed transactions.
+```

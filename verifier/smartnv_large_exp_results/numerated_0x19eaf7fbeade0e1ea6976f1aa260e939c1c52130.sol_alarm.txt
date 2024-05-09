@@ -1,0 +1,35 @@
+<\analyzed_contract\> 
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public tokenPrice;
+         uint public totalTokens;
+         
+         mapping(address => uint) public tokenBalance;
+         mapping(address => uint) public ethBalance;
+
+         constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+             token = _token;
+             owner = msg.sender;
+             tokenPrice = _tokenPrice;
+             totalTokens = _totalTokens;
+         }
+
+         function buyTokens(uint _amount) public payable {
+             require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+             require(_amount <= totalTokens, "Not enough tokens available");
+             
+             tokenBalance[msg.sender] += _amount;
+             ethBalance[msg.sender] += msg.value;
+             totalTokens -= _amount;
+             
+             token.transfer(msg.sender, _amount);
+         }
+
+         function withdraw() public {
+             require(msg.sender == owner, "Only owner can withdraw");
+             uint ethToWithdraw = ethBalance[msg.sender];
+             ethBalance[msg.sender] = 0;
+             msg.sender.transfer(ethToWithdraw);
+         }
+     }

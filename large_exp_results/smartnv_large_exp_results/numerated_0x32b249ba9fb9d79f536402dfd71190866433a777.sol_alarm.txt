@@ -1,0 +1,33 @@
+contract TimeLockedToken is IERC20 {
+    address owner;
+    uint256 totalSupply;
+    mapping(address => uint256) balances;
+
+    constructor(uint256 _totalSupply) {
+        owner = msg.sender;
+        totalSupply = _totalSupply;
+        balances[msg.sender] = _totalSupply;
+    }
+
+    function transfer(address to, uint256 value) external {
+        require(balances[msg.sender] >= value, "Not enough balance");
+        balances[msg.sender] -= value;
+        balances[to] += value;
+    }
+
+    function transferFrom(address from, address to, uint256 value) external {
+        require(balances[from] >= value, "Not enough balance");
+        balances[from] -= value;
+        balances[to] += value;
+    }
+
+    function balanceOf(address account) external view returns (uint256) {
+        return balances[account];
+    }
+
+    function mint(uint256 amount) external {
+        require(msg.sender == owner, "Only owner can mint tokens");
+        balances[owner] += amount;
+        totalSupply += amount;
+    }
+}

@@ -1,0 +1,15 @@
+<\contract_to_analyze\>
+contract TokenSwap {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+
+     function swapTokens(uint amountA, uint amountB) public {
+         require(amountA > 0 && amountB > 0, "Invalid swap amounts");
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transferFrom(msg.sender, address(this), amountB);
+         tokenA.transfer(msg.sender, amountB);
+         tokenB.transfer(msg.sender, amountA);
+     }
+}
+Output: 
+- incorrect visibility/ownership

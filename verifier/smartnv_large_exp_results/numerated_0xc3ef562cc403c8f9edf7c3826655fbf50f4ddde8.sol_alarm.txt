@@ -1,0 +1,41 @@
+The contract:
+
+contract InsurancePolicy {
+     struct Policy {
+          uint256 policyId; 
+          address policyHolder; 
+          bool isClaimed; 
+          uint256 claimAmount; 
+     }
+
+     mapping(uint256 => Policy) public policies;
+     uint256 public policyCount;
+
+     function createPolicy() external {
+          policyCount++;
+          Policy storage newPolicy = policies[policyCount];
+          newPolicy.policyId = policyCount;
+          newPolicy.policyHolder = msg.sender;
+          newPolicy.isClaimed = false;
+          newPolicy.claimAmount = 0;
+     }
+
+     function claimPolicy(uint256 _policyId, uint256 _amount) external {
+          require(!policies[_policyId].isClaimed, "Policy already claimed");
+          policies[_policyId].isClaimed = true;
+          policies[_policyId].claimAmount = _amount;
+          // transfer claim amount to policy holder
+          payable(policies[_policyId].policyHolder).transfer(_amount);
+     }
+
+     function cancelPolicy(uint256 _policyId) external {
+          require(msg.sender == policies[_policyId].policyHolder, "Not policy holder");
+          // refund policy amount to policy holder
+          payable(policies[_policyId].policyHolder).transfer(policies[_policyId].claimAmount);
+          policies[_policyId].isClaimed = false;
+          policies[_policyId].claimAmount = 0;
+     }
+}
+
+Output: 
+Healthy

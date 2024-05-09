@@ -1,0 +1,27 @@
+<\analyzed_contract\>
+contract VotingSystem {
+     address[] public voters;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         voters.push(msg.sender);
+         hasVoted[msg.sender] = true;
+         totalVotes++;
+     }
+
+     function changeVote() public {
+         require(hasVoted[msg.sender], "Has not voted yet");
+         totalVotes--;
+         for (uint i = 0; i < voters.length; i++) {
+             if (voters[i] == msg.sender) {
+                 voters[i] = voters[voters.length - 1];
+                 voters.pop();
+                 break;
+             }
+         }
+         hasVoted[msg.sender] = false;
+     }
+}
+<\analyzed_contract\>

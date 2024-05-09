@@ -1,0 +1,27 @@
+<\contract\>
+contract SimpleSwap {
+    address public token1;
+    address public token2;
+    
+    mapping(address => uint) public balances;
+
+    constructor(address _token1, address _token2) {
+        token1 = _token1;
+        token2 = _token2;
+    }
+
+    function swap(uint amount, address fromToken, address toToken) public {
+        require(amount > 0, "Invalid amount");
+
+        // Transfer tokens from sender to contract
+        IERC20(fromToken).transferFrom(msg.sender, address(this), amount);
+        
+        // Swap tokens
+        balances[fromToken] -= amount;
+        balances[toToken] += amount;
+
+        // Transfer swapped tokens to sender
+        IERC20(toToken).transfer(msg.sender, amount);
+    }
+}
+<\contract\>

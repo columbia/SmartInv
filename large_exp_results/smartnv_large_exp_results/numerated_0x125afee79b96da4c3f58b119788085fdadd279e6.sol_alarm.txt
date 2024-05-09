@@ -1,0 +1,21 @@
+The contract:
+```solidity
+contract TokenSale {
+    uint public tokenPrice;
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect amount sent");
+        require(totalSupply >= amount, "Not enough tokens available");
+        
+        balances[msg.sender] += amount;
+        totalSupply -= amount;
+    }
+}
+```
+
+Potential vulnerabilities:
+1) Inconsistent state update: The balance of the sender's account and the total supply of tokens are updated directly without utilizing safe arithmetic operations, which may lead to inconsistencies if not handled carefully.
+2) Integer overflow/underflow: Upon subtraction of the purchased tokens from the total supply, there is a risk of integer underflow if the amount requested exceeds the total supply. This can result in unexpected behavior and potential vulnerabilities.
+3) Arithmetic flaw: The calculation of the amount of ether sent for buying tokens is simplistic and may not cover all edge cases, leading to potential arithmetic flaws in the contract logic.

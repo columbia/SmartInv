@@ -1,0 +1,34 @@
+<\your_contract\>
+contract Marketplace {
+     struct Product {
+         uint productId;
+         string name;
+         uint price;
+     }
+     
+     address public owner;
+     mapping(uint => Product) public products;
+     uint public productCount;
+     
+     modifier onlyOwner() {
+         require(msg.sender == owner, "Only owner can call this function");
+         _;
+     }
+     
+     constructor() {
+         owner = msg.sender;
+         productCount = 0;
+     }
+     
+     function addProduct(string memory _name, uint _price) public onlyOwner {
+         productCount++;
+         products[productCount] = Product(productCount, _name, _price);
+     }
+     
+     function buyProduct(uint _productId) public payable {
+         require(products[_productId].productId != 0, "Product does not exist");
+         require(msg.value >= products[_productId].price, "Insufficient funds sent");
+         payable(owner).transfer(msg.value);
+     }
+}
+<\your_contract\>

@@ -1,0 +1,22 @@
+The contract provided for analysis is:
+
+```solidity
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    
+    function swapTokens(uint amountA, uint amountB) public {
+        require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance for tokenA");
+        require(tokenB.balanceOf(msg.sender) >= amountB, "Insufficient balance for tokenB");
+        
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transfer(msg.sender, amountB);
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update: The contract does not include any state updates that could lead to this vulnerability.
+
+Therefore, the potential vulnerability in the provided contract is "inconsistent state update."

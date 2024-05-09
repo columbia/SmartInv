@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: `proposal.votedAmount` is being updated in the `execute` function but the state variable is not being explicitly updated.
+2) Incorrect visibility/ownership: The visibility of the `proposal` struct is not specified which can lead to visibility issues.
+3) ID uniqueness violation: There are no checks to ensure the uniqueness of `proposal.addr` which can lead to conflicts or unexpected behavior.
+4) Insufficient gas: The `endExecute` function may consume a large amount of gas due to iterating over all balances in the `votingToken`, potentially leading to out-of-gas errors.

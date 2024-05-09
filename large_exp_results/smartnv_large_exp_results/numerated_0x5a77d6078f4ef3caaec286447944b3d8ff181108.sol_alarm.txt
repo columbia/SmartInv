@@ -1,0 +1,31 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint => address) public idToSeller;
+    mapping(address => bool) public isVerifiedSeller;
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addVerifiedSeller(address _seller) external onlyOwner {
+        isVerifiedSeller[_seller] = true;
+    }
+    
+    function createListing(uint _id, address _seller) external {
+        require(isVerifiedSeller[_seller], "Seller is not verified");
+        idToSeller[_id] = _seller;
+    }
+
+    function purchaseListing(uint _id) external payable {
+        address seller = idToSeller[_id];
+        require(msg.value > 0, "Value must be greater than 0");
+        payable(seller).transfer(msg.value);
+    }
+}
+<\contract\>

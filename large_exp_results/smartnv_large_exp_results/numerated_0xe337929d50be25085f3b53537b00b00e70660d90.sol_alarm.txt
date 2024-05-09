@@ -1,0 +1,39 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    bool public votingOpen;
+
+    function openVoting() external {
+        require(msg.sender == owner, "Only owner can open voting");
+        votingOpen = true;
+    }
+
+    function vote(uint256 _vote) external {
+        require(votingOpen, "Voting is not open");
+        require(voters[msg.sender].weight > 0, "Voter has no weight to vote");
+        
+        voters[msg.sender].vote = _vote;
+        voters[msg.sender].voted = true;
+        totalVotes += voters[msg.sender].weight;
+    }
+
+    function delegate(address to) external {
+        require(votingOpen, "Voting is not open");
+        require(to != msg.sender, "Self-delegating is not allowed");
+
+        voters[msg.sender].delegate = to;
+
+        if (voters[to].voted) {
+            totalVotes += voters[msg.sender].weight;
+        }
+    }
+}
+<\contract\>

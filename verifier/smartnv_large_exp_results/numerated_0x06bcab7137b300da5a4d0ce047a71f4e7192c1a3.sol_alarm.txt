@@ -1,0 +1,36 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint => Item) public items;
+    uint public itemCounter;
+
+    struct Item {
+        uint id;
+        string name;
+        uint price;
+        address owner;
+    }
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function addItem(string memory _name, uint _price) public {
+        items[itemCounter] = Item(itemCounter, _name, _price, msg.sender);
+        itemCounter++;
+    }
+
+    function buyItem(uint _id) public payable {
+        Item storage item = items[_id];
+        require(msg.value >= item.price, "Not enough Ether sent");
+        payable(item.owner).transfer(msg.value);
+        items[_id].owner = msg.sender;
+        items[_id].price = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\>

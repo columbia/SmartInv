@@ -1,0 +1,30 @@
+<\contract\> 
+contract VotingSystem {
+    address public admin;
+    mapping(address => uint) public votes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint _amount) public {
+        require(votes[msg.sender] == 0, "Already voted");
+        
+        votes[msg.sender] = _amount;
+    }
+
+    function changeAdmin(address _newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin address");
+        
+        admin = _newAdmin;
+    }
+
+    function getVote(address _voter) public view returns(uint) {
+        return votes[_voter];
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the given contract are:
+1) privilege escalation - The changeAdmin function allows the admin address to be changed by any account, not just the current admin, potentially leading to privilege escalation.
+2) incorrect visibility/ownership - The admin variable is declared as public, which allows anyone to view the current admin address. This can potentially lead to unauthorized access or manipulation of the contract.

@@ -1,0 +1,37 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    struct Vote {
+        bool inSupport;
+        address voter;
+    }
+
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCounts;
+    Vote[] public votes;
+
+    function vote(bool _inSupport) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        voteCounts[msg.sender]++;
+        votes.push(Vote({
+            inSupport: _inSupport,
+            voter: msg.sender
+        }));
+    }
+
+    function tallyVotes() public view returns (uint, uint) {
+        uint forVotes = 0;
+        uint againstVotes = 0;
+
+        for (uint i = 0; i < votes.length; i++) {
+            if (votes[i].inSupport) {
+                forVotes += voteCounts[votes[i].voter];
+            } else {
+                againstVotes += voteCounts[votes[i].voter];
+            }
+        }
+
+        return (forVotes, againstVotes);
+    }
+}
+<\contract_to_analyze\>

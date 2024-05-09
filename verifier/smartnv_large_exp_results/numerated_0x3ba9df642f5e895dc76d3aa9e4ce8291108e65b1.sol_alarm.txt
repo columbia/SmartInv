@@ -1,0 +1,45 @@
+<\contract\>
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 votedAmount;
+        address proposer;
+    }
+    address public owner;
+    mapping(address => uint256) public startingBalanceList;
+    Proposal public currentProposal;
+    uint256 public lockedFunds;
+    
+    function startVoting() external {
+        require(currentProposal.startTime == 0, "Voting already in progress");
+        currentProposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalanceList[msg.sender] = getStartingBalance(msg.sender);
+    }
+    
+    function vote(uint256 amount) external {
+        require(currentProposal.startTime != 0, "No active proposal to vote on");
+        require(currentProposal.startTime + 24 > block.timestamp, "Voting period has ended");
+        require(currentProposal.votedAmount == 0, "Already voted on this proposal");
+        
+        // Perform voting logic here
+        
+        currentProposal.votedAmount += amount;
+    }
+    
+    function endVoting() external {
+        require(currentProposal.startTime != 0, "No active proposal");
+        require(currentProposal.startTime + 24 < block.timestamp, "Voting period has not ended");
+        require(lockedFunds * 2 > totalSupply(), "Insufficient locked funds for execution");
+        
+        lockedFunds = totalLockedFunds();
+    }
+    
+    function getStartingBalance(address user) internal view returns(uint256) {
+        // Implementation details
+    }
+    
+    function totalLockedFunds() internal view returns(uint256) {
+        // Implementation details
+    }
+}
+<\contract\>

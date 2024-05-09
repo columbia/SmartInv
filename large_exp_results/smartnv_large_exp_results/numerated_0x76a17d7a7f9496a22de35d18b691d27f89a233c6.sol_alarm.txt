@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    IERC20 public token;
+    address public admin;
+    uint public tokenPrice;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        token = _token;
+        admin = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalPrice = _amount * tokenPrice;
+        token.transfer(msg.sender, _amount);
+        admin.transfer(totalPrice);
+    }
+}
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow: The multiplication operation in buyTokens function could lead to an integer overflow if _amount or tokenPrice is very large.
+2) Incorrect visibility/ownership: The admin variable is public, allowing anyone to potentially change the admin address, which could lead to privilege escalation.
+3) Ether leakage: The admin.transfer(totalPrice) statement transfers Ether to the admin address, which can cause Ether leakage if the admin address is a contract that does not have a fallback function to handle incoming Ether.
+4) Insufficient gas: If the admin address is a contract with a high gas consumption in its fallback function, the transfer of Ether in buyTokens may fail due to insufficient gas.

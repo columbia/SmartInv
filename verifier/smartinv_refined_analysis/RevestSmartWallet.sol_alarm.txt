@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `execute` function updates the `proposal` state variables without using an atomic operation, which could result in inconsistent state updates if multiple transactions attempt to modify the same proposal simultaneously.
+   
+2) Cross bridge inconsistency: The `endExecute` function checks the balance of the contract and compares it with the total supply of the `votingToken` without considering potential inconsistencies between the two values, which could lead to incorrect execution outcomes.
+
+3) ID uniqueness violation: The contract does not have a mechanism to ensure the uniqueness of proposal IDs, which could result in potential conflicts or unexpected behavior if multiple proposals have the same ID.

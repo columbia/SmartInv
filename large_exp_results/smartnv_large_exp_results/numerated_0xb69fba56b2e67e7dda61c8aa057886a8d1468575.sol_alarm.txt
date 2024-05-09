@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract RewardSystem {
+         address public owner;
+         mapping(address => uint) public rewards;
+
+         constructor() public {
+             owner = msg.sender;
+         }
+
+         function setReward(address _user, uint _amount) public {
+             require(msg.sender == owner, "only owner can set rewards");
+             rewards[_user] = _amount;
+         }
+
+         function getReward(address _user) public view returns(uint) {
+             return rewards[_user];
+         }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities:
+- incorrect visibility/ownership

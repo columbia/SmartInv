@@ -1,0 +1,35 @@
+The contract you are going to analyze is:
+
+```solidity
+contract Marketplace {
+    address public owner;
+    mapping(address => uint) public balances;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+    
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+    
+    function setOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+}
+```
+
+The potential vulnerabilities in the given contract are:
+1) privilege escalation
+2) inconsistent state update

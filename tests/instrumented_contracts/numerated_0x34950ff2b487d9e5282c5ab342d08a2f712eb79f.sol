@@ -1,0 +1,745 @@
+1 /*
+2 * EFFORCE IEO CONTRACT
+3 * Submitted for verification at Etherscan.io on 13 december 2019
+4 *
+5 * This program is free software: you can redistribute it and/or modify
+6 * it under the terms of the GNU Lesser General Public License as published by
+7 * the Free Software Foundation, either version 3 of the License, or
+8 * (at your option) any later version.
+9 *
+10 * This program is distributed in the hope that it will be useful,
+11 * but WITHOUT ANY WARRANTY; without even the implied warranty of
+12 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+13 * GNU Lesser General Public License for more details.
+14 *
+15 * You should have received a copy of the GNU Lesser General Public License
+16 * along with this program. If not, see <http://www.gnu.org/licenses/>.
+17 */
+18 pragma solidity ^0.4.23;
+19 
+20 
+21 /**
+22  * @title ERC20Basic
+23  * @dev Simpler version of ERC20 interface
+24  * @dev see https://github.com/ethereum/EIPs/issues/179
+25  */
+26 contract ERC20Basic {
+27   function totalSupply() public view returns (uint256);
+28   function balanceOf(address who) public view returns (uint256);
+29   function transfer(address to, uint256 value) public returns (bool);
+30   event Transfer(address indexed from, address indexed to, uint256 value);
+31 }
+32 
+33 
+34 
+35 /**
+36  * @title SafeMath
+37  * @dev Math operations with safety checks that throw on error
+38  */
+39 library SafeMath {
+40 
+41   /**
+42   * @dev Multiplies two numbers, throws on overflow.
+43   */
+44   function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
+45     // Gas optimization: this is cheaper than asserting 'a' not being zero, but the
+46     // benefit is lost if 'b' is also tested.
+47     // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+48     if (a == 0) {
+49       return 0;
+50     }
+51 
+52     c = a * b;
+53     assert(c / a == b);
+54     return c;
+55   }
+56 
+57   /**
+58   * @dev Integer division of two numbers, truncating the quotient.
+59   */
+60   function div(uint256 a, uint256 b) internal pure returns (uint256) {
+61     // assert(b > 0); // Solidity automatically throws when dividing by 0
+62     // uint256 c = a / b;
+63     // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+64     return a / b;
+65   }
+66 
+67   /**
+68   * @dev Subtracts two numbers, throws on overflow (i.e. if subtrahend is greater than minuend).
+69   */
+70   function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+71     assert(b <= a);
+72     return a - b;
+73   }
+74 
+75   /**
+76   * @dev Adds two numbers, throws on overflow.
+77   */
+78   function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
+79     c = a + b;
+80     assert(c >= a);
+81     return c;
+82   }
+83 }
+84 
+85 
+86 
+87 /**
+88  * @title Basic token
+89  * @dev Basic version of StandardToken, with no allowances.
+90  */
+91 contract BasicToken is ERC20Basic {
+92   using SafeMath for uint256;
+93 
+94   mapping(address => uint256) balances;
+95 
+96   uint256 totalSupply_;
+97 
+98   /**
+99   * @dev total number of tokens in existence
+100   */
+101   function totalSupply() public view returns (uint256) {
+102     return totalSupply_;
+103   }
+104 
+105   /**
+106   * @dev transfer token for a specified address
+107   * @param _to The address to transfer to.
+108   * @param _value The amount to be transferred.
+109   */
+110   function transfer(address _to, uint256 _value) public returns (bool) {
+111     require(_to != address(0));
+112     require(_value <= balances[msg.sender]);
+113 
+114     balances[msg.sender] = balances[msg.sender].sub(_value);
+115     balances[_to] = balances[_to].add(_value);
+116     emit Transfer(msg.sender, _to, _value);
+117     return true;
+118   }
+119 
+120   /**
+121   * @dev Gets the balance of the specified address.
+122   * @param _owner The address to query the the balance of.
+123   * @return An uint256 representing the amount owned by the passed address.
+124   */
+125   function balanceOf(address _owner) public view returns (uint256) {
+126     return balances[_owner];
+127   }
+128 
+129 }
+130 
+131 
+132 /**
+133  * @title ERC20 interface
+134  * @dev see https://github.com/ethereum/EIPs/issues/20
+135  */
+136 contract ERC20 is ERC20Basic {
+137   function allowance(address owner, address spender)
+138     public view returns (uint256);
+139 
+140   function transferFrom(address from, address to, uint256 value)
+141     public returns (bool);
+142 
+143   function approve(address spender, uint256 value) public returns (bool);
+144   event Approval(
+145     address indexed owner,
+146     address indexed spender,
+147     uint256 value
+148   );
+149 }
+150 
+151 
+152 /**
+153  * @title Standard ERC20 token
+154  *
+155  * @dev Implementation of the basic standard token.
+156  * @dev https://github.com/ethereum/EIPs/issues/20
+157  * @dev Based on code by FirstBlood: https://github.com/Firstbloodio/token/blob/master/smart_contract/FirstBloodToken.sol
+158  */
+159 contract StandardToken is ERC20, BasicToken {
+160 
+161   mapping (address => mapping (address => uint256)) internal allowed;
+162 
+163 
+164   /**
+165    * @dev Transfer tokens from one address to another
+166    * @param _from address The address which you want to send tokens from
+167    * @param _to address The address which you want to transfer to
+168    * @param _value uint256 the amount of tokens to be transferred
+169    */
+170   function transferFrom(
+171     address _from,
+172     address _to,
+173     uint256 _value
+174   )
+175     public
+176     returns (bool)
+177   {
+178     require(_to != address(0));
+179     require(_value <= balances[_from]);
+180     require(_value <= allowed[_from][msg.sender]);
+181 
+182     balances[_from] = balances[_from].sub(_value);
+183     balances[_to] = balances[_to].add(_value);
+184     allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
+185     emit Transfer(_from, _to, _value);
+186     return true;
+187   }
+188 
+189   /**
+190    * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
+191    *
+192    * Beware that changing an allowance with this method brings the risk that someone may use both the old
+193    * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
+194    * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
+195    * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+196    * @param _spender The address which will spend the funds.
+197    * @param _value The amount of tokens to be spent.
+198    */
+199   function approve(address _spender, uint256 _value) public returns (bool) {
+200     allowed[msg.sender][_spender] = _value;
+201     emit Approval(msg.sender, _spender, _value);
+202     return true;
+203   }
+204 
+205   /**
+206    * @dev Function to check the amount of tokens that an owner allowed to a spender.
+207    * @param _owner address The address which owns the funds.
+208    * @param _spender address The address which will spend the funds.
+209    * @return A uint256 specifying the amount of tokens still available for the spender.
+210    */
+211   function allowance(
+212     address _owner,
+213     address _spender
+214    )
+215     public
+216     view
+217     returns (uint256)
+218   {
+219     return allowed[_owner][_spender];
+220   }
+221 
+222   /**
+223    * @dev Increase the amount of tokens that an owner allowed to a spender.
+224    *
+225    * approve should be called when allowed[_spender] == 0. To increment
+226    * allowed value is better to use this function to avoid 2 calls (and wait until
+227    * the first transaction is mined)
+228    * From MonolithDAO Token.sol
+229    * @param _spender The address which will spend the funds.
+230    * @param _addedValue The amount of tokens to increase the allowance by.
+231    */
+232   function increaseApproval(
+233     address _spender,
+234     uint _addedValue
+235   )
+236     public
+237     returns (bool)
+238   {
+239     allowed[msg.sender][_spender] = (
+240       allowed[msg.sender][_spender].add(_addedValue));
+241     emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+242     return true;
+243   }
+244 
+245   /**
+246    * @dev Decrease the amount of tokens that an owner allowed to a spender.
+247    *
+248    * approve should be called when allowed[_spender] == 0. To decrement
+249    * allowed value is better to use this function to avoid 2 calls (and wait until
+250    * the first transaction is mined)
+251    * From MonolithDAO Token.sol
+252    * @param _spender The address which will spend the funds.
+253    * @param _subtractedValue The amount of tokens to decrease the allowance by.
+254    */
+255   function decreaseApproval(
+256     address _spender,
+257     uint _subtractedValue
+258   )
+259     public
+260     returns (bool)
+261   {
+262     uint oldValue = allowed[msg.sender][_spender];
+263     if (_subtractedValue > oldValue) {
+264       allowed[msg.sender][_spender] = 0;
+265     } else {
+266       allowed[msg.sender][_spender] = oldValue.sub(_subtractedValue);
+267     }
+268     emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+269     return true;
+270   }
+271 
+272 }
+273 
+274 
+275 
+276 /**
+277  * @title Ownable
+278  * @dev The Ownable contract has an owner address, and provides basic authorization control
+279  * functions, this simplifies the implementation of "user permissions".
+280  */
+281 contract Ownable {
+282   address public owner;
+283 
+284 
+285   event OwnershipRenounced(address indexed previousOwner);
+286   event OwnershipTransferred(
+287     address indexed previousOwner,
+288     address indexed newOwner
+289   );
+290 
+291 
+292   /**
+293    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
+294    * account.
+295    */
+296   constructor() public {
+297     owner = msg.sender;
+298   }
+299 
+300   /**
+301    * @dev Throws if called by any account other than the owner.
+302    */
+303   modifier onlyOwner() {
+304     require(msg.sender == owner);
+305     _;
+306   }
+307 
+308   /**
+309    * @dev Allows the current owner to relinquish control of the contract.
+310    */
+311   function renounceOwnership() public onlyOwner {
+312     emit OwnershipRenounced(owner);
+313     owner = address(0);
+314   }
+315 
+316   /**
+317    * @dev Allows the current owner to transfer control of the contract to a newOwner.
+318    * @param _newOwner The address to transfer ownership to.
+319    */
+320   function transferOwnership(address _newOwner) public onlyOwner {
+321     _transferOwnership(_newOwner);
+322   }
+323 
+324   /**
+325    * @dev Transfers control of the contract to a newOwner.
+326    * @param _newOwner The address to transfer ownership to.
+327    */
+328   function _transferOwnership(address _newOwner) internal {
+329     require(_newOwner != address(0));
+330     emit OwnershipTransferred(owner, _newOwner);
+331     owner = _newOwner;
+332   }
+333 }
+334 
+335 
+336 /**
+337  * @title Mintable token
+338  * @dev Simple ERC20 Token example, with mintable token creation
+339  * @dev Issue: * https://github.com/OpenZeppelin/openzeppelin-solidity/issues/120
+340  * Based on code by TokenMarketNet: https://github.com/TokenMarketNet/ico/blob/master/contracts/MintableToken.sol
+341  */
+342 contract MintableToken is StandardToken, Ownable {
+343   event Mint(address indexed to, uint256 amount);
+344   event MintFinished();
+345 
+346   bool public mintingFinished = false;
+347 
+348 
+349   modifier canMint() {
+350     require(!mintingFinished);
+351     _;
+352   }
+353 
+354   modifier hasMintPermission() {
+355     require(msg.sender == owner);
+356     _;
+357   }
+358 
+359   /**
+360    * @dev Function to mint tokens
+361    * @param _to The address that will receive the minted tokens.
+362    * @param _amount The amount of tokens to mint.
+363    * @return A boolean that indicates if the operation was successful.
+364    */
+365   function mint(
+366     address _to,
+367     uint256 _amount
+368   )
+369     hasMintPermission
+370     canMint
+371     public
+372     returns (bool)
+373   {
+374     totalSupply_ = totalSupply_.add(_amount);
+375     balances[_to] = balances[_to].add(_amount);
+376     emit Mint(_to, _amount);
+377     emit Transfer(address(0), _to, _amount);
+378     return true;
+379   }
+380 
+381   /**
+382    * @dev Function to stop minting new tokens.
+383    * @return True if the operation was successful.
+384    */
+385   function finishMinting() onlyOwner canMint public returns (bool) {
+386     mintingFinished = true;
+387     emit MintFinished();
+388     return true;
+389   }
+390 }
+391 
+392 
+393 contract FreezableToken is StandardToken {
+394     // freezing chains
+395     mapping (bytes32 => uint64) internal chains;
+396     // freezing amounts for each chain
+397     mapping (bytes32 => uint) internal freezings;
+398     // total freezing balance per address
+399     mapping (address => uint) internal freezingBalance;
+400 
+401     event Freezed(address indexed to, uint64 release, uint amount);
+402     event Released(address indexed owner, uint amount);
+403 
+404     /**
+405      * @dev Gets the balance of the specified address include freezing tokens.
+406      * @param _owner The address to query the the balance of.
+407      * @return An uint256 representing the amount owned by the passed address.
+408      */
+409     function balanceOf(address _owner) public view returns (uint256 balance) {
+410         return super.balanceOf(_owner) + freezingBalance[_owner];
+411     }
+412 
+413     /**
+414      * @dev Gets the balance of the specified address without freezing tokens.
+415      * @param _owner The address to query the the balance of.
+416      * @return An uint256 representing the amount owned by the passed address.
+417      */
+418     function actualBalanceOf(address _owner) public view returns (uint256 balance) {
+419         return super.balanceOf(_owner);
+420     }
+421 
+422     function freezingBalanceOf(address _owner) public view returns (uint256 balance) {
+423         return freezingBalance[_owner];
+424     }
+425 
+426     /**
+427      * @dev gets freezing count
+428      * @param _addr Address of freeze tokens owner.
+429      */
+430     function freezingCount(address _addr) public view returns (uint count) {
+431         uint64 release = chains[toKey(_addr, 0)];
+432         while (release != 0) {
+433             count++;
+434             release = chains[toKey(_addr, release)];
+435         }
+436     }
+437 
+438     /**
+439      * @dev gets freezing end date and freezing balance for the freezing portion specified by index.
+440      * @param _addr Address of freeze tokens owner.
+441      * @param _index Freezing portion index. It ordered by release date descending.
+442      */
+443     function getFreezing(address _addr, uint _index) public view returns (uint64 _release, uint _balance) {
+444         for (uint i = 0; i < _index + 1; i++) {
+445             _release = chains[toKey(_addr, _release)];
+446             if (_release == 0) {
+447                 return;
+448             }
+449         }
+450         _balance = freezings[toKey(_addr, _release)];
+451     }
+452 
+453     /**
+454      * @dev freeze your tokens to the specified address.
+455      *      Be careful, gas usage is not deterministic,
+456      *      and depends on how many freezes _to address already has.
+457      * @param _to Address to which token will be freeze.
+458      * @param _amount Amount of token to freeze.
+459      * @param _until Release date, must be in future.
+460      */
+461     function freezeTo(address _to, uint _amount, uint64 _until) public {
+462         require(_to != address(0));
+463         require(_amount <= balances[msg.sender]);
+464 
+465         balances[msg.sender] = balances[msg.sender].sub(_amount);
+466 
+467         bytes32 currentKey = toKey(_to, _until);
+468         freezings[currentKey] = freezings[currentKey].add(_amount);
+469         freezingBalance[_to] = freezingBalance[_to].add(_amount);
+470 
+471         freeze(_to, _until);
+472         emit Transfer(msg.sender, _to, _amount);
+473         emit Freezed(_to, _until, _amount);
+474     }
+475 
+476     /**
+477      * @dev release first available freezing tokens.
+478      */
+479     function releaseOnce() public {
+480         bytes32 headKey = toKey(msg.sender, 0);
+481         uint64 head = chains[headKey];
+482         require(head != 0);
+483         require(uint64(block.timestamp) > head);
+484         bytes32 currentKey = toKey(msg.sender, head);
+485 
+486         uint64 next = chains[currentKey];
+487 
+488         uint amount = freezings[currentKey];
+489         delete freezings[currentKey];
+490 
+491         balances[msg.sender] = balances[msg.sender].add(amount);
+492         freezingBalance[msg.sender] = freezingBalance[msg.sender].sub(amount);
+493 
+494         if (next == 0) {
+495             delete chains[headKey];
+496         } else {
+497             chains[headKey] = next;
+498             delete chains[currentKey];
+499         }
+500         emit Released(msg.sender, amount);
+501     }
+502 
+503     /**
+504      * @dev release all available for release freezing tokens. Gas usage is not deterministic!
+505      * @return how many tokens was released
+506      */
+507     function releaseAll() public returns (uint tokens) {
+508         uint release;
+509         uint balance;
+510         (release, balance) = getFreezing(msg.sender, 0);
+511         while (release != 0 && block.timestamp > release) {
+512             releaseOnce();
+513             tokens += balance;
+514             (release, balance) = getFreezing(msg.sender, 0);
+515         }
+516     }
+517 
+518     function toKey(address _addr, uint _release) internal pure returns (bytes32 result) {
+519         // WISH masc to increase entropy
+520         result = 0x5749534800000000000000000000000000000000000000000000000000000000;
+521         assembly {
+522             result := or(result, mul(_addr, 0x10000000000000000))
+523             result := or(result, _release)
+524         }
+525     }
+526 
+527     function freeze(address _to, uint64 _until) internal {
+528         require(_until > block.timestamp);
+529         bytes32 key = toKey(_to, _until);
+530         bytes32 parentKey = toKey(_to, uint64(0));
+531         uint64 next = chains[parentKey];
+532 
+533         if (next == 0) {
+534             chains[parentKey] = _until;
+535             return;
+536         }
+537 
+538         bytes32 nextKey = toKey(_to, next);
+539         uint parent;
+540 
+541         while (next != 0 && _until > next) {
+542             parent = next;
+543             parentKey = nextKey;
+544 
+545             next = chains[nextKey];
+546             nextKey = toKey(_to, next);
+547         }
+548 
+549         if (_until == next) {
+550             return;
+551         }
+552 
+553         if (next != 0) {
+554             chains[key] = next;
+555         }
+556 
+557         chains[parentKey] = _until;
+558     }
+559 }
+560 
+561 
+562 /**
+563  * @title Burnable Token
+564  * @dev Token that can be irreversibly burned (destroyed).
+565  */
+566 contract BurnableToken is BasicToken {
+567 
+568   event Burn(address indexed burner, uint256 value);
+569 
+570   /**
+571    * @dev Burns a specific amount of tokens.
+572    * @param _value The amount of token to be burned.
+573    */
+574   function burn(uint256 _value) public {
+575     _burn(msg.sender, _value);
+576   }
+577 
+578   function _burn(address _who, uint256 _value) internal {
+579     require(_value <= balances[_who]);
+580     // no need to require value <= totalSupply, since that would imply the
+581     // sender's balance is greater than the totalSupply, which *should* be an assertion failure
+582 
+583     balances[_who] = balances[_who].sub(_value);
+584     totalSupply_ = totalSupply_.sub(_value);
+585     emit Burn(_who, _value);
+586     emit Transfer(_who, address(0), _value);
+587   }
+588 }
+589 
+590 
+591 
+592 /**
+593  * @title Pausable
+594  * @dev Base contract which allows children to implement an emergency stop mechanism.
+595  */
+596 contract Pausable is Ownable {
+597   event Pause();
+598   event Unpause();
+599 
+600   bool public paused = false;
+601 
+602 
+603   /**
+604    * @dev Modifier to make a function callable only when the contract is not paused.
+605    */
+606   modifier whenNotPaused() {
+607     require(!paused);
+608     _;
+609   }
+610 
+611   /**
+612    * @dev Modifier to make a function callable only when the contract is paused.
+613    */
+614   modifier whenPaused() {
+615     require(paused);
+616     _;
+617   }
+618 
+619   /**
+620    * @dev called by the owner to pause, triggers stopped state
+621    */
+622   function pause() onlyOwner whenNotPaused public {
+623     paused = true;
+624     emit Pause();
+625   }
+626 
+627   /**
+628    * @dev called by the owner to unpause, returns to normal state
+629    */
+630   function unpause() onlyOwner whenPaused public {
+631     paused = false;
+632     emit Unpause();
+633   }
+634 }
+635 
+636 
+637 contract FreezableMintableToken is FreezableToken, MintableToken {
+638     /**
+639      * @dev Mint the specified amount of token to the specified address and freeze it until the specified date.
+640      *      Be careful, gas usage is not deterministic,
+641      *      and depends on how many freezes _to address already has.
+642      * @param _to Address to which token will be freeze.
+643      * @param _amount Amount of token to mint and freeze.
+644      * @param _until Release date, must be in future.
+645      * @return A boolean that indicates if the operation was successful.
+646      */
+647     function mintAndFreeze(address _to, uint _amount, uint64 _until) public onlyOwner canMint returns (bool) {
+648         totalSupply_ = totalSupply_.add(_amount);
+649 
+650         bytes32 currentKey = toKey(_to, _until);
+651         freezings[currentKey] = freezings[currentKey].add(_amount);
+652         freezingBalance[_to] = freezingBalance[_to].add(_amount);
+653 
+654         freeze(_to, _until);
+655         emit Mint(_to, _amount);
+656         emit Freezed(_to, _until, _amount);
+657         emit Transfer(msg.sender, _to, _amount);
+658         return true;
+659     }
+660 }
+661 
+662 
+663 
+664 contract Consts {
+665     uint public constant TOKEN_DECIMALS = 18;
+666     uint8 public constant TOKEN_DECIMALS_UINT8 = 18;
+667     uint public constant TOKEN_DECIMAL_MULTIPLIER = 10 ** TOKEN_DECIMALS;
+668 
+669     string public constant TOKEN_NAME = "EFFORCE IEO";
+670     string public constant TOKEN_SYMBOL = "WOZX";
+671     bool public constant PAUSED = false;
+672     address public constant TARGET_USER = 0x9d9e8607f0EB69C37Cb14B7110cd458bfB14d0eE;
+673     
+674     bool public constant CONTINUE_MINTING = true;
+675 }
+676 
+677 
+678 
+679 
+680 contract MainToken is Consts, FreezableMintableToken, BurnableToken, Pausable
+681     
+682 {
+683     
+684     event Initialized();
+685     bool public initialized = false;
+686 
+687     constructor() public {
+688         init();
+689         transferOwnership(TARGET_USER);
+690     }
+691     
+692 
+693     function name() public pure returns (string _name) {
+694         return TOKEN_NAME;
+695     }
+696 
+697     function symbol() public pure returns (string _symbol) {
+698         return TOKEN_SYMBOL;
+699     }
+700 
+701     function decimals() public pure returns (uint8 _decimals) {
+702         return TOKEN_DECIMALS_UINT8;
+703     }
+704 
+705     function transferFrom(address _from, address _to, uint256 _value) public returns (bool _success) {
+706         require(!paused);
+707         return super.transferFrom(_from, _to, _value);
+708     }
+709 
+710     function transfer(address _to, uint256 _value) public returns (bool _success) {
+711         require(!paused);
+712         return super.transfer(_to, _value);
+713     }
+714 
+715     
+716     function init() private {
+717         require(!initialized);
+718         initialized = true;
+719 
+720         if (PAUSED) {
+721             pause();
+722         }
+723 
+724         
+725         address[1] memory addresses = [address(0x9d9e8607f0EB69C37Cb14B7110cd458bfB14d0eE)];
+726         uint[1] memory amounts = [uint(350000000000000000000000000)];
+727         uint64[1] memory freezes = [uint64(0)];
+728 
+729         for (uint i = 0; i < addresses.length; i++) {
+730             if (freezes[i] == 0) {
+731                 mint(addresses[i], amounts[i]);
+732             } else {
+733                 mintAndFreeze(addresses[i], amounts[i], freezes[i]);
+734             }
+735         }
+736         
+737 
+738         if (!CONTINUE_MINTING) {
+739             finishMinting();
+740         }
+741 
+742         emit Initialized();
+743     }
+744     
+745 }

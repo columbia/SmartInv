@@ -1,0 +1,27 @@
+Contract to be analyzed:
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint _amount) public {
+        require(votes[msg.sender] + _amount > votes[msg.sender], "Integer overflow");
+        votes[msg.sender] += _amount;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+
+    function getVoteCount(address _voter) public view returns(uint) {
+        return votes[_voter];
+    }
+}
+
+Output:
+1) Integer overflow/underflow
+2) Incorrect visibility/ownership

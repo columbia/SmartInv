@@ -1,0 +1,30 @@
+<\contract_to_analyze\> 
+contract MultiSigWallet {
+    mapping (address => uint) public balances;
+    mapping (address => bool) public isOwner;
+    uint public transactionCount;
+     
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        require(isOwner[msg.sender], "Sender is not an owner");
+        balances[destination] += value;
+        balances[msg.sender] -= value;
+        transactionCount++;
+        // send transaction to destination
+        (bool success, ) = destination.call{value: value}(data);
+        require(success, "Transaction failed");
+    }
+     
+    function addOwner(address newOwner) public {
+        require(!isOwner[newOwner], "Address is already an owner");
+        isOwner[newOwner] = true;
+    }
+     
+    function removeOwner(address owner) public {
+        require(isOwner[owner], "Address is not an owner");
+        isOwner[owner] = false;
+    }
+} 
+
+Output:
+1) Potential vulnerability: reentrancy
+2) Potential vulnerability: incorrect visibility/ownership

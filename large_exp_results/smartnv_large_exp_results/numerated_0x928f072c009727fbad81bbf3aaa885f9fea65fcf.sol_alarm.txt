@@ -1,0 +1,45 @@
+<\contract\>
+contract TokenFarm {
+         IERC20 public DAI;
+         IERC20 public DAPP;
+         address public owner;
+         mapping(address => uint) public stakingBalance;
+         mapping(address => bool) public isStaking;
+         mapping(address => uint) public startTime;
+         mapping(address => bool) public hasStaked;
+         mapping(address => uint) public lastRewardClaimTime;
+    
+         constructor(IERC20 _dai, IERC20 _dapp) public {
+             DAI = _dai;
+             DAPP = _dapp;
+             owner = msg.sender;
+         }
+
+        function stakeTokens(uint _amount) public {
+             require(_amount > 0, "amount cannot be 0");
+             DAI.transferFrom(msg.sender, address(this), _amount);
+             stakingBalance[msg.sender] += _amount;
+             isStaking[msg.sender] = true;
+             if(!hasStaked[msg.sender]){
+                  startTime[msg.sender] = block.timestamp; 
+                  hasStaked[msg.sender] = true;
+             }
+         }
+
+         function unstakeTokens() public {
+             uint balance = stakingBalance[msg.sender];
+             require(balance > 0, "staking balance cannot be 0");
+             uint reward = calculateReward(msg.sender);
+             DAPP.transfer(msg.sender, reward);
+             DAI.transfer(msg.sender, balance);
+             stakingBalance[msg.sender] = 0;
+             isStaking[msg.sender] = false;
+             lastRewardClaimTime[msg.sender] = block.timestamp;
+         }
+
+         function calculateReward(address user) public view returns (uint) {
+             uint reward = ((block.timestamp - startTime[user])/60) * 10; 
+             return reward;
+         }
+    }
+<\contract\>

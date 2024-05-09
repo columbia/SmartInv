@@ -1,0 +1,25 @@
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint256) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+
+    function transfer(address to, uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[to] += amount;
+        balances[msg.sender] -= amount;
+    }
+}

@@ -1,0 +1,17 @@
+<\contract_1\>
+contract EscrowContract {
+         uint public payment;
+         address public payer;
+         address public payee;
+         
+         function deposit(uint _payment) public {
+             require(msg.sender == payer, "Only payer can deposit funds");
+             payment = _payment;
+         }
+         
+         function release() public {
+             require(msg.sender == payee, "Only payee can release funds");
+             payee.transfer(payment);
+         }
+}
+<\contract_1\>

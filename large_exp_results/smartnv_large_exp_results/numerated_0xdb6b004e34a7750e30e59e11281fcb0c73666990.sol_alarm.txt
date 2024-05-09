@@ -1,0 +1,26 @@
+The contract to analyze:
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+
+     // Constructor
+     constructor(IERC20 _token) {
+         token = _token;
+         owner = msg.sender;
+     }
+
+     function buyTokens(uint amount) external {
+         require(token.balanceOf(address(this)) >= amount, "Not enough tokens in contract");
+         token.transfer(msg.sender, amount);
+     }
+
+     function withdrawTokens(uint amount) external {
+         require(msg.sender == owner, "Only owner can withdraw tokens");
+         token.transfer(msg.sender, amount);
+     }
+}
+
+Output: 
+1) Incorrect visibility/ownership
+2) Atomicity violation
+3) Reentrancy

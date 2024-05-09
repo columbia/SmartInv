@@ -1,0 +1,22 @@
+<\contract\>
+contract TokenMarket {
+         struct Token {
+             uint256 id;
+             uint256 price;
+             uint256 amount;
+         }
+         mapping(uint256 => Token) public tokens;
+         
+         function buyToken(uint256 tokenId, uint256 tokenAmount) public {
+             require(tokens[tokenId].amount >= tokenAmount, "Not enough tokens available");
+             require(msg.value >= tokens[tokenId].price * tokenAmount, "Insufficient funds");
+             
+             tokens[tokenId].amount -= tokenAmount;
+             msg.sender.transfer(tokens[tokenId].price * tokenAmount);
+         }
+         
+         function addToken(uint256 tokenId, uint256 tokenPrice, uint256 tokenAmount) public {
+             tokens[tokenId] = Token(tokenId, tokenPrice, tokenAmount);
+         }
+     }
+<\contract\>

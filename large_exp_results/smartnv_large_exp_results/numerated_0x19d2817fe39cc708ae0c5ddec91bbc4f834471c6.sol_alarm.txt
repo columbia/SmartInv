@@ -1,0 +1,21 @@
+<\contract\>
+contract Insurance {
+         uint public totalAmountInsured;
+         address public insurer;
+         address public insured;
+         
+         function setInsurer(address _insurer) public {
+             require(msg.sender == insured, "Only insured can set the insurer");
+             insurer = _insurer;
+         }
+         
+         function setTotalAmountInsured(uint _amount) public {
+             require(msg.sender == insurer, "Only insurer can set the total amount insured");
+             totalAmountInsured = _amount;
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership: The setInsurer function should only be callable by the insured, but the require statement only checks for equality of the sender with the insured address, which can be manipulated.
+2) incorrect visibility/ownership: The setTotalAmountInsured function should only be callable by the insurer, but the require statement only checks for equality of the sender with the insurer address, which can be manipulated.

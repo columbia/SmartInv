@@ -1,0 +1,20 @@
+contract TokenExchange {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    constructor(address _tokenA, address _tokenB) {
+        tokenA = IERC20(_tokenA);
+        tokenB = IERC20(_tokenB);
+    }
+
+    function exchangeTokens(uint amountA, uint amountB) public {
+        require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance of tokenA");
+        require(tokenB.balanceOf(msg.sender) >= amountB, "Insufficient balance of tokenB");
+
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+
+        tokenA.transfer(msg.sender, amountB);
+        tokenB.transfer(msg.sender, amountA);
+    }
+}

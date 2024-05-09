@@ -1,0 +1,33 @@
+<\contract\>
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => uint256) public prices;
+    mapping(uint256 => address) public items;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function addItem(uint256 itemId, uint256 price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        prices[itemId] = price;
+        items[itemId] = msg.sender;
+    }
+    
+    function purchaseItem(uint256 itemId) public payable {
+        require(items[itemId] != address(0), "Item does not exist");
+        require(msg.value >= prices[itemId], "Insufficient funds");
+        
+        address seller = items[itemId];
+        payable(seller).transfer(prices[itemId]);
+        
+        delete items[itemId];
+        delete prices[itemId];
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\>

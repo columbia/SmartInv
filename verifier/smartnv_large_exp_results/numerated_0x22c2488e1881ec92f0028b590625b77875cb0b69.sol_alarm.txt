@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     struct Voter {
+          uint256 votedAmount; 
+          bool hasVoted; 
+          }
+     mapping(address => Voter) public voters;
+     uint256 public totalVotes;
+     uint256 public totalVoters;
+     address public admin;
+
+    function vote(uint256 amount) external {
+              require(!voters[msg.sender].hasVoted, "already voted");
+              voters[msg.sender].votedAmount = amount; 
+              voters[msg.sender].hasVoted = true; 
+              totalVotes += amount; 
+              totalVoters += 1;
+        }
+
+    function tallyVotes() external returns(uint256) {
+              require(msg.sender == admin, "admin only");
+              return totalVotes; 
+        }
+
+    function updateAdmin(address newAdmin) external {
+              require(msg.sender == admin, "admin only");
+              admin = newAdmin; 
+        }
+}
+<\contract_to_analyze\>

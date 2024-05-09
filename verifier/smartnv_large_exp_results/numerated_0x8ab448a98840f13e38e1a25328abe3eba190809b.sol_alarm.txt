@@ -1,0 +1,26 @@
+<\contract\> 
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+     uint public amount;
+     bool public isPaid;
+     
+     constructor(address _buyer, address _seller, uint _amount) {
+          buyer = _buyer;
+          seller = _seller;
+          amount = _amount;
+          isPaid = false;
+     }
+     
+     function deposit() public payable {
+          require(msg.sender == buyer, "You are not the buyer");
+          require(msg.value == amount, "Incorrect amount deposited");
+     }
+     
+     function release() public {
+          require(msg.sender == seller, "You are not the seller");
+          require(address(this).balance >= amount, "Insufficient balance in contract");
+          seller.transfer(amount);
+          isPaid = true;
+     }
+}

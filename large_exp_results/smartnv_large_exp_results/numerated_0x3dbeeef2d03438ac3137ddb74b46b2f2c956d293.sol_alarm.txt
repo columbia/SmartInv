@@ -1,0 +1,20 @@
+The contract you provided is as follows:
+
+contract UserKYC {
+    mapping(address => bool) public isVerified;
+
+    function verifyUser(address user) external {
+        require(msg.sender == owner, "Only owner can verify users");
+        isVerified[user] = true;
+    }
+
+    function revokeVerification(address user) external {
+        require(msg.sender == owner, "Only owner can revoke verification");
+        isVerified[user] = false;
+    }
+}
+
+The potential vulnerabilities in the UserKYC contract are:
+- Incorrect visibility/ownership: The verification and revocation functions are only restricted by checking if the caller is the owner, but the owner variable is not declared or initialized in the contract. This can lead to anyone being able to call these functions without proper ownership control.
+
+Therefore, the identified potential vulnerability is incorrect visibility/ownership.

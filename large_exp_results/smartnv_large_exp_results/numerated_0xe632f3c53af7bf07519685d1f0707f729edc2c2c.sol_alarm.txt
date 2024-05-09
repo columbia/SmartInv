@@ -1,0 +1,21 @@
+Contract to be analyzed:
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint256) public contributions;
+    uint256 public totalContributions;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function contribute() external payable {
+        require(msg.value > 0, "Contribution must be greater than 0");
+        contributions[msg.sender] += msg.value;
+        totalContributions += msg.value;
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "Only owner can withdraw");
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}

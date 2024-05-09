@@ -1,0 +1,38 @@
+Contract to be analyzed:
+
+contract Marketplace {
+    address public owner;
+    mapping(uint => Product) public products;
+    uint public productCounter;
+
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address seller;
+        bool isSold;
+    }
+
+    constructor() public {
+        owner = msg.sender;
+        productCounter = 0;
+    }
+
+    function addProduct(string memory _name, uint _price) public {
+        productCounter++;
+        products[productCounter] = Product(productCounter, _name, _price, msg.sender, false);
+    }
+
+    function buyProduct(uint _productId) public payable {
+        require(products[_productId].id != 0, "Product does not exist");
+        require(msg.value >= products[_productId].price, "Insufficient funds");
+
+        address payable seller = address(uint160(products[_productId].seller));
+        seller.transfer(msg.value);
+
+        products[_productId].isSold = true;
+    }
+}
+
+Output:
+1) healthy

@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function execute() updates the votedAmount in the proposal struct without using the SafeMath library, which can lead to inconsistent state updates if integer overflows or underflows occur.
+
+2) Integer overflow/underflow: There is a potential for integer overflow in the calculation in the liquidate() function where the multiplication of getPrice(), cAmount, and 80% could exceed the maximum uint value.
+
+3) Atomicity violation: The liquidate() function performs multiple state changes (debt and collateral transfers) without using proper atomicity checks, which could lead to unexpected results if any of the transactions fail midway.
+
+4) Incorrect visibility/ownership: The visibility of public variables such as debt, collateral, WETH, USDC, pair is public, which exposes internal state variables and could be manipulated externally.
+
+5) Ether leakage: The contract does not handle Ether transactions or payments securely, which could potentially lead to Ether leakage if not handled properly.
+
+6) Insufficient gas: The liquidate() function may require a significant amount of gas to complete all the required operations, leading to potential out-of-gas errors if the gas limit is not set appropriately.
+
+7) Business logic flaw: The calculatePrice() function relies on the balance of USDC and WETH in the pair contract to calculate the price, which may not accurately reflect the market price if other factors are involved.

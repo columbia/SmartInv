@@ -1,0 +1,29 @@
+<\analyzed_contract\> 
+contract Marketplace {
+        struct Product {
+            uint id;
+            string name;
+            uint price;
+            address owner;
+        }
+        
+        mapping(uint => Product) public products;
+        uint public productCount;
+
+        function addProduct(string memory _name, uint _price) public {
+            productCount++;
+            products[productCount] = Product(productCount, _name, _price, msg.sender);
+        }
+
+        function buyProduct(uint _productId) public payable {
+            Product storage product = products[_productId];
+            require(msg.value >= product.price, "Insufficient funds");
+
+            address payable seller = address(uint160(product.owner));
+            seller.transfer(msg.value);
+            product.owner = msg.sender;
+        }
+}
+Possible vulnerabilities:
+1) incorrect visibility/ownership 
+2) integer overflow/underflow

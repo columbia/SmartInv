@@ -1,0 +1,21 @@
+Contract:
+
+contract SwapTokens {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swap(uint amountA, uint amountB) external {
+        require(amountA > 0 && amountB > 0, "Invalid swap amounts");
+
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+
+        tokenA.transfer(msg.sender, amountB);
+        tokenB.transfer(msg.sender, amountA);
+    }
+}
+
+Potential vulnerabilities:
+1) Atomicity violation: The swap function does not ensure that both token transfers occur together atomically, opening up the possibility of one transfer succeeding while the other fails.
+2) Incorrect visibility/ownership: The contract does not specify any visibility or ownership modifiers for the tokenA and tokenB variables, potentially allowing unauthorized access or modification.
+3) Insufficient gas: If the swap function requires excessive gas to execute due to multiple token transfers, it may run out of gas mid-execution, leading to incomplete or failed swaps.

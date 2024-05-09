@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract to analyze are:
+
+1) Inconsistent state update: The function `startExecute` initializes the `proposal` struct and updates `startingBalanceList`, but it does not update `proposal.sTime` to mark the proposal as started.
+2) Incorrect visibility/ownership: The contract does not specify the visibility of the `proposal` struct, which could lead to potential access control vulnerabilities.
+3) Insufficient gas: The function `endExecute` locks funds based on the comparison `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")`, which may consume excessive gas and lead to potential gas-related vulnerabilities.
+4) ID uniqueness violation: The contract does not include logic to ensure the uniqueness of proposal IDs or addresses, which could lead to potential conflicts or errors.
+5) Integer overflow/underflow: The contract does not have checks for potential integer overflows or underflows in various arithmetic operations, which could lead to unexpected behavior or vulnerabilities.

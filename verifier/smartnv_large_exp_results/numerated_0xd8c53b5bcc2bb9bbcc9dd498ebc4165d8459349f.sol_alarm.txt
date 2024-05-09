@@ -1,0 +1,38 @@
+<\analyzed_contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public price;
+     enum State { CREATED, LOCKED, RELEASED, INACTIVE }
+     State public state;
+     address public escrowManager;
+
+     constructor(address _buyer, address _seller, uint _price) {
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+         state = State.CREATED;
+         escrowManager = msg.sender;
+     }
+
+     function lock() external {
+         require(msg.sender == buyer, "Only the buyer can lock the funds");
+         require(state == State.CREATED, "Funds have already been locked or released");
+         state = State.LOCKED;
+     }
+
+     function release() external {
+         require(msg.sender == seller, "Only the seller can release the funds");
+         require(state == State.LOCKED, "Funds are not locked");
+         escrowManager.transfer(price);
+         state = State.RELEASED;
+     }
+
+     function refund() external {
+         require(msg.sender == escrowManager, "Only the escrow manager can initiate a refund");
+         require(state == State.LOCKED, "Funds are not locked");
+         buyer.transfer(price);
+         state = State.INACTIVE;
+     }
+}
+<\analyzed_contract\>

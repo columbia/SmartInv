@@ -1,0 +1,44 @@
+The contract provided for analysis:
+
+contract Vesting {
+     address public beneficiary;
+     uint public cliff;
+     uint public start;
+     uint public duration;
+     uint public released;
+     IERC20 public token;
+
+     constructor(
+         address _beneficiary,
+         uint _cliff,
+         uint _start,
+         uint _duration,
+         IERC20 _token
+     ) {
+         beneficiary = _beneficiary;
+         cliff = _cliff;
+         start = _start;
+         duration = _duration;
+         token = _token;
+     }
+
+     function release() public {
+         require(block.timestamp >= start, "Vesting: not started yet");
+         uint releasable = vestedAmount() - released;
+         released += releasable;
+         token.transfer(beneficiary, releasable);
+     }
+
+     function vestedAmount() public view returns (uint) {
+         if (block.timestamp < cliff) {
+             return 0;
+         } else if (block.timestamp >= start + duration) {
+             return token.balanceOf(address(this));
+         } else {
+             return token.balanceOf(address(this)) * (block.timestamp - start) / duration;
+         }
+     }
+}
+
+Output: 
+- Insufficient Gas

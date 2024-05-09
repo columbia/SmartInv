@@ -1,0 +1,41 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+    uint public price;
+    bool public fundsReleased;
+    
+    constructor(address _buyer, address _seller, uint _price, address _arbiter) public {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        arbiter = _arbiter;
+    }
+    
+    function approveBuyer() public {
+        require(msg.sender == buyer, "Only buyer can approve");
+        buyerApproved = true;
+    }
+    
+    function approveSeller() public {
+        require(msg.sender == seller, "Only seller can approve");
+        sellerApproved = true;
+    }
+    
+    function approveArbiter() public {
+        require(msg.sender == arbiter, "Only arbiter can approve");
+        arbiterApproved = true;
+    }
+    
+    function releaseFunds() public {
+        require(buyerApproved && sellerApproved && arbiterApproved, "All parties must approve");
+        fundsReleased = true;
+    }
+} 
+
+Output:
+business logic flaw

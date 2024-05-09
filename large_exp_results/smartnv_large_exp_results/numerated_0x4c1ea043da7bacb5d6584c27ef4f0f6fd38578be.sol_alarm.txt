@@ -1,0 +1,6 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The execute function in the TimelockController contract updates the proposal.votedAmount without properly accounting for the total voted amount, potentially leading to inconsistent state updates.
+2) Incorrect visibility/ownership: The TimelockController contract implements IERC20 but it doesn't define all the required functions of the interface, which can lead to incorrect visibility and ownership of functions.
+3) Arithmetic flaw: In the ExchangeTokens contract, the liquidate function performs a calculation that involves multiplication and division, which can lead to arithmetic flaws if the values involved are not carefully validated.
+4) Insufficient gas: The calculatePrice function in the ExchangeTokens contract requires gas to execute the calculations and return the result, which may lead to insufficient gas errors if not enough gas is provided during function execution.

@@ -1,0 +1,19 @@
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility/ownership: The contract does not define the visibility of the `proposal` and `startingBalanceList` variables, leaving them potentially accessible to external contracts or attackers.
+
+2) Insufficient gas: The `endExecute` function checks for a condition that involves iterating over all balances to compare them to the total supply, which could potentially consume a large amount of gas and lead to insufficient gas for the function execution.
+
+3) Inconsistent state update: There is a possibility of inconsistent state update in the `startExecute` function where the `proposal` struct is updated before updating the `startingBalanceList`, which might lead to unintended behaviour.
+
+4) ID uniqueness violation: The contract uses `proposal.addr` as a unique identifier without any validation, which could potentially lead to ID uniqueness violations if multiple proposals have the same address.
+
+5) Atomicity violation: The `proposal.votedAmount` is updated independently of the `votingToken.transferFrom` function call in the `execute` function, which could lead to atomicity violations if the transfer fails after the amount is updated.
+
+6) Integer overflow/underflow: The contract lacks proper checks for potential integer overflow/underflow vulnerabilities in various arithmetic operations, such as in the `execute` function where `proposal.votedAmount` is updated without overflow protection.
+
+7) Ether leakage: The contract does not handle ether transactions securely, which could lead to potential ether leakage vulnerabilities.
+
+8) Business logic flaw: The contract may have business logic flaws, such as the `endExecute` function checking if the locked funds are more than twice the total supply, which might not be the intended condition for execution.
+
+9) Arithmetic flaw: There are potential arithmetic flaws in the `endExecute` function where the balance comparison might not accurately reflect the intended conditions for execution.

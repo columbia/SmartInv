@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+contract SimpleToken {
+    uint public totalSupply;
+    mapping(address => uint) public balanceOf;
+
+    constructor(uint _totalSupply) {
+        totalSupply = _totalSupply;
+        balanceOf[msg.sender] = _totalSupply;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
+    }
+
+    function burn(uint amount) public {
+        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
+        balanceOf[msg.sender] -= amount;
+        totalSupply -= amount;
+    }
+}
+
+Output: 
+- insufficient gas

@@ -1,0 +1,31 @@
+<\contract\>
+contract VotingSystem is IERC20 {
+    struct Voter {
+        uint256 tokensVoted;
+        bool hasVoted;
+    }
+
+    mapping(address => Voter) public voters;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint256 amount) external {
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance to vote");
+        require(!voters[msg.sender].hasVoted, "User has already voted");
+
+        voters[msg.sender].tokensVoted = amount;
+        voters[msg.sender].hasVoted = true;
+    }
+
+    function tallyVotes() external returns (uint256) {
+        uint256 totalVotes = 0;
+        for (uint256 i = 0; i < totalSupply(); i++) {
+            totalVotes += voters[address(i)].tokensVoted;
+        }
+        return totalVotes;
+    }
+}
+<\contract\>

@@ -1,0 +1,24 @@
+<\contract\>
+contract PaymentGateway {
+         uint public totalPayments;
+         mapping(address => uint) public userPayments;
+         
+         function makePayment() public payable {
+             totalPayments += msg.value;
+             userPayments[msg.sender] += msg.value;
+         }
+         
+         function withdrawPayment() public {
+             uint amount = userPayments[msg.sender];
+             require(amount > 0, "No funds to withdraw");
+             totalPayments -= amount;
+             userPayments[msg.sender] = 0;
+             payable(msg.sender).transfer(amount);
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract: 
+- Integer overflow/underflow in totalPayments variable
+- Insufficient gas for transfer function, leading to denial of service
+- Lack of access control in makePayment and withdrawPayment functions

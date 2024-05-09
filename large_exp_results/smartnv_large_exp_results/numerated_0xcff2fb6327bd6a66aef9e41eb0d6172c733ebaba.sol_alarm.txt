@@ -1,0 +1,25 @@
+<\contract\>
+contract Crowdsale {
+    mapping(address => uint) public contributions;
+    address public beneficiary;
+    uint public minContribution;
+    uint public maxContribution;
+
+    constructor(address _beneficiary, uint _minContribution, uint _maxContribution) public {
+        beneficiary = _beneficiary;
+        minContribution = _minContribution;
+        maxContribution = _maxContribution;
+    }
+
+    function contribute() external payable {
+        require(msg.value >= minContribution && msg.value <= maxContribution, "Contribution amount out of range");
+        contributions[msg.sender] += msg.value;
+    }
+
+    function withdraw() external {
+        require(msg.sender == beneficiary, "Only beneficiary can withdraw");
+        uint amount = address(this).balance;
+        payable(beneficiary).transfer(amount);
+    }
+}
+<\contract\>

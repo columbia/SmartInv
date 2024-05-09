@@ -1,0 +1,47 @@
+<\analyzed_contract\> 
+contract MultiSigWallet {
+    mapping(address => bool) public owners;
+    mapping(address => bool) public isOwner;
+    uint public transactionCount;
+    uint public minApprovers;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address from;
+        address to;
+        uint amount;
+        uint approvals;
+        bool executed;
+    }
+
+    function createTransaction(address to, uint amount) public {
+        transactions[transactionCount] = Transaction(msg.sender, to, amount, 0, false);
+        transactionCount++;
+    }
+
+    function approveTransaction(uint transactionId) public {
+        require(owners[msg.sender], "Not an owner");
+        require(!isOwner[msg.sender], "Already approved");
+        transactions[transactionId].approvals++;
+        isOwner[msg.sender] = true;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        require(transactions[transactionId].approvals >= minApprovers, "Not enough approvals");
+        require(!transactions[transactionId].executed, "Transaction already executed");
+        transactions[transactionId].to.transfer(transactions[transactionId].amount);
+        transactions[transactionId].executed = true;
+    }
+
+    function addOwner(address newOwner) public {
+        owners[newOwner] = true;
+    }
+
+    function removeOwner(address owner) public {
+        owners[owner] = false;
+    }
+}
+<\analyzed_contract\> 
+
+ID uniqueness violation
+Ownership violation

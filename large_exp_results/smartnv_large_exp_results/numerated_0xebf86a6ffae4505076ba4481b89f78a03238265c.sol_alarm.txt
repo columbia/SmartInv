@@ -1,0 +1,23 @@
+<\contract_to_analyze\> 
+contract PaymentGateway {
+    address public owner;
+    mapping(uint => address) public payments;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint id, address recipient, uint amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[id] = recipient;
+        recipient.transfer(amount);
+    }
+
+    function getPaymentRecipient(uint id) public view returns (address) {
+        return payments[id];
+    }
+}
+<\contract_to_analyze\> 
+
+Output:
+- privilege escalation

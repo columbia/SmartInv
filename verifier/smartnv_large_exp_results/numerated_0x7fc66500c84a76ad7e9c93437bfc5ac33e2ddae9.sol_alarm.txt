@@ -1,0 +1,24 @@
+<\analyzed_contract\>
+contract PaymentGateway {
+    address public owner;
+    mapping(uint256 => uint256) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint256 invoiceId, uint256 amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[invoiceId] += amount;
+    }
+
+    function withdrawPayment(uint256 invoiceId) public {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        uint256 paymentAmount = payments[invoiceId];
+        require(paymentAmount > 0, "No payment for this invoiceId");
+        
+        payments[invoiceId] = 0;
+        payable(owner).transfer(paymentAmount);
+    }
+}
+<\analyzed_contract\>

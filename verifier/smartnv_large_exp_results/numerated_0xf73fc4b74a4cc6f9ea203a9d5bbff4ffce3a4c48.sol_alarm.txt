@@ -1,0 +1,32 @@
+Contract to analyze:
+
+contract VotingSystem {
+         mapping(address => bool) public hasVoted;
+         address[] public candidates;
+         mapping(address => uint) public votes;
+
+         function vote(address candidate) public {
+             require(!hasVoted[msg.sender], "Already voted");
+             require(isValidCandidate(candidate), "Invalid candidate");
+             
+             votes[candidate]++;
+             hasVoted[msg.sender] = true;
+         }
+
+         function isValidCandidate(address candidate) internal view returns(bool) {
+             for (uint i = 0; i < candidates.length; i++) {
+                 if (candidates[i] == candidate) {
+                     return true;
+                 }
+             }
+             return false;
+         }
+
+         function addCandidate(address newCandidate) public {
+             candidates.push(newCandidate);
+         }
+}
+
+Output: 
+- inconsistency state update
+- ID uniqueness violation

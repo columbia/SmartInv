@@ -1,0 +1,16 @@
+The contract provided for analysis is:
+
+contract SecureTokenSale {
+    mapping(address => uint256) public balanceOf;
+    uint256 public price = 1 ether;
+
+    function buyTokens(uint256 amount) public payable {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        balanceOf[msg.sender] += amount;
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+1) Price manipulation
+2) Integer overflow/underflow
+3) Insufficient gas

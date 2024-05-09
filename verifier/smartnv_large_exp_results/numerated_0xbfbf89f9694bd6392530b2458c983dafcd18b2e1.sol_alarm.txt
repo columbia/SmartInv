@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) privilege escalation: The contract does not implement access control properly, allowing anyone to call functions that should be restricted to certain roles.
+2) inconsistent state update: The `votedAmount` in the Proposal struct is directly modified in the `execute` function without proper synchronization or checks, which can lead to unexpected behavior.
+3) reentrancy: The `execute` function transfers tokens and then calls `votedProposal`, which could potentially allow an external contract to re-enter the `execute` function and manipulate state.
+4) incorrect visibility/ownership: The contract does not explicitly define the visibility of variables and functions, leaving them to default to internal, which might not be the intended behavior.

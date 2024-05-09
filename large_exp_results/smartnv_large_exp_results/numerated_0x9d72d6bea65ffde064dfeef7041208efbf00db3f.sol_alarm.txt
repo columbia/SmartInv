@@ -1,0 +1,31 @@
+<\your_contract\> 
+contract SubscriptionManager {
+    mapping(address => bool) public subscribers;
+    uint256 public subscriptionFee;
+    address public owner;
+
+    constructor(uint256 _fee) {
+        subscriptionFee = _fee;
+        owner = msg.sender;
+    }
+
+    function subscribe() external payable {
+        require(msg.value == subscriptionFee, "Incorrect subscription fee");
+        subscribers[msg.sender] = true;
+    }
+
+    function unsubscribe() external {
+        subscribers[msg.sender] = false;
+    }
+
+    function changeFee(uint256 _newFee) external {
+        require(msg.sender == owner, "Only owner can change fee");
+        subscriptionFee = _newFee;
+    }
+
+    function withdrawFunds() external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\your_contract\>

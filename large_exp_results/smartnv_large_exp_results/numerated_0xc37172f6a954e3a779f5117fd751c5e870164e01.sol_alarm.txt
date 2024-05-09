@@ -1,0 +1,24 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public recipient;
+    uint public amount;
+
+    function deposit(uint _amount) public {
+        require(msg.sender == payer, "Only payer can deposit");
+        amount = _amount;
+    }
+
+    function release() public {
+        require(msg.sender == recipient, "Only recipient can release");
+        recipient.transfer(amount);
+    }
+
+    function cancel() public {
+        require(msg.sender == payer, "Only payer can cancel");
+        payer.transfer(amount);
+    }
+}
+<\contract\> 
+reentrancy
+incorrect visibility/ownership

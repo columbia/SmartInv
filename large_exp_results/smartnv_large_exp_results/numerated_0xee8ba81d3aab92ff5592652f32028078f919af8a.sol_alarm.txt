@@ -1,0 +1,33 @@
+<\contract\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime;
+          uint256 votedAmount;
+          address proposer;
+     }
+     address internal owner;
+     mapping(address => uint256) public startingBalanceList;
+     Proposal public proposal;
+     
+     function startVoting() external {
+          require(proposal.startTime == 0, "voting in progress");
+          proposal = Proposal(block.timestamp, 0, msg.sender);
+          uint256 startingBalance = getStartingBalance(proposal.proposer);
+          startingBalanceList[proposal.proposer] = startingBalance;
+     }
+     
+     function vote(uint256 amount) external {
+          require(proposal.startTime != 0, "no active proposal");
+          require(proposal.startTime + 48 hours > block.timestamp, "voting period ended");
+          require(amount > 0, "invalid amount");
+          startingBalanceList[proposal.proposer] -= amount; // Deduct voted amount from starting balance
+          proposal.votedAmount += amount;
+     }
+     
+     function endVoting() external {
+          require(proposal.startTime != 0, "no active proposal");
+          require(proposal.startTime + 48 hours < block.timestamp, "voting period not ended yet");
+          // Perform final checks and update system state
+     }
+}
+<\contract\>  

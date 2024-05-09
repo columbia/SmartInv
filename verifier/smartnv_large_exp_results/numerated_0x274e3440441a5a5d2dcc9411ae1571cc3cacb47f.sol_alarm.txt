@@ -1,0 +1,12 @@
+<\example_1\>
+Potential vulnerabilities:
+1) Inconsistent state update: The values of proposal.sTime, proposal.votedAmount, and startingBalanceList are updated independently in multiple functions without proper synchronization.
+2) ID uniqueness violation: The proposal.id is not present in the contract, which may lead to conflicts if multiple proposals are initiated simultaneously.
+3) Incorrect visibility/ownership: The votingToken and lockedFunds variables are not declared in the contract, which may result in ownership and visibility issues.
+
+
+<\example_2\>
+Potential vulnerabilities:
+1) Price manipulation: The liquidate function relies on the getPrice function, but the getPrice function is not implemented in the contract, leaving room for potential manipulation of prices.
+2) Incorrect visibility/ownership: The debt, collateral, and pair variables are declared as public, which may expose sensitive data to external users.
+3) Business logic flaw: The liquidate function liquidates a user's funds based on a fixed percentage calculation without considering potential risks or edge cases, which may lead to unintended outcomes.

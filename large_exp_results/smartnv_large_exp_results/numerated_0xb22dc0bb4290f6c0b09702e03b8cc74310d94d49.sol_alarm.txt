@@ -1,0 +1,30 @@
+<\contract\>
+contract Escrow {
+         address public seller;
+         address public buyer;
+         uint public price;
+         bool public sellerApproved;
+         bool public buyerApproved;
+
+         function createEscrow(address _seller, address _buyer, uint _price) external {
+             seller = _seller;
+             buyer = _buyer;
+             price = _price;
+         }
+
+         function approveSeller() external {
+             require(msg.sender == seller, "Only seller can approve");
+             sellerApproved = true;
+         }
+
+         function approveBuyer() external {
+             require(msg.sender == buyer, "Only buyer can approve");
+             buyerApproved = true;
+         }
+
+         function releaseFunds() external {
+             require(sellerApproved && buyerApproved, "Both parties need to approve");
+             // release funds to the seller
+         }
+     }
+<\contract\>

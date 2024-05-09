@@ -1,0 +1,22 @@
+<\analyzed_contract\>
+contract PaymentGateway {
+    uint public totalPayments;
+    mapping(address => uint) public balances;
+
+    function makePayment() public payable {
+        balances[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdrawPayment(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalPayments -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function updateBalance(address account, uint amount) public {
+        balances[account] = amount;
+    }
+}
+<\analyzed_contract\>

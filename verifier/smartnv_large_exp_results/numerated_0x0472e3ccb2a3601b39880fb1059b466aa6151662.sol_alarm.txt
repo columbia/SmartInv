@@ -1,0 +1,31 @@
+Contract analysis:
+
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+
+    function getAdmin() public view returns (address) {
+        return admin;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) privilege escalation: The changeAdmin function allows the admin to change the admin address, potentially leading to privilege escalation if not properly secured.
+2) ID uniqueness violation: The hasVoted mapping relies on the sender's address as the key, which may lead to ID uniqueness violation if multiple users share the same address.
+3) incorrect visibility/ownership: The admin variable is public, which exposes the admin address to everyone, potentially leading to security risks if not intended.
+
+Therefore, the potential vulnerabilities in the contract include privilege escalation, ID uniqueness violation, and incorrect visibility/ownership.

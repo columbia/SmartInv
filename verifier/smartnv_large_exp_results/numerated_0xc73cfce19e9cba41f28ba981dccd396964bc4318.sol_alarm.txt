@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+    address public owner; 
+    mapping(uint => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint _id, uint _amount) public {
+        require(msg.sender == owner, "Permission denied");
+        payments[_id] = _amount;
+    }
+
+    function updatePayment(uint _id, uint _newAmount) public {
+        require(msg.sender == owner, "Permission denied");
+        require(payments[_id] != 0, "Payment not found");
+        payments[_id] = _newAmount;
+    }
+
+    function withdrawPayment(uint _id) public {
+        require(payments[_id] != 0, "Payment not found");
+        uint amount = payments[_id];
+        payments[_id] = 0;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract_to_analyze\>

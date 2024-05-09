@@ -1,0 +1,30 @@
+<\analyzed_contract\>
+contract PaymentContract {
+    address public owner;
+    mapping(uint => bool) public payments;
+    uint public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+        totalPayments = 0;
+    }
+
+    function makePayment(uint paymentId) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        require(!payments[paymentId], "Payment already made");
+        
+        payments[paymentId] = true;
+        totalPayments++;
+    }
+
+    function getTotalPayments() public view returns(uint) {
+        return totalPayments;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\analyzed_contract\>

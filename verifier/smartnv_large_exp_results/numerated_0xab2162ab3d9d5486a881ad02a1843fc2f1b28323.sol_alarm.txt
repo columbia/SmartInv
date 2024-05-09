@@ -1,0 +1,29 @@
+The contract to analyze:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public isPaid;
+
+    constructor(address _seller, uint _price) {
+        seller = _seller;
+        price = _price;
+    }
+
+    function pay() public payable {
+        require(msg.sender == buyer, "Only buyer can pay");
+        require(msg.value == price, "Incorrect payment amount");
+        isPaid = true;
+    }
+
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(isPaid, "Payment has not been made");
+        payable(seller).transfer(address(this).balance); 
+    }
+}
+Potential vulnerabilities:
+8) reentrancy
+13) insufficient gas
+14) incorrect visibility/ownership

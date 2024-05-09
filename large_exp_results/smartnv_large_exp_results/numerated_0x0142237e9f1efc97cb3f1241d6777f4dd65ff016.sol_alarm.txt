@@ -1,0 +1,30 @@
+Contract to analyze:
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(address _token, uint _tokenPrice) {
+        token = _token;
+        tokenPrice = _tokenPrice;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function setTokenPrice(uint _newPrice) external {
+        require(msg.sender == owner, "Must be the owner to set token price");
+        tokenPrice = _newPrice;
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "Only the owner can withdraw");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+Potential vulnerabilities:
+1) incorrect visibility/ownership. 
+2) ether leakage.

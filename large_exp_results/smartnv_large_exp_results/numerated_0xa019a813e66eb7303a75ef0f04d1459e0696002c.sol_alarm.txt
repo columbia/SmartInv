@@ -1,0 +1,25 @@
+Contract: 
+contract PaymentProcessor {
+     address public admin;
+     mapping(uint => uint) public paymentAmounts;
+
+     constructor(address _admin) {
+          admin = _admin;
+     }
+
+     function processPayment(uint _paymentId, uint _amount) public {
+          require(msg.sender == admin, "Only admin can process payments");
+          paymentAmounts[_paymentId] = _amount;
+     }
+
+     function getPaymentAmount(uint _paymentId) public view returns (uint) {
+          return paymentAmounts[_paymentId];
+     }
+
+     function updateAdmin(address _newAdmin) public {
+          admin = _newAdmin;
+     }
+}
+
+Output: 
+incorrect visibility/ownership

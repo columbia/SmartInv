@@ -1,0 +1,21 @@
+<\contract\>
+contract FeeSplitter {
+    address public owner;
+    address public token;
+    uint public totalFees;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = _token;
+    }
+
+    function splitFees(uint amount) external {
+        require(msg.sender == owner, "only the owner can split fees");
+        totalFees += amount / 2;
+        token.transfer(owner, amount / 2);
+    }
+}
+Potential vulnerabilities:
+1) Privilege escalation: The splitFees function can only be called by the owner, but there is no restriction on who can set the owner initially in the constructor.
+2) Inconsistent state update: The totalFees variable is updated before transferring the amount to the owner, which can lead to inconsistencies if the transfer fails.
+3) Ether leakage: The contract does not handle Ether transactions, which can be received accidentally and result in Ether being trapped in the contract.

@@ -1,0 +1,24 @@
+<\contract\> 
+contract PaymentProcessor {
+         address internal owner;
+         mapping(uint => uint) public payments;
+        
+         function makePayment(uint _id, uint _amount) external {
+             require(msg.sender == owner, "Only owner can make payments");
+             payments[_id] = _amount;
+         }
+
+         function viewPayment(uint _id) external view returns (uint) {
+             return payments[_id];
+         }
+
+         function updateOwner(address _newOwner) external {
+             require(msg.sender == owner, "Only owner can update owner");
+             owner = _newOwner;
+         }
+}
+<\contract\> 
+
+Output:
+- privilege escalation 
+- incorrect visibility/ownership

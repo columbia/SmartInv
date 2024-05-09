@@ -1,0 +1,29 @@
+<\analyzed_contract\>
+contract MultisigWallet {
+    address[] public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    function submitTransaction(address to, uint value, bytes memory data) public {
+        require(msg.sender == owners[0], "Only owner 1 can submit transactions");
+        transactions[transactionCount] = Transaction(to, value, data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        Transaction storage transaction = transactions[transactionId];
+        require(msg.sender == owners[1], "Only owner 2 can execute transactions");
+        require(!transaction.executed, "Transaction already executed");
+        (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+        transaction.executed = true;
+    }
+}
+<\analyzed_contract\>

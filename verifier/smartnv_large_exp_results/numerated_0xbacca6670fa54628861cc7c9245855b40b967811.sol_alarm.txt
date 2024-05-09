@@ -1,0 +1,29 @@
+<\contract_to_analyze\>
+contract FinancialContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        require(amount <= balance, "Insufficient balance");
+        msg.sender.transfer(amount);
+        balance -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+Potential vulnerabilities:
+6) Cross bridge inconsistency
+14) Incorrect visibility/ownership

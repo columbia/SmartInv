@@ -1,0 +1,24 @@
+<\contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    mapping(address => uint256) public balances;
+
+    constructor(IERC20 _token) {
+        admin = msg.sender;
+        token = _token;
+    }
+
+    function buyTokens(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        uint256 totalCost = amount * getPrice();
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function getPrice() internal view returns(uint256) {
+        // Some logic to determine the price
+        return 100;
+    }
+}
+<\contract\>

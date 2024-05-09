@@ -1,0 +1,30 @@
+<\contract\> 
+contract Escrow {
+         address public payer;
+         address public recipient;
+         uint public amount;
+         bool public released;
+         bool public canceled;
+
+         constructor(address _payer, address _recipient, uint _amount) {
+             payer = _payer;
+             recipient = _recipient;
+             amount = _amount;
+             released = false;
+             canceled = false;
+         }
+
+         function release() public {
+             require(!released, "Already released");
+             require(msg.sender == payer, "Not authorized");
+             released = true;
+         }
+
+         function cancel() public {
+             require(!canceled, "Already canceled");
+             require(msg.sender == payer, "Not authorized");
+             canceled = true;
+         }
+         
+}
+<\contract\>

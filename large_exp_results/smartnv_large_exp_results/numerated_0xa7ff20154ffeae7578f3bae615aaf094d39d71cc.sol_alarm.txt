@@ -1,0 +1,27 @@
+<\contract_to_analyze\> 
+contract Insurance {
+     struct Policy {
+          uint policyID;
+          address insured;
+          uint premiumAmount;
+          uint coverageAmount;
+          bool isClaimed;
+     }
+     mapping(uint => Policy) public policies;
+     uint public nextPolicyID = 1;
+
+     function buyPolicy(uint _coverageAmount) public payable {
+          require(msg.value >= _coverageAmount * 0.1 ether, "Insufficient payment for coverage amount");
+          policies[nextPolicyID] = Policy(nextPolicyID, msg.sender, msg.value, _coverageAmount, false);
+          nextPolicyID++;
+     }
+
+     function claim(uint _policyID) public {
+          Policy storage policy = policies[_policyID];
+          require(policy.insured == msg.sender, "You are not the policy holder");
+          require(policy.isClaimed == false, "Policy has already been claimed");
+          msg.sender.transfer(policy.coverageAmount);
+          policy.isClaimed = true;
+      }
+}
+<\contract_to_analyze\>

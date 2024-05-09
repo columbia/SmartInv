@@ -1,0 +1,27 @@
+The contract to analyze:
+<\contract_to_analyze\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+    
+    function getTotalVotes() public view returns (uint) {
+        return totalVotes;
+    }
+
+    function resetVotes() public {
+        totalVotes = 0;
+    }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation (multiple votes from the same address can be cast).
+2) Inconsistent state update (resetting votes without proper verification).
+3) Insufficient gas (potential gas limit issues due to increasing totalVotes without limit).
+4) Incorrect visibility/ownership (public access to hasVoted mapping could pose a security risk).

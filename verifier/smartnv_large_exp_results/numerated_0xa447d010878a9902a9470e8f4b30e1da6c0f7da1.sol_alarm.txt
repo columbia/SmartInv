@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+<\contract\> 
+contract TokenSale {
+       uint public tokenPrice;
+       uint public totalTokens;
+       IERC20 public token;
+
+       constructor(uint _tokenPrice, uint _totalTokens, address _tokenAddress) {
+             tokenPrice = _tokenPrice;
+             totalTokens = _totalTokens;
+             token = IERC20(_tokenAddress);
+       }
+       
+       function buyTokens(uint _amount) public payable {
+             require(_amount <= totalTokens, "Not enough tokens left");
+             require(msg.value == tokenPrice * _amount, "Incorrect payment amount");
+             token.transfer(msg.sender, _amount);
+             totalTokens -= _amount;
+       }
+
+       function endSale() public {
+             require(totalTokens == 0, "Not all tokens have been sold");
+             payable(msg.sender).transfer(address(this).balance);
+       }
+}
+<\contract\> 
+
+Output: 
+- Insufficient Gas
+
+Please let me know if you need any further assistance.

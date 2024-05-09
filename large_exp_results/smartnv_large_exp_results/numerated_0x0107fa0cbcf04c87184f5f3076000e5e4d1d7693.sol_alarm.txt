@@ -1,0 +1,22 @@
+Contract to be analyzed: 
+
+contract Sale {
+    address public owner;
+    uint public price;
+
+    constructor() {
+        owner = msg.sender;
+        price = 10;
+    }
+
+    function buy(uint quantity) public payable {
+        require(msg.value == quantity * price, "Incorrect payment amount");
+        uint total = quantity * price;
+        payable(owner).transfer(total);
+    }
+
+    function setPrice(uint newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = newPrice;
+    }
+}

@@ -1,0 +1,44 @@
+<\contract\>
+contract MultiSigWallet {
+    mapping(address => bool) public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bool executed;
+        string data;
+    }
+
+    modifier ownerExists(address owner) {
+        require(owners[owner], "Owner does not exist");
+        _;
+    }
+
+    function submitTransaction(address destination, uint value, string memory data) public ownerExists(msg.sender) {
+        Transaction memory newTransaction = Transaction({
+            destination: destination,
+            value: value,
+            executed: false,
+            data: data
+        });
+        transactions[transactionCount] = newTransaction;
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public ownerExists(msg.sender) {
+        require(transactionId < transactionCount, "Transaction does not exist");
+        Transaction storage txn = transactions[transactionId];
+        txn.executed = true;
+        // Execute transaction logic
+    }
+
+    function revokeTransaction(uint transactionId) public ownerExists(msg.sender) {
+        require(transactionId < transactionCount, "Transaction does not exist");
+        Transaction storage txn = transactions[transactionId];
+        require(!txn.executed, "Transaction already executed");
+        // Revoke transaction logic
+    }
+}
+<\contract\>

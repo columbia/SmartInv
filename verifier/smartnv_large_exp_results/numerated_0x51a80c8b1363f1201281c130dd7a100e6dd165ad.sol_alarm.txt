@@ -1,0 +1,30 @@
+The contract to analyze:
+
+contract MarketMaker {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    address public owner;
+
+    constructor(address _tokenA, address _tokenB) {
+        tokenA = IERC20(_tokenA);
+        tokenB = IERC20(_tokenB);
+        owner = msg.sender;
+    }
+
+    function trade(uint amountA, uint amountB) public {
+        require(amountA > 0 && amountB > 0, "Invalid amounts");
+        
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transfer(msg.sender, amountB);
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+
+The potential vulnerabilities in the MarketMaker contract are:
+
+1) Inconsistent state update: The trade function does not update the internal state after transferring tokens, which may result in inconsistent state if the transfer fails.
+2) Incorrect visibility/ownership: The changeOwner function allows anyone to change the owner of the contract, which is not intended. The ownership should be restricted to the current owner only.

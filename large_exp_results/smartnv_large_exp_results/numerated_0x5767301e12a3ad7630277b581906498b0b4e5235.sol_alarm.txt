@@ -1,0 +1,23 @@
+Contract You Are Analyzing:
+```solidity
+contract SwapContract {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    uint public rate;
+
+    function swap(uint amount) public {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        uint bAmount = amount * rate;
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, bAmount);
+    }
+}
+```
+
+Based on the given contract, the potential vulnerabilities are:
+
+1) Arithmetic flaw: Calculation of `bAmount` may lead to arithmetic overflow if the `rate` is very large.
+2) Insufficient gas: Lack of gas stipend might cause the operation to fail if the gas provided by the caller is not enough for the contract execution.
+```
+
+Please let me know if you need any further assistance.

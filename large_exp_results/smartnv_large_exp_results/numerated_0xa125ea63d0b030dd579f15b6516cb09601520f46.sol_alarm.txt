@@ -1,0 +1,44 @@
+Contract: 
+
+contract TokenSale {
+    // Token being sold
+    IERC20 public token;
+    // Price of the token
+    uint public tokenPrice;
+    // Owner of the contract
+    address public owner;
+    // Total amount of tokens available for sale
+    uint public totalTokens;
+    // Mapping of buyers and their token balances
+    mapping(address => uint) public balances;
+    
+    constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) public {
+        token = _token;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        owner = msg.sender;
+    }
+    
+    function buyTokens(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        require(totalTokens >= _amount, "Not enough tokens left");
+        
+        uint cost = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+        
+        totalTokens -= _amount;
+        balances[msg.sender] += _amount;
+        token.transferFrom(owner, msg.sender, _amount);
+    }
+    
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        uint balance = address(this).balance;
+        owner.transfer(balance);
+    }
+}
+Potential vulnerabilities:
+1) price manipulation
+2) inconsistent state update
+3) incorrect visibility/ownership

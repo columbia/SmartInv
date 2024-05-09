@@ -1,0 +1,33 @@
+<\your_contract_here\>
+contract VotingSystem {
+     struct Vote {
+          address voter; 
+          uint256 voteAmount; 
+          uint256 timestamp; 
+          }
+     mapping(address => Vote[]) public votes;
+     mapping(address => uint) public totalVotes;
+     
+     function vote(uint256 amount) public {
+          votes[msg.sender].push(Vote(msg.sender, amount, block.timestamp));
+          totalVotes[msg.sender] += amount;
+     }
+     
+     function getTotalVotes(address user) public view returns(uint) {
+          return totalVotes[user];
+     }
+     
+     function getLatestVote(address user) public view returns(address, uint256, uint256){
+          Vote[] storage userVotes = votes[user];
+          Vote storage latestVote = userVotes[userVotes.length - 1];
+          return (latestVote.voter, latestVote.voteAmount, latestVote.timestamp);
+     }
+}
+Potential vulnerabilities:
+1) Missing access control
+2) Loss of funds possibility
+3) Lack of input validation
+4) Integer overflow/underflow
+5) No check for double voting
+6) Lack of validation for timestamps
+7) Lack of authorization checks for viewing votes

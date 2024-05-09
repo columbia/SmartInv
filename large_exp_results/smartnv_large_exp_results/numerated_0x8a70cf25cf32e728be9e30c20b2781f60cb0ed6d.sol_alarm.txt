@@ -1,0 +1,23 @@
+The contract for analysis:
+
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+    uint public totalTokens;
+    
+    constructor(IERC20 _token, uint _price, uint _totalTokens) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(_amount <= totalTokens, "Not enough tokens available");
+        uint cost = _amount * price;
+        require(token.transferFrom(msg.sender, address(this), cost), "Token transfer failed");
+        require(token.transfer(msg.sender, _amount), "Token transfer failed");
+        totalTokens -= _amount;
+    }
+}

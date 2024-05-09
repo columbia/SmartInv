@@ -1,0 +1,33 @@
+<\contract\> 
+contract Marketplace {
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    struct Product {
+        uint id;
+        address owner;
+        string name;
+        uint price;
+        bool sold;
+    }
+
+    function createProduct(string memory _name, uint _price) public {
+        productCount++;
+        products[productCount] = Product(productCount, msg.sender, _name, _price, false);
+    }
+
+    function buyProduct(uint _id) public payable {
+        Product memory _product = products[_id];
+        require(_product.id > 0 && !_product.sold, "Product with given ID is not available for sale");
+        require(msg.value >= _product.price, "Insufficient funds to buy this product");
+        
+        _product.owner.transfer(msg.value);
+        _product.owner = msg.sender;
+        _product.sold = true;
+        products[_id] = _product;
+    }
+}
+<\contract\> 
+
+Output:
+1) incorrect visibility/ownership

@@ -1,0 +1,12 @@
+<\contract\> 
+contract SmartAuction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() public payable {
+         require(msg.value > highestBid, "Bid not high enough");
+         highestBidder.transfer(highestBid);
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+}

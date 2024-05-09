@@ -1,0 +1,7 @@
+The contract contains potential vulnerabilities:
+
+1) Incorrect visibility: The functions `lockingContract` and `unlockingContract` are marked as public, which may expose sensitive operations to unauthorized users. Consider making these functions internal or private.
+2) Inconsistent state update: The variables `blockReward` and `totalLockedTokens` are updated independently in different functions (`lockTokens` and `unlockTokens`) without proper synchronization, leading to potential inconsistent state issues.
+3) Insufficient gas: The `withdrawReward` function transfers tokens to the caller without checking for sufficient gas, which could potentially result in the transaction failing due to running out of gas. Consider implementing gas checks or gas optimizations.
+4) Privilege escalation: The `withdrawReward` function allows any user to withdraw the reward without proper access control or checks, leading to potential privilege escalation issues.
+5) Arithmetic flaw: The calculation in the `calculateUnlockReward` function involves division by zero (`totalLockedTokens - _lockedTokens`), which may result in an arithmetic flaw and potential issues with the reward calculation. Consider adding validation checks to avoid division by zero errors.

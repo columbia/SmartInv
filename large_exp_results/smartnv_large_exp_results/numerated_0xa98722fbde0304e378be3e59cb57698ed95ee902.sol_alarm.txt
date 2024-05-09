@@ -1,0 +1,32 @@
+<\contract\>
+ contract Escrow {
+     address public payer;
+     address public recipient;
+     address public arbiter;
+     bool public payerApproved;
+     bool public recipientApproved;
+     uint public amount;
+
+     constructor(address _payer, address _recipient, address _arbiter, uint _amount) public {
+         payer = _payer;
+         recipient = _recipient;
+         arbiter = _arbiter;
+         amount = _amount;
+     }
+     function approvePayment() public {
+         require(msg.sender == payer || msg.sender == recipient || msg.sender == arbiter,
+        "Only payer, recipient, or arbiter can approve the payment");
+        if (msg.sender == payer) {
+             payerApproved = true;
+        } else if (msg.sender == recipient) {
+             recipientApproved = true;
+        } 
+     }
+     function finalize() public {
+         require(payerApproved || recipientApproved, "Payment not approved by both parties");
+         if (payerApproved && recipientApproved) {
+             recipient.transfer(amount);
+         } 
+     }
+ }
+<\contract\>

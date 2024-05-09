@@ -1,0 +1,41 @@
+<\Your_Contract\>
+contract VotingSystem {
+     struct Proposal {
+        uint256 startTime; 
+        uint256 votedAmount; 
+        address proposer; 
+        }
+          
+     address public owner;
+     IERC20 public votingToken;
+     mapping(address => uint256) startingBalanceList;
+     Proposal public proposal;
+
+     function startVoting() external {
+          require(proposal.startTime == 0, "existing proposal");
+          proposal = Proposal(block.timestamp, 0, msg.sender);
+          startingBalanceList[msg.sender] = getStartingBalance(msg.sender); 
+     }
+
+     function vote(uint256 amount) external {
+          require(proposal.startTime != 0, "no active proposal");
+          require(proposal.votedAmount < amount, "invalid amount to vote");
+          votingToken.transferFrom(msg.sender, address(this), amount);
+          proposal.votedAmount += amount; 
+     }
+
+     function endVoting() external {
+          require(proposal.startTime != 0, "no active proposal");
+          require(proposal.startTime + 48 < block.timestamp, "voting period not ended");
+          require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "vote failed");
+     }
+
+     function getStartingBalance(address addr) internal view returns (uint256) {
+          // some logic to calculate starting balance
+          return 1000;
+     }
+}
+Potential vulnerabilities in the contract:
+1) inconsistent state update
+2) atomicity violation
+3) insufficient gas

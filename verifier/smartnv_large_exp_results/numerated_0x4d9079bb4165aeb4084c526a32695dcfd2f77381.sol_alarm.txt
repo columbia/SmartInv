@@ -1,0 +1,12 @@
+Potential vulnerabilities in the contract are:
+
+1) integer overflow/underflow:
+- In the function `endExecute()`, there is a potential for integer overflow when calculating `votingToken.balanceOf(address(this))*2`, as it might exceed the maximum value that can be stored in a uint256 variable.
+
+2) inconsistent state update:
+- The function `endExecute()` updates the `lockedFunds` variable without resetting the `proposal` struct or performing any cleanup, which may lead to inconsistent state if multiple executions occur without proper reset.
+
+3) incorrect visibility/ownership:
+- The contract is implementing the `IERC20` interface but does not provide any implementation for the required functions such as `transfer` or `balanceOf`, which may lead to incorrect behavior or lack of functionality.
+
+Therefore, the potential vulnerabilities in the contract are integer overflow/underflow, inconsistent state update, and incorrect visibility/ownership.

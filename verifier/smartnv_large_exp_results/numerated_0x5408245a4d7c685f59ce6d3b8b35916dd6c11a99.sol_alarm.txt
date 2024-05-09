@@ -1,0 +1,25 @@
+<\contract\>
+contract Escrow {
+         IERC20 public token;
+         address public buyer;
+         address public seller;
+         uint public amount;
+         bool public releaseStatus;
+         
+         constructor(address _token, address _buyer, address _seller, uint _amount){
+             token = IERC20(_token);
+             buyer = _buyer;
+             seller = _seller;
+             amount = _amount;
+             releaseStatus = false;
+         }
+         
+         function releaseAmount() public {
+             require(msg.sender == buyer, "Only buyer can release the amount");
+             require(token.balanceOf(address(this)) >= amount, "Insufficient balance for release");
+             
+             token.transfer(seller, amount);
+             releaseStatus = true;
+         }
+}
+<\contract\>

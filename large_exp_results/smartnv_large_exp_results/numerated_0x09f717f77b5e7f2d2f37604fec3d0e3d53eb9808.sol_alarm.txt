@@ -1,0 +1,7 @@
+Contract TimelockController is vulnerable to the following potential vulnerabilities:
+- Inconsistent state update: The `execute` function updates `proposal.votedAmount` without proper synchronization mechanisms, which can lead to inconsistent state updates.
+- Incorrect visibility/ownership: The contract does not specify the visibility of the `votingToken` variable, potentially leading to issues with ownership and access control.
+
+Contract ExchangeTokens is vulnerable to the following potential vulnerabilities:
+- Price manipulation: The `liquidate` function uses the `getPrice` function to calculate the liquidation amount, which can be manipulated if the price returned by `calculatePrice` is manipulated.
+- Insufficient gas: The `liquidate` function relies on transferring tokens within the function. If the gas limit is exceeded, the transaction may fail to complete, causing issues with token transfers.

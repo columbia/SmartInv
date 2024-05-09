@@ -1,0 +1,24 @@
+<\contract\>
+contract FunnyGame {
+         IERC20 public token;
+         mapping(address => uint) public scores;
+
+         function playGame(uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient balance to play");
+             scores[msg.sender] += amount * 2;
+         }
+         function withdrawScore() public {
+             uint score = scores[msg.sender];
+             require(score > 0, "No score to withdraw");
+             scores[msg.sender] = 0;
+             token.transfer(msg.sender, score);
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: There is a potential for inconsistent state update in the withdrawScore function as it sets the score to 0 before transferring the score to the player, which could lead to issues with withdrawal.
+
+2) Incorrect visibility/ownership: The scores mapping is public, meaning anyone can view or modify the scores of any address, which could be a security risk.
+
+3) Insufficient gas: Depending on the gas limit set for transactions, there might be a risk of running out of gas during score withdrawal, resulting in a failed transaction or leaving the score stuck in the contract.

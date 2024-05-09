@@ -1,0 +1,44 @@
+<\contract\> 
+contract VotingSystem {
+     struct Vote {
+          address voter;
+          uint256 voteCount;
+          bool voted;
+          bool published;
+          uint256 timestamp;
+     }
+     
+     mapping(uint256 => Vote) public votes;
+     mapping(address => bool) public voters;
+     address public owner;
+     uint256 public totalVotes;
+
+     event Voted(uint256 indexed voteId, address indexed voter, uint256 voteCount, bool voted, bool published, uint256 timestamp);
+
+     modifier onlyOwner() {
+          require(msg.sender == owner, "Only owner can call this function");
+          _;
+     }
+
+     function vote(uint256 _voteId, uint256 _voteCount) public {
+          require(!voters[msg.sender], "You have already voted");
+          votes[_voteId] = Vote(msg.sender, _voteCount, true, false, block.timestamp);
+          voters[msg.sender] = true;
+          totalVotes += _voteCount;
+          emit Voted(_voteId, msg.sender, _voteCount, true, false, block.timestamp);
+     }
+
+     function publishVote(uint256 _voteId) public onlyOwner {
+          require(votes[_voteId].voted, "Vote not casted yet");
+          require(!votes[_voteId].published, "Vote already published");
+          votes[_voteId].published = true;
+          emit Voted(_voteId, votes[_voteId].voter, votes[_voteId].voteCount, true, true, votes[_voteId].timestamp);
+     }
+
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) ID uniqueness violation: The contract does not check whether the _voteId provided in the vote and publishVote functions is unique, leaving room for potential conflicts or incorrect data handling.
+2) Incorrect visibility/ownership: The owner variable is publicly accessible, which could lead to unauthorized changes to the contract owner, posing a security risk.
+3) Inconsistent state update: There is no explicit requirement to update the totalVotes variable whenever a vote is cast, which may lead to inconsistencies in the overall count of votes.

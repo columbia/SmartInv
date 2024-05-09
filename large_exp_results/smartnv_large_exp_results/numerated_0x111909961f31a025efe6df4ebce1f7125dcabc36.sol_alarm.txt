@@ -1,0 +1,23 @@
+The contract provided for analysis: 
+
+contract TokenSale {
+    uint public price;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+
+    function buyTokens(uint amount) external {
+        require(amount > 0, "Amount should be greater than 0");
+        require(amount * price <= msg.value, "Insufficient funds provided");
+
+        totalTokens += amount;
+        balances[msg.sender] += amount;
+    }
+
+    function setPrice(uint newPrice) external {
+        price = newPrice;
+    }
+}
+
+Output: 
+4) inconsistent state update
+8) reentrancy

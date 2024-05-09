@@ -1,0 +1,41 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public voteCount;
+
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(to != msg.sender, "Cannot delegate to yourself");
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint256 proposal) public {
+        require(voters[msg.sender].weight > 0, "Only eligible voters can vote");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = proposal;
+
+        voteCount[proposal] += voters[msg.sender].weight;
+    }
+
+    function computeResult(uint256 proposal) public view returns (uint256) {
+        return voteCount[proposal];
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+- ID uniqueness violation: The contract does not ensure uniqueness for voter IDs, which might lead to inconsistent behavior or manipulation.
+- Incorrect visibility/ownership: The admin variable is defined as public, exposing sensitive information to all users, which can lead to unauthorized access and control.
+- Privilege escalation: There is a potential privilege escalation vulnerability in the delegate function where a user can delegate voting rights to another address without proper validation.

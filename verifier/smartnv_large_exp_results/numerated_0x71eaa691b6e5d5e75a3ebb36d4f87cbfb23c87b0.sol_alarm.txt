@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+    address public merchant;
+    mapping(address => uint) public balances;
+
+    constructor(address _merchant) {
+        merchant = _merchant;
+    }
+
+    function deposit() external payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint _amount) external {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        (bool success, ) = msg.sender.call{value: _amount}("");
+        require(success, "Transfer failed");
+    }
+
+    function transfer(address _to, uint _amount) external {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        balances[_to] += _amount;
+    }
+}
+<\contract_to_analyze\>

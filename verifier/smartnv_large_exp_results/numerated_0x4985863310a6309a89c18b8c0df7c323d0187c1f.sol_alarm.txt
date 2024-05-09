@@ -1,0 +1,30 @@
+<\Contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public totalAmount;
+    bool public buyerPaid;
+    bool public sellerPaid;
+    bool public arbiterPaid;
+
+    function deposit() public payable {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can deposit");
+        totalAmount += msg.value;
+    }
+
+    function releaseToSeller() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(buyerPaid, "Buyer has not paid");
+        seller.transfer(totalAmount);
+        sellerPaid = true;
+    }
+
+    function refundToBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(sellerPaid, "Seller has not been paid");
+        buyer.transfer(totalAmount);
+        buyerPaid = true;
+    }
+}
+<\Contract\>

@@ -1,0 +1,24 @@
+The contract provided for analysis is:
+
+```solidity
+contract PaymentNetwork {
+    address public owner;
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The `owner` variable is declared as public and can be accessed by anyone. Consider adjusting the visibility to `private` to prevent unauthorized access.
+2) Ether leakage: The `withdraw` function utilizes a `call` to transfer funds, which can potentially lead to ether being sent to unintended contracts or external addresses if not handled correctly.
+3) Insufficient gas: The `withdraw` function contains a `call` operation that may require additional gas in certain cases, leading to potential out-of-gas errors during execution. Consider implementing a gas stipend or using a more controlled approach for ether transfers.

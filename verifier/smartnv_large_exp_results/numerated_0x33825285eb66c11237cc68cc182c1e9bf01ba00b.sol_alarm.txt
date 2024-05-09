@@ -1,0 +1,61 @@
+Contract: 
+contract VotingSystem {
+     struct Voter {
+         uint weight; 
+         bool voted; 
+         uint8 vote; 
+         address delegate; 
+     }
+     struct Proposal {
+         address proposer;
+         uint voteCount; 
+     }
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+     
+     function delegate(address to) public {
+         Voter storage sender = voters[msg.sender];
+         require(!sender.voted, "You already voted");
+         require(to != msg.sender, "Self-delegation is disallowed");
+
+         while (voters[to].delegate != address(0)) {
+             to = voters[to].delegate;
+             require(to != msg.sender, "Loop in delegation disallowed");
+         }
+         sender.voted = true;
+         sender.delegate = to;
+         Voter storage delegate_ = voters[to];
+         if (delegate_.voted) {
+             proposals[delegate_.vote].voteCount += sender.weight;
+         } else {
+             delegate_.weight += sender.weight;
+         }
+     }
+
+
+     function vote(uint proposal) public {
+         Voter storage sender = voters[msg.sender];
+         require(sender.weight != 0, "Has no right to vote");
+         require(!sender.voted, "Already voted");
+         sender.voted = true;
+         sender.vote = uint8(proposal);
+         proposals[proposal].voteCount += sender.weight;
+     }
+     
+     function winningProposal() public view
+             returns (uint winningProposal_)
+     {
+         uint winningVoteCount = 0;
+         for (uint p = 0; p < proposals.length; p++) {
+             if (proposals[p].voteCount > winningVoteCount) {
+                 winningVoteCount = proposals[p].voteCount;
+                 winningProposal_ = p;
+             }
+         }
+     }
+ }
+   
+Output: 
+- ID uniqueness violation
+- Arithmetic flaw

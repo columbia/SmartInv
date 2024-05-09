@@ -1,0 +1,32 @@
+<\Contract to Analyze\>
+contract VestingContract {
+    address public beneficiary;
+    uint public unlockTime;
+    uint public totalAmount;
+    uint public unlockedAmount;
+
+    constructor(address _beneficiary, uint _unlockTime, uint _totalAmount) {
+        beneficiary = _beneficiary;
+        unlockTime = _unlockTime;
+        totalAmount = _totalAmount;
+    }
+
+    function claim() public {
+        require(msg.sender == beneficiary, "You are not the beneficiary");
+        require(block.timestamp >= unlockTime, "Tokens are locked");
+        
+        unlockedAmount = totalAmount;
+        Token.transfer(beneficiary, unlockedAmount);
+    }
+
+    function modifyUnlockTime(uint _newUnlockTime) public {
+        require(msg.sender == beneficiary, "You are not the beneficiary");
+        
+        unlockTime = _newUnlockTime;
+    }
+}
+<\Contract to Analyze\> 
+
+Output: 
+- incorrect visibility/ownership
+- inconsistent state update

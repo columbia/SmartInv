@@ -1,0 +1,40 @@
+<\Contract_TO_BE_Analyzed\>
+contract VotingSystem {
+    struct Voter {
+      bool voted;
+      address delegate;
+      uint vote;
+    }
+    struct Proposal {
+      uint voteCount;
+    }
+
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+
+    function delegate(address _to) public {
+      require(!voters[msg.sender].voted, "You have already voted.");
+      require(_to != msg.sender, "Self-delegation is not allowed.");
+
+      voters[msg.sender].delegate = _to;
+    }
+
+    function vote(uint _proposal) public {
+      require(!voters[msg.sender].voted, "You have already voted.");
+
+      voters[msg.sender].voted = true;
+      voters[msg.sender].vote = _proposal;
+      proposals[_proposal].voteCount += 1;
+    }
+
+    function getWinningProposal() public view returns (uint winningProposal) {
+      uint winningVoteCount = 0;
+      for (uint p = 0; p < proposals.length; p++) {
+        if (proposals[p].voteCount > winningVoteCount) {
+          winningVoteCount = proposals[p].voteCount;
+          winningProposal = p;
+        }
+      }
+    }
+}
+<\Contract_TO_BE_Analyzed\>

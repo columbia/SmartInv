@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokens;
+    
+    constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect token price");
+        require(totalTokens >= _amount, "Not enough tokens available");
+        
+        totalTokens -= _amount;
+        
+        IERC20 token = IERC20(tokenAddress);
+        token.transfer(msg.sender, _amount);
+    }
+}
+<\contract_to_analyze\> 
+
+7) ID uniqueness violation
+11) Sucidal contracts

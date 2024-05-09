@@ -1,0 +1,25 @@
+<\contract\>
+contract PaymentSplitter {
+    address public owner;
+    mapping(address => uint) public balances;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only owner can deposit funds");
+        balances[msg.sender] += amount;
+    }
+    
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation: The deposit function allows anyone to deposit funds, which should be restricted only to the owner.
+2) incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to everyone.

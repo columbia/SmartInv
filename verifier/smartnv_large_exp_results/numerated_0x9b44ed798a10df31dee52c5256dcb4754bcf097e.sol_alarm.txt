@@ -1,0 +1,34 @@
+Contract to analyze:
+
+contract TokenMarket {
+    IERC20 public token;
+    uint public tokenPrice;
+    address public owner;
+
+    constructor(address _token, uint _price) {
+        token = IERC20(_token);
+        tokenPrice = _price;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalPrice = _amount * tokenPrice;
+        require(token.balanceOf(address(this)) >= totalPrice, "Not enough tokens in market");
+
+        token.transfer(msg.sender, _amount);
+    }
+
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "You are not the owner");
+        tokenPrice = _newPrice;
+    }
+
+    function withdrawTokens(uint _amount) public {
+        require(msg.sender == owner, "You are not the owner");
+        token.transfer(msg.sender, _amount);
+    }
+}
+
+Output:
+- incorrect visibility/ownership
+- inconsistent state update

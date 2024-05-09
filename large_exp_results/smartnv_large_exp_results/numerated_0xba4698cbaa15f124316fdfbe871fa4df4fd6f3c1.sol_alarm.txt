@@ -1,0 +1,41 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {
+    struct Proposal {
+        uint256 sTime;
+        uint256 votedAmount;
+        address addr;
+    }
+    address internal owner;
+    IERC20 votingToken;
+
+    function startExecute() external {
+        uint256 startingBlance;
+        require(proposal.sTime == 0,"on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBalance;
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through");
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount;
+        votedProposal(proposal);
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+
+Based on the analysis provided, the potential vulnerabilities in the contract are:
+1) ID uniqueness violation: The struct Proposal does not contain a unique identifier for each proposal, potentially leading to issues with data integrity or identification of specific proposals.
+2) Inconsistent state update: The startExecute function updates the proposal's state without initializing the proposal variable, which could lead to inconsistencies in the contract state.
+3) Incorrect visibility/ownership: The owner variable is declared as internal, which might lead to issues related to the visibility and control over the contract owner.
+
+Therefore, the identified vulnerabilities in the contract are ID uniqueness violation, inconsistent state update, and incorrect visibility/ownership.

@@ -1,0 +1,34 @@
+<\contract_3\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public fundsDisbursed;
+    
+    constructor(address _seller, address _arbiter, uint _price) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(!fundsDisbursed, "Funds already disbursed");
+        seller.transfer(price);
+        fundsDisbursed = true;
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund buyer");
+        require(!fundsDisbursed, "Funds already disbursed");
+        buyer.transfer(price);
+        fundsDisbursed = true;
+    }
+}
+<\contract_3\> 
+
+The potential vulnerabilities in <\contract_3\> are:
+1) incorrect visibility/ownership
+2) inconsistent state update

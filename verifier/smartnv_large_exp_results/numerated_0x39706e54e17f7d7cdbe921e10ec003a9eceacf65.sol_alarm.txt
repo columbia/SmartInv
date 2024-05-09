@@ -1,0 +1,31 @@
+<\contract\> 
+contract Marketplace {
+         address public owner;
+         mapping(uint => address) public itemIdToSeller;
+         mapping(uint => uint) public itemIdToPrice;
+
+         constructor() {
+             owner = msg.sender;
+         }
+
+         function buyItem(uint itemId) public payable {
+             require(itemIdToSeller[itemId] != address(0), "Item does not exist");
+             require(msg.value >= itemIdToPrice[itemId], "Insufficient funds");
+             address seller = itemIdToSeller[itemId];
+             payable(seller).transfer(msg.value);
+             itemIdToSeller[itemId] = address(0);
+             itemIdToPrice[itemId] = 0;
+         }
+
+         function addItem(uint itemId, uint price, address seller) public {
+             require(msg.sender == owner, "Only owner can add items");
+             itemIdToSeller[itemId] = seller;
+             itemIdToPrice[itemId] = price;
+         }
+}
+<\contract\> 
+
+Output:
+- Incorrect Visibility/Ownership
+
+The "addItem" function allows any address to add items to the marketplace, whereas it should only be accessible by the owner according to the requirement specified in the function. This vulnerability could lead to unauthorized parties adding items to the marketplace.

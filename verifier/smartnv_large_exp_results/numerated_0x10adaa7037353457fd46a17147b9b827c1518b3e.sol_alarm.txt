@@ -1,0 +1,25 @@
+The contract provided for analysis is:
+
+```solidity
+contract VotingSystem {
+    mapping(address => uint256) public votes;
+    uint256 public totalVotes;
+
+    function vote(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += amount;
+        totalVotes += amount;
+    }
+
+    function redeemVotes() external {
+        uint256 userVotes = votes[msg.sender];
+        require(userVotes > 0, "No votes to redeem");
+        votes[msg.sender] = 0;
+        totalVotes -= userVotes;
+        msg.sender.transfer(userVotes);
+    }
+}
+```
+
+Output: 
+- potential vulnerability: reentrancy

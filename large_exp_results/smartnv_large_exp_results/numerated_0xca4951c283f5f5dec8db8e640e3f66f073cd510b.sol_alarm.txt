@@ -1,0 +1,20 @@
+The contract provided for analysis is:
+
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public price;
+
+         function buyTokens(uint amount) public {
+             require(msg.value == amount * price, "Incorrect payment amount");
+             token.transfer(msg.sender, amount);
+         }
+         function setPrice(uint _price) public {
+             require(msg.sender == owner, "Only owner can set price");
+             price = _price;
+         }
+}
+Potential vulnerabilities in the TokenSale contract:
+1) privilege escalation: The owner can set the price without proper authorization.
+2) inconsistent state update: Setting the price does not consider the token transaction state.
+3) incorrect visibility/ownership: The owner variable is public, which can expose ownership details.

@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal` struct in the `TimelockController` contract is being updated in the `startExecute` and `execute` functions without proper synchronization, potentially leading to inconsistent state.
+
+2) Integer overflow/underflow: There is a possibility of integer overflow in the `liquidate` function of the `ExchangeTokens` contract when calculating `getPrice() * cAmount * 80 / 100`.
+
+3) Cross bridge inconsistency: The `liquidate` function in the `ExchangeTokens` contract transfers tokens directly between users without proper checks, which can lead to cross-bridge inconsistency.
+
+4) Incorrect visibility/ownership: The visibility of state variables like `votingToken` and `proposal` in the `TimelockController` contract might not be appropriate, potentially leading to incorrect access or manipulation of these variables.
+
+5) Incorrect visibility/ownership: The `paired` variable in the `ExchangeTokens` contract is public, which might expose sensitive information or allow unauthorized access.
+
+6) Insufficient gas: There could be a risk of running out of gas during the execution of functions in both contracts, leading to failed transactions or incomplete operations.

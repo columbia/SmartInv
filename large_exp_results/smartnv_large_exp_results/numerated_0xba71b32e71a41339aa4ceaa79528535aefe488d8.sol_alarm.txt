@@ -1,0 +1,34 @@
+<\contract_to_analyze\> 
+contract EscrowContract {
+     address public owner;
+     address public seller; 
+     address public buyer; 
+     uint public price; 
+
+     constructor(address _seller, address _buyer, uint _price) public {
+          owner = msg.sender;
+          seller = _seller;
+          buyer = _buyer;
+          price = _price;
+     }
+
+     function deposit() public payable {
+          require(msg.sender == buyer, "Only buyer can deposit");
+          require(msg.value == price, "Incorrect amount deposited");
+     }
+
+     function release() public {
+          require(msg.sender == seller, "Only seller can release funds");
+          payable(seller).transfer(address(this).balance);
+     }
+
+     function cancel() public {
+          require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can cancel");
+          if (msg.sender == buyer) {
+               payable(buyer).transfer(address(this).balance);
+          } else {
+               payable(seller).transfer(address(this).balance);
+          }
+     }
+}
+<\contract_to_analyze\>  

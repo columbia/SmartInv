@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentContract {
+    address public owner;
+    mapping(uint => bool) public paymentReceived;
+    uint public totalPayments;
+    
+    constructor() {
+        owner = msg.sender;
+        totalPayments = 0;
+    }
+    
+    function receivePayment(uint paymentId) public {
+        require(msg.sender == owner, "Only owner can receive payments.");
+        paymentReceived[paymentId] = true;
+        totalPayments++;
+    }
+    
+    function makePayment() public payable {
+        //logic for making payments
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership

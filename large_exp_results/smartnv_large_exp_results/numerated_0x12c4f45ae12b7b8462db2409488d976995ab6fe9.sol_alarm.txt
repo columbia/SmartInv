@@ -1,0 +1,20 @@
+The contract provided below does not contain any vulnerabilities:
+
+contract SmartContract {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can transfer ownership");
+        owner = newOwner;
+    }
+
+    function getOwner() public view returns (address) {
+        return owner;
+    }
+}
+
+Output: Healthy

@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are as follows:
+
+1) Inconsistent state update: The function `endExecute()` updates `lockedFunds` based on the balance of the contract, which is not updated consistently within the contract.
+
+2) Integer overflow/underflow: There is a potential for integer overflow/underflow in the calculation `getPrice() * cAmount * 80 / 100` in the `liquidate()` function. 
+
+3) Insufficient gas: The function `execute()` may require a significant amount of gas to execute due to the potential loop in the condition `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which may lead to out-of-gas exceptions and failed executions.
+
+Therefore, the vulnerabilities identified in the contract are inconsistent state update, integer overflow/underflow, and insufficient gas.

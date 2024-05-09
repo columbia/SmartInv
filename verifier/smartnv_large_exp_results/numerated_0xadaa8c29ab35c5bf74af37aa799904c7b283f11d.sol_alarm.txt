@@ -1,0 +1,15 @@
+The contract provided contains the following potential vulnerabilities:
+
+1) Inconsistent state update:  
+   - In the function `startExecute`, the `startingBalanceList` is updated with the `startingBlance` variable, which seems to be a typo for `startingBalance`. This could lead to an inconsistent state in the contract.
+
+2) Incorrect visibility/ownership:  
+   - The contract does not specify any visibility levels for the `proposal` struct, `lockedFunds` variable, and `votedProposal` function. This could lead to potential issues with visibility and ownership control.
+
+3) Insufficient gas:
+   - In the `endExecute` function, the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` could potentially consume more gas than is available, leading to an out-of-gas error.
+
+Therefore, the potential vulnerabilities in the provided contract are: 
+- Inconsistent state update
+- Incorrect visibility/ownership
+- Insufficient gas

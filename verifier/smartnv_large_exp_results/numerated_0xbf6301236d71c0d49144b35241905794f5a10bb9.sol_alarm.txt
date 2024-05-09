@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+contract Crowdsale {
+    address public owner;
+    uint public totalTokens;
+    uint public tokenPrice;
+    mapping (address => uint) public balance;
+
+    constructor(uint _totalTokens, uint _tokenPrice) public {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        require(totalTokens >= _numTokens, "Not enough tokens available");
+        
+        balance[msg.sender] += _numTokens;
+        totalTokens -= _numTokens;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        msg.sender.transfer(address(this).balance);
+    }
+
+    function getBalance(address _user) public view returns (uint) {
+        return balance[_user];
+    }
+}
+
+Output: 
+- insufficient gas

@@ -1,0 +1,634 @@
+1 /**
+2  *Submitted for verification at Etherscan.io on 2019-03-13
+3 */
+4 
+5 pragma solidity ^0.5.0;
+6 
+7 library SafeMath {
+8     /**
+9     * @dev Multiplies two unsigned integers, reverts on overflow.
+10     */
+11     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+12         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+13         // benefit is lost if 'b' is also tested.
+14         // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+15         if (a == 0) {
+16             return 0;
+17         }
+18 
+19         uint256 c = a * b;
+20         require(c / a == b);
+21 
+22         return c;
+23     }
+24 
+25     /**
+26     * @dev Integer division of two unsigned integers truncating the quotient, reverts on division by zero.
+27     */
+28     function div(uint256 a, uint256 b) internal pure returns (uint256) {
+29         // Solidity only automatically asserts when dividing by 0
+30         require(b > 0);
+31         uint256 c = a / b;
+32         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+33 
+34         return c;
+35     }
+36 
+37     /**
+38     * @dev Subtracts two unsigned integers, reverts on overflow (i.e. if subtrahend is greater than minuend).
+39     */
+40     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+41         require(b <= a);
+42         uint256 c = a - b;
+43 
+44         return c;
+45     }
+46 
+47     /**
+48     * @dev Adds two unsigned integers, reverts on overflow.
+49     */
+50     function add(uint256 a, uint256 b) internal pure returns (uint256) {
+51         uint256 c = a + b;
+52         require(c >= a);
+53 
+54         return c;
+55     }
+56 
+57     /**
+58     * @dev Divides two unsigned integers and returns the remainder (unsigned integer modulo),
+59     * reverts when dividing by zero.
+60     */
+61     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+62         require(b != 0);
+63         return a % b;
+64     }
+65 }
+66 
+67 library Roles {
+68     struct Role {
+69         mapping (address => bool) bearer;
+70     }
+71 
+72     /**
+73      * @dev give an account access to this role
+74      */
+75     function add(Role storage role, address account) internal {
+76         require(account != address(0));
+77         require(!has(role, account));
+78 
+79         role.bearer[account] = true;
+80     }
+81 
+82     /**
+83      * @dev remove an account's access to this role
+84      */
+85     function remove(Role storage role, address account) internal {
+86         require(account != address(0));
+87         require(has(role, account));
+88 
+89         role.bearer[account] = false;
+90     }
+91 
+92     /**
+93      * @dev check if an account has this role
+94      * @return bool
+95      */
+96     function has(Role storage role, address account) internal view returns (bool) {
+97         require(account != address(0));
+98         return role.bearer[account];
+99     }
+100 }
+101 
+102 contract Ownable {
+103     address public owner;
+104     address public newOwner;
+105 
+106     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+107 
+108     constructor() public {
+109         owner = msg.sender;
+110         newOwner = address(0);
+111     }
+112 
+113     modifier onlyOwner() {
+114         require(msg.sender == owner);
+115         _;
+116     }
+117     modifier onlyNewOwner() {
+118         require(msg.sender != address(0));
+119         require(msg.sender == newOwner);
+120         _;
+121     }
+122     
+123     function isOwner(address account) public view returns (bool) {
+124         if( account == owner ){
+125             return true;
+126         }
+127         else {
+128             return false;
+129         }
+130     }
+131 
+132     function transferOwnership(address _newOwner) public onlyOwner {
+133         require(_newOwner != address(0));
+134         newOwner = _newOwner;
+135     }
+136 
+137     function acceptOwnership() public onlyNewOwner returns(bool) {
+138         emit OwnershipTransferred(owner, newOwner);        
+139         owner = newOwner;
+140         newOwner = address(0);
+141     }
+142 }
+143 
+144 contract PauserRole is Ownable{
+145     using Roles for Roles.Role;
+146 
+147     event PauserAdded(address indexed account);
+148     event PauserRemoved(address indexed account);
+149 
+150     Roles.Role private _pausers;
+151 
+152     constructor () internal {
+153         _addPauser(msg.sender);
+154     }
+155 
+156     modifier onlyPauser() {
+157         require(isPauser(msg.sender)|| isOwner(msg.sender));
+158         _;
+159     }
+160 
+161     function isPauser(address account) public view returns (bool) {
+162         return _pausers.has(account);
+163     }
+164 
+165     function addPauser(address account) public onlyOwner {
+166         _addPauser(account);
+167     }
+168     
+169     function removePauser(address account) public onlyOwner {
+170         _removePauser(account);
+171     }
+172 
+173     function renouncePauser() public {
+174         _removePauser(msg.sender);
+175     }
+176 
+177     function _addPauser(address account) internal {
+178         _pausers.add(account);
+179         emit PauserAdded(account);
+180     }
+181 
+182     function _removePauser(address account) internal {
+183         _pausers.remove(account);
+184         emit PauserRemoved(account);
+185     }
+186 }
+187 
+188 contract Pausable is PauserRole {
+189     event Paused(address account);
+190     event Unpaused(address account);
+191 
+192     bool private _paused;
+193 
+194     constructor () internal {
+195         _paused = false;
+196     }
+197 
+198     /**
+199      * @return true if the contract is paused, false otherwise.
+200      */
+201     function paused() public view returns (bool) {
+202         return _paused;
+203     }
+204 
+205     /**
+206      * @dev Modifier to make a function callable only when the contract is not paused.
+207      */
+208     modifier whenNotPaused() {
+209         require(!_paused);
+210         _;
+211     }
+212 
+213     /**
+214      * @dev Modifier to make a function callable only when the contract is paused.
+215      */
+216     modifier whenPaused() {
+217         require(_paused);
+218         _;
+219     }
+220 
+221     /**
+222      * @dev called by the owner to pause, triggers stopped state
+223      */
+224     function pause() public onlyPauser whenNotPaused {
+225         _paused = true;
+226         emit Paused(msg.sender);
+227     }
+228 
+229     /**
+230      * @dev called by the owner to unpause, returns to normal state
+231      */
+232     function unpause() public onlyPauser whenPaused {
+233         _paused = false;
+234         emit Unpaused(msg.sender);
+235     }
+236 }
+237 
+238 interface IERC20 {
+239     function transfer(address to, uint256 value) external returns (bool);
+240 
+241     function approve(address spender, uint256 value) external returns (bool);
+242 
+243     function transferFrom(address from, address to, uint256 value) external returns (bool);
+244 
+245     function totalSupply() external view returns (uint256);
+246 
+247     function balanceOf(address who) external view returns (uint256);
+248 
+249     function allowance(address owner, address spender) external view returns (uint256);
+250 
+251     event Transfer(address indexed from, address indexed to, uint256 value);
+252 
+253     event Approval(address indexed owner, address indexed spender, uint256 value);
+254 }
+255 
+256 contract ERC20 is IERC20 {
+257     using SafeMath for uint256;
+258 
+259     mapping (address => uint256) internal _balances;
+260 
+261     mapping (address => mapping (address => uint256)) internal _allowed;
+262 
+263     uint256 private _totalSupply;
+264 
+265     /**
+266     * @dev Total number of tokens in existence
+267     */
+268     function totalSupply() public view returns (uint256) {
+269         return _totalSupply;
+270     }
+271 
+272     /**
+273     * @dev Gets the balance of the specified address.
+274     * @param owner The address to query the balance of.
+275     * @return An uint256 representing the amount owned by the passed address.
+276     */
+277     function balanceOf(address owner) public view returns (uint256) {
+278         return _balances[owner];
+279     }
+280 
+281     /**
+282      * @dev Function to check the amount of tokens that an owner allowed to a spender.
+283      * @param owner address The address which owns the funds.
+284      * @param spender address The address which will spend the funds.
+285      * @return A uint256 specifying the amount of tokens still available for the spender.
+286      */
+287     function allowance(address owner, address spender) public view returns (uint256) {
+288         return _allowed[owner][spender];
+289     }
+290 
+291     /**
+292     * @dev Transfer token for a specified address
+293     * @param to The address to transfer to.
+294     * @param value The amount to be transferred.
+295     */
+296     function transfer(address to, uint256 value) public returns (bool) {
+297         _transfer(msg.sender, to, value);
+298         return true;
+299     }
+300 
+301     /**
+302      * @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
+303      * Beware that changing an allowance with this method brings the risk that someone may use both the old
+304      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
+305      * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
+306      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+307      * @param spender The address which will spend the funds.
+308      * @param value The amount of tokens to be spent.
+309      */
+310     function approve(address spender, uint256 value) public returns (bool) {
+311         require(spender != address(0));
+312 
+313         _allowed[msg.sender][spender] = value;
+314         emit Approval(msg.sender, spender, value);
+315         return true;
+316     }
+317 
+318     /**
+319      * @dev Transfer tokens from one address to another.
+320      * Note that while this function emits an Approval event, this is not required as per the specification,
+321      * and other compliant implementations may not emit the event.
+322      * @param from address The address which you want to send tokens from
+323      * @param to address The address which you want to transfer to
+324      * @param value uint256 the amount of tokens to be transferred
+325      */
+326     function transferFrom(address from, address to, uint256 value) public returns (bool) {
+327         _allowed[from][msg.sender] = _allowed[from][msg.sender].sub(value);
+328         _transfer(from, to, value);
+329         emit Approval(from, msg.sender, _allowed[from][msg.sender]);
+330         return true;
+331     }
+332 
+333     /**
+334      * @dev Increase the amount of tokens that an owner allowed to a spender.
+335      * approve should be called when allowed_[_spender] == 0. To increment
+336      * allowed value is better to use this function to avoid 2 calls (and wait until
+337      * the first transaction is mined)
+338      * From MonolithDAO Token.sol
+339      * Emits an Approval event.
+340      * @param spender The address which will spend the funds.
+341      * @param addedValue The amount of tokens to increase the allowance by.
+342      */
+343     function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
+344         require(spender != address(0));
+345 
+346         _allowed[msg.sender][spender] = _allowed[msg.sender][spender].add(addedValue);
+347         emit Approval(msg.sender, spender, _allowed[msg.sender][spender]);
+348         return true;
+349     }
+350 
+351     /**
+352      * @dev Decrease the amount of tokens that an owner allowed to a spender.
+353      * approve should be called when allowed_[_spender] == 0. To decrement
+354      * allowed value is better to use this function to avoid 2 calls (and wait until
+355      * the first transaction is mined)
+356      * From MonolithDAO Token.sol
+357      * Emits an Approval event.
+358      * @param spender The address which will spend the funds.
+359      * @param subtractedValue The amount of tokens to decrease the allowance by.
+360      */
+361     function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
+362         require(spender != address(0));
+363 
+364         _allowed[msg.sender][spender] = _allowed[msg.sender][spender].sub(subtractedValue);
+365         emit Approval(msg.sender, spender, _allowed[msg.sender][spender]);
+366         return true;
+367     }
+368 
+369     /**
+370     * @dev Transfer token for a specified addresses
+371     * @param from The address to transfer from.
+372     * @param to The address to transfer to.
+373     * @param value The amount to be transferred.
+374     */
+375     function _transfer(address from, address to, uint256 value) internal {
+376         require(to != address(0));
+377 
+378         _balances[from] = _balances[from].sub(value);
+379         _balances[to] = _balances[to].add(value);
+380         emit Transfer(from, to, value);
+381     }
+382 
+383     /**
+384      * @dev Internal function that mints an amount of the token and assigns it to
+385      * an account. This encapsulates the modification of balances such that the
+386      * proper events are emitted.
+387      * @param account The account that will receive the created tokens.
+388      * @param value The amount that will be created.
+389      */
+390     function _mint(address account, uint256 value) internal {
+391         require(account != address(0));
+392 
+393         _totalSupply = _totalSupply.add(value);
+394         _balances[account] = _balances[account].add(value);
+395         emit Transfer(address(0), account, value);
+396     }
+397 
+398     /**
+399      * @dev Internal function that burns an amount of the token of a given
+400      * account.
+401      * @param account The account whose tokens will be burnt.
+402      * @param value The amount that will be burnt.
+403      */
+404     function _burn(address account, uint256 value) internal {
+405         require(account != address(0));
+406 
+407         _totalSupply = _totalSupply.sub(value);
+408         _balances[account] = _balances[account].sub(value);
+409         emit Transfer(account, address(0), value);
+410     }
+411 
+412     /**
+413      * @dev Internal function that burns an amount of the token of a given
+414      * account, deducting from the sender's allowance for said account. Uses the
+415      * internal burn function.
+416      * Emits an Approval event (reflecting the reduced allowance).
+417      * @param account The account whose tokens will be burnt.
+418      * @param value The amount that will be burnt.
+419      */
+420     function _burnFrom(address account, uint256 value) internal {
+421         _allowed[account][msg.sender] = _allowed[account][msg.sender].sub(value);
+422         _burn(account, value);
+423         emit Approval(account, msg.sender, _allowed[account][msg.sender]);
+424     }
+425 }
+426 
+427 contract ERC20Burnable is ERC20 {
+428     /**
+429      * @dev Destoys `amount` tokens from the caller.
+430      *
+431      * See `ERC20._burn`.
+432      */
+433     function burn(uint256 amount) public {
+434         _burn(msg.sender, amount);
+435     }
+436 
+437     /**
+438      * @dev See `ERC20._burnFrom`.
+439      */
+440     function burnFrom(address account, uint256 amount) public {
+441         _burnFrom(account, amount);
+442     }
+443 }
+444 
+445 contract ERC20Pausable is ERC20, Pausable {
+446     function transfer(address to, uint256 value) public whenNotPaused returns (bool) {
+447         return super.transfer(to, value);
+448     }
+449 
+450     function transferFrom(address from, address to, uint256 value) public whenNotPaused returns (bool) {
+451         return super.transferFrom(from, to, value);
+452     }
+453     
+454     /*
+455      * approve/increaseApprove/decreaseApprove can be set when Paused state
+456      */
+457      
+458     /*
+459      * function approve(address spender, uint256 value) public whenNotPaused returns (bool) {
+460      *     return super.approve(spender, value);
+461      * }
+462      *
+463      * function increaseAllowance(address spender, uint addedValue) public whenNotPaused returns (bool success) {
+464      *     return super.increaseAllowance(spender, addedValue);
+465      * }
+466      *
+467      * function decreaseAllowance(address spender, uint subtractedValue) public whenNotPaused returns (bool success) {
+468      *     return super.decreaseAllowance(spender, subtractedValue);
+469      * }
+470      */
+471 }
+472 
+473 contract ERC20Detailed is IERC20 {
+474     string private _name;
+475     string private _symbol;
+476     uint8 private _decimals;
+477 
+478     constructor (string memory name, string memory symbol, uint8 decimals) public {
+479         _name = name;
+480         _symbol = symbol;
+481         _decimals = decimals;
+482     }
+483 
+484     /**
+485      * @return the name of the token.
+486      */
+487     function name() public view returns (string memory) {
+488         return _name;
+489     }
+490 
+491     /**
+492      * @return the symbol of the token.
+493      */
+494     function symbol() public view returns (string memory) {
+495         return _symbol;
+496     }
+497 
+498     /**
+499      * @return the number of decimals of the token.
+500      */
+501     function decimals() public view returns (uint8) {
+502         return _decimals;
+503     }
+504 }
+505 
+506 contract XSRToken is ERC20Detailed, ERC20Pausable, ERC20Burnable {
+507     
+508     struct LockInfo {
+509         uint256 _releaseTime;
+510         uint256 _amount;
+511     }
+512     
+513     mapping (address => LockInfo[]) public timelockList;
+514 	mapping (address => bool) public frozenAccount;
+515     
+516     event Freeze(address indexed holder);
+517     event Unfreeze(address indexed holder);
+518     event Lock(address indexed holder, uint256 value, uint256 releaseTime);
+519     event Unlock(address indexed holder, uint256 value);
+520 
+521     modifier notFrozen(address _holder) {
+522         require(!frozenAccount[_holder]);
+523         _;
+524     }
+525 
+526     constructor (
+527             string memory name,
+528             string memory symbol,
+529             uint256 totalSupply,
+530             uint8 decimals
+531     ) ERC20Detailed(name, symbol, decimals)
+532     public {
+533         _mint(msg.sender, totalSupply * 10**uint(decimals));
+534     }
+535 
+536     function burnOwner(address account, uint256 amount) public onlyOwner returns (bool) {
+537         _burn(account, amount);
+538         return true;
+539     }
+540 
+541     function balanceOf(address owner) public view returns (uint256) {
+542         
+543         uint256 totalBalance = super.balanceOf(owner);
+544         if( timelockList[owner].length >0 ){
+545             for(uint i=0; i<timelockList[owner].length;i++){
+546                 totalBalance = totalBalance.add(timelockList[owner][i]._amount);
+547             }
+548         }
+549         
+550         return totalBalance;
+551     }
+552     
+553     function transfer(address to, uint256 value) public notFrozen(msg.sender) returns (bool) {
+554         if (timelockList[msg.sender].length > 0 ) {
+555             _autoUnlock(msg.sender);
+556         }
+557         return super.transfer(to, value);
+558     }
+559 
+560     function transferFrom(address from, address to, uint256 value) public notFrozen(from) returns (bool) {
+561         if (timelockList[from].length > 0) {
+562             _autoUnlock(from);            
+563         }
+564         return super.transferFrom(from, to, value);
+565     }
+566     
+567     function freezeAccount(address holder) public onlyPauser returns (bool) {
+568         require(!frozenAccount[holder]);
+569         frozenAccount[holder] = true;
+570         emit Freeze(holder);
+571         return true;
+572     }
+573 
+574     function unfreezeAccount(address holder) public onlyPauser returns (bool) {
+575         require(frozenAccount[holder]);
+576         frozenAccount[holder] = false;
+577         emit Unfreeze(holder);
+578         return true;
+579     }
+580     
+581     function lock(address holder, uint256 value, uint256 releaseTime) public onlyPauser returns (bool) {
+582         require(_balances[holder] >= value,"There is not enough balances of holder.");
+583         _lock(holder,value,releaseTime);
+584         
+585         
+586         return true;
+587     }
+588     
+589     function transferWithLock(address holder, uint256 value, uint256 releaseTime) public onlyPauser returns (bool) {
+590         _transfer(msg.sender, holder, value);
+591         _lock(holder,value,releaseTime);
+592         return true;
+593     }
+594     
+595     function unlock(address holder, uint256 idx) public onlyPauser returns (bool) {
+596         require( timelockList[holder].length > idx, "There is not lock info.");
+597         _unlock(holder,idx);
+598         return true;
+599     }
+600     
+601     function _lock(address holder, uint256 value, uint256 releaseTime) internal returns(bool) {
+602         _balances[holder] = _balances[holder].sub(value);
+603         timelockList[holder].push( LockInfo(releaseTime, value) );
+604         
+605         emit Lock(holder, value, releaseTime);
+606         return true;
+607     }
+608     
+609     function _unlock(address holder, uint256 idx) internal returns(bool) {
+610         LockInfo storage lockinfo = timelockList[holder][idx];
+611         uint256 releaseAmount = lockinfo._amount;
+612 
+613         delete timelockList[holder][idx];
+614         timelockList[holder][idx] = timelockList[holder][timelockList[holder].length.sub(1)];
+615         timelockList[holder].length -=1;
+616         
+617         emit Unlock(holder, releaseAmount);
+618         _balances[holder] = _balances[holder].add(releaseAmount);
+619         
+620         return true;
+621     }
+622     
+623     function _autoUnlock(address holder) internal returns(bool) {
+624         for(uint256 idx =0; idx < timelockList[holder].length ; idx++ ) {
+625             if (timelockList[holder][idx]._releaseTime <= now) {
+626                 // If lockupinfo was deleted, loop restart at same position.
+627                 if( _unlock(holder, idx) ) {
+628                     idx -=1;
+629                 }
+630             }
+631         }
+632         return true;
+633     }
+634 }

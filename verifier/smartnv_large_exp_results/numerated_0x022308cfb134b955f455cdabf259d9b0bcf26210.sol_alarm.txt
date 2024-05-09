@@ -1,0 +1,24 @@
+contract PaymentContract {
+    uint public totalAmount;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only owner can deposit");
+        totalAmount += amount;
+    }
+    
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        require(amount <= totalAmount, "Not enough funds");
+        totalAmount -= amount;
+    }
+    
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}

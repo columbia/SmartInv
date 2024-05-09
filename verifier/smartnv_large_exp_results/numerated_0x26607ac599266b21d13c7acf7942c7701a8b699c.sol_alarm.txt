@@ -1,0 +1,29 @@
+<\contract\> 
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    
+    function bid(uint amount) external {
+        require(amount > highestBid, "Bid must be higher than current highest bid");
+        
+        if (highestBid != 0) {
+            address payable prevHighestBidder = payable(highestBidder);
+            prevHighestBidder.transfer(highestBid);
+        }
+        
+        highestBid = amount;
+        highestBidder = msg.sender;
+    }
+    
+    function endAuction() external {
+        require(msg.sender == owner, "Only owner can end the auction");
+        
+        address payable winner = payable(highestBidder);
+        winner.transfer(highestBid);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- inconsistent state update
+- incorrect visibility/ownership

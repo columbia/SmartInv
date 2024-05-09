@@ -1,0 +1,43 @@
+This is the contract to analyze for potential vulnerabilities:
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+    bool public sellerApproved;
+    bool public buyerApproved;
+    bool public arbiterApproved;
+
+    function initiate(address _buyer, address _arbiter, uint _price) public {
+        seller = msg.sender;
+        buyer = _buyer;
+        arbiter = _arbiter;
+        price = _price;
+    }
+
+    function approve() public {
+        if (msg.sender == seller) {
+            sellerApproved = true;
+        }
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        }
+        if (msg.sender == arbiter) {
+            arbiterApproved = true;
+        }
+    }
+
+    function finalize() public {
+        if (sellerApproved && buyerApproved) {
+            seller.transfer(price);
+        }
+        if (arbiterApproved) {
+            buyer.transfer(price);
+        }
+    }
+}
+
+Output:
+1) business logic flaw
+2) inconsistent state update

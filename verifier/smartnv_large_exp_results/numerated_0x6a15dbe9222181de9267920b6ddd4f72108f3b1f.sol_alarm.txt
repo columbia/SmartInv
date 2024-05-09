@@ -1,0 +1,25 @@
+<\contract_to_be_analyzed\>
+contract PaymentContract {
+    address public owner;
+    mapping(uint => bool) paymentStatus;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint paymentId) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        require(!paymentStatus[paymentId], "Payment already made");
+        
+        // Make payment logic
+        
+        paymentStatus[paymentId] = true;
+    }
+
+    function updateOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can update owner");
+        
+        owner = newOwner;
+    }
+}
+<\contract_to_be_analyzed\>

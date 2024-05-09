@@ -1,0 +1,27 @@
+<\contract\> 
+contract InsuranceContract {
+        mapping(address => uint) public policyHolders;
+        
+        function buyPolicy() public payable {
+            policyHolders[msg.sender] += msg.value;
+        }
+        
+        function claimInsurance() public {
+            require(policyHolders[msg.sender] > 0, "No policy owned");
+            uint payout = 2 * policyHolders[msg.sender];
+            payable(msg.sender).transfer(payout);
+            policyHolders[msg.sender] = 0;
+        }
+        
+        function cancelPolicy() public {
+            require(policyHolders[msg.sender] > 0, "No policy owned");
+            payable(msg.sender).transfer(policyHolders[msg.sender]);
+            policyHolders[msg.sender] = 0;
+        }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+- 10) Arithmetic flaw: The calculation for payout in the claimInsurance function could lead to an arithmetic flaw as it multiplies the policy holder's value by 2.
+- 13) Insufficient gas: The transfer of funds in both the claimInsurance and cancelPolicy functions may lead to insufficient gas issues, especially if the policy holder has a large balance.
+- 14) Incorrect visibility/ownership: The policyHolders mapping is public, which may expose sensitive information about policy holders to external parties. Also, the transfer of funds directly to msg.sender in claimInsurance and cancelPolicy functions can be risky in terms of ownership control.

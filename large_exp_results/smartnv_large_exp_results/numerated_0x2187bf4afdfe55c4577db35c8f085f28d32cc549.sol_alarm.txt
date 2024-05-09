@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The "endExecute" function updates the state variable "lockedFunds" based on the condition that may introduce inconsistent state if the conditions are met only after this variable is updated.
+2) Integer overflow/underflow: The calculation in the "liquidate" function can potentially result in integer overflow if the values are large and not properly checked.
+3) Atomicity violation: The "liquidate" function performs multiple state changes and external calls without proper atomicity, leaving room for potential issues if any of the calls fail midway.
+4) Incorrect visibility/ownership: The visibility of some state variables and functions (such as "debt" and "collateral" being public) may expose sensitive information and functionality to unauthorized users.

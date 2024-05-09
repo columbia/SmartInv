@@ -1,0 +1,31 @@
+<\analyzed_contract\> 
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    uint256 public totalShares;
+    mapping(address => uint) public released;
+    mapping(address => uint) public toRelease;
+
+    function release(address payable _payee) public {
+        uint totalReceived = address(this).balance;
+        require(totalReceived >= toRelease[_payee], "Insufficient balance to release");
+        released[_payee] += toRelease[_payee];
+        _payee.transfer(toRelease[_payee]);
+    }
+    
+    function addPayee(address _payee, uint256 _shares) public {
+        require(_payee != address(0), "Invalid address");
+        require(_shares > 0, "Shares must be greater than 0");
+        require(msg.sender == owner, "Only owner can add payee");
+        
+        payees.push(_payee);
+        shares.push(_shares);
+        totalShares += _shares;
+        toRelease[_payee] = address(this).balance * _shares / totalShares;
+    }
+}
+<\analyzed_contract\> 
+
+Potential vulnerabilities:
+3) business logic flaw: There is a potential issue with the logic of releasing funds based on the calculated shares in the `addPayee` function. The release of funds may not be distributed correctly if the calculation of shares or totalShares is incorrect.
+6) cross bridge inconsistency: There could be a discrepancy in the handling of funds across different functions that deal with releasing payments, potentially leading to inconsistent state updates.

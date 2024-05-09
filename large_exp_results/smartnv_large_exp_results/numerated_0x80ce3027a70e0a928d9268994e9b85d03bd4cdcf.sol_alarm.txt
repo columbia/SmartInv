@@ -1,0 +1,20 @@
+<\contract\> 
+contract PaymentGateway {
+     address public owner;
+     mapping(uint => bool) public usedNonces;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function pay(uint amount, uint nonce, bytes memory signature) public {
+         require(!usedNonces[nonce], "nonce has already been used");
+         bytes32 message = keccak256(abi.encodePacked(msg.sender, amount, nonce));
+         bytes32 messageHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", message));
+         address signer = ECDSA.recover(messageHash, signature);
+         require(signer == owner, "invalid signature");
+         msg.sender.transfer(amount);
+         usedNonces[nonce] = true;
+     }
+}
+<\contract\>

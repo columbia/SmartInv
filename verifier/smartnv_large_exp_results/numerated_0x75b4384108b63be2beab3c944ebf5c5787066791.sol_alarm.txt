@@ -1,0 +1,45 @@
+The contract provided for analysis: 
+
+contract TimelockController is IERC20 {
+    struct Proposal {
+          uint256 sTime;
+          uint256 votedAmount;
+          address addr;
+          }
+     address internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance;
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through");
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount;
+              votedProposal(proposal);
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the provided contract are:
+
+1) Integer overflow/underflow: The contract does not have explicit checks to prevent potential integer overflow or underflow vulnerabilities in operations involving arithmetic calculations on uint256 variables.
+2) Inconsistent state update: The contract manipulates proposal state variables like sTime and votedAmount without adequate checks or safeguards, leading to potential inconsistent state updates.
+3) Incorrect visibility/ownership: The owner variable is marked as internal, which may not correctly reflect the intended visibility and ownership structure of the contract, potentially leading to ownership-related vulnerabilities.
+4) Privilege escalation: The contract lacks appropriate access control mechanisms, potentially allowing unauthorized privilege escalation in functions like startExecute() and execute().
+5) Ether leakage: The contract does not handle Ether transactions or include Ether-related functionalities, so it may not be vulnerable to ether leakage. 
+
+Therefore, the identified potential vulnerabilities in the provided contract are integer overflow/underflow, inconsistent state update, incorrect visibility/ownership, privilege escalation.

@@ -1,0 +1,27 @@
+<\contract\>
+contract LoanContract {
+    address public borrower;
+    address public lender;
+    uint public loanAmount;
+    uint public interestRate;
+    bool public loanRepaid;
+
+    function takeLoan(uint amount, uint rate) external {
+        require(msg.sender == borrower, "Only borrower can take the loan");
+        require(!loanRepaid, "Loan has already been repaid");
+        require(amount > 0, "Loan amount must be greater than 0");
+
+        loanAmount = amount;
+        interestRate = rate;
+    }
+
+    function repayLoan() external {
+        require(msg.sender == borrower, "Only borrower can repay the loan");
+        require(loanRepaid == false, "Loan has already been repaid");
+
+        uint totalAmount = loanAmount + (loanAmount * interestRate / 100);
+        // transfer totalAmount to lender
+        // mark loanRepaid as true
+    }
+}
+<\contract\>

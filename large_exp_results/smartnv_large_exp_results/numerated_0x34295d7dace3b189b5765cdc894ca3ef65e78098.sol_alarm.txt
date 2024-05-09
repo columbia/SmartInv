@@ -1,0 +1,33 @@
+<\contract\>
+contract PaymentGateway {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+
+    function transfer(address recipient, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+
+    function ownerWithdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        (bool success,) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+}
+<\contract\>

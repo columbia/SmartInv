@@ -1,0 +1,26 @@
+Contract to be analyzed:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == seller, "Only seller can release the amount");
+        payable(buyer).transfer(amount);
+    }
+
+    function refundAmount() public {
+        require(msg.sender == buyer, "Only buyer can refund the amount");
+        payable(seller).transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership: The releaseAmount and refundAmount functions should have only the seller and buyer as the permissible accounts respectively. An additional check for the other account should also be added before transferring the amount to prevent unauthorized access.

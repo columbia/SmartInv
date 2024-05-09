@@ -1,0 +1,42 @@
+<\contract\> 
+contract Vesting {
+     address payable public beneficiary;
+     uint public start;
+     uint public duration;
+     uint public durationAmount;
+     uint public durationPaid;
+     
+     constructor(address payable _beneficiary, uint _start, uint _duration, uint _durationAmount) {
+         beneficiary = _beneficiary;
+         start = _start;
+         duration = _duration;
+         durationAmount = _durationAmount;
+     }
+
+     function release() public {
+         require(block.timestamp >= start, "Vesting has not started yet");
+         uint amount = calcAmount();
+         require(amount > 0, "No funds to release");
+         
+         durationPaid += duration;
+         beneficiary.transfer(amount);
+     }
+
+     function calcAmount() public view returns (uint) {
+         uint currentTime = block.timestamp;
+         uint elapsedTime = currentTime - start;
+         
+         if (elapsedTime >= duration) {
+             return durationAmount;
+         } else {
+             return durationAmount * elapsedTime / duration;
+         }
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The 'durationPaid' variable is updated without any check or restriction, which can lead to unexpected state changes.
+2) Incorrect visibility/ownership: The 'beneficiary' variable is declared as public, which exposes it to be modified by anyone.
+3) Insufficient gas: The 'transfer' function can potentially fail if the recipient is a contract with a high gas consumption, leading to transaction revert.

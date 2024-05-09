@@ -1,0 +1,35 @@
+<\contract\> 
+contract TokenSale {
+         address public tokenAddress;
+         uint public tokenPrice;
+         address public owner;
+         address public admin;
+         
+         constructor(address _tokenAddress, uint _tokenPrice) {
+            tokenAddress = _tokenAddress;
+            tokenPrice = _tokenPrice;
+            owner = msg.sender;
+         }
+
+         function setAdmin(address _admin) public {
+             require(msg.sender == owner, "only owner can set admin");
+             admin = _admin;
+         }
+
+         function buyTokens(uint _amount) public payable {
+             uint totalPrice = _amount * tokenPrice;
+             require(msg.value >= totalPrice, "not enough ETH sent");
+             IERC20(tokenAddress).transfer(msg.sender, _amount);
+         }
+
+         function withdrawETH() public {
+             require(msg.sender == owner || msg.sender == admin, "only owner/admin can withdraw ETH");
+             payable(msg.sender).transfer(address(this).balance);
+         }
+}
+<\contract\> 
+
+Output:
+- privilege escalation (setAdmin function can be called by anyone, allowing potential privilege escalation)
+- incorrect visibility/ownership (withdrawETH function has incorrect ownership requirements, allowing unauthorized withdrawals)
+- inconsistent state update (setAdmin function updates admin without clear validation checks)

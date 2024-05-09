@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) ID uniqueness violation: There are mappings for debt and collateral which are based on the user's address. If user addresses are not unique, it could lead to unexpected behavior or overwrite of data.
+
+2) Price manipulation: The calculatePrice function relies on external data (balances of tokens in the pair contract) which can be manipulated to provide false or incorrect pricing information.
+
+3) Inconsistent state update: In the liquidate function, the debt and collateral mappings are directly modified without proper validation of the inputs or potential side effects.
+
+4) Insufficient gas: If the liquidate function requires a significant amount of gas to execute, it may run out of gas and fail mid-execution.
+
+5) Incorrect visibility/ownership: The functions in the contract do not specify visibility (public, external, internal, private), which can lead to unintended access or behavior.
+
+Thus, the potential vulnerabilities in the contract include: ID uniqueness violation, price manipulation, inconsistent state update, insufficient gas, and incorrect visibility/ownership.

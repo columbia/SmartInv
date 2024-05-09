@@ -1,0 +1,28 @@
+The contract provided for analysis is:
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address public winningProposal;
+    uint public winningVoteCount;
+    
+    function vote(uint proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.voted == false, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+        if (winningVoteCount < proposal) {
+            winningVoteCount = proposal;
+            winningProposal = msg.sender;
+        }
+    }
+}
+
+The potential vulnerabilities in the contract VotingSystem are:
+- Inconsistent state update: The winningProposal is updated with the address of the sender instead of the proposal number.
+- Incorrect visibility/ownership: The voters mapping is public, allowing anyone to see the voter information, which may not be desirable depending on the use case.

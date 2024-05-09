@@ -1,0 +1,33 @@
+Contract:
+contract Vault {
+    address public owner;
+    uint public totalSupply;
+
+    mapping(address => uint) public balance;
+
+    constructor() {
+        owner = msg.sender;
+        totalSupply = 1000;
+        balance[msg.sender] = 1000;
+    }
+
+    function deposit(uint amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+        totalSupply += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(totalSupply >= amount, "Insufficient total supply");
+        totalSupply -= amount;
+        balance[msg.sender] += amount;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+
+Output:
+1) Insufficient gas

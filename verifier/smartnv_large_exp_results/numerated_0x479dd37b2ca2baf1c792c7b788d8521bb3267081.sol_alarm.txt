@@ -1,0 +1,43 @@
+Contract:
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+    State public currentState;
+
+    uint public price;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function makePayment() public payable {
+        require(msg.sender == buyer && currentState == State.AWAITING_PAYMENT, "Invalid state or sender");
+
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == seller, "Invalid sender");
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state");
+
+        seller.transfer(price);
+        currentState = State.COMPLETE;
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Invalid sender");
+        require(currentState == State.AWAITING_DELIVERY, "Invalid state");
+
+        buyer.transfer(price);
+        currentState = State.REFUNDED;
+    }
+}
+Output:
+1) healthy

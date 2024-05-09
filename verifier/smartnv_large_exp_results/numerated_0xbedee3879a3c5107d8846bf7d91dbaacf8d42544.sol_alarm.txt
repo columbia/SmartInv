@@ -1,0 +1,21 @@
+<\contract\>
+contract VotingSystem {
+     uint256 public totalVotes;
+     mapping(address => uint256) public userVotes;
+     
+     function vote(uint256 amount) public {
+         totalVotes += amount;
+         userVotes[msg.sender] += amount;
+     }
+     
+     function withdrawVotes() public {
+         uint256 amount = userVotes[msg.sender];
+         require(amount > 0, "No votes to withdraw");
+         totalVotes -= amount;
+         userVotes[msg.sender] = 0;
+     }
+}
+<\contract\> 
+
+<\output\>
+healthy

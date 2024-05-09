@@ -1,0 +1,21 @@
+<\analyzed_contract\> 
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    address public owner;
+
+    function swap(uint amount) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+
+    function changeOwner(address newOwner) external {
+        require(msg.sender == owner, "not authorized");
+        owner = newOwner;
+    }
+}
+Output:
+1) Inconsistent state update: The 'changeOwner' function allows the owner to be changed without proper validation or checks, potentially leading to unauthorized access to the contract.
+2) Incorrect visibility/ownership: The 'owner' variable should be set to private to prevent direct access and enable proper authorization control.
+3) Insufficient gas: The 'swap' function does not have a gas check, which may result in failed transactions due to running out of gas.

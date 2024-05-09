@@ -1,0 +1,33 @@
+<\analyzed_contract\> 
+contract SubscriptionService {
+    address public owner;
+    uint public subscriptionCost;
+    mapping(address => bool) public subscribers;
+
+    constructor(uint _cost) {
+        owner = msg.sender;
+        subscriptionCost = _cost;
+    }
+
+    function subscribe() public payable {
+        require(msg.value == subscriptionCost, "Incorrect subscription cost");
+        subscribers[msg.sender] = true;
+    }
+
+    function unsubscribe() public {
+        require(subscribers[msg.sender] == true, "Not subscribed");
+        subscribers[msg.sender] = false;
+        payable(msg.sender).transfer(subscriptionCost);
+    }
+
+    function updateCost(uint _newCost) public {
+        require(msg.sender == owner, "Only owner can update subscription cost");
+        subscriptionCost = _newCost;
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the <\analyzed_contract\> are:
+4) inconsistent state update - There is a potential vulnerability if the subscribers mapping is not updated correctly or consistently when users subscribe or unsubscribe.
+7) ID uniqueness violation - The mapping storing subscribers' status may not guarantee uniqueness of addresses.
+14) incorrect visibility/ownership - The ownership and access control mechanisms could potentially be flawed, allowing unauthorized users to update the subscription cost.

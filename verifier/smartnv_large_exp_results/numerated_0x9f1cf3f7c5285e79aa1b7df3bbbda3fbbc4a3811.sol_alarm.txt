@@ -1,0 +1,33 @@
+Contract being analyzed:
+
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public funds;
+     bool public releasedToSeller;
+     bool public releasedToBuyer;
+
+     function deposit() public payable {
+         require(msg.sender == buyer, "Only the buyer can deposit funds");
+         funds += msg.value;
+     }
+    
+     function releaseToSeller() public {
+         require(msg.sender == arbiter, "Only the arbiter can release funds");
+         require(!releasedToSeller, "Funds already released to seller");
+         releasedToSeller = true;
+         seller.transfer(funds);
+     }
+
+     function releaseToBuyer() public {
+         require(msg.sender == arbiter, "Only the arbiter can release funds");
+         require(releasedToSeller, "Funds not yet released to seller");
+         require(!releasedToBuyer, "Funds already released to buyer");
+         releasedToBuyer = true;
+         buyer.transfer(funds);
+     }
+}
+Output:
+- Incorrect visibility/ownership
+- Inconsistent state update

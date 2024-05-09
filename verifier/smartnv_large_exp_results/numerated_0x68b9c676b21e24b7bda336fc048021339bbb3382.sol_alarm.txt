@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract Marketplace {
+    mapping(uint => Product) public products;
+    uint public productCount = 0;
+
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+        address owner;
+    }
+
+    function addProduct(string memory _name, uint _price) public {
+        productCount ++;
+        products[productCount] = Product(productCount, _name, _price, msg.sender);
+    }
+
+    function purchaseProduct(uint _productId) public payable {
+        Product memory _product = products[_productId];
+        require(_product.id != 0, "Product does not exist");
+        require(msg.value >= _product.price, "Not enough Ether sent");
+
+        payable(_product.owner).transfer(msg.value);
+        delete products[_productId];
+    }
+}
+
+Output: 
+1) Reentrancy
+2) Incorrect visibility/ownership

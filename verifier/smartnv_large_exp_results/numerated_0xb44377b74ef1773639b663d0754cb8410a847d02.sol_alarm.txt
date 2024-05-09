@@ -1,0 +1,42 @@
+The contract below has potential vulnerabilities:
+
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    enum State {Created, Locked, Inactive}
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this");
+        _;
+    }
+
+    constructor(address _seller, address _arbiter, uint _price) {
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        state = State.Created;
+    }
+
+    function initiatePurchase() public {
+        require(state == State.Created, "Purchase already initiated");
+        buyer = msg.sender;
+        state = State.Locked;
+    }
+
+    function confirmReceived() public onlyBuyer {
+        require(state == State.Locked, "Purchase not initiated");
+        seller.transfer(price);
+        state = State.Inactive;
+    }
+
+    function refundBuyer() public {
+        require(state == State.Locked, "Purchase not initiated");
+        buyer.transfer(price);
+        state = State.Inactive;
+    }
+}
+<\contract_to_analyze\> 

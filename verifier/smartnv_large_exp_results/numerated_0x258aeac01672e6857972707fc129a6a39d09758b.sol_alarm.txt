@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    mapping(address => uint256) public balances;
+
+    constructor(address _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) external {
+        uint totalCost = _amount * tokenPrice;
+        token.transferFrom(msg.sender, address(this), totalCost);
+        balances[msg.sender] += _amount;
+    }
+
+    function sellTokens(uint _amount) external {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        uint totalEarnings = _amount * tokenPrice;
+        token.transfer(msg.sender, totalEarnings);
+        balances[msg.sender] -= _amount;
+    }
+}
+
+Output: 
+1) incorrect visibility/ownership
+2) inconsistent state update

@@ -1,0 +1,35 @@
+<\contract\>
+contract TokenCrowdsale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect amount sent");
+        require(totalTokens >= _amount, "Not enough tokens left");
+
+        balances[msg.sender] += _amount;
+        totalTokens -= _amount;
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == admin, "Only admin can withdraw funds");
+        payable(admin).transfer(address(this).balance);
+    }
+
+    function updateTokenPrice(uint _newPrice) public {
+        require(msg.sender == admin, "Only admin can update token price");
+        tokenPrice = _newPrice;
+    }
+}
+<\contract\>

@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+     uint public tokenPrice;
+     mapping(address => uint) public buyers;
+     
+     function buyTokens(uint amount) public {
+         require(token.balanceOf(owner) >= amount * tokenPrice, "Not enough tokens for sale");
+         uint cost = amount * tokenPrice;
+         token.transferFrom(owner, msg.sender, amount);
+         buyers[msg.sender] += amount;
+         owner.transfer(cost);
+     }
+     
+     function setTokenPrice(uint price) public {
+         require(msg.sender == owner, "Only owner can set token price");
+         tokenPrice = price;
+     }
+}
+
+Output: 
+1) inconsistent state update
+2) reentrancy

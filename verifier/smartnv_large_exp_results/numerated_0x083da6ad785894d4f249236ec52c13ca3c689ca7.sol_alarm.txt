@@ -1,0 +1,16 @@
+contract Marketplace {
+    IERC20 public token;
+    mapping(address => uint) public prices;
+
+    function setPrice(uint _price) public {
+        prices[msg.sender] = _price;
+    }
+
+    function buy(uint _amount) public {
+        uint totalPrice = _amount * prices[msg.sender];
+        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient balance");
+        
+        token.transferFrom(msg.sender, address(this), totalPrice);
+        token.transfer(msg.sender, _amount);
+    }
+}

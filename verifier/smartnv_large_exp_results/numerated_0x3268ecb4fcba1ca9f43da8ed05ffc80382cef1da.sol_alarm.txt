@@ -1,0 +1,54 @@
+The contract provided for analysis is:
+
+```solidity
+pragma solidity ^0.8.0;
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE}
+    State public currentState;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier inState(State expectedState) {
+        require(currentState == expectedState, "Invalid state for this operation");
+        _;
+    }
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function deposit() public payable onlyBuyer inState(State.AWAITING_PAYMENT) {
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public onlyBuyer inState(State.AWAITING_DELIVERY) {
+        currentState = State.COMPLETE;
+        payable(seller).transfer(address(this).balance);
+    }
+
+    function refund() public onlySeller inState(State.AWAITING_DELIVERY) {
+        currentState = State.AWAITING_PAYMENT;
+        payable(buyer).transfer(address(this).balance);
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+- Incorrect visibility/ownership: The `currentState` variable is public, which exposes the current state of the contract to all external parties. This can potentially lead to unauthorized access or manipulation of the contract state.
+- Insufficient gas: The `refund` function transfers the contract balance to the buyer using `payable(buyer).transfer(address(this).balance)`. If the buyer is a smart contract with limited gas, the transfer may fail due to insufficient gas and leave the contract in an inconsistent state.

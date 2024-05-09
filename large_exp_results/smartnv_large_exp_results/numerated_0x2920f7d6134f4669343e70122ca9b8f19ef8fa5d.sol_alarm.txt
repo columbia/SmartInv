@@ -1,0 +1,48 @@
+<\contract\>
+contract PaymentChannel {
+    address public payer;
+    address public payee;
+    uint public expiration;
+    uint public amount;
+
+    constructor(address _payer, address _payee, uint _amount, uint _duration) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+        expiration = block.timestamp + _duration;
+    }
+
+    function close(uint _nonce, bytes memory _signature) public {
+        require(msg.sender == payee, "only payee can close the channel");
+
+        bytes32 message = keccak256(abi.encodePacked(payer, payee, amount, expiration, _nonce));
+        require(recoverSigner(message, _signature) == payer, "invalid signature");
+
+        address(this).transfer(amount);
+    }
+
+    function extend(uint _extraDuration) public {
+        require(msg.sender == payer, "only payer can extend the channel");
+
+        expiration += _extraDuration;
+    }
+
+    function recoverSigner(bytes32 _message, bytes memory _signature) internal pure returns (address) {
+        bytes32 r;
+        bytes32 s;
+        uint8 v;
+
+        assembly {
+            r := mload(add(_signature, 32))
+            s := mload(add(_signature, 64))
+            v := byte(0, mload(add(_signature, 96)))
+        }
+
+        if (v < 27) {
+            v += 27;
+        }
+
+        return ecrecover(_message, v, r, s);
+    }
+}
+<\contract\>

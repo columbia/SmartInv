@@ -1,0 +1,27 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: LGCCToken
+Function name: increaseApproval(address,uint256)
+PC address: 5015
+Estimated Gas Usage: 1502 - 1977
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x0ee1f2567e9b90ba36905e8be842ab728f166a02.sol:150
+
+allowed[msg.sender][_spender].add(_addedValue)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: approve(address,uint256), txdata: 0x095ea7b300000000000000000000000000000000000000000000000000000000000000008b, decoded_data: ('0x0000000000000000000000000000000000000000', 62871485953074027983892058266436012467205186986422025005799235066796582109184), value: 0x0
+Caller: [CREATOR], function: increaseApproval(address,uint256), txdata: 0xd73dd623b3b3b3b3b3b3b3b3b3b3b3b3000000000000000000000000000000000000000095, value: 0x0
+
+

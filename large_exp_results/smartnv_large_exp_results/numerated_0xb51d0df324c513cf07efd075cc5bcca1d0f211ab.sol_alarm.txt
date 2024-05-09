@@ -1,0 +1,30 @@
+<\contract\> 
+contract TradeEngine {
+    uint public totalTrades;
+    mapping(uint => Trade) public trades;
+
+    struct Trade {
+        address trader;
+        uint amount;
+        bool isBuy;
+    }
+
+    function executeTrade(uint tradeId, uint amount) public {
+        Trade storage trade = trades[tradeId];
+        require(trade.amount >= amount, "Insufficient amount in trade");
+        
+        if (trade.isBuy) {
+            // Buying logic
+        } else {
+            // Selling logic
+        }
+        
+        trade.amount -= amount;
+        totalTrades++;
+    }
+}
+<\contract\> 
+
+Output:
+- atomicity violation
+- inconsistent state update

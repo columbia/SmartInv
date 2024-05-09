@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public rate;
+    uint public soldTokens;
+
+    constructor(IERC20 _token, uint _rate) {
+        token = _token;
+        owner = msg.sender;
+        rate = _rate;
+    }
+
+    function buyTokens(uint _amount) external {
+        uint cost = _amount * rate;
+        require(token.balanceOf(msg.sender) >= cost, "Insufficient balance");
+        token.transferFrom(msg.sender, owner, cost);
+        soldTokens += _amount;
+    }
+
+    function withdrawTokens() external {
+        require(msg.sender == owner, "Unauthorized access");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\contract_to_analyze\>

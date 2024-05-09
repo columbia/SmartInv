@@ -1,0 +1,34 @@
+The contract provided for analysis is:
+
+contract Escrow {
+    
+    address public buyer;
+    address public seller;
+    bool public isBuyerPaid;
+    
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(!isBuyerPaid, "Buyer has already paid");
+        
+        // deposit funds into escrow
+    }
+    
+    function releaseEscrow() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(isBuyerPaid, "Buyer has not paid yet");
+        
+        // release funds to seller
+    }
+    
+    function cancelTransaction() public {
+        require(msg.sender == buyer, "Only buyer can cancel transaction");
+        require(!isBuyerPaid, "Buyer has already paid, cannot cancel");
+        
+        // release funds back to buyer
+    }
+    
+}
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership
+2) Inconsistent state update

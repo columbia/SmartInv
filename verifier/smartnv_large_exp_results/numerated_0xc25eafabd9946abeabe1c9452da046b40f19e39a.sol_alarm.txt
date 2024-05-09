@@ -1,0 +1,33 @@
+The contract to be analyzed:
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+     uint public availableTokens;
+
+     constructor (IERC20 _token, uint _price, uint _availableTokens) public {
+          token = _token;
+          owner = msg.sender;
+          price = _price;
+          availableTokens = _availableTokens;
+     }
+
+     function buyTokens(uint _amount) public {
+          require(_amount * price <= token.balanceOf(owner), "Insufficient token balance");
+          token.transferFrom(owner, msg.sender, _amount);
+          availableTokens -= _amount;
+     }
+
+     function withdrawTokens(uint _amount) public {
+          require(msg.sender == owner, "Only owner can withdraw tokens");
+          require(_amount <= availableTokens, "Insufficient available tokens");
+          token.transfer(msg.sender, _amount);
+          availableTokens -= _amount;
+     }
+}
+
+Output: 
+The potential vulnerabilities in the TokenSale contract are:
+- inconsistent state update
+- incorrect visibility/ownership

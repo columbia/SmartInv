@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    address public admin;
+    uint public totalVotes;
+    mapping(address => uint) public votes;
+
+    constructor() {
+        admin = msg.sender;
+        totalVotes = 0;
+    }
+
+    function vote(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += amount;
+        totalVotes += amount;
+    }
+
+    function withdrawVotes() public {
+        require(msg.sender != admin, "Admin cannot withdraw votes");
+        uint amount = votes[msg.sender];
+        require(amount > 0, "No votes to withdraw");
+        totalVotes -= amount;
+        votes[msg.sender] = 0;
+    }
+}
+<\contract_to_analyze\>

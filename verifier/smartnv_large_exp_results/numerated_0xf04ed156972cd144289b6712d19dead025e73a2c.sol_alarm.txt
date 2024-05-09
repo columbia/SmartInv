@@ -1,0 +1,43 @@
+contract VotingSystem {
+     struct Voter {
+          uint256 weight;
+          bool voted;
+          address delegate;
+          uint256 vote;
+    }
+    struct Proposal {
+         uint256 voteCount;
+     }
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+
+     function delegate(address _to) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "You already voted.");
+          require(_to != msg.sender, "Self-delegation is disallowed.");
+          while (voters[_to].delegate != address(0)) {
+              _to = voters[_to].delegate;
+          }
+          sender.voted = true;
+          sender.delegate = _to;
+          Voter storage delegate_ = voters[_to];
+          if (delegate_.voted) {
+              proposals[delegate_.vote].voteCount += sender.weight;
+          } else {
+              delegate_.weight += sender.weight;
+          }
+     }
+     function vote(uint256 proposal) public {
+          Voter storage sender = voters[msg.sender];
+          require(sender.weight != 0, "Has no right to vote.");
+          require(!sender.voted, "Already voted.");
+          sender.voted = true;
+          sender.vote = proposal;
+          proposals[proposal].voteCount += sender.weight;
+     }
+} 
+
+Output:
+1) inconsistent state update
+2) atomicity violation

@@ -1,0 +1,25 @@
+contract SmartContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can change ownership");
+        owner = newOwner;
+    }
+}

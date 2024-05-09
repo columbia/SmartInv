@@ -1,0 +1,28 @@
+<\contract_to_analyze\> 
+contract Escrow {
+       address public buyer;
+       address public seller;
+       bool public fundsReleased;
+       bool public buyerConfirmed;
+       bool public sellerConfirmed;
+
+       function releaseFunds() public {
+               require(msg.sender == seller, "only seller can release funds");
+               require(!fundsReleased, "funds already released");
+               fundsReleased = true;
+               payable(seller).transfer(address(this).balance);
+       }
+
+       function confirmReceipt() public {
+               require(msg.sender == buyer, "only buyer can confirm receipt");
+               require(fundsReleased, "funds not released yet");
+               buyerConfirmed = true;
+       }
+
+       function confirmDelivery() public {
+               require(msg.sender == seller, "only seller can confirm delivery");
+               require(buyerConfirmed, "buyer hasn't confirmed receipt yet");
+               sellerConfirmed = true; 
+       }
+}
+<\contract_to_analyze\>

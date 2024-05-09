@@ -1,0 +1,27 @@
+Contract to analyze:
+
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint) public balances;
+    event PaymentMade(address indexed sender, uint amount);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(address _recipient, uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        balances[_recipient] += _amount;
+        emit PaymentMade(msg.sender, _amount);
+    }
+
+    function withdraw(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        msg.sender.transfer(_amount);
+    }
+}
+
+Output:
+- correct visibility/ownership

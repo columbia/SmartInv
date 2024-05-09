@@ -1,0 +1,32 @@
+<\contract\> 
+contract Lottery {
+    address public owner;
+    mapping(uint => address) public players;
+    uint public numPlayers;
+    uint public totalPrize;
+
+    function buyTicket() public payable {
+        require(msg.value > 0, "Value must be greater than 0");
+        players[numPlayers] = msg.sender;
+        numPlayers++;
+        totalPrize += msg.value;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "Only owner can pick a winner");
+        require(numPlayers > 0, "No players in the game");
+        
+        address winner = players[random() % numPlayers];
+        payable(winner).transfer(totalPrize);
+        totalPrize = 0;
+        numPlayers = 0;
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership: The owner variable is public, which could potentially expose the owner's identity and allow unauthorized parties to manipulate the ownership. Consider making it private and adding a function to change ownership securely.

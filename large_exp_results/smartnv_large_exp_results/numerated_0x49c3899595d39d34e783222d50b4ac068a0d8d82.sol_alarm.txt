@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public fundsDisbursed;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+
+    function approve() public {
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else if (msg.sender == seller) {
+            sellerApproved = true;
+        }
+    }
+
+    function disburseFunds() public {
+        require(buyerApproved && sellerApproved && !fundsDisbursed, "Funds already disbursed or not approved by both parties");
+        // Disburse funds to the seller
+        fundsDisbursed = true;
+    }
+}
+Potential vulnerabilities:
+1) Business logic flaw: There is no verification of the arbiter's approval before disbursing the funds, potentially allowing one party to bypass the arbiter's decision.
+2) Incorrect visibility/ownership: The state variables buyerApproved, sellerApproved, and fundsDisbursed are public, which may expose sensitive information to external parties.
+3) Inconsistent state update: The state variables buyerApproved and sellerApproved can both be set to true independently, allowing funds to be disbursed without mutual agreement from buyer and seller.

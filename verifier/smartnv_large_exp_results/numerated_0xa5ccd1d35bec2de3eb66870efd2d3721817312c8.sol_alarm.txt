@@ -1,0 +1,21 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     address public buyer;
+     address public seller;
+     uint public amount;
+     uint public price;
+     IERC20 public token;
+     uint public totalSold;
+
+    function buy(uint _amount) external {
+         require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+         uint totalPrice = _amount * price;
+         token.transferFrom(msg.sender, seller, _amount);
+         token.transferFrom(seller, msg.sender, totalPrice);
+         totalSold += _amount;
+          }
+} 
+
+The potential vulnerabilities in the contract are:
+1) Price manipulation
+2) Arithmetic flaw

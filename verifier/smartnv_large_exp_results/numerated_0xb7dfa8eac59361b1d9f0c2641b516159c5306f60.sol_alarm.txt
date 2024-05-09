@@ -1,0 +1,34 @@
+<\contract\> 
+contract Sale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public price = 1 ether;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buy() public payable {
+        require(msg.value >= price, "Not enough Ether sent");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() public onlyOwner {
+        uint balance = balances[msg.sender];
+        require(balance > 0, "No balance to withdraw");
+        (bool success, ) = msg.sender.call{value: balance}("");
+        require(success, "Withdrawal failed");
+        balances[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are: 
+1) price manipulation
+2) inconsistent state update
+3) ether leakage

@@ -1,0 +1,37 @@
+<\contract\> 
+contract SubscriptionManager {
+     struct Subscription {
+          address subscriber;
+          uint256 startTime;
+          uint256 endTime;
+          uint256 price;
+          bool active;
+     }
+     
+     mapping(bytes32 => Subscription) public subscriptions;
+     address public owner;
+
+     function createSubscription(address _subscriber, uint256 _duration, uint256 _price) public {
+          bytes32 subscriptionId = keccak256(abi.encodePacked(_subscriber, _duration, _price));
+          subscriptions[subscriptionId] = Subscription(_subscriber, block.timestamp, block.timestamp + _duration, _price, true);
+     }
+
+     function cancelSubscription(bytes32 _subscriptionId) public {
+          require(subscriptions[_subscriptionId].active, "Subscription is not active");
+          require(msg.sender == subscriptions[_subscriptionId].subscriber || msg.sender == owner, "Unauthorized");
+          subscriptions[_subscriptionId].active = false;
+     }
+
+     function renewSubscription(bytes32 _subscriptionId, uint256 _newDuration) public {
+          require(subscriptions[_subscriptionId].active, "Subscription is not active");
+          require(msg.sender == subscriptions[_subscriptionId].subscriber, "Unauthorized");
+          subscriptions[_subscriptionId].endTime += _newDuration;
+     }
+}
+<\contract\> 
+
+Output:
+- Incorrect visibility/ownership: The `owner` variable is public, potentially exposing ownership control to unauthorized entities.
+- ID uniqueness violation: The `subscriptionId` is generated using `keccak256` of subscriber, duration, and price, which may not guarantee uniqueness and lead to clashes in the mapping.
+- Inconsistent state update: In the `renewSubscription` function, the `endTime` of the subscription is updated directly without checking if the new duration extends beyond the current end time, leading to a potential inconsistency in the subscription duration.
+- Insufficient gas: The contract does not consider gas costs for operations like `renewSubscription`, which could potentially result in failed transactions due to insufficient gas.

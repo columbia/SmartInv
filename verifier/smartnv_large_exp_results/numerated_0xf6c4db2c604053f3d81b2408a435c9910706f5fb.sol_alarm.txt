@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility/ownership: The `proposal` struct is not explicitly defined as private, making it accessible outside the contract. This could potentially lead to unauthorized access and manipulation of proposal data.
+
+2) Inconsistent state update: The `proposal.votedAmount` is updated directly in the `execute` function without any synchronization mechanism, which could lead to race condition issues and inconsistent data updates.
+
+3) Integer overflow/underflow: There are operations in the `calculatePrice` function that involve potential multiplication and division of values, which could lead to integer overflow or underflow if not handled properly.
+
+4) Insufficient gas: The `endExecute` function performs a potentially expensive operation by checking if `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which could result in out-of-gas errors if the gas limit is not sufficient.
+
+5) Incorrect visibility/ownership: The `lockedFunds` variable is not declared or specified with any visibility modifier, which can make it publicly accessible and modifiable.
+
+6) Business logic flaw: The condition `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` in the `endExecute` function might have a flaw in logic, potentially leading to unexpected consequences in the contract execution.

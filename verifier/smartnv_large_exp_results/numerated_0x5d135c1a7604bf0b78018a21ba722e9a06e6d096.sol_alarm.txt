@@ -1,0 +1,32 @@
+<\contract_to_be_analyzed\>
+contract TokenAuction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public bids;
+
+    function placeBid(uint amount) public {
+        require(amount > highestBid, "Bid amount must be higher than current highest bid");
+        require(bids[msg.sender] + amount > bids[msg.sender], "Integer overflow");
+        
+        if (bids[msg.sender] > 0) {
+            bids[msg.sender] += amount;
+        } else {
+            bids[msg.sender] = amount;
+        }
+
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+
+    function withdrawBid() public {
+        uint amount = bids[msg.sender];
+        require(amount > 0, "No bid to withdraw");
+        
+        bids[msg.sender] = 0;
+
+        if (!payable(msg.sender).send(amount)) {
+            bids[msg.sender] = amount;
+        }
+    }
+}
+<\contract_to_be_analyzed\>

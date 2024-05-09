@@ -1,0 +1,600 @@
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getBuyPrice()
+PC address: 6311
+Estimated Gas Usage: 2678 - 2963
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:602
+
+_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: getBuyPrice(), txdata: 0x018a25e8, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getBuyPrice()
+PC address: 6343
+Estimated Gas Usage: 3592 - 4067
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:602
+
+_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: getBuyPrice(), txdata: 0x018a25e8, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getBuyPrice()
+PC address: 6375
+Estimated Gas Usage: 4506 - 5171
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:602
+
+_now > round_[_rID].end && round_[_rID].plyr == 0
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: getBuyPrice(), txdata: 0x018a25e8, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getBuyPrice()
+PC address: 6410
+Estimated Gas Usage: 2695 - 2980
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:602
+
+if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
+            return ( (round_[_rID].keys.add(1000000000000000000)).ethRec(1000000000000000000) );
+        else // rounds over.  need price for new round
+            return ( 75000000000000 )
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: getBuyPrice(), txdata: 0x018a25e8, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: RatScam
+Function name: activate()
+PC address: 6972
+Estimated Gas Usage: 24639 - 106104
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1425
+
+now + rndInit_
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: activate(), txdata: 0x0f15f4c0, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: calcKeysReceived(uint256)
+PC address: 9375
+Estimated Gas Usage: 2976 - 3261
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1005
+
+_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: calcKeysReceived(uint256), txdata: 0x409dba83, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: calcKeysReceived(uint256)
+PC address: 9407
+Estimated Gas Usage: 3890 - 4365
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1005
+
+_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: calcKeysReceived(uint256), txdata: 0x409dba83, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: calcKeysReceived(uint256)
+PC address: 9439
+Estimated Gas Usage: 4804 - 5469
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1005
+
+_now > round_[_rID].end && round_[_rID].plyr == 0
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: calcKeysReceived(uint256), txdata: 0x409dba83, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: calcKeysReceived(uint256)
+PC address: 9474
+Estimated Gas Usage: 2993 - 3278
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1005
+
+if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
+            return ( (round_[_rID].eth).keysRec(_eth) );
+        else // rounds over.  need keys for new round
+            return ( (_eth).keys() )
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: calcKeysReceived(uint256), txdata: 0x409dba83, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getPlayerVaults(uint256)
+PC address: 11300
+Estimated Gas Usage: 2275 - 2560
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:650
+
+now > round_[_rID].end && round_[_rID].ended == false
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: getPlayerVaults(uint256), txdata: 0x63066434, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getPlayerVaults(uint256)
+PC address: 11351
+Estimated Gas Usage: 2295 - 2580
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:650
+
+now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: getPlayerVaults(uint256), txdata: 0x63066434, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getPlayerVaults(uint256)
+PC address: 11385
+Estimated Gas Usage: 2312 - 2597
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:650
+
+if (now > round_[_rID].end && round_[_rID].ended == false && round_[_rID].plyr != 0)
+        {
+            // if player is winner
+            if (round_[_rID].plyr == _pID)
+            {
+                return
+                (
+                (plyr_[_pID].win).add( ((round_[_rID].pot).mul(48)) / 100 ),
+                (plyr_[_pID].gen).add(  getPlayerVaultsHelper(_pID, _rID).sub(plyrRnds_[_pID][_rID].mask)   ),
+                plyr_[_pID].aff
+                );
+                // if player is not the winner
+            } else {
+                return
+                (
+                plyr_[_pID].win,
+                (plyr_[_pID].gen).add(  getPlayerVaultsHelper(_pID, _rID).sub(plyrRnds_[_pID][_rID].mask)  ),
+                plyr_[_pID].aff
+                );
+            }
+
+            // if round is still going on, or round has ended and round end has been ran
+        } else {
+            return
+            (
+            plyr_[_pID].win,
+            (plyr_[_pID].gen).add(calcUnMaskedEarnings(_pID, plyr_[_pID].lrnd)),
+            plyr_[_pID].aff
+            );
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: getPlayerVaults(uint256), txdata: 0x63066434, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: getTimeLeft()
+PC address: 16210
+Estimated Gas Usage: 2441 - 2726
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:625
+
+if (_now < round_[_rID].end)
+            if (_now > round_[_rID].strt + rndGap_)
+                return( (round_[_rID].end).sub(_now) );
+            else
+                return( (round_[_rID].strt + rndGap_).sub(_now));
+        else
+            return(0)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: getTimeLeft(), txdata: 0xc7e284b8, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: iWantXKeys(uint256)
+PC address: 17141
+Estimated Gas Usage: 3350 - 3635
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1029
+
+_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: iWantXKeys(uint256), txdata: 0xcf808000, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: iWantXKeys(uint256)
+PC address: 17173
+Estimated Gas Usage: 4264 - 4739
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1029
+
+_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: iWantXKeys(uint256), txdata: 0xcf808000, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: iWantXKeys(uint256)
+PC address: 17205
+Estimated Gas Usage: 5178 - 5843
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1029
+
+_now > round_[_rID].end && round_[_rID].plyr == 0
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: iWantXKeys(uint256), txdata: 0xcf808000, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: RatScam
+Function name: iWantXKeys(uint256)
+PC address: 17240
+Estimated Gas Usage: 3367 - 3652
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1029
+
+if (_now > round_[_rID].strt + rndGap_ && (_now <= round_[_rID].end || (_now > round_[_rID].end && round_[_rID].plyr == 0)))
+            return ( (round_[_rID].keys.add(_keys)).ethRec(_keys) );
+        else // rounds over.  need price for new round
+            return ( (_keys).eth() )
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: iWantXKeys(uint256), txdata: 0xcf808000, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: RatScam
+Function name: registerNameXaddr(string,address,bool)
+PC address: 23096
+Estimated Gas Usage: 1945 - 5371
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:555
+
+_nameString.nameFilter()
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x1, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: registerNameXaddr(string,address,bool), txdata: 0x3ddd4698e7, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: RatScam
+Function name: registerNameXname(string,bytes32,bool)
+PC address: 23096
+Estimated Gas Usage: 2102 - 5528
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:571
+
+_nameString.nameFilter()
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x2a50200444803e96, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: registerNameXname(string,bytes32,bool), txdata: 0x685ffd83e7, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: RatScam
+Function name: registerNameXID(string,uint256,bool)
+PC address: 23096
+Estimated Gas Usage: 2181 - 5607
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:539
+
+_nameString.nameFilter()
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x800000000000, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: registerNameXID(string,uint256,bool), txdata: 0x921dec2191, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: RatScam
+Function name: registerNameXaddr(string,address,bool)
+PC address: 25396
+Estimated Gas Usage: 2899 - 7629
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xcbc19cd1bf0b5922ca77d060172c19876eb909c4.sol:1610
+
+for (uint256 i = 0; i < _length; i++)
+        {
+            // if its uppercase A-Z
+            if (_temp[i] > 0x40 && _temp[i] < 0x5b)
+            {
+                // convert to lower case a-z
+                _temp[i] = byte(uint(_temp[i]) + 32);
+
+                // we have a non number
+                if (_hasNonNumber == false)
+                    _hasNonNumber = true;
+            } else {
+                require
+                (
+                // require character is a space
+                    _temp[i] == 0x20 ||
+                // OR lowercase a-z
+                (_temp[i] > 0x60 && _temp[i] < 0x7b) ||
+                // or 0-9
+                (_temp[i] > 0x2f && _temp[i] < 0x3a),
+                    "string contains invalid characters"
+                );
+                // make sure theres not 2x spaces in a row
+                if (_temp[i] == 0x20)
+                    require( _temp[i+1] != 0x20, "string cannot contain consecutive spaces");
+
+                // see if we have a character other than a number
+                if (_hasNonNumber == false && (_temp[i] < 0x30 || _temp[i] > 0x39))
+                    _hasNonNumber = true;
+            }
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: registerNameXaddr(string,address,bool), txdata: 0x3ddd46988e, value: 0x0
+
+

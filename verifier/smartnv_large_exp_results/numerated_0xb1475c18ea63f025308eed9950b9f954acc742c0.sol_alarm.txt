@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenSale {
+      address public admin;
+      IERC20 public token;
+      address public tokenWallet;
+      uint public tokenPrice;
+      uint public totalTokens;
+      uint public tokensSold;
+      
+      constructor(IERC20 _token, address _tokenWallet, uint _tokenPrice, uint _totalTokens) {
+          admin = msg.sender;
+          token = _token;
+          tokenWallet = _tokenWallet;
+          tokenPrice = _tokenPrice;
+          totalTokens = _totalTokens;
+          tokensSold = 0;
+      }
+      
+      function buyTokens(uint _numTokens) public payable {
+          require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent");
+          require(tokensSold + _numTokens <= totalTokens, "Not enough tokens available");
+          tokensSold += _numTokens;
+          token.transfer(msg.sender, _numTokens);
+      }
+      
+      function withdraw() public {
+          require(msg.sender == admin, "Only admin can withdraw");
+          payable(admin).transfer(address(this).balance);
+      }
+  }
+analyze potential vulnerabilities in the TokenSale contract: 
+1) inconsistent state update
+2) incorrect visibility/ownership

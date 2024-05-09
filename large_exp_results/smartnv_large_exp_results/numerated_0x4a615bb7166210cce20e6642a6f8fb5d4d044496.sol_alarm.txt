@@ -1,0 +1,33 @@
+Contract:
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public tokenAmount;
+
+    constructor(address _tokenAddress, uint _tokenPrice, uint _tokenAmount) public {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        tokenAmount = _tokenAmount;
+    }
+
+    function buyTokens(uint _numTokens) payable public {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        require(tokenAmount >= _numTokens, "Not enough tokens available");
+        
+        // Transfer tokens to buyer
+        IERC20(tokenAddress).transfer(msg.sender, _numTokens);
+        
+        // Update token amount
+        tokenAmount -= _numTokens;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "You are not the owner");
+        msg.sender.transfer(address(this).balance);
+    }
+} 
+
+Output:
+incorrect state update

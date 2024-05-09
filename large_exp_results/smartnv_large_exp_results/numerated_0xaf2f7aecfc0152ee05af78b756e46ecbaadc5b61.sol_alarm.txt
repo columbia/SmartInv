@@ -1,0 +1,19 @@
+Contract to analyze:
+
+contract MyContract {
+    address public owner;
+    uint public value;
+
+    function setValue(uint _value) public {
+        require(msg.sender == owner, "Only owner can set value");
+        value = _value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Potential vulnerabilities in MyContract:
+- incorrect visibility/ownership

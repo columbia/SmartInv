@@ -1,0 +1,45 @@
+The contract mentioned for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the mentioned contract are:
+
+1) Inconsistent State Update: The "execute" function updates the "proposal.votedAmount" without ensuring atomicity or proper synchronization, potentially leading to inconsistent state updates.
+
+2) Incorrect Visibility/Ownership: The "owner" variable is declared as internal but is never used or set in the contract, potentially leading to ownership vulnerabilities if intended for access control purposes.
+
+3) Suicidal Contracts: The contract does not have a feature to self-destruct (suicide), but if such a feature is added without proper checks, it could lead to vulnerabilities related to self-destruct functions.
+
+Therefore, the identified potential vulnerabilities in the contract are Inconsistent State Update, Incorrect Visibility/Ownership, and Suicidal Contracts.

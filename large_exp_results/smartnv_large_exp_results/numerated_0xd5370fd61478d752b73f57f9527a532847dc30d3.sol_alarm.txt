@@ -1,0 +1,40 @@
+The contract provided for analysis:
+
+contract MultiSigWallet {
+     address[] public owners;
+     uint public required;
+     mapping(address => bool) public isOwner;
+
+     constructor(address[] memory _owners, uint _required) {
+         owners = _owners;
+         required = _required;
+         for (uint i = 0; i < _owners.length; i++) {
+             isOwner[_owners[i]] = true;
+         }
+     }
+
+     function changeOwner(uint index, address newOwner) public {
+         require(index < owners.length, "Invalid owner index");
+         isOwner[owners[index]] = false;
+         isOwner[newOwner] = true;
+         owners[index] = newOwner;
+     }
+
+     function removeOwner(uint index) public {
+         require(index < owners.length, "Invalid owner index");
+         isOwner[owners[index]] = false;
+         owners[index] = address(0);
+     }
+     
+     function submitTransaction(address to, uint value, bytes memory data) public {
+         // submit transaction logic
+     }
+
+     function executeTransaction(uint index) public {
+         // execute transaction logic
+     }
+}
+
+The potential vulnerabilities in the provided contract are:
+1) inconsistent state update
+2) ID uniqueness violation

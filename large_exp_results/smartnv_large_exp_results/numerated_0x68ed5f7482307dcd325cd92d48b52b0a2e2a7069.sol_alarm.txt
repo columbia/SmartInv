@@ -1,0 +1,26 @@
+contract VotingSystem {
+     struct Voter {
+         uint256 weight;
+         bool voted;
+     }
+     mapping(address => Voter) public voters;
+     address public winner;
+
+     function vote(address _voter) public {
+         require(!voters[_voter].voted, "Already voted.");
+         voters[_voter].weight = 1;
+         voters[_voter].voted = true;
+         if (voters[_voter].weight > 0) {
+             winner = _voter;
+         }
+     }
+
+     function reset() public {
+         require(msg.sender == owner, "Only owner can reset.");
+         winner = address(0);
+         for (uint256 i = 0; i < voters.length; i++) {
+             voters[i].voted = false;
+             voters[i].weight = 0;
+         }
+     }
+}

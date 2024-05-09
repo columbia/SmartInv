@@ -1,0 +1,23 @@
+The contract to analyze:
+
+contract ExampleContract {
+    IERC20 public token;
+    address public owner;
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+
+    function deposit(uint amount) public {
+        token.transferFrom(msg.sender, address(this), amount);
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        token.transfer(owner, amount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership

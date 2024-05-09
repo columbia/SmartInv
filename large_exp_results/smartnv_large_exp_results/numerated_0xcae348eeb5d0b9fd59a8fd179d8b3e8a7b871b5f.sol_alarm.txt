@@ -1,0 +1,29 @@
+<\contract\>
+contract TokenSale {
+    IERC20 public token; 
+    address public owner; 
+    uint public tokenPrice; 
+    uint public totalTokens; 
+    mapping (address => uint) public tokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+        token = _token; 
+        owner = msg.sender; 
+        tokenPrice = _tokenPrice; 
+        totalTokens = _totalTokens; 
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        require(tokensSold[msg.sender] + _numTokens <= totalTokens, "Exceeded token limit");
+        tokensSold[msg.sender] += _numTokens;
+        token.transfer(msg.sender, _numTokens);
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only owner can end the sale");
+        token.transfer(owner, token.balanceOf(address(this)));
+        selfdestruct(msg.sender);
+    }
+}
+<\contract\>

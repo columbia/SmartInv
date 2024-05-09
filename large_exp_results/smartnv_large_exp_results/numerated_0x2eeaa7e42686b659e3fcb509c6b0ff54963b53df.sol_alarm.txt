@@ -1,0 +1,11 @@
+The contract contains potential vulnerabilities:
+
+1) Inconsistent state update: The `endExecute` function updates the `lockedFunds` variable based on the balance of the contract, but there is no safeguard against updating it multiple times. This could lead to inconsistent state and potential issues.
+
+2) Incorrect visibility/ownership: The `owner` variable is marked as `internal` instead of `private`, potentially exposing it to external manipulation and violating the principle of least privilege. 
+
+3) Insufficient gas: The contract lacks explicit gas management strategies, which could result in failed transactions or reverts due to running out of gas during execution.
+
+4) ID uniqueness violation: The contract does not ensure that the `proposal.addr` is unique before assigning it in the `startExecute` function, which could lead to conflicts or unexpected behavior.
+
+5) Ether leakage: The contract does not handle Ether transactions explicitly, leaving room for potential Ether leakage or unintended fund transfers.

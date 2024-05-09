@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+contract ExampleContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(balance >= amount, "Insufficient balance");
+        balance -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+The identified potential vulnerabilities in the provided contract are:
+1) incorrect visibility/ownership.

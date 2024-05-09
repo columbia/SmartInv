@@ -1,0 +1,19 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    mapping(address => bool) public voters;
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!voters[msg.sender], "voter has already voted");
+        require(msg.sender.balance > 0, "voter has no balance to vote");
+        voters[msg.sender] = true;
+        votes[msg.sender] = msg.sender.balance;
+        totalVotes += msg.sender.balance;
+    }
+
+    function tallyVotes() public view returns (uint) {
+        return totalVotes;
+    }
+}
+<\contract_to_analyze\>

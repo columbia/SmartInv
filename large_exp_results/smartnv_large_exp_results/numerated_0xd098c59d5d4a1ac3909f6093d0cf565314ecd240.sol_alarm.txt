@@ -1,0 +1,13 @@
+This contract contains the following potential vulnerabilities:
+
+1) ID uniqueness violation: The contract does not have any mechanism to ensure uniqueness of IDs assigned to proposals. This can lead to conflicts or unexpected behavior if multiple proposals are created with the same ID.
+
+2) Incorrect visibility/ownership: The contract does not specify visibility for the `proposal` struct, making it publicly accessible. This can expose sensitive data and potentially lead to unwanted manipulation of proposal details.
+
+3) Inconsistent state update: The `execute` function updates the `proposal.votedAmount` without checking the success of the `votingToken.transferFrom` function. This can result in an inconsistent state where the `votedAmount` is updated even if the token transfer fails.
+
+4) Insufficient gas: The `endExecute` function checks for a condition that involves reading the balance of the contract. If the contract holds a large number of tokens, this operation may require significant gas, potentially causing the function to fail due to gas limit.
+
+5) Arithmetic flaw: In the `liquidate` function of the ExchangeTokens contract, there is a potential arithmetic flaw in the calculation of the liquidation condition. The condition `getPrice() * cAmount * 80 / 100 < dAmount` might not work as intended due to possible integer division truncation.
+
+Therefore, the potential vulnerabilities in the contract are ID uniqueness violation, incorrect visibility/ownership, inconsistent state update, insufficient gas, and arithmetic flaw.

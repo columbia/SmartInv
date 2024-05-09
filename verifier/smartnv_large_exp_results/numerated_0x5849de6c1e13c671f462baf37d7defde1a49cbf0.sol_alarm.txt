@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract InsurancePolicy {
+    mapping(address => uint) public policyHolders;
+    uint public totalPayouts;
+    address internal insuranceCompany;
+
+    function issuePolicy(uint amount) external {
+        require(policyHolders[msg.sender] == 0, "policy already issued");
+        policyHolders[msg.sender] = amount;
+    }
+
+    function claimPolicy() external {
+        require(policyHolders[msg.sender] > 0, "no policy issued");
+        totalPayouts += policyHolders[msg.sender];
+        policyHolders[msg.sender] = 0;
+    }
+
+    function setInsuranceCompany(address _insuranceCompany) external {
+        require(msg.sender == insuranceCompany, "not authorized");
+        insuranceCompany = _insuranceCompany;
+    }
+}
+<\contract_to_analyze\>

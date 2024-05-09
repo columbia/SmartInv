@@ -1,0 +1,32 @@
+The contract provided for analysis is:
+
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    
+    constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint amount) external payable {
+        require(msg.value >= amount * tokenPrice, "Insufficient funds");
+        require(totalTokens >= amount, "Not enough tokens available");
+        
+        totalTokens -= amount;
+        ERC20(token).transfer(msg.sender, amount);
+    }
+    
+    function withdrawFunds() external {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+1) inconsistent state update
+2) incorrect visibility/ownership

@@ -1,0 +1,39 @@
+<\contract\>
+
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = _amount;
+        state = State.Created;
+    }
+
+    function lockFunds() public {
+        require(msg.sender == buyer, "Only the buyer can lock funds");
+        state = State.Locked;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only the arbiter can refund");
+        state = State.Inactive;
+    }
+}
+
+<\contract\>
+
+Output:
+- incorrect visibility/ownership

@@ -1,0 +1,9 @@
+<\TimelockController Contract\>
+1) Privilege escalation: The startExecute function allows any external account to initiate a new proposal, which could lead to unauthorized privileges.
+2) Inconsistent state update: In the execute function, the votedAmount is incremented without proper synchronization mechanisms, leading to potential inconsistencies.
+3) Insufficient gas: The endExecute function may fail due to insufficient gas if the execution of all the required operations consumes a large amount of gas.
+
+<\ExchangeTokens Contract\>
+1) Price manipulation: The liquidate function does not have proper checks or validations before transferring tokens, allowing potential manipulation of the liquidation process.
+2) Incorrect visibility/ownership: The debt and collateral mappings have public visibility, which could expose sensitive data to external parties.
+3) Arithmetic flaw: The calculatePrice function divides the balance of USDC by the balance of WETH, which may result in division by zero if WETH balance is zero.

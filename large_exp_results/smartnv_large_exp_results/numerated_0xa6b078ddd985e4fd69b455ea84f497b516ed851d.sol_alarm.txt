@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+
+    modifier onlyAdmin {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        // logic for voting
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeAdmin(address newAdmin) public onlyAdmin {
+        admin = newAdmin;
+    }
+}
+<\contract\>
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation: The `changeAdmin` function allows the admin to be changed, potentially leading to privilege escalation if not properly controlled.
+2) ID uniqueness violation: There is no check to ensure that a single address can't vote multiple times, leading to ID uniqueness violation.

@@ -1,0 +1,37 @@
+Contract:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenAddress, uint _initialPrice) {
+        owner = msg.sender;
+        token = IERC20(_tokenAddress);
+        tokenPrice = _initialPrice;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(token.balanceOf(address(this)) >= _amount, "Not enough tokens in the contract");
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount * tokenPrice;
+    }
+
+    function setTokenPrice(uint _newPrice) external {
+        require(msg.sender == owner, "Only owner can set the token price");
+        tokenPrice = _newPrice;
+    }
+
+    function withdrawBalance() external {
+        uint balance = balances[msg.sender];
+        require(balance > 0, "No balance to withdraw");
+        balances[msg.sender] = 0;
+        msg.sender.transfer(balance);
+    }
+}
+
+Output:
+1) atomicity violation
+2) inconsistent state update

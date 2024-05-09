@@ -1,0 +1,25 @@
+<\Your Contract\>
+contract PaymentProcessor {
+         address public admin;
+         uint public totalPayments;
+         mapping(address => uint) public payments;
+
+         constructor(address _admin) {
+             admin = _admin;
+         }
+
+         function processPayment() public payable {
+             require(msg.value > 0, "Payment should be greater than 0");
+             totalPayments += msg.value;
+             payments[msg.sender] += msg.value;
+         }
+
+         function withdrawAllPayments() public {
+             require(msg.sender == admin, "Only admin can withdraw payments");
+             uint amount = totalPayments;
+             totalPayments = 0;
+             (bool success, ) = msg.sender.call{value: amount}("");
+             require(success, "Transfer failed");
+         }
+     }
+<\Your Contract\>

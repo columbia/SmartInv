@@ -1,0 +1,41 @@
+<\contract\>
+contract VotingSystem {
+    using SafeMath for uint256;
+
+    enum VoteStatus { Pending, Voted, Passed, Rejected }
+
+    struct Proposal {
+        uint256 id;
+        address proposer;
+        string description;
+        uint256 forVotes;
+        uint256 againstVotes;
+        VoteStatus status;
+    }
+
+    mapping(uint256 => Proposal) public proposals;
+    uint256 public totalProposals;
+
+    function createProposal(string memory _description) public {
+        totalProposals = totalProposals.add(1);
+        proposals[totalProposals] = Proposal(totalProposals, msg.sender, _description, 0, 0, VoteStatus.Pending);
+    }
+
+    function vote(uint256 _proposalId, uint256 _votes) public {
+        require(proposals[_proposalId].status == VoteStatus.Pending, "Voting is not allowed on this proposal");
+        
+        if (_votes > 0) {
+            proposals[_proposalId].forVotes = proposals[_proposalId].forVotes.add(_votes);
+        } else {
+            proposals[_proposalId].againstVotes = proposals[_proposalId].againstVotes.add(_votes.mul(-1));
+        }
+
+        if (proposals[_proposalId].forVotes > proposals[_proposalId].againstVotes) {
+            proposals[_proposalId].status = VoteStatus.Passed;
+        } else {
+            proposals[_proposalId].status = VoteStatus.Rejected;
+        }
+    }
+
+}
+<\contract\>

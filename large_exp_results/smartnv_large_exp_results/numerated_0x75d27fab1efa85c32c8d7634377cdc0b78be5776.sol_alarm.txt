@@ -1,0 +1,38 @@
+<\contract\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public bids;
+    bool public ended;
+
+    function bid() public payable {
+        require(!ended, "Auction has ended");
+        require(msg.value > highestBid, "Bid amount is lower than current highest bid");
+
+        if (highestBid != 0) {
+            bids[highestBidder] += highestBid;
+        }
+
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "Only owner can end the auction");
+        
+        ended = true;
+    }
+
+    function withdrawBid() public {
+        uint amount = bids[msg.sender];
+        require(amount > 0, "You have no bid to withdraw");
+
+        address payable recipient = payable(msg.sender);
+        recipient.transfer(amount);
+        bids[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

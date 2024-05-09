@@ -1,0 +1,9 @@
+There are potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `votedAmount` in the `execute` function is updated by directly adding the transferred amount, which can lead to inconsistent state if multiple transfers happen simultaneously.
+
+2) Insufficient gas: The `endExecute` function is checking for a condition that involves taking the balance of the contract multiple times, which can consume more gas than available in a single transaction.
+
+3) Incorrect visibility/ownership: The `Proposal` struct is a public struct, which exposes internal details of the contract and can lead to potential security risks.
+
+Overall, this contract contains potential vulnerabilities.

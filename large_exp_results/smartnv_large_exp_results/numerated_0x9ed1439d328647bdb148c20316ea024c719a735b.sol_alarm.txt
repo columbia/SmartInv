@@ -1,0 +1,32 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 votedAmount;
+        address proposer;
+    }
+    
+    mapping(uint256 => Proposal) public proposals;
+    address public owner;
+    IERC20 public votingToken;
+
+    function createProposal(uint256 proposalId) external {
+        require(proposals[proposalId].startTime == 0, "proposal already exists");
+        proposals[proposalId].startTime = block.timestamp;
+        proposals[proposalId].proposer = msg.sender; 
+    }
+
+    function vote(uint256 proposalId, uint256 amount) external {
+        require(proposals[proposalId].startTime != 0, "proposal does not exist");
+        votingToken.transferFrom(msg.sender, address(this), amount);
+        proposals[proposalId].votedAmount += amount;
+    }
+
+    function executeProposal(uint256 proposalId) external {
+        Proposal storage proposal = proposals[proposalId];
+        require(proposal.startTime != 0, "proposal does not exist");
+        require(block.timestamp >= proposal.startTime + 24 hours, "voting period has not ended");
+        // Execute proposal logic
+    }
+}
+<\analyzed_contract\>

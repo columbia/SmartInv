@@ -1,0 +1,29 @@
+The contract provided for analysis is:
+
+contract TokenSale {
+     uint public totalTokens;
+     uint public tokenPrice;
+     mapping(address => uint) public balances;
+     
+     constructor(uint _totalTokens, uint _tokenPrice) {
+         totalTokens = _totalTokens;
+         tokenPrice = _tokenPrice;
+     }
+     
+     function buyTokens(uint _numTokens) public payable {
+         require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+         require(_numTokens <= totalTokens, "Not enough tokens available");
+         
+         balances[msg.sender] += _numTokens;
+         totalTokens -= _numTokens;
+     }
+     
+     function transferTokens(address _to, uint _numTokens) public {
+         require(balances[msg.sender] >= _numTokens, "Not enough tokens in balance");
+         
+         balances[msg.sender] -= _numTokens;
+         balances[_to] += _numTokens;
+     }
+}
+
+There are no vulnerabilities identified in the provided contract. Therefore, the output should be: healthy

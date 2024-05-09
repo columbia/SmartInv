@@ -1,0 +1,40 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The identified potential vulnerabilities in the contract are:
+- Inconsistent state update: The state of the proposal is updated in the startExecute and execute functions without proper synchronization, leading to potential inconsistencies.
+- Incorrect visibility/ownership: The owner variable is declared as internal, which might not provide the intended visibility or ownership control.
+- Insufficient gas: The endExecute function could potentially run out of gas if the required gas for the operations exceeds the gas limit.
+
+Therefore, the potential vulnerabilities in the provided contract are inconsistent state update, incorrect visibility/ownership, and insufficient gas.

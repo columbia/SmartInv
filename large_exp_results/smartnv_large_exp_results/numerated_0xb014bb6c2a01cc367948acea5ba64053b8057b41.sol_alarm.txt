@@ -1,0 +1,31 @@
+Contract: 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public price;
+     bool public buyerApproved;
+     bool public sellerApproved;
+
+     constructor(address _buyer, address _seller, uint _price) {
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+     }
+
+     function approvePayment() public {
+         require(msg.sender == buyer || msg.sender == seller, "must be buyer or seller to approve payment");
+         if (msg.sender == buyer) {
+             buyerApproved = true;
+         }
+         if (msg.sender == seller) {
+             sellerApproved = true;
+         }
+         if (buyerApproved && sellerApproved) {
+             address _this = address(this);
+             payable(seller).transfer(price);
+         }
+     }
+
+}
+Output: 
+1) Correct & healthy.

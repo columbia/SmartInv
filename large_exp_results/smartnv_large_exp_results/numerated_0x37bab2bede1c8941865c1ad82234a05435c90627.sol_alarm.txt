@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Insufficient funds");
+        require(_numTokens <= totalTokens, "Not enough tokens available");
+
+        balances[msg.sender] += _numTokens;
+        totalTokens -= _numTokens;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        IERC20(tokenAddress).transfer(owner, totalTokens);
+        totalTokens = 0;
+    }
+}
+
+Potential vulnerabilities in the TokenSale contract:
+- Suicidal contracts
+- Insufficient gas
+- Incorrect visibility/ownership

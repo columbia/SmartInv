@@ -1,0 +1,23 @@
+<\contract_to_be_analyzed\>
+contract PaymentProcessor {
+    mapping(uint256 => uint256) public payments;
+    address public owner;
+
+    constructor(address _owner) {
+        owner = _owner;
+    }
+
+    function makePayment(uint256 _invoiceId, uint256 _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_invoiceId] += _amount;
+    }
+
+    function withdrawPayment(uint256 _invoiceId) public {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        uint256 amount = payments[_invoiceId];
+        payments[_invoiceId] = 0;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed.");
+    }
+}
+<\contract_to_be_analyzed\>

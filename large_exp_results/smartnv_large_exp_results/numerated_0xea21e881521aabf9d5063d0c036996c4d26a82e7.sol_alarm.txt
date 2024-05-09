@@ -1,0 +1,28 @@
+Given contract analysis:
+
+<\your_contract\>
+contract Marketplace {
+    IERC20 public token;
+    uint public price;
+    address public owner;
+
+    constructor(address _token, uint _price) {
+        token = IERC20(_token);
+        price = _price;
+        owner = msg.sender;
+    }
+
+    function purchase(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        require(token.allowance(msg.sender, address(this)) >= _amount, "Insufficient allowance");
+        
+        uint totalPrice = _amount * price;
+        token.transferFrom(msg.sender, owner, totalPrice);
+    }
+
+    function setPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Unauthorized");
+        price = _newPrice;
+    }
+}
+<\your_contract\>

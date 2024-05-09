@@ -1,0 +1,24 @@
+<\contract\> 
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == owner, "Not owner");
+        totalVotes = 0;
+        for (address voter : hasVoted) {
+            hasVoted[voter] = false;
+        }
+    }
+}
+<\contract\>
+
+Potential vulnerabilities:
+7) ID uniqueness violation: The mapping `hasVoted` uses addresses as keys, which could lead to ID uniqueness violation if multiple addresses are assigned the same key.
+8) Reentrancy: The `resetVotes` function allows the owner to reset all votes, which could potentially be exploited for reentrancy attacks if the logic is not carefully managed.

@@ -1,0 +1,30 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public releasedToSeller;
+    bool public releasedToBuyer;
+
+    function setup(address _seller, address _arbiter) public {
+        seller = _seller;
+        buyer = msg.sender;
+        arbiter = _arbiter;
+    }
+
+    function finalize() public {
+        require(msg.sender == arbiter || msg.sender == buyer, "Only arbiter or buyer can finalize");
+        
+        if (msg.sender == arbiter) {
+            releasedToSeller = true;
+        } else {
+            releasedToBuyer = true;
+        }
+        
+        if (releasedToSeller && releasedToBuyer) {
+            seller.transfer(price);
+        }
+    }
+}
+<\contract\>

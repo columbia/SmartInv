@@ -1,0 +1,25 @@
+<\analyzed_contract\>
+contract Escrow {
+    address public admin;
+    mapping(address => uint) public deposits;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function deposit() public payable {
+        deposits[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(deposits[msg.sender] >= amount, "Insufficient balance");
+        deposits[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+<\analyzed_contract\>

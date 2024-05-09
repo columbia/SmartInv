@@ -1,0 +1,23 @@
+<\contract\> 
+contract Lottery {
+    mapping(address => uint) public players;
+    uint public totalPlayers;
+
+    function enter() public payable {
+        players[msg.sender] = msg.value;
+        totalPlayers++;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "Only owner can pick a winner");
+        
+        address winner = // logic to determine winner
+        payable(winner).transfer(address(this).balance);
+        totalPlayers = 0;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) privilege escalation
+2) inconsistent state update

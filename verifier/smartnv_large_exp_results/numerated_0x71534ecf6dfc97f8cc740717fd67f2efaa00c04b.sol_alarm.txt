@@ -1,0 +1,33 @@
+The contract below contains potential vulnerabilities:
+
+<\contract\>
+contract TokenSale {
+    uint public totalTokens;
+    uint public tokenPrice;
+    address public tokenAddress;
+    address public owner;
+    
+    constructor(uint _totalTokens, uint _tokenPrice, address _tokenAddress) {
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+        tokenAddress = _tokenAddress;
+        owner = msg.sender;
+    }
+    
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        require(_numTokens <= totalTokens, "Not enough tokens available");
+        
+        totalTokens -= _numTokens;
+        transferTokens(msg.sender, _numTokens);
+    }
+    
+    function transferTokens(address _buyer, uint _numTokens) private {
+        // transfer _numTokens from tokenAddress to _buyer
+    }
+}
+<\contract\>
+
+This contract contains the following potential vulnerabilities:
+1) Incorrect payment amount
+2) Not enough tokens available

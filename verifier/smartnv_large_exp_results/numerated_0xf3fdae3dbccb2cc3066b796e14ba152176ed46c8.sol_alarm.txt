@@ -1,0 +1,21 @@
+<\analyzed_contract\>
+contract Payment {
+    uint public totalPayments; 
+    mapping(address => uint) public payments;
+
+    function makePayment() public payable {
+        payments[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdraw() public {
+        uint amount = payments[msg.sender];
+        require(amount > 0, "No payment to withdraw");
+        payments[msg.sender] = 0;
+        totalPayments -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\analyzed_contract\>
+
+The contract "Payment" does not contain any vulnerabilities.

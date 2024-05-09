@@ -1,0 +1,25 @@
+<\contract\>
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+<\contract\>
+
+<\output\>
+Potential vulnerabilities:
+- Privilege escalation (changeAdmin function can potentially be called by unauthorized users)
+- ID uniqueness violation (hasVoted mapping does not consider unique identification for users)

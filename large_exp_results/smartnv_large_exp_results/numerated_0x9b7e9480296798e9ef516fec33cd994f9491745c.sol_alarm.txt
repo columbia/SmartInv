@@ -1,0 +1,26 @@
+The contract below contains a potential vulnerability:
+
+contract Auction {
+    mapping(address => uint) public bids;
+    address public highestBidder;
+    address public owner;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        require(msg.sender != highestBidder, "You are already the highest bidder");
+
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function endAuction() public {
+        require(msg.sender == owner, "You are not the owner of the auction");
+
+        owner.transfer(highestBid);
+    }
+}
+
+Output:
+- inconsistent state update

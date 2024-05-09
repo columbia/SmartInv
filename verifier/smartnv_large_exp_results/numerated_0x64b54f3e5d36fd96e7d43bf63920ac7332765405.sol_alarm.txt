@@ -1,0 +1,34 @@
+Contract: 
+
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint[] public proposals;
+
+    function vote(uint proposalId) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        voters[msg.sender].vote = proposalId;
+        voters[msg.sender].voted = true;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "Already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = to;
+
+        if (voters[to].voted) {
+            proposals[voters[to].vote]++;
+        }
+    }
+}
+
+Output: 
+- business logic flaw: The delegate function does not handle the case where the delegate has already voted, which can lead to unexpected behavior.
+- inconsistent state update: The delegate function updates the state of the sender and the delegate without performing proper checks, potentially leading to an inconsistent state.

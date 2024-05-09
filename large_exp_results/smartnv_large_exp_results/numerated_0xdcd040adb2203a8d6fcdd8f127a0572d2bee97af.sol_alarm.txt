@@ -1,0 +1,32 @@
+<\contract\> 
+contract FundManagement {
+     address public owner;
+     mapping(address => uint) public funds;
+     uint public totalFunds;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function deposit() public payable {
+         funds[msg.sender] += msg.value;
+         totalFunds += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(funds[msg.sender] >= amount, "Insufficient funds");
+         funds[msg.sender] -= amount;
+         totalFunds -= amount;
+         payable(msg.sender).transfer(amount);
+     }
+
+     function transferOwnership(address newOwner) public {
+         require(msg.sender == owner, "Only owner can transfer ownership");
+         owner = newOwner;
+     }
+
+     function getBalance(address account) public view returns (uint) {
+         return funds[account];
+     }
+}
+<\contract\>

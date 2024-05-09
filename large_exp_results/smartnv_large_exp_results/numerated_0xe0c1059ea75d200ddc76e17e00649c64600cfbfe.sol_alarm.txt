@@ -1,0 +1,22 @@
+<\contract\>
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public tokenSold;
+
+    constructor(address _token, uint _tokenPrice) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(token.balanceOf(owner) >= _amount, "Not enough tokens for sale");
+        uint totalCost = _amount * tokenPrice;
+        require(token.allowance(msg.sender, address(this)) >= totalCost, "Insufficient allowance set");
+        token.transferFrom(owner, msg.sender, _amount);
+        tokenSold += _amount;
+    }
+}
+<\contract\>

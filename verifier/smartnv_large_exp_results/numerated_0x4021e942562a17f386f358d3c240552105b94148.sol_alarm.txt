@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The state variable `lockedFunds` is updated in the `endExecute` function without proper synchronization, which can lead to inconsistent state updates.
+
+2) Atomicity violation: The state variables `proposal.votedAmount` and `votedProposal` are updated separately in the `execute` function, which can result in inconsistent or unexpected behavior if an external call interrupts between the two updates.
+
+3) Incorrect visibility/ownership: The contract does not specify the visibility of the `lockedFunds` variable, which could lead to potential security risks if the variable is accessed or modified by external contracts.

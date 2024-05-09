@@ -1,0 +1,36 @@
+<\contract\> 
+contract Escrow {
+         address public buyer;
+         address public seller;
+         uint public funds;
+         bool public isFundsReleased;
+
+         constructor(address _buyer, address _seller) {
+             buyer = _buyer;
+             seller = _seller;
+         }
+         
+         function depositFunds() public payable {
+             require(msg.sender == buyer, "only buyer can deposit funds");
+             funds += msg.value;
+         }
+         
+         function releaseFunds() public {
+             require(msg.sender == seller, "only seller can release funds");
+             require(isFundsReleased == false, "funds have already been released");
+             isFundsReleased = true;
+             payable(seller).transfer(funds);
+         }
+         
+         function refundFunds() public {
+             require(msg.sender == buyer, "only buyer can refund funds");
+             require(isFundsReleased == false, "funds have already been released");
+             payable(buyer).transfer(funds);
+         }
+     }
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The visibility of the state variables buyer, seller, funds, and isFundsReleased should be set to private to prevent unauthorized access.
+2) Inconsistent state update: The state variable isFundsReleased is not updated consistently with the release of funds, which could lead to funds being released multiple times.
+3) Insufficient gas: The transfer of funds using transfer() can fail if the recipient runs out of gas, resulting in a failed transaction and loss of funds. Consider using the withdrawal pattern to mitigate this vulnerability.

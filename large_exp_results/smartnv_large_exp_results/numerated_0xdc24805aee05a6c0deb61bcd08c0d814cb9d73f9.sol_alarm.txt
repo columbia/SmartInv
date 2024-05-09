@@ -1,0 +1,31 @@
+<\contract\>
+contract SupplyChain {
+    address public owner;
+    mapping(uint256 => Item) public items;
+
+    struct Item {
+        uint256 id;
+        string name;
+        uint256 price;
+        bool isSold;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(uint256 _id, string memory _name, uint256 _price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        items[_id] = Item(_id, _name, _price, false);
+    }
+
+    function buyItem(uint256 _id) public payable {
+        require(items[_id].id != 0, "Item does not exist");
+        require(!items[_id].isSold, "Item already sold");
+        require(msg.value >= items[_id].price, "Insufficient funds");
+
+        items[_id].isSold = true;
+        owner.transfer(msg.value);
+    }
+}
+<\contract\>

@@ -1,0 +1,33 @@
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+          bool hasVoted; 
+          address delegate;
+          uint vote;
+          uint votingWeight;
+     }
+     mapping(address => Voter) public voters;
+     address public admin;
+
+     modifier onlyAdmin() {
+          require(msg.sender == admin, "Only admin can call this function");
+          _;
+     }
+
+     function delegate(address to) external {
+          require(!voters[msg.sender].hasVoted, "You have already voted");
+          voters[msg.sender].delegate = to;
+     }
+
+     function vote(uint option) external {
+          require(voters[msg.sender].votingWeight > 0, "You don't have voting rights");
+          require(!voters[msg.sender].hasVoted, "You have already voted");
+          voters[msg.sender].vote = option;
+          voters[msg.sender].hasVoted = true;
+     }
+
+     function weight(address account, uint amount) external onlyAdmin {
+          voters[account].votingWeight = amount;
+     }
+}
+<\contract\>

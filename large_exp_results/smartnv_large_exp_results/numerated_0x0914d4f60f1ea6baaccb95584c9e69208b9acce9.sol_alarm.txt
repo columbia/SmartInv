@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+```solidity
+contract Crowdsale {
+     mapping(address => uint) public balances;
+     address public owner;
+     uint public hardCap;
+     uint public totalSold;
+     IERC20 public token;
+
+     function buyTokens(uint amount) public {
+          require(totalSold + amount <= hardCap, "hard cap reached");
+          uint price = amount * 0.01 ether;
+          token.transferFrom(msg.sender, address(this), amount);
+          balances[msg.sender] += amount;
+          totalSold += amount;
+          owner.transfer(price);
+     }
+}
+```
+
+Potential vulnerabilities in the Crowdsale contract:
+1) Arithmetic flaw: Multiplying by a decimal value (0.01 ether) in calculating the token price could lead to precision errors.
+2) Inconsistent state update: The total sold amount is updated after transferring tokens, which could lead to exceeding the hard cap.
+3) Insufficient gas: If the price calculation and token transfer consume too much gas, the transfer to the owner may fail.
+4) Incorrect visibility/ownership: Lack of access control or visibility for certain variables and functions might pose security risks.

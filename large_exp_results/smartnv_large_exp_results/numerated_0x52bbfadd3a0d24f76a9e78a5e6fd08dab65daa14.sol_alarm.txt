@@ -1,0 +1,27 @@
+<\analyzed_contract\> 
+contract SalesContract {
+    address public seller;
+    address public buyer;
+    uint public price;
+    bool public isPaid;
+
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+        isPaid = false;
+    }
+
+    function buy() public payable {
+        require(msg.sender == buyer, "Only buyer can execute this function");
+        require(msg.value == price, "Incorrect payment amount");
+        isPaid = true;
+        seller.transfer(msg.value);
+    }
+
+    function cancel() public {
+        require(msg.sender == seller, "Only seller can cancel the sale");
+        require(!isPaid, "Sale has already been paid for");
+        selfdestruct(payable(seller));
+    }
+}

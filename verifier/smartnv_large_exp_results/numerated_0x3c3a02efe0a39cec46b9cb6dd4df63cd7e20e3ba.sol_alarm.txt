@@ -1,0 +1,45 @@
+The contract to analyze for potential vulnerabilities is as follows:
+
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+
+     enum State { Created, Locked, Released, Inactive }
+     State public state;
+
+     modifier onlyBuyer() {
+         require(msg.sender == buyer, "Only buyer can call this function");
+         _;
+     }
+
+     modifier inState(State _state) {
+         require(state == _state, "Invalid state");
+         _;
+     }
+
+     function deposit() public payable onlyBuyer {
+         require(state == State.Created, "Invalid state");
+     }
+
+     function confirmReceived() public onlyBuyer inState(State.Locked) {
+         state = State.Released;
+         seller.transfer(address(this).balance);
+     }
+
+     function refundBuyer() public onlyBuyer inState(State.Locked) {
+         state = State.Inactive;
+         buyer.transfer(address(this).balance);
+     }
+
+     function refundSeller() public inState(State.Released) {
+         state = State.Inactive;
+         seller.transfer(address(this).balance);
+     }
+}
+
+Output: 
+- Incorrect visibility/ownership (seller and arbiter addresses are public)
+- Insufficient gas for transfer functions
+- Inconsistent state update in refundSeller function (updating state to Inactive without checking state)
+- Potential reentrancy in transfer functions.

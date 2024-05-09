@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public amount;
+     bool public buyerOk;
+     bool public sellerOk;
+     
+     function Escrow(address _seller, address _arbiter) public {
+         buyer = msg.sender;
+         seller = _seller;
+         arbiter = _arbiter;
+     }
+     
+     function accept() public {
+         require(msg.sender == arbiter);
+         if (sellerOk) {
+             seller.transfer(amount);
+         } else if (buyerOk) {
+             buyer.transfer(amount);
+         }
+     }
+     
+     function cancel() public {
+         require(msg.sender == arbiter);
+         if (buyerOk && sellerOk) {
+             buyer.transfer(amount);
+         }
+     }
+} 
+
+Output:
+1) inconsistency state update
+2) incorrect visibility/ownership

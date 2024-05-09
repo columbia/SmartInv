@@ -1,0 +1,41 @@
+<\contract\>
+contract Crowdsale {
+    address public owner;
+    uint public totalTokens;
+    uint public tokenPrice;
+
+    constructor(uint _totalTokens, uint _tokenPrice) {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent");
+        require(totalTokens >= _numTokens, "Not enough tokens available");
+
+        totalTokens -= _numTokens;
+        // Transfer tokens to buyer
+        // TODO: Implement transfer function
+        
+        payable(owner).transfer(msg.value);
+    }
+
+    function changePrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only the owner can change the price");
+
+        tokenPrice = _newPrice;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to the public. It is recommended to use private visibility for sensitive variables like the owner's address.
+2) Insufficient gas: The withdrawFunds function transfers the contract's balance to the owner. If the contract holds a large amount of funds, this transfer might fail due to running out of gas. Consider using a withdrawal pattern or limiting the amount transferred in a single transaction.
+3) Atomicity violation: The buyTokens function deducts the purchased tokens from the totalTokens variable before transferring the tokens to the buyer. This could lead to a race condition where multiple users try to purchase the same tokens simultaneously, resulting in an inconsistent state. It is recommended to transfer the tokens before updating the totalTokens variable.

@@ -1,0 +1,27 @@
+contract Crowdsale {
+    address public owner;
+    uint public endTime;
+    uint public tokenPrice;
+    
+    mapping(address => uint) public balance;
+    mapping(address => uint) public tokensBought;
+    
+    constructor() {
+        owner = msg.sender;
+        endTime = block.timestamp + 7 days;
+        tokenPrice = 0.005 ether;
+    }
+    
+    function buyTokens(uint amount) public payable {
+        require(block.timestamp < endTime, "Crowdsale has ended");
+        require(msg.value >= amount * tokenPrice, "Insufficient payment");
+        
+        balance[msg.sender] += msg.value;
+        tokensBought[msg.sender] += amount;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}

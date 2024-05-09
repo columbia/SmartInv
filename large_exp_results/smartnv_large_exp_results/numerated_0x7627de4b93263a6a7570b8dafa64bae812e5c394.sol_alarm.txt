@@ -1,0 +1,23 @@
+<\contract\>
+contract Marketplace {
+    struct Product {
+        uint id;
+        string name;
+        uint price;
+    }
+    
+    mapping(uint => Product) public products;
+    
+    function addProduct(uint _id, string memory _name, uint _price) public {
+        Product memory newProduct = Product(_id, _name, _price);
+        products[_id] = newProduct;
+    }
+    
+    function updateProductPrice(uint _id, uint _newPrice) public {
+        products[_id].price = _newPrice;
+    }
+}
+<\contract\>
+
+output:
+- Incorrect visibility/ownership (functions are public by default)

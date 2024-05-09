@@ -1,0 +1,31 @@
+Contract to analyze:
+contract Escrow {
+     address public sender;
+     address public receiver;
+     bool public isActive;
+     uint public amount;
+
+     function deposit(address _receiver) public payable {
+         require(isActive == false, "Escrow already active");
+         sender = msg.sender;
+         receiver = _receiver;
+         amount = msg.value;
+         isActive = true;
+     }
+
+     function release() public {
+         require(isActive == true, "Escrow not active");
+         require(msg.sender == sender, "Only sender can release funds");
+         payable(receiver).transfer(amount);
+         isActive = false;
+     }
+
+     function cancel() public {
+         require(isActive == true, "Escrow not active");
+         require(msg.sender == sender, "Only sender can cancel");
+         payable(sender).transfer(amount);
+         isActive = false;
+     }
+}
+Output: 
+ID uniqueness violation

@@ -1,0 +1,31 @@
+The contract below contains potential vulnerabilities:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    address[] public voters;
+    
+    function vote(uint _numVotes) public {
+        require(_numVotes > 0, "Must vote for at least 1 vote");
+        votes[msg.sender] += _numVotes;
+        
+        bool isNewVoter = true;
+        for(uint i = 0; i < voters.length; i++) {
+            if(voters[i] == msg.sender) {
+                isNewVoter = false;
+                break;
+            }
+        }
+        
+        if(isNewVoter) {
+            voters.push(msg.sender);
+        }
+    }
+    
+    function getVotes(address _voter) public view returns (uint) {
+        return votes[_voter];
+    }
+}
+Potential vulnerabilities:
+- ID uniqueness violation: The contract does not check for unique voters, allowing the same user to vote multiple times.
+- Incorrect visibility/ownership: The `votes` mapping and `voters` array are public, exposing voter information publicly.
+- Inconsistent state update: The contract does not handle the case where a voter's votes exceed the maximum uint value, potentially leading to unexpected behavior.

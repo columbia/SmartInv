@@ -1,0 +1,20 @@
+The contract provided for analysis:
+
+```solidity
+contract CrossBridgeContract {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    
+    function swapTokens(uint amount, address recipient) external {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(recipient, amount);
+    }
+}
+```
+
+Potential vulnerabilities in the CrossBridgeContract:
+1) privilege escalation
+2) inconsistent state update
+3) atomicity violation
+4) ID uniqueness violation

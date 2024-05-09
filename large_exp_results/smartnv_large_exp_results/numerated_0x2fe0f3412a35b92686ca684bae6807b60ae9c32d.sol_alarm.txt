@@ -1,0 +1,27 @@
+<\contract\> 
+contract Marketplace {
+    address public admin;
+    mapping(uint => uint) public itemPrices;
+    mapping(uint => address) public itemOwners;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function setPrice(uint itemId, uint price) external {
+        require(msg.sender == admin, "Only admin can set prices");
+        itemPrices[itemId] = price;
+    }
+
+    function purchaseItem(uint itemId) external payable {
+        require(msg.value >= itemPrices[itemId], "Insufficient funds");
+        address payable seller = address(uint160(itemOwners[itemId]));
+        seller.transfer(msg.value);
+        itemOwners[itemId] = msg.sender;
+    }
+
+    function getItemPrice(uint itemId) external view returns (uint) {
+        return itemPrices[itemId];
+    }
+}
+<\contract\>

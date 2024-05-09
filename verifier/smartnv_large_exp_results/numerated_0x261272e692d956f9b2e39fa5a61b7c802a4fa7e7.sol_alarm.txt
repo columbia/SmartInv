@@ -1,0 +1,46 @@
+contract VotingSystem {
+    struct Candidate {
+        string name;
+        uint256 voteCount;
+    }
+    
+    mapping(address => bool) public hasVoted;
+    mapping(address => bool) public isCandidate;
+    mapping(address => uint256) public voteWeight;
+    mapping(address => uint256) public votesReceived;
+    
+    Candidate[] public candidates;
+    address public admin;
+    
+    constructor() {
+        admin = msg.sender;
+    }
+    
+    function addCandidate(address _candidate, string memory _name) public {
+        require(msg.sender == admin, "Only admin can add candidates");
+        isCandidate[_candidate] = true;
+        candidates.push(Candidate(_name, 0));
+    }
+    
+    function vote(address _candidate) public {
+        require(isCandidate[_candidate], "Not a valid candidate");
+        require(!hasVoted[msg.sender], "You have already voted");
+        hasVoted[msg.sender] = true;
+        voteWeight[msg.sender] += 1;
+        candidates[_candidate].voteCount += voteWeight[msg.sender];
+        votesReceived[msg.sender] = voteWeight[msg.sender];
+    }
+    
+    function getWinner() view public returns (string memory) {
+        require(msg.sender == admin, "Only admin can get the winner");
+        uint256 winningVoteCount = 0;
+        string memory winningName;
+        for (uint256 i = 0; i < candidates.length; i++) {
+            if (candidates[i].voteCount > winningVoteCount) {
+                winningVoteCount = candidates[i].voteCount;
+                winningName = candidates[i].name;
+            }
+        }
+        return winningName;
+    }
+}

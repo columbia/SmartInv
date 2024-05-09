@@ -1,0 +1,30 @@
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => bool) public itemsListed;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function listNewItem(uint256 itemId) public {
+        require(msg.sender == owner, "Not authorized");
+        itemsListed[itemId] = true;
+    }
+
+    function purchaseItem(uint256 itemId) public payable {
+        require(itemsListed[itemId], "Item not listed");
+        // Process payment logic here
+        // Send item to buyer
+        itemsListed[itemId] = false;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Not authorized");
+        // Withdraw funds logic here
+    }
+} 
+
+The potential vulnerabilities in the Marketplace contract are:
+1) Incorrect visibility/ownership: Although the contract checks for ownership in the listNewItem and withdrawFunds functions, the visibility of the owner variable is public, which could potentially lead to unauthorized access if not properly implemented. 
+2) Inconsistent state update: The purchaseItem function sets the itemsListed[itemId] to false without any additional checks, which could lead to inconsistencies in the state of listed items.
+3) Suicidal contracts: The contract does not have a self-destruct function, but if implemented incorrectly in the future, it could lead to vulnerability.

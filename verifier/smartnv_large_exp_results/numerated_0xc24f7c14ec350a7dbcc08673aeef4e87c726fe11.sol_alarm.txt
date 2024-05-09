@@ -1,0 +1,33 @@
+The contract provided is as follows:
+
+```
+contract Marketplace {
+      IERC20 public token;
+      address public owner;
+      mapping(address => uint) public balances;
+
+      function deposit(uint amount) public {
+          token.transferFrom(msg.sender, address(this), amount);
+          balances[msg.sender] += amount;
+      }
+
+      function withdraw(uint amount) public {
+          require(balances[msg.sender] >= amount, "Insufficient balance");
+          balances[msg.sender] -= amount;
+          token.transfer(msg.sender, amount);
+      }
+
+      function setOwner(address newOwner) public {
+          require(msg.sender == owner, "Only owner can set new owner");
+          owner = newOwner;
+      }
+}
+```
+
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility/ownership: The `setOwner` function allows anyone to set a new owner for the contract, which should ideally only be allowed for the current owner to prevent unauthorized changes in ownership.
+
+2) Insufficient gas: If the `withdraw` function requires a significant amount of gas to process, it could lead to a scenario where users are unable to withdraw their funds due to insufficient gas. 
+
+Therefore, the vulnerabilities in the provided contract are Incorrect visibility/ownership and Insufficient gas.

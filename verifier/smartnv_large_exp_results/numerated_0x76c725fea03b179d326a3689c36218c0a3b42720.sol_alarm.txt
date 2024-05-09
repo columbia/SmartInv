@@ -1,0 +1,32 @@
+<\contract\> 
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public itemReceived;
+    bool public paymentReleased;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        itemReceived = false;
+        paymentReleased = false;
+    }
+
+    function confirmItemReceived() public {
+        require(msg.sender == buyer, "Only the buyer can confirm item received");
+        itemReceived = true;
+    }
+
+    function releasePayment() public {
+        require(msg.sender == seller, "Only the seller can release payment");
+        require(itemReceived == true, "Item has not been received yet");
+        paymentReleased = true;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+- Business logic flaw: The contract does not have checks to prevent the buyer or seller from calling both confirmItemReceived() and releasePayment().
+- Incorrect visibility/ownership: Both confirmItemReceived() and releasePayment() functions are public, allowing anyone to call these functions. These functions should be restricted to only the intended parties (buyer and seller).

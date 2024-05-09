@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+    
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(address(this)) >= totalCost, "Insufficient token balance in the contract");
+        
+        token.transfer(msg.sender, _amount);
+    }
+    
+    function setTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "You are not authorized to change token price");
+        
+        tokenPrice = _newPrice;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the `TokenSale` contract are:
+1) Incorrect visibility/ownership on the `owner` variable, making it publicly accessible.
+2) No input validation for `_amount` in the `buyTokens` function, which could lead to integer overflow/underflow.
+3) Possible privileged escalation in the `setTokenPrice` function if the owner checks are not robust enough.
+4) Lack of access control in the `setTokenPrice` function, allowing anyone to change the token price.
+5) Lack of validation for the `_newPrice` parameter in the `setTokenPrice` function, potentially introducing price manipulation vulnerabilities.

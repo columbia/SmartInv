@@ -1,0 +1,39 @@
+<\contract_to_analyze\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    uint256 public totalShares;
+    mapping(address => uint256) public released;
+    uint256 public releasedTotal;
+
+    constructor(address[] memory _payees, uint256[] memory _shares) public payable {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        require(_payees.length > 0, "No payees");
+        
+        payees = _payees;
+        shares = _shares;
+
+        for (uint256 i = 0; i < payees.length; i++) {
+            totalShares += shares[i];
+        }
+    }
+
+    function release(address payable _payee) public {
+        require(released[_payee] < shares[_payee], "No shares to release");
+
+        uint256 payment = (shares[_payee] / totalShares) * address(this).balance;
+        require(payment > 0, "Payment amount too small");
+
+        released[_payee] += payment;
+        releasedTotal += payment;
+
+        _payee.transfer(payment);
+    }
+
+    function releaseBatch(address payable[] memory _payees) public {
+        for (uint256 i = 0; i < _payees.length; i++) {
+            release(_payees[i]);
+        }
+    }
+}
+<\contract_to_analyze\>

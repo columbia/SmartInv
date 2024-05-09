@@ -1,0 +1,34 @@
+The contract provided for analysis:
+
+contract Lottery {
+    mapping(address => uint) public ticketCount;
+    uint public totalTickets;
+    address public winner;
+
+    function buyTickets(uint amount) public {
+        uint cost = amount * 0.01 ether;
+        require(msg.value >= cost, "Insufficient payment");
+        ticketCount[msg.sender] += amount;
+        totalTickets += amount;
+    }
+
+    function selectWinner() public {
+        require(totalTickets > 0, "No tickets bought");
+        uint winningTicket = uint(keccak256(abi.encodePacked(blockhash(block.number - 1)))) % totalTickets + 1;
+        uint currentTicket = 0;
+        address currentWinner;
+        for(uint i = 0; i < ticketCount.length; i++) {
+            currentTicket += ticketCount[i];
+            if(currentTicket >= winningTicket) {
+                currentWinner = i;
+                break;
+            }
+        }
+        winner = currentWinner;
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Output: 
+- business logic flaw
+- integer overflow/underflow.

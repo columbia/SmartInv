@@ -1,0 +1,46 @@
+<\contract\>
+contract Vesting {
+    address public beneficiary;
+    uint public start;
+    uint public duration;
+    uint public cliff;
+    uint public totalAmount;
+    
+    constructor(address _beneficiary, uint _start, uint _duration, uint _cliff, uint _totalAmount) {
+        beneficiary = _beneficiary;
+        start = _start;
+        duration = _duration;
+        cliff = _cliff;
+        totalAmount = _totalAmount;
+    }
+    
+    function release() public {
+        require(block.timestamp >= start, "Vesting has not started yet");
+        uint vestedAmount = calculateVestedAmount();
+        require(vestedAmount > 0, "No tokens are vested yet");
+        
+        // Transfer vested amount to beneficiary
+        transferVestedTokens(vestedAmount);
+    }
+    
+    function calculateVestedAmount() public view returns (uint) {
+        uint vestedAmount;
+        uint currentTime = block.timestamp;
+        
+        if (currentTime < start + cliff) {
+            vestedAmount = 0;
+        } else if (currentTime >= start + duration) {
+            vestedAmount = totalAmount;
+        } else {
+            uint elapsedTime = currentTime - start;
+            vestedAmount = totalAmount * elapsedTime / duration;
+        }
+        
+        return vestedAmount;
+    }
+    
+    function transferVestedTokens(uint amount) private {
+        // Transfer vested amount to beneficiary
+    }
+}
+<\contract\>

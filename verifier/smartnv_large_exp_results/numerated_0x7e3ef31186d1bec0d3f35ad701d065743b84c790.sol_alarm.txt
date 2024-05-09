@@ -1,0 +1,25 @@
+The contract to be analyzed for potential vulnerabilities is as follows:
+
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+
+    function vote(uint256 amount) external {
+        require(amount > 0, "Cannot vote with zero amount");
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function redeemVotes() external {
+        uint256 userVote = userVotes[msg.sender];
+        require(userVote > 0, "No votes to redeem");
+    
+        msg.sender.transfer(userVote);
+        totalVotes -= userVote;
+        userVotes[msg.sender] = 0;
+    }
+}
+
+The potential vulnerabilities in the VotingSystem contract are:
+- insufficient gas
+- incorrect visibility/ownership

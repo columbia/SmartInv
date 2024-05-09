@@ -1,0 +1,28 @@
+Contract:
+
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        require(Token(token).balanceOf(address(this)) >= amount, "Not enough tokens available");
+
+        Token(token).transfer(msg.sender, amount);
+    }
+
+    function withdrawETH() public {
+        require(msg.sender == owner, "Only owner can withdraw ETH");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Output:
+8) reentrancy

@@ -1,0 +1,26 @@
+<\Contract_to_be_analyzed\>
+contract Crowdsale {
+    address payable public owner;
+    uint public totalSupply;
+    mapping(address => uint) public balanceOf;
+    bool public isOpen;
+    
+    constructor() public {
+        owner = msg.sender;
+        totalSupply = 1000000;
+        isOpen = true;
+    }
+    
+    function buyTokens(uint amount) public payable {
+        require(isOpen, "Crowdsale is closed");
+        require(msg.value == amount, "Amount must match value sent");
+        
+        balanceOf[msg.sender] += amount;
+    }
+    
+    function closeCrowdsale() public {
+        require(msg.sender == owner, "Only owner can close the crowdsale");
+        isOpen = false;
+    }
+}
+<\Contract_to_be_analyzed\>

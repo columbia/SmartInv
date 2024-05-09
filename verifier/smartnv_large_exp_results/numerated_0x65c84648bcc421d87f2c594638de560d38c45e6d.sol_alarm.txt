@@ -1,0 +1,35 @@
+Contract to be analyzed:
+
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+    
+    constructor(address _token, uint _price) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _price;
+    }
+    
+    function buyTokens(uint _amount) public {
+        uint totalPrice = _amount * tokenPrice;
+        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient token balance");
+        
+        balances[msg.sender] += _amount;
+        token.transferFrom(msg.sender, address(this), _amount);
+        token.transfer(owner, totalPrice);
+    }
+    
+    function withdrawTokens() public {
+        uint amount = balances[msg.sender];
+        require(amount > 0, "No tokens to withdraw");
+        
+        balances[msg.sender] = 0;
+        token.transfer(msg.sender, amount);
+    }
+}
+
+Output: 
+- Insufficient gas
+- Incorrect visibility/ownership

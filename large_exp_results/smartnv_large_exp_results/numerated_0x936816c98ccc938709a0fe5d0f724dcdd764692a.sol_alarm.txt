@@ -1,0 +1,21 @@
+The contract provided for analysis:
+<\contract_for_analysis\>
+contract TokenSale {
+        address public admin;
+        IERC20 public token;
+
+        constructor(address _token) {
+            admin = msg.sender;
+            token = IERC20(_token);
+        }
+
+        function buyTokens(uint256 amount) public {
+            token.transfer(msg.sender, amount);
+        }
+
+        function withdrawFunds() public {
+            require(msg.sender == admin, "only admin can withdraw funds");
+            msg.sender.transfer(address(this).balance);
+        }
+}
+<\contract_for_analysis\>

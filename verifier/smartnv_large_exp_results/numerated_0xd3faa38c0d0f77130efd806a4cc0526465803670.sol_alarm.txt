@@ -1,0 +1,34 @@
+<\contract\> 
+
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+     mapping(address => uint) public balances;
+
+     constructor(IERC20 _token, uint _tokenPrice) {
+         token = _token;
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint amount) public {
+         require(balances[msg.sender] + amount * tokenPrice <= token.balanceOf(address(this)), "Insufficient token balance");
+         uint cost = amount * tokenPrice;
+         balances[msg.sender] += amount;
+         token.transfer(msg.sender, amount);
+         token.transferFrom(msg.sender, owner, cost);
+     }
+
+     function withdraw() public {
+         uint balance = balances[msg.sender];
+         balances[msg.sender] = 0;
+         token.transferFrom(address(this), msg.sender, balance * tokenPrice);
+     }
+}
+
+<\contract\> 
+Output:
+1) Inconsistent state update
+2) Atomicity violation
+3) Integer overflow/underflow

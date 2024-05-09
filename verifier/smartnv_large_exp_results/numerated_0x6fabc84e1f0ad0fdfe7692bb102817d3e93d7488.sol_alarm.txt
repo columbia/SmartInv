@@ -1,0 +1,25 @@
+<\contract\> 
+contract TokenSale {
+         address public owner;
+         mapping(address => uint) public balances;
+         uint public tokenPrice;
+ 
+         constructor() {
+             owner = msg.sender;
+             tokenPrice = 100; 
+         }
+
+         function buyTokens(uint amount) public payable {
+             require(msg.value == amount * tokenPrice, "Incorrect payment amount");
+             balances[msg.sender] += amount;
+         }
+
+         function withdraw() public {
+             require(msg.sender == owner, "Only owner can withdraw funds");
+             payable(owner).transfer(address(this).balance);
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect ownership control in the withdraw function.

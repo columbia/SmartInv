@@ -1,0 +1,42 @@
+The contract provided for analysis is:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The startExecute function sets the values of proposal and startingBalanceList without any validation, potentially leading to inconsistent state updates.
+2) Incorrect visibility/ownership: The internal owner variable is not used in the contract but is declared without any visibility specifier, which may lead to incorrect ownership assumptions.
+3) Insufficient gas: The contract does not handle potential out-of-gas exceptions when executing functions, which may result in incomplete or failed transactions.
+4) ID uniqueness violation: The contract does not ensure uniqueness of IDs for proposals, which could lead to conflicts or unexpected behavior.
+5) Business logic flaw: The endExecute function's condition check "votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()" may have a flawed business logic as it is not clear why the balance should be double the total supply for execution to be successful.

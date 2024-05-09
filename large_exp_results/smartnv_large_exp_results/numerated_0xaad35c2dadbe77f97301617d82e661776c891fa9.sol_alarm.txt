@@ -1,0 +1,18 @@
+<\analyzed_contract\>
+contract MyContract {
+    address public owner;
+    uint public balance;
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(amount <= balance, "Insufficient funds");
+        
+        owner.transfer(amount);
+        balance -= amount;
+    }
+}
+<\analyzed_contract\>

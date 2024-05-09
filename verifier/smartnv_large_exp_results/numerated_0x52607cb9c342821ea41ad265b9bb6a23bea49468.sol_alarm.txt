@@ -1,0 +1,37 @@
+<\contract_to_analyze\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public depositAmount;
+    bool public isPaid;
+    
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        depositAmount = 0;
+        isPaid = false;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        depositAmount += msg.value;
+    }
+    
+    function release() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(isPaid == false, "Funds have already been released");
+        seller.transfer(depositAmount);
+        isPaid = true;
+    }
+    
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(isPaid == false, "Funds have already been released");
+        buyer.transfer(depositAmount);
+        isPaid = true;
+    }
+}
+<\contract_to_analyze\>

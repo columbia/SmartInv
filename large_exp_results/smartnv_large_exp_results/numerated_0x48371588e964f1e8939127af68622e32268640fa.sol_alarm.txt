@@ -1,0 +1,28 @@
+<\your_contract_name\> 
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public investors;
+    uint public totalInvested;
+    uint public totalTokens;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function invest() public payable {
+        require(msg.value >= 1 ether, "Minimum investment is 1 ether");
+        investors[msg.sender] += msg.value;
+        totalInvested += msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        payable(owner).transfer(address(this).balance);
+    }
+
+    function distributeTokens() public {
+        require(msg.sender == owner, "Only owner can distribute tokens");
+        totalTokens = totalInvested * 10;
+    }
+}
+<\your_contract_name\>

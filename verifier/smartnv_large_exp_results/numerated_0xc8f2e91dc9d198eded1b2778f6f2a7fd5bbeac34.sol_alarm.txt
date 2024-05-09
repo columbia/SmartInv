@@ -1,0 +1,16 @@
+contract TokenExchange {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         
+         function exchangeTokens(uint amountA) public {
+             require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance of tokenA");
+             
+             // Perform the exchange logic
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             tokenB.transfer(msg.sender, amountA);
+         }
+         
+         function getExchangeRate() public view returns (uint) {
+             return tokenB.balanceOf(address(this)) / tokenA.balanceOf(address(this));
+         }
+     }

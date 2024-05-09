@@ -1,0 +1,30 @@
+<strong>Contract:</strong> 
+
+```solidity
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() external payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if (highestBid != 0) {
+            address payable prevHighestBidder = address(uint160(highestBidder));
+            prevHighestBidder.transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() external {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw");
+        address payable recipient = address(uint160(msg.sender));
+        recipient.transfer(highestBid);
+        highestBid = 0;
+    }
+}
+```
+
+<strong>Potential Vulnerabilities:</strong> 
+1) Reentrancy
+2) Inconsistent state update
+3) Incorrect visibility/ownership

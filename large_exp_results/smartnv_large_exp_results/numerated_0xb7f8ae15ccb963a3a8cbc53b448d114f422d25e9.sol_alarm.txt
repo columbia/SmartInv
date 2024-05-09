@@ -1,0 +1,15 @@
+<\contract\> 
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+7) ID uniqueness violation

@@ -1,0 +1,25 @@
+<\contract\>
+contract PaymentChannel {
+     address public payer;
+     address public recipient;
+     uint public expiration;
+     uint public amount;
+     bool public closed;
+    
+    constructor(address _recipient, uint _duration) public payable {
+        payer = msg.sender;
+        recipient = _recipient;
+        expiration = now + _duration;
+        amount = msg.value;
+        closed = false;
+    }
+    
+    function closeChannel(bytes32 _secret) public {
+        require(msg.sender == payer, "You are not authorized to close the channel");
+        require(keccak256(abi.encodePacked(_secret)) == keccak256(abi.encodePacked("secret")), "Incorrect secret provided");
+        require(now < expiration, "Channel has expired");
+        
+        recipient.transfer(address(this).balance);
+        closed = true;
+    }
+}

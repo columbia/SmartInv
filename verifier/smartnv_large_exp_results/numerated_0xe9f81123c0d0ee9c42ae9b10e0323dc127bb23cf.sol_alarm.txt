@@ -1,0 +1,28 @@
+The potential vulnerabilities in the contract below are:
+
+2) Price manipulation
+4) Inconsistent state update
+6) Cross bridge inconsistency
+
+contract TokenSale {
+    uint public totalSupply;
+    uint public tokenPrice;
+    address public tokenAddress;
+    
+    mapping(address => uint) public balances;
+    
+    function buyTokens(uint amount) external {
+        require(balances[msg.sender] >= amount * tokenPrice, "Insufficient balance");
+        require(totalSupply >= amount, "Not enough tokens left");
+        
+        balances[msg.sender] -= amount * tokenPrice;
+        totalSupply -= amount;
+        
+        tokenAddress.transfer(amount);
+    }
+    
+    function setTokenPrice(uint price) external {
+        require(msg.sender == owner, "Unauthorized");
+        tokenPrice = price;
+    }
+}

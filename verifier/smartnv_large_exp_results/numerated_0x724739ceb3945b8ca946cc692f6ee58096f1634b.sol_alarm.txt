@@ -1,0 +1,23 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[owner] += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Unauthorized");
+        uint balance = balances[owner];
+        balances[owner] = 0;
+        msg.sender.transfer(balance);
+    }
+}
+<\contract_to_be_analyzed\>

@@ -1,0 +1,31 @@
+<\contract\> 
+contract MultiSigWallet {
+    mapping(address => uint) public balances;
+    mapping(address => bool) public isOwner;
+    uint public transactionCount;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function submitTransaction(address to, uint value) public {
+        require(isOwner[msg.sender], "Sender is not an owner");
+        require(balances[msg.sender] >= value, "Insufficient balance");
+        
+        transactionCount++;
+    }
+    
+    function executeTransaction(address to, uint value) public {
+        require(isOwner[msg.sender], "Sender is not an owner");
+        require(balances[msg.sender] >= value, "Insufficient balance");
+        
+        balances[to] += value;
+        balances[msg.sender] -= value;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the MultiSigWallet contract are:
+1) Incorrect visibility/ownership: The `submitTransaction` and `executeTransaction` functions should ideally only be accessed by authorized owners, but there is no check to ensure that `to` address is an owner or has the authority to execute transactions.
+2) Inconsistent state update: The `balances` mapping is directly modified within the `submitTransaction` and `executeTransaction` functions without proper checks or safeguards, which could lead to inconsistent state updates or unauthorized changes in the balances.
+3) Insufficient gas: If the contract runs out of gas during the execution of the `submitTransaction` or `executeTransaction` functions, it may result in the functions being left incomplete, leaving the contract in an inconsistent state.

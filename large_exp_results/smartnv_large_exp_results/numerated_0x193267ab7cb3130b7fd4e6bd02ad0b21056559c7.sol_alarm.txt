@@ -1,0 +1,27 @@
+<\contract\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid amount must be higher than current highest bid");
+        
+        if(highestBid > 0) {
+            highestBidder.transfer(highestBid); // Refund the previous highest bidder
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+        
+        highestBidder.transfer(highestBid); // Transfer the winning bid amount
+        highestBid = 0;
+    }
+}
+<\contract\> 
+
+Output:
+1) reentrancy

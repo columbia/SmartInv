@@ -1,0 +1,26 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+     address public admin;
+     mapping(address => uint) public balances;
+     
+     constructor() {
+         admin = msg.sender;
+     }
+     
+     function buyTokens(uint amount) public {
+         require(amount > 0, "Amount cannot be zero");
+         ERC20Token token = ERC20Token(0x123);
+         token.transfer(msg.sender, amount);
+         balances[msg.sender] += amount;
+     }
+     
+     function withdrawTokens(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         ERC20Token token = ERC20Token(0x123);
+         token.transfer(admin, amount);
+         balances[msg.sender] -= amount;
+     }
+}
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership
+2) Inconsistent state update

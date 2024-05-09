@@ -1,0 +1,27 @@
+contract PaymentContract {
+    address public owner;
+    uint public totalPayments;
+    
+    mapping(uint => bool) public paymentStatus;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint paymentId) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        
+        totalPayments += 1;
+        paymentStatus[paymentId] = true;
+    }
+
+    function getPaymentStatus(uint paymentId) public view returns (bool) {
+        return paymentStatus[paymentId];
+    }
+
+    function updateOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can update owner");
+        
+        owner = newOwner;
+    }
+}

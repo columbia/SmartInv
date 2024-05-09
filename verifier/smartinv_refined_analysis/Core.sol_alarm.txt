@@ -1,0 +1,24 @@
+The contract provided for analysis:
+
+contract CrossBridgeController {
+    struct Bridge {
+        address tokenA;
+        address tokenB;
+        address bridgeAddress;
+    }
+
+    mapping(address => Bridge) public bridges;
+
+    function addBridge(address _tokenA, address _tokenB, address _bridgeAddress) external {
+        require(_tokenA != address(0) && _tokenB != address(0) && _bridgeAddress != address(0), "Invalid address");
+        require(bridges[_tokenA].bridgeAddress == address(0) && bridges[_tokenB].bridgeAddress == address(0), "Bridge already exists");
+
+        Bridge memory newBridge = Bridge(_tokenA, _tokenB, _bridgeAddress);
+        bridges[_tokenA] = newBridge;
+        bridges[_tokenB] = newBridge;
+    }
+}
+
+Potential vulnerabilities in the CrossBridgeController contract:
+- Cross bridge inconsistency: When adding a new bridge, the contract only updates the bridge information for one of the tokens involved in the bridge. This can lead to inconsistencies where one token has a bridge address set while the other token does not, potentially causing issues with token transfers between the two bridges.
+- ID uniqueness violation: The contract does not enforce uniqueness of the bridge tokens when adding a new bridge. This could result in multiple bridges being created for the same token pair, leading to confusion and potential errors in transferring tokens between bridges.

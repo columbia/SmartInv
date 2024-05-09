@@ -1,0 +1,22 @@
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+    uint public totalTokens;
+    uint public tokensSold;
+
+    constructor(address _token, uint _price, uint _totalTokens) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        price = _price;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _amount) external payable {
+        require(_amount > 0, "Invalid token amount");
+        require(msg.value == _amount * price, "Incorrect payment amount");
+
+        token.transfer(msg.sender, _amount);
+        tokensSold += _amount;
+    }
+}

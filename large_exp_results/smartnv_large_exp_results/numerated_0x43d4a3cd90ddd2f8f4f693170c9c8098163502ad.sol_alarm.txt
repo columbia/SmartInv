@@ -1,0 +1,20 @@
+The contract provided for analysis:
+
+contract UniswapV2Pair is IUniswapV2Pair {
+ 
+    uint public totalSupply = 0;
+    mapping(address => uint) public balanceOf;
+ 
+    function swap(uint amount0Out, uint amount1Out, address to, bytes calldata data) external override {
+        balanceOf[msg.sender] -= amount0Out + amount1Out;
+        balanceOf[to] += amount0Out + amount1Out;
+    }
+ 
+    function mint(address to) external {
+        balanceOf[to] += 1000;
+        totalSupply += 1000;
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

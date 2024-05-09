@@ -1,0 +1,50 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+
+    struct Voter {
+        uint256 weight; 
+        bool voted; 
+        uint256 vote; 
+    }
+    
+    struct Proposal {
+        uint256 voteCount; 
+    }
+
+    address public chairperson;
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+
+    constructor(uint256 numProposals) {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+        proposals.length = numProposals;
+    }
+
+    function giveRightToVote(address voter) public {
+        require(msg.sender == chairperson, "Only chairperson can give right to vote.");
+        require(!voters[voter].voted, "The voter already voted.");
+        require(voters[voter].weight == 0);
+        voters[voter].weight = 1;
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Has no right to vote.");
+        require(!sender.voted, "Already voted.");
+        sender.voted = true;
+        sender.vote = proposal;
+        proposals[proposal].voteCount += sender.weight;
+    }
+
+    function winningProposal() public view returns (uint256 winningProposal_) {
+        uint256 winningVoteCount = 0;
+        for (uint256 p = 0; p < proposals.length; p++) {
+            if (proposals[p].voteCount > winningVoteCount) {
+                winningVoteCount = proposals[p].voteCount;
+                winningProposal_ = p;
+            }
+        }
+    }
+
+}

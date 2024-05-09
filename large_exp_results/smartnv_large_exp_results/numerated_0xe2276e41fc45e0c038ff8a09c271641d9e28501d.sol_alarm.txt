@@ -1,0 +1,18 @@
+The contract provided for analysis:
+
+contract PaymentProcessor {
+     address public admin;
+     mapping(address => uint256) public payments;
+     
+     constructor() {
+         admin = msg.sender;
+     }
+     
+     function processPayment(address _recipient, uint256 _amount) public {
+         require(msg.sender == admin, "Only admin can process payments");
+         payments[_recipient] += _amount;
+     }
+}
+
+The potential vulnerabilities in the contract are:
+- incorrect visibility/ownership

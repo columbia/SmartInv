@@ -1,0 +1,31 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint public totalVotes;
+
+    function delegate(address to) public {
+        require(to != msg.sender, "Self-delegation is not allowed");
+
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint option) public {
+        require(!voters[msg.sender].voted, "Already voted");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+        totalVotes++;
+    }
+
+    function endVoting() public {
+        require(totalVotes > 0, "No votes casted yet");
+        // logic to determine winning option
+    }
+}
+<\contract_to_analyze\>

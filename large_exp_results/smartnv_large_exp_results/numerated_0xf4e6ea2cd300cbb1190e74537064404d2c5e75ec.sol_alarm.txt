@@ -1,0 +1,19 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function directly, which may lead to inconsistencies if multiple callers are interacting with the contract concurrently.
+
+2) Incorrect visibility/ownership: The `votingToken` and `owner` variables are not specified with any visibility modifier, making them publicly accessible.
+
+3) Insufficient gas: The `execute` function may require significant gas if the `votingToken.transferFrom` call consumes a large amount of gas, leading to potential out-of-gas errors.
+
+4) Atomicity violation: The operations in the `execute` function are not wrapped in a single transaction, leaving the possibility of intermediate states if any operation fails.
+
+5) Integer overflow/underflow: There is a lack of explicit validation for potential integer overflow/underflow scenarios throughout the contract, which could pose a risk.
+
+6) ID uniqueness violation: The uniqueness of `proposal.addr` is not enforced, which may lead to unexpected behavior if multiple proposals share the same address.
+
+7) Reentrancy: The contract is susceptible to reentrancy attacks as external calls are made after state changes within the functions.
+
+8) Business logic flaw: The business logic around `lockedFunds` calculation in the `endExecute` function may lead to unintended outcomes depending on the token balances and total supply.
+
+9) Ether leakage: The contract does not handle Ether transactions explicitly, which may result in unintended Ether transfers or losses.

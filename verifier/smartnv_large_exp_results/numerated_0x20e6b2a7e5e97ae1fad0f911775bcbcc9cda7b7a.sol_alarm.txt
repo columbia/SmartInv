@@ -1,0 +1,21 @@
+contract VotingSystem {
+    struct Voter {
+        bool hasVoted;
+        uint votedProposalId;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint => uint) public proposalVotes;
+
+    function vote(uint proposalId) public {
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        voters[msg.sender].hasVoted = true;
+        voters[msg.sender].votedProposalId = proposalId;
+        proposalVotes[proposalId]++;
+    }
+
+    function executeProposal(uint proposalId) public {
+        require(proposalVotes[proposalId] > 100, "Not enough votes");
+        // Execute the proposal
+    }
+}

@@ -1,0 +1,34 @@
+contract Crowdsale {
+     address public owner;
+     IERC20 public token; 
+     uint public tokenPrice; 
+     uint public totalTokens;
+     uint public tokensSold;
+     bool public saleOpen;
+     
+     mapping(address => uint) public tokenBalance;
+
+     constructor(IERC20 _token, uint _tokenPrice, uint _totalTokens) {
+         owner = msg.sender;
+         token = _token;
+         tokenPrice = _tokenPrice;
+         totalTokens = _totalTokens;
+         saleOpen = true;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(saleOpen, "Sale is not open");
+         require(_amount <= totalTokens - tokensSold, "Not enough tokens available");
+         uint cost = _amount * tokenPrice;
+         token.transferFrom(msg.sender, address(this), _amount);
+         tokenBalance[msg.sender] += _amount;
+         tokensSold += _amount;
+         totalTokens -= tokensSold;
+         msg.sender.transfer(cost);
+     }
+
+     function endSale() public {
+         require(msg.sender == owner, "You are not the owner");
+         saleOpen = false;
+     }
+ }

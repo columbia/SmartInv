@@ -1,0 +1,21 @@
+The contract provided for analysis:
+
+```solidity
+contract MyContract {
+    IERC20 public token;
+
+    function deposit(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        token.transferFrom(msg.sender, address(this), amount);
+    }
+
+    function withdraw(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        token.transfer(msg.sender, amount);
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Insufficient gas: The `transferFrom` and `transfer` functions could potentially run out of gas during execution, especially if handling a large number of transactions.
+2) Incorrect visibility/ownership: It is not specified who can call the `deposit` and `withdraw` functions, which could lead to ownership or access control issues.

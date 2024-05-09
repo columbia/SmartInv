@@ -1,0 +1,33 @@
+<\contract\> 
+contract PaymentProcessor {
+    mapping(address => uint) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\> 
+
+Vulnerabilities: 
+1) Insufficient gas - The transfer function in the contract does not include a gas stipend, which may potentially lead to failing transactions due to insufficient gas.
+
+2) Incorrect visibility/ownership - The 'owner' variable is declared as public, which may expose the owner of the contract to potential security risks. 
+
+3) ID uniqueness violation - The contract does not have any mechanism to ensure the uniqueness of addresses, which can lead to confusion or incorrect operation due to non-unique addresses.

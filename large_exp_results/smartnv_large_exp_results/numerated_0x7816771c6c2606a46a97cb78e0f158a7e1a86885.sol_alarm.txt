@@ -1,0 +1,24 @@
+Contract to be analyzed: 
+
+contract Vesting {
+    mapping(address => uint256) public vestedAmounts;
+    mapping(address => uint256) public startTime;
+    mapping(address => uint256) public cliffDuration;
+    mapping(address => uint256) public vestingDuration;
+    mapping(address => bool) private tokenReleased;
+
+    function releaseTokens(address recipient) public {
+        require(tokenReleased[recipient] == false, "Tokens already released");
+        require(now >= startTime[recipient] + cliffDuration[recipient], "Cliff period not over yet");
+        
+        uint256 vestedAmount = vestedAmounts[recipient];
+        uint256 amountToSend = vestedAmount * (now - startTime[recipient]) / vestingDuration[recipient];
+        require(amountToSend > 0, "No funds to release");
+
+        tokenReleased[recipient] = true;
+        // transfer tokens to recipient
+    }
+}
+Output: 
+insufficient gas
+inconsistent state update

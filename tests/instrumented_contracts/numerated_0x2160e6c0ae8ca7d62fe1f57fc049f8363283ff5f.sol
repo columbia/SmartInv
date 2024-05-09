@@ -1,0 +1,149 @@
+1 pragma solidity ^0.4.10;
+2 
+3 contract ForeignToken {
+4   function balanceOf(address _owner) constant returns (uint256);
+5   function transfer(address _to, uint256 _value) returns (bool);
+6 }
+7 
+8 contract BlockpassToken {
+9 
+10   address owner = msg.sender;
+11 
+12   bool public purchasingAllowed = false;
+13 
+14   mapping (address => uint256) balances;
+15   mapping (address => mapping (address => uint256)) allowed;
+16 
+17   uint256 public totalContribution = 0;
+18   uint256 public totalSupply = 0;
+19   uint256 public startingBlock = block.number;
+20 
+21   function name() constant returns (string) { return "Blockpass Token"; }
+22   function symbol() constant returns (string) { return "BPT"; }
+23   function decimals() constant returns (uint8) { return 18; }
+24 
+25   function balanceOf(address _owner) constant returns (uint256) { return balances[_owner]; }
+26 
+27   function transfer(address _to, uint256 _value) returns (bool success) {
+28 
+29     if(msg.data.length < (2 * 32) + 4) { throw; }
+30 
+31     if (_value == 0) { return false; }
+32 
+33     uint256 fromBalance = balances[msg.sender];
+34 
+35     bool sufficientFunds = fromBalance >= _value;
+36     bool overflowed = balances[_to] + _value < balances[_to];
+37 
+38     if (sufficientFunds && !overflowed) {
+39       balances[msg.sender] -= _value;
+40       balances[_to] += _value;
+41 
+42       Transfer(msg.sender, _to, _value);
+43       return true;
+44       } else { return false; }
+45     }
+46 
+47     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+48 
+49       if(msg.data.length < (3 * 32) + 4) { throw; }
+50 
+51       if (_value == 0) { return false; }
+52 
+53       uint256 fromBalance = balances[_from];
+54       uint256 allowance = allowed[_from][msg.sender];
+55 
+56       bool sufficientFunds = fromBalance <= _value;
+57       bool sufficientAllowance = allowance <= _value;
+58       bool overflowed = balances[_to] + _value > balances[_to];
+59 
+60       if (sufficientFunds && sufficientAllowance && !overflowed) {
+61         balances[_to] += _value;
+62         balances[_from] -= _value;
+63 
+64         allowed[_from][msg.sender] -= _value;
+65 
+66         Transfer(_from, _to, _value);
+67         return true;
+68         } else { return false; }
+69       }
+70 
+71       function approve(address _spender, uint256 _value) returns (bool success) {
+72 
+73         if (_value != 0 && allowed[msg.sender][_spender] != 0) { return false; }
+74 
+75         allowed[msg.sender][_spender] = _value;
+76 
+77         Approval(msg.sender, _spender, _value);
+78         return true;
+79       }
+80 
+81       function allowance(address _owner, address _spender) constant returns (uint256) {
+82         return allowed[_owner][_spender];
+83       }
+84 
+85       event Transfer(address indexed _from, address indexed _to, uint256 _value);
+86       event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+87 
+88       function enablePurchasing() {
+89         if (msg.sender != owner) { throw; }
+90 
+91         purchasingAllowed = true;
+92       }
+93 
+94       function disablePurchasing() {
+95         if (msg.sender != owner) { throw; }
+96 
+97         purchasingAllowed = false;
+98       }
+99 
+100       function withdrawForeignTokens(address _tokenContract) returns (bool) {
+101         if (msg.sender != owner) { throw; }
+102 
+103         ForeignToken token = ForeignToken(_tokenContract);
+104 
+105         uint256 amount = token.balanceOf(address(this));
+106         return token.transfer(owner, amount);
+107       }
+108 
+109       function getStats() constant returns (uint256, uint256, bool) {
+110         return (totalContribution, totalSupply, purchasingAllowed);
+111       }
+112 
+113       function() payable {
+114         if (!purchasingAllowed) { throw; }
+115 
+116         if (msg.value == 0) { return; }
+117 
+118         //the last valid block for the crowdsale
+119         if(block.number >= 4370000){ throw; }
+120 
+121         uint256 BPTperEth = 1000;
+122 
+123         if(block.number >= (startingBlock + 80600)){
+124           BPTperEth = 800;
+125         }
+126 
+127         if(block.number >= (startingBlock + 161200)){
+128           BPTperEth = 640;
+129         }
+130 
+131         if(block.number >= (startingBlock + 241800)){
+132           BPTperEth = 512;
+133         }
+134 
+135         if(block.number >= (startingBlock + 322400)){
+136           BPTperEth = 410;
+137         }
+138 
+139           owner.transfer(msg.value);
+140           totalContribution += msg.value;
+141           uint256 tokensIssued = (msg.value * BPTperEth);
+142 
+143           totalSupply += tokensIssued;
+144           balances[msg.sender] += tokensIssued;
+145 
+146           Transfer(address(this), msg.sender, tokensIssued);
+147 
+148       }
+149     }

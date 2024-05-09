@@ -1,0 +1,26 @@
+<\contract\> 
+contract PaymentContract {
+     address public owner;
+     mapping(address => uint256) public payments;
+     uint256 public totalPayments;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function makePayment(address _recipient, uint256 _amount) public {
+         require(msg.sender == owner, "Only owner can make payments");
+         payments[_recipient] += _amount;
+         totalPayments += _amount;
+     }
+
+     function withdraw() public {
+         uint256 amount = payments[msg.sender];
+         require(amount > 0, "No payments to withdraw");
+         payments[msg.sender] = 0;
+         totalPayments -= amount;
+         payable(msg.sender).transfer(amount);
+     }
+}
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership

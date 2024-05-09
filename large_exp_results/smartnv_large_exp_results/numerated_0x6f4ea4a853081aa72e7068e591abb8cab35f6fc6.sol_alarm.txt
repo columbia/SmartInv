@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract Purchase {
+    mapping(address => uint) public balances;
+
+    function buy() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() public {
+        uint amount = balances[msg.sender];
+        require(amount > 0, "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Withdrawal failed");
+        balances[msg.sender] = 0;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Integer overflow/underflow: The balances[msg.sender] += msg.value; in the buy() function could potentially lead to integer overflow if the value of msg.value is large enough.
+2) Ether leakage: The transfer of funds in the withdraw() function is susceptible to reentrancy attacks as the state change (balances[msg.sender] = 0) occurs after the transfer, allowing malicious contracts to potentially reenter and withdraw multiple times.
+3) Insufficient gas: The withdrawal process may fail if the gas provided is not enough to complete the transfer, leading to trapped funds.
+4) Incorrect visibility/ownership: The balances mapping is public, exposing all user balances to external parties, potentially leading to privacy concerns.
+
+Therefore, the potential vulnerabilities in the contract are:
+- Integer overflow/underflow
+- Ether leakage
+- Insufficient gas
+- Incorrect visibility/ownership

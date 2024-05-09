@@ -1,0 +1,20 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+    address public owner;
+    address public token;
+    mapping(address => uint) public balances;
+
+    function buyTokens() public payable {
+        uint amount = msg.value / 1 ether;
+        require(amount > 0, "You must send at least 1 Ether");
+        balances[msg.sender] += amount;
+        token.transfer(msg.sender, amount);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        uint balance = address(this).balance;
+        owner.transfer(balance);
+    }
+}
+<\contract_to_be_analyzed\>

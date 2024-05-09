@@ -1,0 +1,24 @@
+The contract provided for analysis is:
+
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    constructor(address _tokenA, address _tokenB) {
+        tokenA = IERC20(_tokenA);
+        tokenB = IERC20(_tokenB);
+    }
+
+    function swap(uint amount) public {
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Reentrancy: The swap function allows the sender to transfer tokens before transferring the other token, which can lead to reentrancy vulnerabilities if the receiver contract calls back into the swap function before completing the first token transfer.
+
+2) Incorrect visibility/ownership: The constructor should be either private or internal to prevent external contracts from deploying contracts using this contract.
+
+Therefore, the vulnerabilities present in the contract are reentrancy and incorrect visibility/ownership.

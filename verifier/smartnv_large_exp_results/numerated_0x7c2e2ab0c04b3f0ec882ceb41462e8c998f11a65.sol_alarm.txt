@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) In <\TimelockController\>:
+   - ID uniqueness violation: There is no guarantee that the proposal ID generated in the startExecute function is unique, which could lead to conflicts or unexpected behavior.
+   - Inconsistent state update: The execution of the execute function allows for multiple calls that increment the votedAmount without proper checks, potentially leading to inconsistent state updates.
+
+2) In <\ExchangeTokens\>:
+   - Price manipulation: The liquidate function uses getPrice() to calculate the liquidation amount, which could be manipulated to exploit the system.
+   - Incorrect visibility/ownership: The debt and collateral mappings are public, allowing anyone to access and potentially manipulate the data stored in them.

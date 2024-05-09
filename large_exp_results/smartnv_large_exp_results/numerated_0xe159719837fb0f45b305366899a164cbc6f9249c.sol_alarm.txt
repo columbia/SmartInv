@@ -1,0 +1,28 @@
+<\The contract you want to analyze\>
+contract FundContract {
+    struct Fund {
+        address owner;
+        uint256 amount;
+    }
+
+    mapping(uint256 => Fund) public funds;
+    uint256 public totalFunds;
+
+    function createFund(uint256 _id, address _owner, uint256 _amount) public {
+        funds[_id] = Fund(_owner, _amount);
+        totalFunds += _amount;
+    }
+
+    function withdrawFunds(uint256 _id) public {
+        require(msg.sender == funds[_id].owner, "Only the owner can withdraw funds");
+        uint256 amount = funds[_id].amount;
+        msg.sender.transfer(amount);
+        totalFunds -= amount;
+        delete funds[_id];
+    }
+} 
+
+Output:
+- Insufficient gas: The contract may run out of gas during the execution of functions due to the accumulation of large amounts of data in the mapping.
+- Incorrect visibility/ownership: There is a potential issue with the visibility of the funds mapping, as it is public and can be accessed by anyone, which can lead to unauthorized access to sensitive information.
+- ID uniqueness violation: There is a risk of ID collision when creating funds, as the _id parameter may be reused, causing conflicts and potential data integrity issues.

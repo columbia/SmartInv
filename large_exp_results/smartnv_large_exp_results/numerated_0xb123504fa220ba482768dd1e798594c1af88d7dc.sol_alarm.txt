@@ -1,0 +1,43 @@
+<\contract_3\> 
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public tickets;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function buyTicket(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        tickets[msg.sender] += amount;
+    }
+    
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        uint totalTickets = getTotalTickets();
+        uint winningNumber = uint(keccak256(abi.encodePacked(block.timestamp))) % totalTickets;
+        
+        address winner;
+        uint count = 0;
+        for (uint i = 0; i < totalTickets; i++) {
+            count += tickets[address(i)];
+            if (count >= winningNumber) {
+                winner = address(i);
+                break;
+            }
+        }
+        
+        // Transfer prize to the winner
+        uint prize = totalTickets * 1 ether;
+        payable(winner).transfer(prize);
+    }
+    
+    function getTotalTickets() internal view returns (uint) {
+        uint total = 0;
+        for (uint i = 0; i < totalTickets; i++) {
+            total += tickets[address(i)];
+        }
+        return total;
+    }
+}
+<\contract_3\>

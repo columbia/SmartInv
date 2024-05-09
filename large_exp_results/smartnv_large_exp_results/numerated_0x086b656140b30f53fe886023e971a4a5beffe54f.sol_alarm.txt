@@ -1,0 +1,28 @@
+<\contract\>
+contract Escrow {
+        uint public balance;
+        mapping(address => uint) public escrowBalance;
+        address public owner;
+
+        constructor() {
+            owner = msg.sender;
+        }
+
+        function deposit(uint amount) external {
+            require(msg.sender == owner, "Only owner can deposit");
+            balance += amount;
+            escrowBalance[msg.sender] += amount;
+        }
+        
+        function withdraw(uint amount) external {
+            require(escrowBalance[msg.sender] >= amount, "Insufficient balance");
+            balance -= amount;
+            escrowBalance[msg.sender] -= amount;
+        }
+
+        function transferOwnership(address _newOwner) external {
+            require(msg.sender == owner, "Only owner can transfer ownership");
+            owner = _newOwner;
+        }
+}
+<\contract\>

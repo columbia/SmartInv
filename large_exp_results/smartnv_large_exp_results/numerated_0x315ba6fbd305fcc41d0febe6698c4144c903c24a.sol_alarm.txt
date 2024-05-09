@@ -1,0 +1,25 @@
+The potential vulnerabilities in the contract below are:
+1) Inconsistent state update
+2) Insufficient gas
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public released;
+    
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        released = false;
+    }
+    
+    function releasePayment() public {
+        require(msg.sender == buyer, "Only buyer can release payment");
+        require(released == false, "Payment already released");
+        
+        seller.transfer(price);
+        released = true;
+    }
+}

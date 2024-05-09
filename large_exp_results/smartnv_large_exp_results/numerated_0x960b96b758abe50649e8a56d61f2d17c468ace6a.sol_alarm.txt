@@ -1,0 +1,10 @@
+Potential vulnerabilities in the TimelockController contract:
+1) Privilege escalation: The startExecute function allows any external address to start a new proposal, which could potentially lead to unauthorized parties creating proposals.
+2) Inconsistent state update: The execute function increments the votedAmount without any check or validation, potentially allowing for inconsistent state updates.
+3) Incorrect visibility/ownership: The IERC20 interface is inherited by the TimelockController contract, but it is not implemented within the contract, which could lead to ownership and visibility issues.
+
+Potential vulnerabilities in the ExchangeTokens contract:
+1) Price manipulation: The liquidate function uses getPrice() without defining or implementing it, leaving room for potential price manipulation through external calls or tampering.
+2) Business logic flaw: The liquidate function performs a liquidation based on a hardcoded value (80% of collateral amount), which may not always align with real-world conditions or optimal liquidation strategies.
+
+Overall, the TimelockController contract has vulnerabilities related to privilege escalation, inconsistent state update, and incorrect visibility/ownership. The ExchangeTokens contract has vulnerabilities related to price manipulation and business logic flaws.

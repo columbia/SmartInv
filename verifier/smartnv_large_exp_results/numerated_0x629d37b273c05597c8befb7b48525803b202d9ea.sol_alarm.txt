@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public admin;
+    address public token;
+    address public recipient;
+
+    constructor(address _token, address _recipient) {
+        admin = msg.sender;
+        token = _token;
+        recipient = _recipient;
+    }
+
+    function buyTokens(uint256 amount) external {
+        require(msg.sender == recipient, "only recipient can buy tokens");
+        token.transfer(msg.sender, amount);
+    }
+
+    function changeRecipient(address _newRecipient) external {
+        require(msg.sender == admin, "only admin can change recipient");
+        recipient = _newRecipient;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+3) business logic flaw: The buyTokens function allows any address to buy tokens as long as it matches the recipient address, which may lead to unauthorized purchases.
+14) incorrect visibility/ownership: The changeRecipient function allows any address to change the recipient, not just the admin. 
+
+Therefore, the identified vulnerabilities are business logic flaw and incorrect visibility/ownership.

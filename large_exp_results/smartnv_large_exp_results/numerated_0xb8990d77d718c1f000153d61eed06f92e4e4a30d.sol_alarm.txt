@@ -1,0 +1,21 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        // Perform voting logic
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeVote() public {
+        require(hasVoted[msg.sender], "Hasn't voted yet");
+        // Perform changing voting logic
+        hasVoted[msg.sender] = false;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) privilege escalation 
+2) inconsistent state update

@@ -1,0 +1,51 @@
+Contract to analyze:
+
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        buyerApproved = false;
+        sellerApproved = false;
+    }
+
+    function deposit() external payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == price, "Incorrect deposit amount");
+    }
+
+    function approveByBuyer() external {
+        require(msg.sender == buyer, "Only buyer can approve");
+        buyerApproved = true;
+    }
+
+    function approveBySeller() external {
+        require(msg.sender == seller, "Only seller can approve");
+        sellerApproved = true;
+    }
+
+    function releaseFunds() external {
+        require(buyerApproved && sellerApproved, "Buyer and Seller must approve");
+        address(uint160(seller)).transfer(address(this).balance);
+    }
+
+    function refund() external {
+        require((msg.sender == buyer && sellerApproved) || (msg.sender == seller && buyerApproved), "Incorrect refund requester");
+        if (msg.sender == buyer) {
+            address(uint160(buyer)).transfer(address(this).balance);
+        } else {
+            address(uint160(seller)).transfer(address(this).balance);
+        }
+    }
+}
+
+Output:
+- The contract does not contain any vulnerabilities. It is healthy.

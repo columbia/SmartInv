@@ -1,0 +1,7 @@
+Possible vulnerabilities in the contract are:
+
+1) Inconsistent state update: The `lockedFunds` variable is being updated in the `endExecute` function based on the balance of `votingToken` in the contract. This state update might be inconsistent if other funds are being transferred or manipulated elsewhere in the contract.
+
+2) Incorrect visibility/ownership: The `startExecute`, `execute`, and `endExecute` functions are marked as `external`, which exposes them to be called by any address outside the contract. This might lead to unauthorized access and manipulation of the contract state. Additionally, the `owner` variable is marked as `internal`, which could lead to potential ownership vulnerabilities.
+
+3) Integer overflow/underflow: There is no check for potential integer overflow or underflow in calculations involving adding or subtracting amounts like in the `execute` function where `proposal.votedAmount` is being incremented.

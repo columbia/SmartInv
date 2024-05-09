@@ -1,0 +1,19 @@
+contract PaymentProcessor {
+    uint public totalPayments;
+    mapping(address => uint) public balances;
+
+    function makePayment() public payable {
+        // Here goes the logic for making a payment
+        balances[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdrawBalance() public {
+        uint balance = balances[msg.sender];
+        require(balance > 0, "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: balance}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] = 0;
+        totalPayments -= balance;
+    }
+}

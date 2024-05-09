@@ -1,0 +1,30 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+    address public owner;
+    uint public rate;
+    IERC20 public token;
+
+    constructor(uint _rate, IERC20 _token) public {
+        owner = msg.sender;
+        rate = _rate;
+        token = _token;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(_amount > 0, "Amount cannot be 0");
+        uint tokenAmount = _amount * rate;
+        token.transfer(msg.sender, tokenAmount);
+    }
+
+    function changeRate(uint _newRate) public {
+        require(msg.sender == owner, "Only owner can change rate");
+        rate = _newRate;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        uint balance = address(this).balance;
+        msg.sender.transfer(balance);
+    }
+}
+<\contract_to_analyze\>

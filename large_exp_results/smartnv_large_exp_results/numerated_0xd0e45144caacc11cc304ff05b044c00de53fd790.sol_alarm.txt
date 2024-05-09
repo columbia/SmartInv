@@ -1,0 +1,28 @@
+The contract under analysis:
+
+contract TokenSale {
+    address payable public owner;
+    IERC20 public token;
+    mapping(address => uint) public balances;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) public {
+        require(balances[msg.sender] + _amount >= balances[msg.sender], "Integer overflow");
+        balances[msg.sender] += _amount;
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Unauthorized access");
+        owner.transfer(address(this).balance);
+    }
+}
+
+<Output>
+The potential vulnerabilities in the TokenSale contract are:
+1) Integer overflow in the buyTokens function
+2) Unauthorized access in the withdrawFunds function

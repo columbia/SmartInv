@@ -1,0 +1,25 @@
+<\contract\>
+contract Marketplace {
+    struct Product {
+        address seller;
+        string name;
+        uint price;
+        bool sold;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCounter;
+
+    function addProduct(string memory _name, uint _price) public {
+        productCounter++;
+        products[productCounter] = Product(msg.sender, _name, _price, false);
+    }
+
+    function buyProduct(uint _productId) public payable {
+        require(products[_productId].sold == false, "Product is already sold");
+        require(msg.value >= products[_productId].price, "Insufficient funds");
+        products[_productId].seller.transfer(products[_productId].price);
+        products[_productId].sold = true;
+    }
+}
+<\contract\>

@@ -1,0 +1,39 @@
+contract SupplyChain {
+    struct Product {
+          uint productId;
+          string productName;
+          uint productPrice;
+          address owner;
+          bool isPurchased;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    event ProductCreated(uint productId, string productName, uint productPrice, address owner);
+    event ProductPurchased(uint productId, string productName, uint productPrice, address owner);
+
+    function createProduct(string memory _productName, uint _productPrice) public {
+          productCount++;
+          products[productCount] = Product(productCount, _productName, _productPrice, msg.sender, false);
+          emit ProductCreated(productCount, _productName, _productPrice, msg.sender);
+    }
+
+    function purchaseProduct(uint _productId) public payable {
+          Product memory _product = products[_productId];
+          require(_product.productId > 0 && _product.productId <= productCount, "Invalid product ID");
+          require(msg.value >= _product.productPrice, "Insufficient funds");
+          require(!_product.isPurchased, "Product already purchased");
+
+          _product.owner.transfer(msg.value);
+          _product.isPurchased = true;
+          products[_productId] = _product;
+          emit ProductPurchased(_productId, _product.productName, _product.productPrice, _product.owner);
+    }
+}
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The `Product` struct does not have any access control or visibility modifiers, making all fields publicly accessible. This could lead to unauthorized access and manipulation of sensitive product information.
+- Insufficient gas: The `purchaseProduct` function transfers Ether to the product owner using `transfer` without checking for any exceptions. This could potentially lead to a scenario where the transfer fails due to lack of gas and leaves the contract in an inconsistent state.
+- Inconsistent state update: The state of the product (`isPurchased`) is updated within the `purchaseProduct` function, but there is no check for successful completion of the update. This could result in a scenario where the product purchase is not accurately recorded.
+- Integer overflow/underflow: The productCount variable is incremented in the `createProduct` function without any check for potential integer overflow. If the productCount exceeds the maximum value of a uint, unexpected behavior could occur.
+- ID uniqueness violation: There is no check within the contract to ensure that product IDs are unique, which could lead to conflicts and incorrect data mapping.

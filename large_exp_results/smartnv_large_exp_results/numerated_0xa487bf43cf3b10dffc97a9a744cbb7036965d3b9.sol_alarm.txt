@@ -1,0 +1,22 @@
+<\analyzed_contract\> 
+contract MyContract {
+    address public owner;
+    uint public value;
+
+    function updateValue(uint _newValue) public {
+        require(msg.sender == owner, "Only owner can update value");
+        value = _newValue;
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "Only owner can withdraw");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\analyzed_contract\> 
+
+<\output\>
+Potential Vulnerabilities:
+1) Incorrect visibility/ownership: The `owner` variable is public, which exposes the ownership of the contract to anyone. It should be made private to prevent unauthorized access.
+2) Reentrancy: The `withdraw` function allows the owner to withdraw funds, but it does not include the necessary checks to prevent reentrancy attacks. Adding a check to set a flag before transferring funds can mitigate this vulnerability.
+3) Insufficient gas: The `withdraw` function transfers the entire balance of the contract to the owner, which can lead to out-of-gas errors if the contract holds a large amount of ether. Implementing a withdrawal pattern with a limit on how much can be withdrawn at once can address this issue.

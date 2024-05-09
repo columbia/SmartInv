@@ -1,0 +1,21 @@
+<\Analyzing Contract\>
+contract TokenMarket {
+    mapping(address => uint) public balanceOf;
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        uint256 price = getTokensPrice();
+        uint totalCost = amount * price;
+        require(balanceOf[msg.sender] >= totalCost, "Insufficient balance");
+        
+        balanceOf[msg.sender] -= totalCost;
+        // Transfer tokens to buyer
+    }
+
+    function getTokensPrice() internal pure returns(uint) {
+        return 100; // Fixed price for demonstration purposes
+    }
+}
+<\Potential Vulnerabilities\>
+1) price manipulation
+2) arithmetic flaw

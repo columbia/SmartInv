@@ -1,0 +1,52 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+         struct Voter {
+             uint weight;
+             bool voted;
+             address delegate;
+             uint vote;
+         }
+         struct Proposal {
+             uint voteCount;
+         }
+
+         mapping(address => Voter) public voters;
+         Proposal[] public proposals;
+         address public chairperson;
+
+         function giveRightToVoter(address voter) public {
+             require(msg.sender == chairperson, "Only chairperson can give right to vote.");
+             require(!voters[voter].voted, "The voter already voted.");
+             require(voters[voter].weight == 0);
+             voters[voter].weight = 1;
+         }
+
+         function delegate(address to) public {
+             Voter storage sender = voters[msg.sender];
+             require(!sender.voted, "You already voted.");
+
+             while (voters[to].delegate != address(0) && voters[to].delegate != msg.sender) {
+                 to = voters[to].delegate;
+             }
+
+             require(to != msg.sender, "Delegate loop found.");
+             sender.voted = true;
+             sender.delegate = to;
+             Voter storage delegateTo = voters[to];
+             if (delegateTo.voted) {
+                 proposals[delegateTo.vote].voteCount += sender.weight;
+             } else {
+                 delegateTo.weight += sender.weight;
+             }
+         }
+
+         function vote(uint proposal) public {
+             Voter storage sender = voters[msg.sender];
+             require(sender.weight != 0, "Has no right to vote");
+             require(!sender.voted, "Already voted.");
+             sender.voted = true;
+             sender.vote = proposal;
+             proposals[proposal].voteCount += sender.weight;
+         }
+     }
+<\contract_to_analyze\>

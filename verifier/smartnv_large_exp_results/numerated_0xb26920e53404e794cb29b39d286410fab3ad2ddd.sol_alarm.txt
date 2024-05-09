@@ -1,0 +1,46 @@
+The contract provided is:
+
+```solidity
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+
+    function vote(address delegate, uint256 voteValue) public {
+        require(voters[msg.sender].weight > 0, "Only registered voters can vote");
+        require(!voters[msg.sender].voted, "Voter has already voted");
+        require(delegate != msg.sender, "Cannot delegate vote to yourself");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = delegate;
+        voters[msg.sender].vote = voteValue;
+        totalVotes += voteValue;
+    }
+
+    function delegate(address to) public {
+        require(voters[msg.sender].weight > 0, "Only registered voters can delegate");
+        require(to != msg.sender, "Cannot delegate to yourself");
+
+        address delegateTo = to;
+
+        while (voters[delegateTo].delegate != address(0)) {
+            delegateTo = voters[delegateTo].delegate;
+
+            require(delegateTo != msg.sender, "Circular delegation is not allowed");
+        }
+
+        voters[msg.sender].delegate = delegateTo;
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+
+1) ID uniqueness violation
+2) Inconsistent state update

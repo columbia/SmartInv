@@ -1,0 +1,18 @@
+<\your_contract\>
+contract StakingPool {
+     IERC20 public stakingToken;
+     address public owner;
+     mapping(address => uint256) public stakingBalance;
+
+     function stake(uint256 amount) external {
+         stakingToken.transferFrom(msg.sender, address(this), amount);
+         stakingBalance[msg.sender] += amount;
+     }
+
+     function withdraw(uint256 amount) external {
+         require(stakingBalance[msg.sender] >= amount, "Insufficient balance");
+         stakingBalance[msg.sender] -= amount;
+         stakingToken.transfer(msg.sender, amount);
+     }
+}
+<\your_contract\>

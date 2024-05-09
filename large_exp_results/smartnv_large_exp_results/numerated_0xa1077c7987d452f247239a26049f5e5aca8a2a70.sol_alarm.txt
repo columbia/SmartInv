@@ -1,0 +1,23 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+         address public owner;
+         address public token;
+         uint public rate;
+         uint public startTime;
+         uint public endTime;
+         
+         constructor(address _token, uint _rate, uint _startTime, uint _endTime) public {
+             owner = msg.sender;
+             token = _token;
+             rate = _rate;
+             startTime = _startTime;
+             endTime = _endTime;
+         }
+         
+         function buyTokens() public payable {
+             require(block.timestamp >= startTime && block.timestamp <= endTime, "Crowdsale is not active");
+             uint tokenAmount = msg.value * rate;
+             require(ERC20(token).balanceOf(address(this)) >= tokenAmount, "Not enough tokens in contract");
+             ERC20(token).transfer(msg.sender, tokenAmount);
+         }
+     }

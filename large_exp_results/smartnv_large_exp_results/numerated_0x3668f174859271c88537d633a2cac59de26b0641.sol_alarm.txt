@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership - The `startExecute`, `execute`, and `endExecute` functions are all marked as external, but it seems like they should be restricted to only be accessed by certain privileged accounts, such as the owner. This could lead to unauthorized access and potential issues.
+2) Inconsistent state update - The `proposal.votedAmount += amount;` line in the `execute` function may lead to inconsistent state updates if multiple transactions try to update the `votedAmount` at the same time.
+3) Insufficient gas - The `endExecute` function may fail if there is not enough gas provided to complete all the required operations, which can result in unexpected behavior.
+4) ID uniqueness violation - It seems like there should be a mechanism to ensure the uniqueness of proposal IDs to avoid potential conflicts or confusion.
+5) Cross bridge inconsistency - There might be issues related to inconsistent data handling between different components or bridges within the contract that could lead to unintended consequences.

@@ -1,0 +1,22 @@
+<\contract\>
+contract PaymentProcessor {
+     address public owner;
+     mapping(uint256 => uint256) public payments;
+     
+     constructor() {
+          owner = msg.sender;
+     }
+     
+     function processPayment(uint256 id, uint256 amount) public {
+          require(msg.sender == owner, "Only owner can process payments");
+          payments[id] += amount;
+     }
+     
+     function withdrawPayment(uint256 id) public {
+          require(msg.sender == owner, "Only owner can withdraw payments");
+          uint256 amount = payments[id];
+          payments[id] = 0;
+          msg.sender.transfer(amount);
+     }
+}
+<\contract\>

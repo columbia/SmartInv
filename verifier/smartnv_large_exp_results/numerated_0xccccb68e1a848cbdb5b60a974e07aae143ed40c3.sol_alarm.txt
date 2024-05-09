@@ -1,0 +1,30 @@
+<\The Contract You Are Analyzing\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    
+    function bid(uint _amount) public {
+        require(_amount > highestBid, "Bid amount must be higher");
+        
+        if (highestBid != 0) {
+            highestBidder.transfer(highestBid);
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = _amount;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+        
+        highestBidder = address(0);
+        highestBid = 0;
+    }
+    
+    function endAuction() public {
+        require(msg.sender == owner, "Only the owner can end the auction");
+        
+        owner.transfer(address(this).balance);
+        highestBid = 0;
+    }
+}

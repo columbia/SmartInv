@@ -1,0 +1,18 @@
+The contract to analyze:
+
+contract SecureToken {
+    mapping(address => uint) public balance;
+
+    function deposit(uint amount) public {
+        balance[msg.sender] += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(balance[msg.sender] >= amount, "Insufficient balance");
+        balance[msg.sender] -= amount;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) integer overflow/underflow
+2) inconsistent state update

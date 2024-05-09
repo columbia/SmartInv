@@ -1,0 +1,519 @@
+1 // SPDX-License-Identifier: -- 🎲 --
+2 
+3 pragma solidity ^0.7.5;
+4 
+5 library SafeMath {
+6 
+7     function add(uint256 a, uint256 b) internal pure returns (uint256) {
+8         uint256 c = a + b;
+9         require(c >= a, 'SafeMath: addition overflow');
+10         return c;
+11     }
+12 
+13     function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+14         require(b <= a, 'SafeMath: subtraction overflow');
+15         uint256 c = a - b;
+16         return c;
+17     }
+18 
+19     function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+20         if (a == 0) {
+21             return 0;
+22         }
+23 
+24         uint256 c = a * b;
+25         require(c / a == b, 'SafeMath: multiplication overflow');
+26         return c;
+27     }
+28 
+29     function div(uint256 a, uint256 b) internal pure returns (uint256) {
+30         require(b > 0, 'SafeMath: division by zero');
+31         uint256 c = a / b;
+32         // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+33         return c;
+34     }
+35 
+36     function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+37         require(b != 0, 'SafeMath: modulo by zero');
+38         return a % b;
+39     }
+40 }
+41 
+42 library Math {
+43 
+44     function max(uint256 a, uint256 b) internal pure returns (uint256) {
+45         return a >= b ? a : b;
+46     }
+47 
+48     function min(uint256 a, uint256 b) internal pure returns (uint256) {
+49         return a < b ? a : b;
+50     }
+51 
+52     function average(uint256 a, uint256 b) internal pure returns (uint256) {
+53         return (a / 2) + (b / 2) + ((a % 2 + b % 2) / 2);
+54     }
+55 }
+56 
+57 contract Context {
+58 
+59     constructor() {}
+60 
+61     function _msgSender() internal view returns (address payable) {
+62         return msg.sender;
+63     }
+64 
+65     function _msgData() internal view returns (bytes memory) {
+66         this;
+67         return msg.data;
+68     }
+69 }
+70 
+71 contract Ownable is Context {
+72 
+73     address private _owner;
+74 
+75     event OwnershipTransferred(
+76         address indexed previousOwner,
+77         address indexed newOwner
+78     );
+79 
+80     constructor() {
+81         _owner = _msgSender();
+82         emit OwnershipTransferred(
+83             address(0),
+84             _owner
+85         );
+86     }
+87 
+88     function owner() public view returns (address) {
+89         return _owner;
+90     }
+91 
+92     modifier onlyOwner() {
+93         require(
+94             isOwner(),
+95             'Ownable: caller is not the owner'
+96         );
+97         _;
+98     }
+99 
+100     function isOwner() public view returns (bool) {
+101         return _msgSender() == _owner;
+102     }
+103 
+104     function renounceOwnership() public onlyOwner {
+105         emit OwnershipTransferred(
+106             _owner,
+107             address(0x0)
+108         );
+109         _owner = address(0x0);
+110     }
+111 
+112     function transferOwnership(address newOwner) public onlyOwner {
+113         _transferOwnership(newOwner);
+114     }
+115 
+116     function _transferOwnership(address newOwner) internal {
+117         require(
+118             newOwner != address(0x0),
+119             'Ownable: new owner is the zero address'
+120         );
+121         emit OwnershipTransferred(_owner, newOwner);
+122         _owner = newOwner;
+123     }
+124 }
+125 
+126 interface IERC20 {
+127 
+128     function totalSupply() external view returns (uint256);
+129 
+130     function balanceOf(address account) external view returns (uint256);
+131 
+132     function transfer(address recipient, uint256 amount) external returns (bool);
+133 
+134     function allowance(address owner, address spender) external view returns (uint256);
+135 
+136     function approve(address spender, uint256 amount) external returns (bool);
+137 
+138     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+139 
+140     event Transfer(address indexed from, address indexed to, uint256 value);
+141 
+142     event Approval(address indexed owner, address indexed spender, uint256 value);
+143 }
+144 
+145 library Address {
+146 
+147     function isContract(address account) internal view returns (bool) {
+148         bytes32 codehash;
+149         bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
+150         assembly { codehash := extcodehash(account) }
+151         return (codehash != 0x0 && codehash != accountHash);
+152     }
+153 
+154     function toPayable(address account) internal pure returns (address payable) {
+155         return address(uint160(account));
+156     }
+157 
+158     function sendValue(address payable recipient, uint256 amount) internal {
+159         require(
+160             address(this).balance >= amount,
+161             'Address: insufficient balance'
+162         );
+163 
+164         (bool success, ) = recipient.call{value: amount}('');
+165 
+166         require(
+167             success,
+168             'Address: unable to send value'
+169         );
+170     }
+171 }
+172 
+173 library SafeERC20 {
+174 
+175     using SafeMath for uint256;
+176     using Address for address;
+177 
+178     function safeTransfer(
+179         IERC20 token,
+180         address to,
+181         uint256 value
+182     )
+183         internal
+184     {
+185         callOptionalReturn(
+186             token,
+187             abi.encodeWithSelector(
+188                 token.transfer.selector,
+189                 to,
+190                 value
+191             )
+192         );
+193     }
+194 
+195     function safeTransferFrom(
+196         IERC20 token,
+197         address from,
+198         address to,
+199         uint256 value
+200     )
+201         internal
+202     {
+203         callOptionalReturn(
+204             token,
+205             abi.encodeWithSelector(
+206                 token.transferFrom.selector,
+207                 from,
+208                 to,
+209                 value
+210             )
+211         );
+212     }
+213 
+214     function safeApprove(
+215         IERC20 token,
+216         address spender,
+217         uint256 value
+218     )
+219         internal
+220     {
+221         require(
+222             (value == 0) || (token.allowance(address(this), spender) == 0),
+223             'SafeERC20: approve from non-zero to non-zero allowance'
+224         );
+225         callOptionalReturn(
+226             token,
+227             abi.encodeWithSelector(
+228                 token.approve.selector,
+229                 spender,
+230                 value
+231             )
+232         );
+233     }
+234 
+235     function safeIncreaseAllowance(
+236         IERC20 token,
+237         address spender,
+238         uint256 value
+239     )
+240         internal
+241     {
+242         uint256 newAllowance = token.allowance(
+243             address(this),
+244             spender
+245         ).add(value);
+246 
+247         callOptionalReturn(
+248             token,
+249             abi.encodeWithSelector(
+250                 token.approve.selector,
+251                 spender,
+252                 newAllowance
+253             )
+254         );
+255     }
+256 
+257     function safeDecreaseAllowance(
+258         IERC20 token,
+259         address spender,
+260         uint256 value
+261     )
+262         internal
+263     {
+264         uint256 newAllowance = token.allowance(
+265             address(this),
+266             spender
+267         ).sub(value);
+268 
+269         callOptionalReturn(
+270             token,
+271             abi.encodeWithSelector(
+272                 token.approve.selector,
+273                 spender,
+274                 newAllowance
+275             )
+276         );
+277     }
+278 
+279     function callOptionalReturn(
+280         IERC20 token,
+281         bytes memory data
+282     )
+283         private
+284     {
+285         require(
+286             address(token).isContract(),
+287             'SafeERC20: call to non-contract'
+288         );
+289 
+290         (bool success, bytes memory returndata) = address(token).call(data);
+291         require(
+292             success,
+293             'SafeERC20: low-level call failed'
+294         );
+295 
+296         if (returndata.length > 0) {
+297             require(
+298                 abi.decode(returndata, (bool)),
+299                 'SafeERC20: ERC20 operation did not succeed'
+300             );
+301         }
+302     }
+303 }
+304 
+305 // staking token (the one you need to stake aka send to contract)
+306 contract LPTokenWrapper {
+307 
+308     using SafeMath for uint256;
+309     using SafeERC20 for IERC20;
+310 
+311     IERC20 public bpt = IERC20(
+312         0x3Cf393b95a4fbf9B2BdfC2011Fd6675Cf51d3e5d
+313     );
+314 
+315     uint256 private _totalSupply;
+316     mapping(address => uint256) private _balances;
+317 
+318     function totalSupply() public view returns (uint256) {
+319         return _totalSupply;
+320     }
+321 
+322     function balanceOf(address account) public view returns (uint256) {
+323         return _balances[account];
+324     }
+325 
+326     function _stake(uint256 amount) internal {
+327 
+328         _totalSupply = _totalSupply.add(amount);
+329 
+330         _balances[msg.sender] =
+331         _balances[msg.sender].add(amount);
+332 
+333         bpt.safeTransferFrom(
+334             msg.sender,
+335             address(this),
+336             amount
+337         );
+338     }
+339 
+340     function _withdraw(uint256 amount) internal {
+341 
+342         _totalSupply = _totalSupply.sub(amount);
+343 
+344         _balances[msg.sender] =
+345         _balances[msg.sender].sub(amount);
+346 
+347         bpt.safeTransfer(
+348             msg.sender,
+349             amount
+350         );
+351     }
+352 }
+353 
+354 // reward token (the one that you get paid in back)
+355 contract dgStaking is LPTokenWrapper, Ownable {
+356 
+357     using SafeMath for uint256;
+358     using SafeERC20 for IERC20;
+359 
+360     IERC20 public dg = IERC20(
+361         0xEE06A81a695750E71a662B51066F2c74CF4478a0
+362     );
+363 
+364     uint256 public constant DURATION = 5 weeks;
+365     
+366     uint256 public periodFinish;
+367     uint256 public rewardRate;
+368     uint256 public lastUpdateTime;
+369     uint256 public rewardPerTokenStored;
+370 
+371     mapping(address => uint256) public userRewardPerTokenPaid;
+372     mapping(address => uint256) public rewards;
+373 
+374     event RewardAdded(
+375         uint256 reward
+376     );
+377 
+378     event Staked(
+379         address indexed user,
+380         uint256 amount
+381     );
+382 
+383     event Withdrawn(
+384         address indexed user,
+385         uint256 amount
+386     );
+387 
+388     event RewardPaid(
+389         address indexed user,
+390         uint256 reward
+391     );
+392 
+393     modifier updateReward(address account) {
+394 
+395         rewardPerTokenStored = rewardPerToken();
+396         lastUpdateTime = lastTimeRewardApplicable();
+397 
+398         if (account != address(0)) {
+399             rewards[account] = earned(account);
+400             userRewardPerTokenPaid[account] = rewardPerTokenStored;
+401         }
+402         _;
+403     }
+404 
+405     function lastTimeRewardApplicable()
+406         public
+407         view
+408         returns (uint256)
+409     {
+410         return Math.min(
+411             block.timestamp,
+412             periodFinish
+413         );
+414     }
+415 
+416     function rewardPerToken()
+417         public
+418         view
+419         returns (uint256)
+420     {
+421         if (totalSupply() == 0) {
+422             return rewardPerTokenStored;
+423         }
+424 
+425         return rewardPerTokenStored.add(
+426             lastTimeRewardApplicable()
+427                 .sub(lastUpdateTime)
+428                 .mul(rewardRate)
+429                 .mul(1e18)
+430                 .div(totalSupply())
+431         );
+432     }
+433 
+434     function earned(
+435         address account
+436     )
+437         public
+438         view
+439         returns (uint256)
+440     {
+441         return balanceOf(account)
+442             .mul(rewardPerToken().sub(userRewardPerTokenPaid[account]))
+443             .div(1E18)
+444             .add(rewards[account]);
+445     }
+446 
+447     function stake(
+448         uint256 amount
+449     )
+450         public
+451         updateReward(msg.sender)
+452     {
+453         require(
+454             amount > 0,
+455             'Cannot stake 0'
+456         );
+457 
+458         _stake(amount);
+459 
+460         emit Staked(
+461             msg.sender,
+462             amount
+463         );
+464     }
+465 
+466     function withdraw(
+467         uint256 amount
+468     )
+469         public
+470         updateReward(msg.sender)
+471     {
+472         require(
+473             amount > 0,
+474             'Cannot withdraw 0'
+475         );
+476 
+477         _withdraw(amount);
+478 
+479         emit Withdrawn(
+480             msg.sender,
+481             amount
+482         );
+483     }
+484 
+485     function exit() external {
+486         withdraw(balanceOf(msg.sender));
+487         getReward();
+488     }
+489 
+490     function getReward()
+491         public
+492         updateReward(msg.sender)
+493         returns (uint256 reward)
+494     {
+495         reward = earned(msg.sender);
+496         if (reward > 0) {
+497             rewards[msg.sender] = 0;
+498             dg.safeTransfer(msg.sender, reward);
+499             emit RewardPaid(msg.sender, reward);
+500         }
+501     }
+502 
+503     function notifyRewardAmount(uint256 reward)
+504         external
+505         onlyOwner
+506         updateReward(address(0x0))
+507     {
+508         if (block.timestamp >= periodFinish) {
+509             rewardRate = reward.div(DURATION);
+510         } else {
+511             uint256 remaining = periodFinish.sub(block.timestamp);
+512             uint256 leftover = remaining.mul(rewardRate);
+513             rewardRate = reward.add(leftover).div(DURATION);
+514         }
+515         lastUpdateTime = block.timestamp;
+516         periodFinish = block.timestamp.add(DURATION);
+517         emit RewardAdded(reward);
+518     }
+519 }

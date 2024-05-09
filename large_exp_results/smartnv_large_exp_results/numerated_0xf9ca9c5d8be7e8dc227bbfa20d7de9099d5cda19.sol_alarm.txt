@@ -1,0 +1,30 @@
+<\analyzed_contract\>
+contract InsuranceContract {
+    address public owner;
+    uint public policyCount;
+    mapping(uint => address) public policyHolders;
+    
+    constructor() {
+        owner = msg.sender;
+        policyCount = 0;
+    }
+    
+    function buyPolicy() public payable {
+        require(msg.value == 1 ether, "Incorrect amount sent");
+        uint policyNumber = policyCount + 1;
+        policyHolders[policyNumber] = msg.sender;
+        policyCount++;
+    }
+    
+    function claimPolicy(uint policyNumber) public {
+        address policyHolder = policyHolders[policyNumber];
+        require(policyHolder == msg.sender, "Only policy holder can claim");
+        // Code for claiming the policy amount
+    }
+    
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,45 @@
+The contract you provided for analysis is:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        uint256 vote;
+    }
+    
+    address public owner;
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public votes;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function giveRightToVote(address _voter) public {
+        require(msg.sender == owner, "Only owner can give right to vote");
+        voters[_voter].weight = 1;
+    }
+    
+    function vote(uint256 _proposal) public {
+        require(voters[msg.sender].weight > 0, "You don't have the right to vote");
+        require(!voters[msg.sender].voted, "Already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = _proposal;
+        
+        votes[_proposal] += voters[msg.sender].weight;
+    }
+    
+    function endVoting() public {
+        require(msg.sender == owner, "Only owner can end the voting");
+
+        // Find the winner based on the highest number of votes
+    }
+}
+
+The potential vulnerabilities in this contract could be:
+1) privilege escalation - The owner can give the right to vote to any address, potentially allowing for manipulation of the voting process.
+2) inconsistent state update - If multiple voters vote for the same proposal simultaneously, there could be inconsistent state updates in the vote count.
+3) incorrect visibility/ownership - The owner variable is set publicly, allowing anyone to see who the owner is, which may not be desired.
+
+Please note that the endVoting function needs to have the logic to determine the winner based on the highest number of votes, as stated in the comment.

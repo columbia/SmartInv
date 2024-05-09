@@ -1,0 +1,37 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public buyerPaid;
+    bool public sellerPaid;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        buyerPaid = false;
+        sellerPaid = false;
+    }
+
+    function paySeller() public {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        seller.transfer(escrowAmount);
+        sellerPaid = true;
+    }
+
+    function releaseFundsToSeller() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(buyerPaid && sellerPaid, "Both parties must have paid before release");
+        seller.transfer(escrowAmount);
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund");
+        require(buyerPaid && !sellerPaid, "Buyer must have paid and seller must not have paid");
+        buyer.transfer(escrowAmount);
+    }
+}
+<\contract\>

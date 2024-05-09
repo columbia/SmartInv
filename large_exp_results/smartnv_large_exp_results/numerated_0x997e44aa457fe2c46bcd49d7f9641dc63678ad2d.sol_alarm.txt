@@ -1,0 +1,20 @@
+<\contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint => uint) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function makePayment(uint _paymentId, uint _amount) public {
+        require(msg.sender == owner, "Only the owner can make payments");
+        payments[_paymentId] = _amount;
+    }
+    
+    function updatePayment(uint _paymentId, uint _newAmount) public {
+        require(msg.sender == owner, "Only the owner can update payments");
+        payments[_paymentId] = _newAmount;
+    }
+}
+<\contract\>

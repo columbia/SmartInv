@@ -1,0 +1,20 @@
+The contract provided for analysis:
+
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    mapping(address => uint) public balance;
+
+    function swapTokens(uint amount) public {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        balance[msg.sender] += amount;
+        uint tokenBAmount = amount * 2;
+        tokenB.transfer(msg.sender, tokenBAmount);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Integer overflow/underflow: The multiplication operation in the swapTokens function could potentially result in an integer overflow if the amount is large enough.
+2) Inconsistent state update: The balance mapping is being updated after transferring tokens which could potentially lead to inconsistencies in the data.
+3) Incorrect visibility/ownership: The balance mapping is public, which could expose sensitive user information.

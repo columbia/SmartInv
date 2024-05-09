@@ -1,0 +1,26 @@
+<\contract\>
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) external {
+        uint totalPrice = _numTokens * tokenPrice;
+        require(token.transfer(msg.sender, _numTokens), "Transfer failed");
+        totalTokensSold += _numTokens;
+        owner.transfer(totalPrice);
+    }
+
+    function setTokenPrice(uint _newPrice) external {
+        require(msg.sender == owner, "Unauthorized");
+        tokenPrice = _newPrice;
+    }
+}
+<\contract\>

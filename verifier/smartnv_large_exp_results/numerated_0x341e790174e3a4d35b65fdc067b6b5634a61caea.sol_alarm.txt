@@ -1,0 +1,27 @@
+<\the_contract\> 
+contract TokenSale {
+         address public owner;
+         IERC20 public token;
+         uint public price;
+
+         constructor(address _token, uint _price) {
+             owner = msg.sender;
+             token = IERC20(_token);
+             price = _price;
+         }
+
+         function buyTokens(uint _amount) public {
+             require(token.balanceOf(msg.sender) >= _amount * price, "Insufficient balance");
+             token.transferFrom(owner, msg.sender, _amount);
+         }
+
+         function setPrice(uint _newPrice) public {
+             require(msg.sender == owner, "Not authorized");
+             price = _newPrice;
+         }
+}
+<\the_contract\> 
+
+Potential vulnerabilities:
+7) ID uniqueness violation: The contract does not appear to have any mechanism for ensuring unique identifiers for transactions or users, which could lead to conflicts or unexpected behavior.
+14) Incorrect visibility/ownership: The use of `msg.sender` for owner verification and setting price without additional access control may lead to unauthorized changes and manipulation.

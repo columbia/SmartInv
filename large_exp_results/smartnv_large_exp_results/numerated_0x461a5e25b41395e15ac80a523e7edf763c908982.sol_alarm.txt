@@ -1,0 +1,29 @@
+<\contract\>
+contract TokenFarm {
+    IERC20 public token;
+    address public owner;
+
+    mapping(address => uint) public stakedBalance;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function stake(uint amount) public {
+        token.transferFrom(msg.sender, address(this), amount);
+        stakedBalance[msg.sender] += amount;
+    }
+
+    function unstake(uint amount) public {
+        require(stakedBalance[msg.sender] >= amount, "Insufficient staked balance");
+        token.transfer(msg.sender, amount);
+        stakedBalance[msg.sender] -= amount;
+    }
+
+    function emergencyWithdraw() public {
+        require(msg.sender == owner, "Unauthorized");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\contract\>

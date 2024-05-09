@@ -1,0 +1,12 @@
+contract TokenSwap {
+    ERC20 public token1;
+    ERC20 public token2;
+    
+    function swapTokens(uint amount1, uint amount2) external {
+        require(token1.balanceOf(msg.sender) >= amount1, "Insufficient balance for token1");
+        require(token2.balanceOf(msg.sender) >= amount2, "Insufficient balance for token2");
+        
+        token1.transferFrom(msg.sender, address(this), amount1);
+        token2.transfer(msg.sender, amount2);
+    }
+}

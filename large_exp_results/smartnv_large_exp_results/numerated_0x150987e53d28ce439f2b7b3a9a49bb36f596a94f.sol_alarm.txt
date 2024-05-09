@@ -1,0 +1,29 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public escrowAmount;
+     bool public releasedToSeller;
+     bool public releasedToBuyer;
+
+     function releaseToSeller() public {
+         require(msg.sender == arbiter, "Only arbiter can release funds");
+         require(releasedToSeller == false, "Funds already released to seller");
+         if (releasedToBuyer) {
+             releasedToSeller = true;
+             // transfer funds to seller
+         }
+     }
+
+     function releaseToBuyer() public {
+         require(msg.sender == arbiter, "Only arbiter can release funds");
+         require(releasedToBuyer == false, "Funds already released to buyer");
+         if (releasedToSeller) {
+             releasedToBuyer = true;
+             // transfer funds to buyer
+         }
+     }
+
+}
+<\contract\>

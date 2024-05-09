@@ -1,0 +1,46 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    
+    uint256 public totalVotes;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint256 _choice) external {
+        require(!voters[msg.sender].voted, "You have already voted");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = _choice;
+        totalVotes++;
+    }
+
+    function getWinner() external view returns (uint256) {
+        require(msg.sender == admin, "Only admin can view the winner");
+        
+        uint256 choice1;
+        uint256 choice2;
+        
+        for (uint i = 0; i < totalVotes; i++) {
+            if (voters[msg.sender].vote == 1) {
+                choice1++;
+            } else if (voters[msg.sender].vote == 2) {
+                choice2++;
+            }
+        }
+        
+        if (choice1 > choice2) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+}
+<\contract\>

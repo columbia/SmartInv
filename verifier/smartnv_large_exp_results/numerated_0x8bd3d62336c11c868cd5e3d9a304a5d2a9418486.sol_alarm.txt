@@ -1,0 +1,18 @@
+The contract below contains the following potential vulnerabilities:
+1) privilege escalation
+2) inconsistent state update
+3) atomicity violation
+4) integer overflow/underflow
+
+<\contract\>
+contract Auction {
+   address public highestBidder;
+   uint public highestBid;
+
+   function bid() public payable {
+       require(msg.value > highestBid, "Bid not high enough");
+       highestBidder.transfer(highestBid); 
+       highestBidder = msg.sender;
+       highestBid = msg.value;
+   }
+}

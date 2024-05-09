@@ -1,0 +1,24 @@
+The contract below contains potential vulnerabilities:
+
+Contract:
+contract Purchase {
+    uint public price;
+    address public owner;
+    address public buyer;
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "only owner can set price");
+        price = _price;
+    }
+
+    function buy() public payable {
+        require(msg.value == price, "incorrect payment amount");
+        owner.transfer(msg.value);
+        buyer = msg.sender;
+    }
+}
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership: The "setPrice" function allows anyone to set the price of the item, which should only be allowed by the owner.
+2) Insufficient gas: The "buy" function transfers funds directly to the owner, which could potentially fail if the owner's contract does not have enough gas to receive the transfer.
+3) Inconsistent state update: The "buyer" variable is updated after transferring funds to the owner, which could lead to inconsistent state if the transfer fails after updating the variable.

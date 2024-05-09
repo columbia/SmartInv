@@ -1,0 +1,29 @@
+<\contract\>
+contract TokenLock {
+    mapping(address => uint) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint amount) public {
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+3) business logic flaw: The transfer function should also check for potential integer overflows when increasing or decreasing token amounts.
+8) reentrancy: The contract does not include reentrancy protection which can lead to malicious contracts exploiting this vulnerability to perform multiple operations through a single transaction.

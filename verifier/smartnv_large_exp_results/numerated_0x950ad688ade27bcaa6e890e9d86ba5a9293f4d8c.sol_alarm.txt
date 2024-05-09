@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    IERC20 public token;
+    address public owner;
+    mapping(uint => address) public itemIdToOwner;
+    mapping(address => uint[]) public ownerToItemIds;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function createItem(uint _id) external {
+        itemIdToOwner[_id] = msg.sender;
+        ownerToItemIds[msg.sender].push(_id);
+    }
+
+    function buyItem(uint _id, uint _price) external {
+        require(token.balanceOf(msg.sender) >= _price, "Insufficient balance");
+        
+        address itemOwner = itemIdToOwner[_id];
+        require(itemOwner != address(0), "Item does not exist");
+        
+        token.transferFrom(msg.sender, itemOwner, _price);
+        
+        delete itemIdToOwner[_id];
+        for (uint i = 0; i < ownerToItemIds[itemOwner].length; i++) {
+            if (ownerToItemIds[itemOwner][i] == _id) {
+                delete ownerToItemIds[itemOwner][i];
+                break;
+            }
+        }
+    }
+}
+<\contract_to_analyze\>

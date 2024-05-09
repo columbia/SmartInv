@@ -1,0 +1,19 @@
+The contract provided for analysis:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function placeBid(uint bidAmount) external {
+        require(bidAmount > highestBid, "Bid amount should be higher than current highest bid");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = bidAmount;
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Reentrancy: The transfer function can be vulnerable to reentrancy attacks.
+- Inconsistent state update: The highest bidder is transferred the highest bid amount before updating the highestBidder and highestBid variables.
+
+Therefore, the potential vulnerabilities in the contract are reentrancy and inconsistent state update.

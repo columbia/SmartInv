@@ -1,0 +1,23 @@
+<\contract\>
+contract PaymentContract {
+    address public vendor;
+    address public customer;
+    uint public amount;
+
+    constructor(address _vendor, address _customer, uint _amount) {
+        vendor = _vendor;
+        customer = _customer;
+        amount = _amount;
+    }
+
+    function makePayment() public {
+        require(msg.sender == customer, "Only customer can make payment");
+        vendor.transfer(amount);
+    }
+
+    function refundPayment() public {
+        require(msg.sender == vendor, "Only vendor can issue refund");
+        customer.transfer(amount);
+    }
+}
+<\contract\>

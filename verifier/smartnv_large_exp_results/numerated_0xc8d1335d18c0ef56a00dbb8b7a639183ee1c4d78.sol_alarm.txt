@@ -1,0 +1,36 @@
+Contract:
+
+contract VotingSystem {
+     struct Voter {
+          bool voted;
+          address delegate;
+          uint vote;
+     }
+
+     address public admin;
+     mapping(address => Voter) public voters;
+     uint public totalVotes;
+     bool public votingOpen;
+
+     function startVoting() public {
+          require(msg.sender == admin, "only admin can start voting");
+          votingOpen = true;
+     }
+
+     function vote(uint option) public {
+          require(votingOpen, "voting is closed");
+          require(!voters[msg.sender].voted, "voter already voted");
+          voters[msg.sender].vote = option;
+          voters[msg.sender].voted = true;
+          totalVotes += 1;
+     }
+
+     function endVoting() public {
+          require(msg.sender == admin, "only admin can end voting");
+          require(votingOpen, "voting is already closed");
+          votingOpen = false;
+     }
+}
+
+Output:
+- No potential vulnerabilities found. Healthy.

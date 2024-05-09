@@ -1,0 +1,37 @@
+<\contract\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime;
+          uint256 endTime;
+          uint256 voteCount;
+          address proposer;
+          bool executed;
+     }
+
+     mapping(uint256 => Proposal) public proposals;
+     mapping(address => uint256) public votes;
+
+     function createProposal(uint256 _startTime, uint256 _endTime) external {
+          require(_startTime < _endTime, "invalid proposal dates");
+          uint256 proposalId = uint256(keccak256(abi.encodePacked(_startTime, _endTime, msg.sender)));
+          proposals[proposalId] = Proposal(_startTime, _endTime, 0, msg.sender, false);
+     }
+
+     function vote(uint256 _proposalId) external {
+          require(proposals[_proposalId].startTime < block.timestamp, "voting has not started yet");
+          require(proposals[_proposalId].endTime > block.timestamp, "voting has ended");
+          require(votes[msg.sender] == 0, "voter already voted");
+          proposals[_proposalId].voteCount++;
+          votes[msg.sender] = _proposalId;
+     }
+
+     function executeProposal(uint256 _proposalId) external {
+          require(!proposals[_proposalId].executed, "proposal already executed");
+          require(proposals[_proposalId].endTime < block.timestamp, "voting has not ended yet");
+          if (proposals[_proposalId].voteCount > 0) {
+               //execute proposal logic
+               proposals[_proposalId].executed = true;
+          }
+     }
+}
+<\contract\>

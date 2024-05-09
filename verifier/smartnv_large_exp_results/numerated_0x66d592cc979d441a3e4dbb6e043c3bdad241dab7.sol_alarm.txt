@@ -1,0 +1,12 @@
+The potential vulnerabilities in the contract you provided are:
+
+1) Inconsistent state update: The contract does not reset the values of `proposal` and `startingBalanceList` after the execution of a proposal, potentially leading to incorrect state updates in future proposals.
+
+2) Incorrect visibility/ownership: The `owner` variable is declared as internal which could lead to potential issues as it might be unintentionally accessed outside the contract.
+
+3) Insufficient gas: If the execution of `endExecute` requires a large amount of gas due to the calculation `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, it may result in an out-of-gas error.
+
+Therefore, the vulnerabilities identified in the provided contract are:
+- Inconsistent state update
+- Incorrect visibility/ownership
+- Insufficient gas

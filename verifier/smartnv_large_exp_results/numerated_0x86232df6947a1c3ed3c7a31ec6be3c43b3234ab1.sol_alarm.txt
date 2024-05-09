@@ -1,0 +1,13 @@
+<\contract\>
+contract AirdropCampaign {
+    mapping(address => bool) public hasClaimed;
+    address public token;
+    uint public amountPerClaim = 100;
+
+    function claim() public {
+        require(hasClaimed[msg.sender] == false, "User has already claimed");
+        IERC20(token).transfer(msg.sender, amountPerClaim);
+        hasClaimed[msg.sender] = true;
+    }
+}
+<\contract\>

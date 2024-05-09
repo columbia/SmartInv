@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The variable `lockedFunds` is updated in the `endExecute()` function without proper synchronization or protection, which could lead to inconsistent state updates.
+2) ID uniqueness violation: The `proposal` struct does not have a unique identifier for each proposal, which could lead to potential issues when multiple proposals are being handled simultaneously.
+3) Atomicity violation: The `execute()` function involves multiple state changes (e.g., transfer of tokens, updating `proposal.votedAmount`), which are not wrapped in a single atomic operation, leaving room for potential inconsistencies if one of the operations fails midway.

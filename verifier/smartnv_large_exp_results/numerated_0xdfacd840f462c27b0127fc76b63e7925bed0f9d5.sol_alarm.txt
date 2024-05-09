@@ -1,0 +1,32 @@
+Contract to analyze:
+
+contract Purchase {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public isPaid;
+
+    constructor() {
+        buyer = msg.sender;
+        seller = address(0x123);
+        price = 100;
+        isPaid = false;
+    }
+
+    function pay() public payable {
+        require(msg.value == price, "Incorrect payment amount");
+        seller.transfer(msg.value);
+        isPaid = true;
+    }
+
+    function refund() public {
+        require(msg.sender == seller, "Only seller can initiate refund");
+        require(isPaid, "Payment has not been made yet");
+        buyer.transfer(price);
+        isPaid = false;
+    }
+}
+
+Output: 
+1) insufficient gas
+2) incorrect visibility/ownership

@@ -1,0 +1,38 @@
+<\The contract to analyze\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokensAvailable;
+    
+    mapping(address => uint) public tokenBalance;
+    
+    constructor(IERC20 _token, uint _tokenPrice, uint _totalTokensAvailable) public {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokensAvailable = _totalTokensAvailable;
+    }
+    
+    function buyTokens(uint _numTokens) public {
+        require(_numTokens > 0, "Must buy at least 1 token");
+        require(token.balanceOf(msg.sender) >= _numTokens * tokenPrice, "Insufficient token balance");
+        require(tokenBalance[msg.sender] + _numTokens <= totalTokensAvailable, "Exceeds total available tokens");
+        
+        uint cost = _numTokens * tokenPrice;
+        tokenBalance[msg.sender] += _numTokens;
+        token.transferFrom(msg.sender, address(this), cost);
+    }
+    
+    function withdrawTokens(uint _numTokens) public {
+        require(tokenBalance[msg.sender] >= _numTokens, "Insufficient token balance");
+        
+        uint cost = _numTokens * tokenPrice;
+        tokenBalance[msg.sender] -= _numTokens;
+        token.transfer(msg.sender, cost);
+    }
+} 
+
+Output:
+- Inconsistent state update: The contract may not accurately update the tokenBalance of a user or totalTokensAvailable due to inconsistent state updates within the buyTokens and withdrawTokens functions.
+- Incorrect visibility/ownership: The owner variable is public, which exposes ownership details to all external parties. Consider making it private or internal depending on the contract's requirements.

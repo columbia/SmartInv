@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) privilege escalation: The contract does not have proper access control mechanisms to restrict certain functions only to authorized users.
+
+2) inconsistent state update: The `startExecute` function updates the proposal state without checking if a proposal is already in progress, potentially leading to unexpected behavior.
+
+3) atomicity violation: The `execute` function transfers tokens before updating `votedAmount`, which can cause issues if the token transfer fails after tokens are deducted from the sender.
+
+4) incorrect visibility/ownership: It is unclear if the `owner` variable is meant to be accessible only internally or if it should be public/externally accessible, leading to potential ownership control issues.
+
+5) insufficient gas: Depending on the gas limit set for transactions, certain operations like transferring tokens or updating state variables may fail if there is not enough gas allocated.
+
+6) ether leakage: The contract does not handle or track Ether transactions, leaving an opportunity for Ether leakage if not managed properly.
+
+7) business logic flaw: The `endExecute` function only checks if the balance is greater than half the total supply, which might not be a sufficient condition for a successful execution, leading to potential business logic flaws.

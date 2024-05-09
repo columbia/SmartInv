@@ -1,0 +1,21 @@
+<\contract\>
+
+contract Insurance {
+        address internal owner;
+        mapping(address => uint) public policyPremiums;
+        mapping(address => bool) public hasClaimed;
+
+        function purchasePolicy() public payable {
+            require(msg.value > 0, "must pay premium to purchase policy");
+            policyPremiums[msg.sender] = msg.value;
+        }
+
+        function submitClaim() public {
+            require(hasClaimed[msg.sender] == false, "already claimed");
+            require(policyPremiums[msg.sender] > 0, "no policy purchased");
+            // process claim logic
+            hasClaimed[msg.sender] = true;
+        }
+}
+
+<\contract\>

@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract PaymentGateway {
+    address public owner;
+    uint public totalAmount;
+
+    constructor() {
+        owner = msg.sender;
+        totalAmount = 0;
+    }
+
+    function deposit(uint amount) public {
+        require(msg.sender == owner, "Only the owner can deposit funds");
+        require(amount > 0, "Deposit amount must be greater than 0");
+
+        totalAmount += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(amount <= totalAmount, "Not enough funds to withdraw");
+
+        totalAmount -= amount;
+    }
+}
+<\contract_to_analyze\> 

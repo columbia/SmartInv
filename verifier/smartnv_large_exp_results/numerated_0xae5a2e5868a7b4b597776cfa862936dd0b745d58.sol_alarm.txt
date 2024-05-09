@@ -1,0 +1,52 @@
+Contract to Analyze:
+
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    address[] public candidates;
+    
+    function vote(uint256 _candidateIndex) public {
+        require(!voters[msg.sender].voted, "You have already voted");
+        require(_candidateIndex < candidates.length, "Invalid candidate index");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = _candidateIndex;
+    }
+    
+    function addCandidate(address _candidate) public {
+        candidates.push(_candidate);
+    }
+    
+    function getWinner() public view returns (address) {
+        uint[] memory votes;
+        for (uint i = 0; i < candidates.length; i++) {
+            votes[i] = 0;
+        }
+        
+        for (uint i = 0; i < voters.length; i++) {
+            if (voters[i].voted) {
+                votes[voters[i].vote]++;
+            }
+        }
+        
+        uint maxVotes = 0;
+        address winner;
+        for (uint i = 0; i < candidates.length; i++) {
+            if (votes[i] > maxVotes) {
+                maxVotes = votes[i];
+                winner = candidates[i];
+            }
+        }
+        
+        return winner;
+    }
+}
+
+Output:
+1) business logic flaw
+2) inconsistent state update
+3) incorrect visibility/ownership

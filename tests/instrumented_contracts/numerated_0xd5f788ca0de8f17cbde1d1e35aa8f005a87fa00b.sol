@@ -1,0 +1,106 @@
+1 pragma solidity ^0.4.13;
+2 
+3 contract tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData); }
+4 
+5 contract ShiversToken {
+6     /* Public variables of the token */
+7     string public name;
+8     string public symbol;
+9     uint8 public decimals;
+10     uint256 public totalSupply;
+11 
+12     /* This creates an array with all balances */
+13     mapping (address => uint256) public balanceOf;
+14     mapping (address => mapping (address => uint256)) public allowance;
+15 
+16     /* This generates a public event on the blockchain that will notify clients */
+17     event Transfer(address indexed from, address indexed to, uint256 value);
+18 
+19     /* This notifies clients about the amount burnt */
+20     event Burn(address indexed from, uint256 value);
+21 
+22     /* Initializes contract with initial supply tokens to the creator of the contract */
+23     function ShiversToken(
+24         uint256 initialSupply,
+25         string tokenName,
+26         uint8 decimalUnits,
+27         string tokenSymbol
+28         ) {
+29         decimals = decimalUnits;                            // Amount of decimals for display purposes
+30         uint supply = initialSupply * 10 ** uint256(decimals);
+31         balanceOf[msg.sender] = supply;              // Give the creator all initial tokens
+32         totalSupply = supply;                        // Update total supply
+33         name = tokenName;                                   // Set the name for display purposes
+34         symbol = tokenSymbol;                               // Set the symbol for display purposes
+35     }
+36 
+37     /* Internal transfer, only can be called by this contract */
+38     function _transfer(address _from, address _to, uint256 _value) internal {
+39         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
+40         require (balanceOf[_from] >= _value);                // Check if the sender has enough
+41         require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
+42         balanceOf[_from] -= _value;                         // Subtract from the sender
+43         balanceOf[_to] += _value;                            // Add the same to the recipient
+44         Transfer(_from, _to, _value);
+45     }
+46 
+47     /// @notice Send `_value` tokens to `_to` from your account
+48     /// @param _to The address of the recipient
+49     /// @param _value the amount to send
+50     function transfer(address _to, uint256 _value) {
+51         _transfer(msg.sender, _to, _value);
+52     }
+53 
+54     /// @notice Send `_value` tokens to `_to` in behalf of `_from`
+55     /// @param _from The address of the sender
+56     /// @param _to The address of the recipient
+57     /// @param _value the amount to send
+58     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+59         require (_value < allowance[_from][msg.sender]);     // Check allowance
+60         allowance[_from][msg.sender] -= _value;
+61         _transfer(_from, _to, _value);
+62         return true;
+63     }
+64 
+65     /// @notice Allows `_spender` to spend no more than `_value` tokens in your behalf
+66     /// @param _spender The address authorized to spend
+67     /// @param _value the max amount they can spend
+68     function approve(address _spender, uint256 _value)
+69         returns (bool success) {
+70         allowance[msg.sender][_spender] = _value;
+71         return true;
+72     }
+73 
+74     /// @notice Allows `_spender` to spend no more than `_value` tokens in your behalf, and then ping the contract about it
+75     /// @param _spender The address authorized to spend
+76     /// @param _value the max amount they can spend
+77     /// @param _extraData some extra information to send to the approved contract
+78     function approveAndCall(address _spender, uint256 _value, bytes _extraData)
+79         returns (bool success) {
+80         tokenRecipient spender = tokenRecipient(_spender);
+81         if (approve(_spender, _value)) {
+82             spender.receiveApproval(msg.sender, _value, this, _extraData);
+83             return true;
+84         }
+85     }        
+86 
+87     /// @notice Remove `_value` tokens from the system irreversibly
+88     /// @param _value the amount of money to burn
+89     function burn(uint256 _value) returns (bool success) {
+90         require (balanceOf[msg.sender] > _value);            // Check if the sender has enough
+91         balanceOf[msg.sender] -= _value;                      // Subtract from the sender
+92         totalSupply -= _value;                                // Updates totalSupply
+93         Burn(msg.sender, _value);
+94         return true;
+95     }
+96 
+97     function burnFrom(address _from, uint256 _value) returns (bool success) {
+98         require(balanceOf[_from] >= _value);                // Check if the targeted balance is enough
+99         require(_value <= allowance[_from][msg.sender]);    // Check allowance
+100         balanceOf[_from] -= _value;                         // Subtract from the targeted balance
+101         allowance[_from][msg.sender] -= _value;             // Subtract from the sender's allowance
+102         totalSupply -= _value;                              // Update totalSupply
+103         Burn(_from, _value);
+104         return true;
+105     }
+106 }

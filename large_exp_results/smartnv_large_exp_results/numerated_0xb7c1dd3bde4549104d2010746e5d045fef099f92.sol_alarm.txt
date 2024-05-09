@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentChannel {
+    address public sender;
+    address public recipient;
+    uint public amount;
+
+    constructor(address _recipient) payable {
+        sender = msg.sender;
+        recipient = _recipient;
+        amount = msg.value;
+    }
+
+    function closeChannel(uint _amount) public {
+        require(msg.sender == recipient, "Only recipient can close the channel");
+        require(_amount <= amount, "Invalid amount");
+        recipient.transfer(_amount);
+        amount -= _amount;
+    }
+
+    function updateChannel(uint _amount) public {
+        require(msg.sender == sender, "Only sender can update the channel");
+        amount += _amount;
+    }
+}
+<\contract\>

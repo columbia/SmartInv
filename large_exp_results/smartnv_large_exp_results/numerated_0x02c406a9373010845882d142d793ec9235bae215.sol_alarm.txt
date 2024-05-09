@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+    
+    function doubleVote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        totalVotes += 2;
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities:
+1) ID uniqueness violation: The contract allows the same address to vote multiple times by simply increasing the totalVotes counter without properly checking for unique voters.
+2) Inconsistent state update: The doubleVote function allows a voter to cast two votes with just one action, potentially manipulating the totalVotes count.
+3) Incorrect visibility/ownership: The hasVoted mapping is public, which exposes voter information to anyone on the blockchain.

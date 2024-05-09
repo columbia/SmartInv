@@ -1,0 +1,34 @@
+<b>Contract:</b>
+contract PaymentSplitter {
+    address public owner;
+    mapping(address => uint) public payees;
+    
+    function splitPayment(address[] memory _payees, uint[] memory _shares) public payable {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        uint totalShares = 0;
+        
+        for (uint i = 0; i < _shares.length; i++) {
+            totalShares += _shares[i];
+            payees[_payees[i]] = _shares[i];
+        }
+        
+        require(totalShares == 100, "Total shares is not 100");
+        
+        for (uint i = 0; i < _payees.length; i++) {
+            address payee = _payees[i];
+            uint amount = msg.value * payees[payee] / 100;
+            require(amount > 0, "Payment amount is zero");
+            payable(payee).transfer(amount);
+        }
+    }
+}
+<b>Potential Vulnerabilities:</b>
+1) Arithmetic flaw: The contract does not account for potential integer overflow or underflow when calculating payment amounts.
+2) Inconsistent state update: The contract assigns shares to payees without first resetting their existing share values, potentially resulting in incorrect distributions.
+3) Incorrect visibility/ownership: The `owner` variable is declared as public, which may expose sensitive information.
+4) Insufficient gas: Depending on the number of payees and shares, the gas required to execute the `splitPayment` function may exceed the block gas limit.
+5) ID uniqueness violation: The payees' addresses are used as keys in the mapping, which may lead to conflicts if the same address is used multiple times.
+6) Atomicity violation: The distribution of payments to multiple payees is not performed atomically, leaving room for potential reentrancy attacks.
+7) Ether leakage: There are potential scenarios where ether could be stuck in the contract, leading to loss of funds.
+
+<b>Disclaimer:</b> This analysis is based on the provided code snippet and does not cover all possible vulnerabilities. Comprehensive security audits are recommended before deploying any smart contract.

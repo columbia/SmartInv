@@ -1,0 +1,15 @@
+<\Your contract\> 
+contract Marketplace {
+     mapping(address => uint) public balances;
+     mapping(uint => bool) public itemSold;
+     uint public totalItemsSold;
+
+     function buyItem(uint itemId, uint price) public {
+         require(itemSold[itemId] == false, "Item already sold");
+         require(balances[msg.sender] >= price, "Insufficient balance");
+
+         balances[msg.sender] -= price;
+         totalItemsSold++;
+         itemSold[itemId] = true;
+     }
+}

@@ -1,0 +1,28 @@
+The contract below contains the following potential vulnerabilities:
+
+1) ID uniqueness violation
+2) Incorrect visibility/ownership
+
+```solidity
+contract Auction {
+    struct Bid {
+        address bidder;
+        uint amount;
+    }
+    
+    mapping(uint => Bid) public bids;
+    uint public auctionID;
+    
+    function placeBid(uint _auctionID, uint _amount) public {
+        bids[_auctionID] = Bid(msg.sender, _amount);
+    }
+    
+    function getHighestBid(uint _auctionID) public view returns (uint) {
+        return bids[_auctionID].amount;
+    }
+    
+    function getBidder(uint _auctionID) public view returns (address) {
+        return bids[_auctionID].bidder;
+    }
+}
+```

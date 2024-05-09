@@ -1,0 +1,25 @@
+<\your_contract\>
+contract Marketplace {
+     address public owner;
+     mapping(address => uint) public productPrices;
+     mapping(address => uint) public productQuantities;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function setPrice(address product, uint price) public {
+         require(msg.sender == owner, "only owner can set price");
+         productPrices[product] = price;
+     }
+
+     function buyProduct(address product, uint quantity) public payable {
+         require(productPrices[product] > 0, "product not available");
+         require(productQuantities[product] >= quantity, "insufficient quantity");
+         uint totalPrice = productPrices[product] * quantity;
+         require(totalPrice <= msg.value, "insufficient funds");
+
+         productQuantities[product] -= quantity;
+     }
+}
+<\your_contract\>

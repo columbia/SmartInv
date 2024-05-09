@@ -1,0 +1,26 @@
+The contract to analyze:
+
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint256 => uint256) public payments;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint256 paymentId, uint256 amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[paymentId] += amount;
+    }
+
+    function withdraw(uint256 paymentId) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        uint256 amount = payments[paymentId];
+        require(amount > 0, "No funds to withdraw");
+        payments[paymentId] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output: 
+This contract seems healthy and does not contain any potential vulnerabilities.

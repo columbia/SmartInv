@@ -1,0 +1,22 @@
+The contract provided for analysis is:
+
+contract VotingSystem {
+    mapping(address => uint) public voteRecord;
+    uint public totalVotes;
+
+    function vote(uint _numVotes) external {
+        require(_numVotes > 0, "Number of votes must be greater than 0");
+        voteRecord[msg.sender] += _numVotes;
+        totalVotes += _numVotes;
+    }
+
+    function revokeVote(uint _numVotes) external {
+        require(_numVotes > 0, "Number of votes to revoke must be greater than 0");
+        require(voteRecord[msg.sender] >= _numVotes, "Not enough votes to revoke");
+        voteRecord[msg.sender] -= _numVotes;
+        totalVotes -= _numVotes;
+    }
+}
+
+Output: 
+healthy

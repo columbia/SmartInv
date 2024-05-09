@@ -1,0 +1,4 @@
+The contract contains the following potential vulnerabilities:
+1) Inconsistent state update: The function `endExecute()` updates the `lockedFunds` without any check on its consistency with other state variables.
+2) Incorrect visibility/ownership: The contract does not define the visibility/ownership of the `lockedFunds` variable, which can lead to unexpected behavior.
+3) Insufficient gas: The function `endExecute()` performs a potentially expensive operation (`votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`) which might require more gas than available in certain situations.

@@ -1,0 +1,22 @@
+Contract you are analyzing:
+
+contract SimpleToken {
+         uint public totalSupply;
+         mapping(address => uint) public balanceOf;
+
+         function mint(address account, uint amount) public {
+             require(msg.sender == owner, "only owner can mint");
+             require(totalSupply + amount >= totalSupply, "integer overflow");
+             totalSupply += amount;
+             balanceOf[account] += amount;
+         }
+         function transfer(address to, uint amount) public {
+             require(balanceOf[msg.sender] >= amount, "insufficient balance");
+             balanceOf[msg.sender] -= amount;
+             balanceOf[to] += amount;
+         }
+}
+
+Potential vulnerabilities:
+9) integer overflow/underflow
+14) incorrect visibility/ownership

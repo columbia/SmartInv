@@ -1,0 +1,36 @@
+<\Contract\> 
+contract SimpleEscrow {
+         address public payer;
+         address public recipient;
+         uint public amount;
+         bool public isPaid;
+
+         constructor(address _payer, address _recipient, uint _amount) {
+            payer = _payer;
+            recipient = _recipient;
+            amount = _amount;
+            isPaid = false;
+         }
+
+         function deposit() public payable {
+            require(msg.sender == payer, "Only payer can deposit funds");
+            require(msg.value == amount, "Incorrect amount deposited");
+         }
+
+         function release() public {
+            require(msg.sender == payer, "Only payer can release funds");
+            require(address(this).balance >= amount, "Insufficient balance in escrow");
+            payable(recipient).transfer(amount);
+            isPaid = true;
+         }
+
+         function refund() public {
+            require(msg.sender == payer, "Only payer can request a refund");
+            payable(payer).transfer(amount);
+            isPaid = true;
+         }
+}
+<\Contract\> 
+
+Output:
+- Insufficient gas

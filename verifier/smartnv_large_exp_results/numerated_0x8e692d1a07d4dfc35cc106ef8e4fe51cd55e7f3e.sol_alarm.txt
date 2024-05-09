@@ -1,0 +1,15 @@
+<\analyzed_contract\>
+contract Auction {
+     address payable public highestBidder;
+     uint public highestBid;
+
+     function bid() public payable {
+         require(msg.value > highestBid, "Bid not high enough");
+         if (highestBidder != address(0)) {
+             highestBidder.transfer(highestBid);
+         }
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+}
+<\analyzed_contract\>

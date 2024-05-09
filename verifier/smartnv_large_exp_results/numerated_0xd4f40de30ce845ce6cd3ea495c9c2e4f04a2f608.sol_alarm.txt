@@ -1,0 +1,25 @@
+The contract provided:
+contract VotingSystem {
+     struct Vote {
+           address voter;
+           uint256 amount;
+           bool choice;
+           }
+     mapping(uint256 => Vote) public votes;
+     uint256 public totalVotes;
+     address public tokenAddress;
+     address public owner;
+     
+     function vote(uint256 id, uint256 amount, bool choice) external {
+           require(amount > 0, "amount must be greater than 0");
+           require(amount * 1 ether <= Token(tokenAddress).balanceOf(msg.sender), "insufficient balance");
+           votes[id] = Vote(msg.sender, amount, choice);
+           totalVotes += amount;
+     }
+     function getTotalVotes() external view returns(uint256) {
+           return totalVotes;
+     }
+}
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership
+2) inconsistent state update

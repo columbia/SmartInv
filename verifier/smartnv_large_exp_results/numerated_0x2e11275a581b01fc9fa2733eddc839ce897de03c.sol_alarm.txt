@@ -1,0 +1,28 @@
+The contract in question:
+
+contract Crowdsale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+
+    constructor(address _tokenAddress, uint _tokenPrice) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _tokenAmount) public payable {
+        uint totalPrice = _tokenAmount * tokenPrice;
+        require(msg.value >= totalPrice, "Insufficient funds");
+
+        // Transfer tokens to buyer
+        ERC20(tokenAddress).transfer(msg.sender, _tokenAmount);
+
+        // Send ether to owner
+        owner.transfer(totalPrice);
+    }
+}
+
+Output: 
+1) Inconsistent state update: The token transfer and ether transfer need to be performed atomically to avoid inconsistent state issues.
+2) Insufficient gas: The contract does not include gas stipend for ether transfers, which may lead to out of gas errors during execution.

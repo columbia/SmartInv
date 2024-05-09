@@ -1,0 +1,44 @@
+The contract provided for analysis is:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the provided contract:
+1) Inconsistent state update: The contract may have inconsistencies in updating the state variables, leading to unexpected behavior.
+2) ID uniqueness violation: The contract may not enforce unique identifiers for proposals, potentially causing conflicts or data corruption.
+3) Business logic flaw: There may be flaws in the execution flow that could be exploited for malicious purposes.
+4) Cross bridge inconsistency: The contract may have inconsistencies when interacting with other contracts or external systems, leading to vulnerabilities.
+5) Atomicity violation: Operations within the contract may not be atomic, allowing for undesired outcomes due to partial completion of actions.
+
+Overall, the contract provided may have various potential vulnerabilities that need to be addressed to ensure its security and reliability.

@@ -1,0 +1,17 @@
+The contract provided for analysis is:
+
+```solidity
+contract CrossBridge {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swapTokens(uint256 amount, address recipient) external {
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(recipient, amount);
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) inconsistent state update
+3) business logic flaw

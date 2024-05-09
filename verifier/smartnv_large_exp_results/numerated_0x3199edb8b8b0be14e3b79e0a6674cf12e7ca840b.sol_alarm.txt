@@ -1,0 +1,35 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    uint public amount;
+
+    enum State { Created, Locked, Released }
+    State public state;
+
+    constructor(address _recipient, address _arbiter) public {
+        payer = msg.sender;
+        recipient = _recipient;
+        arbiter = _arbiter;
+        state = State.Created;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        amount += msg.value;
+    }
+
+    function lock() public {
+        require(msg.sender == payer, "Only payer can lock funds");
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(state == State.Locked, "Funds are not locked");
+        recipient.transfer(amount);
+        state = State.Released;
+    }
+}
+<\contract\>

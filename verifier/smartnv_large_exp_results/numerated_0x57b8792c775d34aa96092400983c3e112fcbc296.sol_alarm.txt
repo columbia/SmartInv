@@ -1,0 +1,30 @@
+<\contract\> 
+contract MyToken is IERC20 {
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+
+    function mint(address account, uint amount) public {
+        require(msg.sender == owner, "only owner can mint");
+        totalSupply += amount;
+        balances[account] += amount;
+    }
+    
+    function transfer(address recipient, uint amount) public {
+        require(balances[msg.sender] >= amount, "insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+
+    function burn(address account, uint amount) public {
+        require(msg.sender == account, "only account owner can burn tokens");
+        require(balances[account] >= amount, "insufficient balance to burn");
+        totalSupply -= amount;
+        balances[account] -= amount;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership.

@@ -1,0 +1,36 @@
+<\contract\>
+contract  VestingContract {
+     address internal owner;
+     IERC20 public token;
+     uint public startDate;
+     uint public endDate;
+     uint public cliffDuration;
+     uint public percentRelease;
+     mapping(address => uint) public vestedAmount;
+
+     constructor(IERC20 _token, uint _startDate, uint _endDate, uint _cliffDuration, uint _percentRelease) {
+         owner = msg.sender;
+         token = _token;
+         startDate = _startDate;
+         endDate = _endDate;
+         cliffDuration = _cliffDuration;
+         percentRelease = _percentRelease;
+     }
+
+     function release(address beneficiary) public {
+         require(msg.sender == owner, "Caller is not the owner");
+         require(block.timestamp >= cliffDuration, "Cliff duration has not passed yet");
+         uint releaseAmount = calculateReleaseAmount(beneficiary);
+         vestedAmount[beneficiary] += releaseAmount;
+         token.transfer(beneficiary, releaseAmount);
+     }
+
+     function calculateReleaseAmount(address beneficiary) internal returns (uint) {
+         uint totalAmount = (token.balanceOf(address(this)) - vestedAmount[beneficiary]);
+         return totalAmount * percentRelease / 100;
+     }
+}
+<\contract\>
+
+Output:
+1) incorrect visibility/ownership

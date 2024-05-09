@@ -1,0 +1,25 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public recipient;
+    uint public amount;
+    bool public paid;
+
+    function deposit(address _recipient) public payable {
+        require(!paid, "Payment already made");
+        require(msg.sender == payer, "Only payer can deposit");
+        require(msg.value == amount, "Incorrect amount deposited");
+        recipient = _recipient;
+    }
+
+    function withdraw() public {
+        require(paid, "Payment not made yet");
+        payable(recipient).transfer(amount);
+    }
+
+    function confirmPayment() public {
+        require(msg.sender == recipient, "Only recipient can confirm payment");
+        paid = true;
+    }
+}
+<\contract\>

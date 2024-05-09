@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+contract Marketplace {
+    mapping(uint256 => address) public tokenIdToOwner;
+    mapping(address => uint256) public tokenOwnershipCount;
+    mapping(address => uint256) public balances;
+
+    function buyToken(uint256 tokenId, uint256 price) external {
+        require(tokenIdToOwner[tokenId] != msg.sender, "You already own this token");
+
+        require(balances[msg.sender] >= price, "Insufficient balance");
+
+        balances[msg.sender] -= price;
+        balances[tokenIdToOwner[tokenId]] += price;
+        tokenIdToOwner[tokenId] = msg.sender;
+
+        tokenOwnershipCount[msg.sender]++;
+        tokenOwnershipCount[tokenIdToOwner[tokenId]]--;
+    }
+
+    function depositFunds() external payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdrawFunds(uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+Output:
+1) Sucidal contracts
+2) Incorrect visibility/ownership

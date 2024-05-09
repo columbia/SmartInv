@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: In the function endExecute, the condition "require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");" may lead to inconsistent state updates if the balance changes between the check and the actual execution.
+
+2) Insufficient gas: The function liquidate in ExchangeTokens could potentially run out of gas if the debt[user] or collateral[user] amounts are too high, causing the transaction to fail.
+
+3) Incorrect visibility/ownership: The visibility of the variables debt and collateral in ExchangeTokens is set to public, which may expose sensitive information to external actors.
+
+4) Arithmetic flaw: In the liquidate function of ExchangeTokens, the calculation "getPrice() * cAmount * 80 / 100" could potentially result in an arithmetic flaw if the values involved are not carefully validated.

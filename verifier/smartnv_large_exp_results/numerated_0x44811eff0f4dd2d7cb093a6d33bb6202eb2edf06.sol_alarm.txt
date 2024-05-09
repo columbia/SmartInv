@@ -1,0 +1,4 @@
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The `proposal` struct is updated in the `startExecute` function without properly initializing it first, which can lead to inconsistent state updates.
+2) Atomicity violation: The updates to `proposal.votedAmount` and the call to `votedProposal` in the `execute` function are not atomic, which can result in race conditions and inconsistent data.
+3) Insufficient gas: The `endExecute` function may require a significant amount of gas due to the check on `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which could potentially result in running out of gas during execution.

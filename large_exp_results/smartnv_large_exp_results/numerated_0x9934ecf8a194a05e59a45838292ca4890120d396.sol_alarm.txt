@@ -1,0 +1,19 @@
+<\contract\>
+contract Payment {
+    mapping(uint => uint) public payments;
+    uint public totalPayments;
+
+    function makePayment(uint id, uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        payments[id] += amount;
+        totalPayments += amount;
+    }
+
+    function refundPayment(uint id, uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        require(payments[id] >= amount, "Insufficient funds");
+        payments[id] -= amount;
+        totalPayments -= amount;
+    }
+}
+<\contract\>

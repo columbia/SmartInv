@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The "proposal.votedAmount" is updated in the "execute" function without proper synchronization or locking mechanisms, which can lead to inconsistent state updates.
+
+2) Atomicity violation: The operations in the "execute" function are not wrapped in a single atomic transaction, leading to the possibility of partial execution and atomicity violation.
+
+3) Cross bridge inconsistency: The contract interacts with external contracts (IERC20 and votingToken) without verifying the consistency of data passed between them, which can result in cross bridge inconsistency.
+
+4) ID uniqueness violation: The contract does not have any mechanism to ensure the uniqueness of proposal IDs, which may lead to conflicts and unexpected behavior.

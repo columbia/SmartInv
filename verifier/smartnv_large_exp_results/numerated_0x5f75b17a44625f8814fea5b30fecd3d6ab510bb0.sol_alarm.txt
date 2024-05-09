@@ -1,0 +1,23 @@
+<\your_contract\>
+contract AirDrop {
+    mapping(address => uint) public recipients;
+    address public tokenAddress;
+    uint public totalTokens;
+    
+    constructor(address _tokenAddress, uint _totalTokens) {
+        tokenAddress = _tokenAddress;
+        totalTokens = _totalTokens;
+    }
+
+    function addRecipient(address _recipient, uint _amount) external {
+        require(msg.sender == owner, "Only owner can add recipients");
+        recipients[_recipient] = _amount;
+    }
+
+    function distributeTokens() external {
+        for(uint i=0; i<recipients.length; i++) {
+            require(Token(tokenAddress).transfer(recipients[i], recipients[i]), "Token transfer failed");
+        }
+    }
+}
+<\your_contract\>

@@ -1,0 +1,45 @@
+<\contract\>
+contract Escrow {
+         IERC20 public token;
+         address public buyer;
+         address public seller;
+         address public arbiter;
+         uint public amount;
+         bool public buyerApproved;
+         bool public sellerApproved;
+
+         constructor(address _token, address _buyer, address _seller, address _arbiter, uint _amount) {
+             token = IERC20(_token);
+             buyer = _buyer;
+             seller = _seller;
+             arbiter = _arbiter;
+             amount = _amount;
+             buyerApproved = false;
+             sellerApproved = false;
+         }
+
+         function approve() public {
+             require(msg.sender == buyer || msg.sender == seller, "only buyer or seller can approve");
+             if (msg.sender == buyer) {
+                 buyerApproved = true;
+             } else {
+                 sellerApproved = true;
+             }
+         }
+
+         function release() public {
+             require(buyerApproved && sellerApproved, "both buyer and seller must approve");
+             token.transfer(seller, amount);
+         }
+
+         function refund() public {
+             require(!buyerApproved || !sellerApproved, "either buyer or seller must not approve");
+             token.transfer(buyer, amount);
+         }
+
+         function setArbiter(address _arbiter) public {
+             require(msg.sender == arbiter, "only arbiter can set new arbiter");
+             arbiter = _arbiter;
+         }
+     }
+<\contract\>

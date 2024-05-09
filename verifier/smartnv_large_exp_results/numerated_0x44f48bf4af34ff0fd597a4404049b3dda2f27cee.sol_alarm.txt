@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract Escrow {
+         mapping(address => uint) balances;
+         address public owner;
+         address public target;
+         
+         constructor(address _target) public {
+             owner = msg.sender;
+             target = _target;
+         }
+         
+         function deposit() public payable {
+             require(msg.sender == owner, "Only owner can deposit funds");
+             balances[target] += msg.value;
+         }
+         
+         function withdraw() public {
+             require(msg.sender == owner, "Only owner can withdraw funds");
+             uint amount = balances[target];
+             balances[target] = 0;
+             (bool success, ) = msg.sender.call{value: amount}("");
+             require(success, "Transfer failed");
+         }
+}
+<\contract_to_analyze\>

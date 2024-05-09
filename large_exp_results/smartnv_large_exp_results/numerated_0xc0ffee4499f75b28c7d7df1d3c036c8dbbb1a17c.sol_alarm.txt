@@ -1,0 +1,20 @@
+Contract to analyze:
+
+contract PaymentGateway {
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+         balances[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         msg.sender.transfer(amount);
+     }
+}
+
+Potential vulnerabilities in the contract:
+- Insufficient gas, as the withdrawal function relies on the sender to have enough gas to cover the transfer amount.
+- Integer overflow/underflow, as the balances are stored as uint and no check is in place to prevent overflow or underflow.
+- Ether leakage, as there is potential for ether to get stuck in the contract if a sender doesn't have enough gas to complete the transfer.

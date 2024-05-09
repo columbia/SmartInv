@@ -1,0 +1,33 @@
+<\contract\> 
+contract VotingSystem {
+         struct Proposal {
+             uint256 startTime; 
+             uint256 votedAmount; 
+             address proposer; 
+          }
+          address internal admin;
+          IERC20 public votingToken;
+          Proposal public activeProposal;
+
+          function startVoting() external {
+              activeProposal = Proposal(block.timestamp, 0, msg.sender);
+          }
+
+          function vote(uint256 amount) external {
+              require(activeProposal.startTime != 0, "voting has not started");
+              votingToken.transferFrom(msg.sender, address(this), amount);
+              activeProposal.votedAmount += amount;
+          }
+
+          function endVoting() external {
+              require(activeProposal.startTime + 24 < block.timestamp, "voting has not ended");
+              require(activeProposal.votedAmount * 2 > votingToken.totalSupply(), "proposal failed");
+              admin = msg.sender;
+          }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are: 
+1) Inconsistent state update: there is no check to ensure that endVoting can be called only once.
+2) Privilege escalation: Setting the admin variable might be exploited for privilege escalation attacks.
+3) Incorrect visibility/ownership: The admin variable is set without any access control mechanisms, making it prone to unauthorized modifications.

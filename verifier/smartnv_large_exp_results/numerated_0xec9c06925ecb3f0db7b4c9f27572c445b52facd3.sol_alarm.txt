@@ -1,0 +1,38 @@
+The contract provided for analysis:
+
+contract Lottery {
+    address public owner;
+    uint public prizePool;
+
+    mapping(address => uint) public participants;
+
+    constructor() {
+        owner = msg.sender;
+        prizePool = 0;
+    }
+
+    function enterLottery(uint amount) external {
+        require(amount > 0, "Invalid amount");
+        require(prizePool + amount >= prizePool, "Integer overflow");
+        
+        participants[msg.sender] += amount;
+        prizePool += amount;
+    }
+
+    function pickWinner() external {
+        require(msg.sender == owner, "Only owner can pick winner");
+        
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty, participants))) % prizePool;
+        address winner = address(winnerIndex);
+        
+        uint winnings = prizePool;
+        prizePool = 0;
+        
+        (bool success,) = winner.call{value: winnings}("");
+        require(success, "Failed to send winnings to winner");
+    }
+}
+
+Output:
+1) integer overflow/underflow
+2) incorrect visibility/ownership

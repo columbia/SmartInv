@@ -1,0 +1,32 @@
+<\Contract\>
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        uint256 voteIndex;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public votes;
+
+    function vote(uint256 index) public {
+        require(!voters[msg.sender].voted, "Already voted");
+        voters[msg.sender].voted = true;
+        voters[msg.sender].voteIndex = index;
+        votes[index]++;
+    }
+
+    function getWinner() public view returns (uint256) {
+        uint256 maxVotes = 0;
+        uint256 winningIndex;
+        
+        for (uint256 i = 0; i < votes.length; i++) {
+            if (votes[i] > maxVotes) {
+                maxVotes = votes[i];
+                winningIndex = i;
+            }
+        }
+        
+        return winningIndex;
+    }
+}
+<\Contract\>

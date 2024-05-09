@@ -1,0 +1,13 @@
+Contract:
+contract TransferTokens {
+        IERC20 public token;
+        address public recipient;
+        
+        function transfer(uint amount) public {
+            require(msg.sender == owner, "only owner can transfer tokens");
+            token.transfer(recipient, amount);
+        }
+}
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership

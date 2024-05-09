@@ -1,0 +1,27 @@
+<\contract_to_be_analyzed\>
+contract Lottery {
+    address public owner;
+    uint public totalTickets;
+    mapping(address => uint) public ticketsBought;
+
+    constructor() {
+        owner = msg.sender;
+        totalTickets = 0;
+    }
+
+    function buyTickets(uint numberOfTickets) public payable {
+        require(msg.value == numberOfTickets * 0.1 ether, "Incorrect amount sent");
+        totalTickets += numberOfTickets;
+        ticketsBought[msg.sender] += numberOfTickets;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw the winner");
+        // logic to randomly select a winner and transfer prize
+    }
+
+    function checkBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+}
+<\contract_to_be_analyzed\>

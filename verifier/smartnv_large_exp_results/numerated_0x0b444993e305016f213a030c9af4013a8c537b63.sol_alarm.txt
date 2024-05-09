@@ -1,0 +1,26 @@
+Contract to be analyzed:
+```solidity
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function processPayment(address _recipient, uint _amount) public {
+        require(msg.sender == owner, "Only owner can process payment");
+        payments[_recipient] += _amount;
+    }
+
+    function withdrawPayment(address _recipient) public {
+        uint paymentAmount = payments[_recipient];
+        require(paymentAmount > 0, "No payment available for withdrawal");
+        payments[_recipient] = 0;
+        _recipient.transfer(paymentAmount);
+    }
+}
+```
+
+Output:
+- incorrect visibility/ownership

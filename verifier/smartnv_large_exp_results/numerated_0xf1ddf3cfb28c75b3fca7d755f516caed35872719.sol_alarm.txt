@@ -1,0 +1,23 @@
+<\contract\> 
+contract Marketplace {
+    mapping(uint256 => address) private itemIdToOwner;
+    mapping(address => uint256) private itemOwnerCount;
+
+    function createItem(uint256 _itemId) external {
+        require(itemIdToOwner[_itemId] == address(0), "Item already exists");
+        itemIdToOwner[_itemId] = msg.sender;
+        itemOwnerCount[msg.sender]++;
+    }
+
+    function transferItem(uint256 _itemId, address _newOwner) external {
+        require(itemIdToOwner[_itemId] == msg.sender, "You are not the owner");
+        itemIdToOwner[_itemId] = _newOwner;
+        itemOwnerCount[msg.sender]--;
+        itemOwnerCount[_newOwner]++;
+    }
+
+    function getItemOwnerCount(address _owner) external view returns (uint256) {
+        return itemOwnerCount[_owner];
+    }
+}
+<\contract\>

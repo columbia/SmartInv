@@ -1,0 +1,24 @@
+The contract provided for analysis is:
+
+contract Auction {
+     mapping(address => uint) public bids;
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() public payable {
+         require(msg.value > highestBid, "Bid not high enough");
+         if(highestBidder != address(0)){
+             address _highestBidder = highestBidder;
+             _highestBidder.transfer(highestBid);
+         }
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+}
+
+Potential vulnerabilities in the contract:
+- reentrancy: The bid function could be vulnerable to reentrancy attacks as the transfer of funds to the previous highest bidder is done after updating the highest bidder, allowing the previous highest bidder to potentially call the bid function again before the transfer is completed.
+- inconsistent state update: There is a potential risk of inconsistent state if the transfer to the previous highest bidder fails after updating the highest bidder and highest bid. This could result in the contract being in an inconsistent state where the new highest bidder has not actually bid the highest amount.
+- incorrect visibility/ownership: The visibility of the highestBidder and highestBid variables as public could expose sensitive information about the highest bidder and bid amount to all external parties. 
+
+The potential vulnerabilities in the provided contract are reentrancy, inconsistent state update, and incorrect visibility/ownership.

@@ -1,0 +1,29 @@
+The provided contract is the following:
+
+```
+contract OrderBook {
+    mapping(uint => Order) public orders;
+    uint public totalOrders;
+
+    struct Order {
+        address user;
+        uint amount;
+        bool executed;
+    }
+
+    function createOrder(uint _amount) public {
+        totalOrders++;
+        orders[totalOrders] = Order(msg.sender, _amount, false);
+    }
+
+    function executeOrder(uint _orderId) public {
+        require(orders[_orderId].executed == false, "Order already executed");
+        // Execute order logic
+        orders[_orderId].executed = true;
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

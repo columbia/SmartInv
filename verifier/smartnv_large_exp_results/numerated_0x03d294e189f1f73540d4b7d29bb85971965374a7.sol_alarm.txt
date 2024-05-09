@@ -1,0 +1,28 @@
+The contract to analyze:
+
+contract VotingSystem {
+    address public owner;
+    mapping(address => uint) public votes;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function vote(uint amount) public {
+        require(amount > 0, "Invalid amount");
+        votes[msg.sender] += amount;
+    }
+    
+    function getTotalVotes() public view returns (uint) {
+        uint total = 0;
+        for (uint i = 0; i < votes.length; i++) {
+            total += votes[i];
+        }
+        return total;
+    }
+} 
+
+Output:
+1) inconsistent state update
+2) integer overflow/underflow
+3) incorrect visibility/ownership

@@ -1,0 +1,23 @@
+<\contract\> 
+contract TokenSwap {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     uint public exchangeRate;
+
+     function swapTokens(uint amountA) public {
+         require(amountA > 0, "Amount must be greater than 0");
+         uint amountB = amountA * exchangeRate;
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         tokenB.transfer(msg.sender, amountB);
+     }
+
+}
+<\contract\>
+
+Potential vulnerabilities in the contract:
+
+10) Arithmetic flaw: The calculation of amountB in the swapTokens function can potentially lead to arithmetic flaws, such as overflow or underflow, depending on the value of exchangeRate and amountA.
+
+13) Insufficient gas: If the amountB calculated exceeds the gas limit for transferring tokens in the tokenB.transfer function, the transaction may run out of gas and fail.
+
+Therefore, the potential vulnerabilities in the TokenSwap contract are arithmetic flaw and insufficient gas.

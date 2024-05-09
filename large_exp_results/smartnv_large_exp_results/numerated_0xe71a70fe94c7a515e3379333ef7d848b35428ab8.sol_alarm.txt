@@ -1,0 +1,30 @@
+Contract to analyze:
+
+contract VotingSystem {
+    address internal admin;
+    mapping(address => uint) public votes;
+
+    constructor() public {
+        admin = msg.sender;
+    }
+
+    function vote(address user, uint amount) public {
+        require(msg.sender == admin, "only admin can vote");
+        votes[user] += amount;
+    }
+
+    function withdrawVotes(address user) public {
+        require(votes[user] > 0, "no votes to withdraw");
+        votes[user] = 0;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Privilege escalation: The admin is the only one allowed to vote, which could potentially lead to privilege escalation if there is a flaw in the admin's account security.
+2) Incorrect visibility/ownership: The admin is not specified as internal or external, which can lead to ownership vulnerabilities.
+3) Insufficient gas: If the contract runs out of gas during a vote or withdrawal, it could lead to unexpected behavior.
+
+Therefore, the identified potential vulnerabilities in the VotingSystem contract are:
+1) Privilege escalation
+2) Incorrect visibility/ownership
+3) Insufficient gas

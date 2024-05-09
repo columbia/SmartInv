@@ -1,0 +1,27 @@
+<\contract_3\> 
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCount;
+    
+    function vote(bool decision) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        if(decision) {
+            voteCount[msg.sender]++;
+        } else {
+            if(voteCount[msg.sender] > 0) {
+                voteCount[msg.sender]--;
+            }
+        }
+        
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract_3\>
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The mappings `hasVoted` and `voteCount` are public, which exposes sensitive voting information to anyone who accesses the contract.
+2) Inconsistent state update: The function `vote` updates the `hasVoted` mapping and the `voteCount` mapping but in separate steps, potentially leading to inconsistent state if one update fails while the other succeeds.
+3) Insufficient gas: If there are a large number of voters or the mappings grow too large, the function `vote` could run out of gas as it may require a significant amount of gas to update the mappings.
+4) ID uniqueness violation: The use of `msg.sender` as the key in the mappings `hasVoted` and `voteCount` assumes that each address is unique, which may not always be the case.
+5) Integer underflow: There is a risk of integer underflow in the `else` branch of the decision in the `vote` function when `voteCount[msg.sender]` is decremented.

@@ -1,0 +1,26 @@
+The contract that needs to be analyzed for potential vulnerabilities:
+
+contract Escrow {
+         address public seller;
+         address public buyer;
+         uint public price;
+
+         function createEscrow(address _seller, address _buyer, uint _price) public {
+             seller = _seller;
+             buyer = _buyer;
+             price = _price;
+         }
+
+         function releasePayment() public {
+             require(msg.sender == seller, "Only seller can release payment");
+             payable(buyer).transfer(price);
+         }
+
+         function refundPayment() public {
+             require(msg.sender == buyer, "Only buyer can refund payment");
+             payable(seller).transfer(price);
+         }
+}
+
+Output: 
+- incorrect visibility/ownership

@@ -1,0 +1,33 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    uint public tokenPrice;
+    uint public totalTokens;
+    uint public tokensSold;
+    address public tokenAddress;
+    address public owner;
+
+    constructor(uint _tokenPrice, uint _totalTokens, address _tokenAddress) {
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        tokensSold = 0;
+        tokenAddress = _tokenAddress;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+
+        require(tokensSold + _numTokens <= totalTokens, "Not enough tokens left");
+
+        ERC20(tokenAddress).transfer(msg.sender, _numTokens);
+        tokensSold += _numTokens;
+    }
+}
+<\contract_to_analyze\>
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The owner variable is declared as public, which can expose sensitive information about the contract owner.
+2) Inconsistent state update: The tokensSold variable is updated after transferring tokens to the buyer, which can lead to inconsistent state if the transfer fails.
+3) Integer overflow/underflow: There is no check to prevent integer overflow when updating tokensSold variable with _numTokens.
+4) Insufficient gas: There is a possibility that the transfer of tokens in buyTokens function may run out of gas if the number of tokens transferred is too high.
+5) Privilege escalation: The constructor function does not include any access control for setting owner, leaving it open to privilege escalation attacks.

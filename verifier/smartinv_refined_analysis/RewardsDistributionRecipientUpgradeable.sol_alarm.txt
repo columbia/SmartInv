@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The contract updates the state of "proposal" and "startingBalanceList" in the "startExecute" function without properly checking for existing proposals or handling potential reentrancy attacks.
+2) Atomicity violation: The "execute" function performs multiple state changes without being wrapped in a single transaction, which could lead to inconsistent state if any step fails halfway through the execution.
+3) Cross bridge inconsistency: The contract interacts with external contracts (ERC20 tokens) without proper validation, which could lead to inconsistencies or unexpected behavior if the external contracts behave maliciously or unexpectedly.
+4) ID uniqueness violation: There is no clear mechanism in place to ensure the uniqueness of proposal IDs, which could lead to confusion or conflicts in the proposal handling process.

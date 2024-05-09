@@ -1,0 +1,19 @@
+<\contract_to_analyze\>
+contract OrderBook {
+     struct Order {
+         address person;
+         uint amount;
+         uint price;
+      }
+     mapping(uint => Order) public orders;
+  
+     function createOrder(uint _id, uint _amount, uint _price) public {
+         orders[_id] = Order(msg.sender, _amount, _price);
+     }
+     
+     function cancelOrder(uint _id) public {
+         require(orders[_id].person == msg.sender, "You are not the owner of this order");
+         delete orders[_id];
+     }
+}
+<\contract_to_analyze\>

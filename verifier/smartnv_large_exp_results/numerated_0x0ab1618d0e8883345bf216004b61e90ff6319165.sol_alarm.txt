@@ -1,0 +1,24 @@
+The contract provided for analysis: 
+
+contract Sale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+
+    constructor(IERC20 _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buy(uint amount) public {
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        require(token.allowance(msg.sender, address(this)) >= amount, "Not enough allowance");
+
+        token.transferFrom(msg.sender, owner, amount * price);
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Price manipulation
+2) Incorrect visibility/ownership

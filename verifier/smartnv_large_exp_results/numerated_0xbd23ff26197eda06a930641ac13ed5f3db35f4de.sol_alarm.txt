@@ -1,0 +1,24 @@
+<\contract\>
+contract PaymentChannel {
+    address public sender;
+    address public receiver;
+    uint public amount;
+    bool public closed;
+
+    constructor(address _receiver) public {
+        sender = msg.sender;
+        receiver = _receiver;
+        amount = msg.value;
+        closed = false;
+    }
+
+    function closeChannel() public {
+        require(msg.sender == sender, "only sender can close the channel");
+        receiver.transfer(amount);
+        closed = true;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership

@@ -1,0 +1,12 @@
+<b>Contract:</b> TimelockController
+
+<b>Potential Vulnerabilities:</b>
+1) Privilege escalation: The startExecute function allows any address to start a new proposal, potentially leading to unauthorized privilege escalation.
+2) Inconsistent state update: In the execute function, the votedAmount is incremented without proper synchronization or locking mechanisms, which could lead to inconsistent state updates.
+3) Insufficient gas: In the endExecute function, the gas cost of the required check (require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed")) might exceed the gas limit, resulting in insufficient gas for the function execution.
+
+<b>Contract:</b> ExchangeTokens
+
+<b>Potential Vulnerabilities:</b>
+1) Price manipulation: The liquidate function uses a price calculation to determine if a user's fund can be liquidated, which can be manipulated if the getPrice() function provides inaccurate or manipulated values.
+2) Incorrect visibility/ownership: The debt and collateral mappings are public, potentially exposing sensitive user data to unauthorized access. Consider using internal or private visibility instead.

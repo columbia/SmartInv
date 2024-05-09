@@ -1,0 +1,36 @@
+<\contract\>
+contract Escrow {
+         IERC20 public token;
+         address public buyer;
+         address public seller;
+         uint public amount;
+
+         enum State {
+             Created,
+             Locked,
+             Released
+         }
+
+         State public state;
+
+         constructor(IERC20 _token, address _buyer, address _seller, uint _amount) {
+             token = _token;
+             buyer = _buyer;
+             seller = _seller;
+             amount = _amount;
+             state = State.Created;
+         }
+
+         function lock() public {
+             require(msg.sender == buyer, "Only buyer can lock funds");
+             token.transferFrom(buyer, address(this), amount);
+             state = State.Locked;
+         }
+
+         function release() public {
+             require(msg.sender == seller, "Only seller can release funds");
+             token.transfer(seller, amount);
+             state = State.Released;
+         }
+}
+<\contract\>

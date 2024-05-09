@@ -1,0 +1,29 @@
+<\contract\>
+contract TokenSale {
+    address payable public owner;
+    IERC20 public token;
+    uint public price;
+    uint public totalTokens;
+    
+    constructor(IERC20 _token, uint _price, uint _totalTokens) {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+        totalTokens = _totalTokens;
+    }
+    
+    function buyTokens(uint tokensToBuy) public payable {
+        require(msg.value == tokensToBuy * price, "Incorrect payment amount");
+        
+        token.transfer(msg.sender, tokensToBuy);
+        totalTokens -= tokensToBuy;
+        owner.transfer(msg.value);
+    }
+    
+    function endSale() public {
+        require(msg.sender == owner, "Unauthorized");
+        token.transfer(owner, totalTokens);
+        selfdestruct(owner);
+    }
+}
+<\contract\>

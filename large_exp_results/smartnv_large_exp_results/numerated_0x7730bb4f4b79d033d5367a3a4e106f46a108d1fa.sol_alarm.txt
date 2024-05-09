@@ -1,0 +1,46 @@
+The contract provided for analysis is as follows:
+
+contract MultiSigWallet {
+     mapping(address => uint8) public owners; 
+     uint constant public MAX_OWNER_COUNT = 50;
+     uint public transactionCount; 
+     mapping(uint => Transaction) public transactions;
+
+     struct Transaction {
+         address to;
+         uint value;
+         bytes data;
+         bool executed;
+     }
+
+     function addOwner(address owner) public {
+         require(owners[owner] == 0, "owner already exists");
+         require(transactionCount == 0, "existing transactions in progress");
+         owners[owner] = 1;
+     }
+
+     function removeOwner(address owner) public {
+         require(owners[owner] == 1, "owner does not exist");
+         require(transactionCount == 0, "existing transactions in progress");
+         owners[owner] = 0;
+     }
+
+     function submitTransaction(address to, uint value, bytes memory data) public {
+         require(owners[msg.sender] == 1, "sender is not an owner");
+         transactions[transactionCount] = Transaction(to, value, data, false);
+         transactionCount++;
+     }
+
+     function executeTransaction(uint transactionId) public {
+         require(transactions[transactionId].executed == false, "transaction already executed");
+         Transaction storage transaction = transactions[transactionId];
+         transaction.executed = true;
+         (bool success, ) = transaction.to.call{value: transaction.value}(transaction.data);
+         require(success, "transaction failed");
+     }
+}
+
+The potential vulnerabilities in the provided contract are:
+1) inconsistent state update
+2) reentrancy
+3) incorrect visibility/ownership

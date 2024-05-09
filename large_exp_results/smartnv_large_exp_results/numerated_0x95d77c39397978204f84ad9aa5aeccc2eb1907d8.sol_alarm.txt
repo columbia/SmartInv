@@ -1,0 +1,29 @@
+<\analyzed_contract\>
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    address public owner;
+    
+    constructor(address[] memory _payees, uint256[] memory _shares) {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        for (uint256 i = 0; i < _payees.length; i++) {
+            payees.push(_payees[i]);
+            shares.push(_shares[i]);
+        }
+        owner = msg.sender;
+    }
+    
+    function release() public {
+        require(msg.sender == owner, "Only owner can release funds");
+        for (uint256 i = 0; i < payees.length; i++) {
+            address payee = payees[i];
+            uint256 amount = shares[i];
+            (bool success, ) = payee.call{value: amount}("");
+            require(success, "Transfer failed");
+        }
+    }
+} 
+
+<\output\>
+potential vulnerabilities:
+7) ID uniqueness violation

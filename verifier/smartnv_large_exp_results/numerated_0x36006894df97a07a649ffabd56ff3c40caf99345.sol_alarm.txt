@@ -1,0 +1,24 @@
+<\contract\> 
+contract VotingSystem {
+     struct Voter {
+          uint256 id;
+          bool hasVoted;
+          uint256 vote;
+     }
+     mapping(address => Voter) public voters;
+     uint256 public totalVotes;
+     uint256 public totalVoters;
+     
+     function vote(uint256 _vote) external {
+          require(!voters[msg.sender].hasVoted, "Already voted");
+          voters[msg.sender].vote = _vote;
+          voters[msg.sender].hasVoted = true;
+          totalVotes += _vote;
+          totalVoters++;
+     }
+     
+     function tallyVotes() external view returns(uint256) {
+          return totalVotes;
+     }
+}
+<\contract\>

@@ -1,0 +1,41 @@
+<\contract_to_be_analyzed\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    constructor(address _buyer, address _seller, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+        buyerApproved = false;
+        sellerApproved = false;
+    }
+
+    function approveAsBuyer() public {
+        require(msg.sender == buyer, "Only buyer can approve");
+        buyerApproved = true;
+    }
+
+    function approveAsSeller() public {
+        require(msg.sender == seller, "Only seller can approve");
+        sellerApproved = true;
+    }
+
+    function finalize() public {
+        require(buyerApproved && sellerApproved, "Both parties need to approve");
+        seller.transfer(amount);
+    }
+
+    function cancel() public {
+        require(!buyerApproved || !sellerApproved, "Both parties need to agree to cancel");
+        if(buyerApproved) {
+            buyer.transfer(amount);
+        } else {
+            seller.transfer(amount);
+        }
+    }
+}
+<\contract_to_be_analyzed\>

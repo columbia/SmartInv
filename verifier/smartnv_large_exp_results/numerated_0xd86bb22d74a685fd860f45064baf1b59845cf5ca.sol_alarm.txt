@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public funds;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not higher than current highest bid");
+        funds[highestBidder] += highestBid;
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        uint amount = funds[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        funds[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract_to_analyze\> 
+
+1) sucidal contracts
+2) inconsistent state update

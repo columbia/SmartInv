@@ -1,0 +1,20 @@
+contract LoanContract {
+    uint public loanAmount;
+    uint public repaymentAmount;
+    address public borrower;
+    address public lender;
+
+    constructor(uint _loanAmount, uint _repaymentAmount, address _borrower) {
+        loanAmount = _loanAmount;
+        repaymentAmount = _repaymentAmount;
+        borrower = _borrower;
+        lender = msg.sender;
+    }
+
+    function repayLoan() public {
+        require(msg.sender == borrower, "Only borrower can repay the loan");
+        require(msg.value == repaymentAmount, "Incorrect repayment amount");
+
+        lender.transfer(msg.value);
+    }
+}

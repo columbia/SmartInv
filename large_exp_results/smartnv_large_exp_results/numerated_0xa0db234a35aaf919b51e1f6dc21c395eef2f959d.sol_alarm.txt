@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract StakingContract {
+    address public owner;
+    mapping(address => uint) public stakingBalance;
+    uint public totalStaked;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function stake(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        stakingBalance[msg.sender] += amount;
+        totalStaked += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        require(stakingBalance[msg.sender] >= amount, "Insufficient staked amount");
+        stakingBalance[msg.sender] -= amount;
+        totalStaked -= amount;
+    }
+}
+
+Output: 
+No vulnerabilities identified. Healthy.

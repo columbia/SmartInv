@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract StakingContract {
+     mapping(address => uint) public stakingBalance;
+     mapping(address => uint) public startTime;
+     mapping(address => bool) public isStaking;
+
+     function stakeTokens(uint _amount) public {
+          require(_amount > 0, "amount need to be more than 0");
+          ERC20Token.transferFrom(msg.sender, address(this), _amount);
+          stakingBalance[msg.sender] = stakingBalance[msg.sender] + _amount;
+          if(!isStaking[msg.sender]) {
+              startTime[msg.sender] = block.timestamp;
+          }
+          isStaking[msg.sender] = true;
+     }
+
+     function unstakeTokens() public {
+          uint balance = stakingBalance[msg.sender];
+          require(balance > 0, "staking balance can not be 0");
+          ERC20Token.transfer(msg.sender, balance);
+          stakingBalance[msg.sender] = 0;
+          isStaking[msg.sender] = false;
+     }
+}
+
+Output:
+- Inconsistent state update: The mapping isStaking may not be correctly updated in the stakeTokens function depending on the current state.
+- Incorrect visibility/ownership: ERC20Token usage is not specified in the contract.

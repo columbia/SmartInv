@@ -1,0 +1,11 @@
+The contract contains potential vulnerabilities: 
+
+1) Inconsistent state update: The contract does not update the state of debt and collateral variables after transferring USDC and WETH tokens in the liquidate function, which may lead to inconsistent state updates.
+
+2) Arithmetic flaw: In the liquidate function, there is a calculation that multiplies the price, collateral amount, and a percentage value, which may lead to arithmetic flaws if the values used in the calculation are not carefully validated.
+
+3) Ether leakage: The contract uses transferFrom functions to transfer tokens, which may result in ether leakage if the transfer fails and leaves the contract's balance inconsistent.
+
+4) Insufficient gas: The calculatePrice function may consume significant gas if the token balances of USDC and WETH increase over time, potentially causing gas exhaustion issues.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, arithmetic flaw, ether leakage, and insufficient gas.

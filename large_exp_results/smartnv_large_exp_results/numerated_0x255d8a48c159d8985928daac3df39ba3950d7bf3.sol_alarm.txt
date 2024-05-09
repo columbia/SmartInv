@@ -1,0 +1,6 @@
+potential vulnerabilities in the contract: 
+1) inconsistency state update - the function execute() updates the votedAmount of the proposal directly. This could lead to inconsistent state if multiple transactions try to update the same proposal simultaneously. Adding a locking mechanism or using a state variable as a flag to indicate whether the proposal has been executed could mitigate this vulnerability. 
+
+2) ID uniqueness violation - the contract does not seem to have any mechanism to ensure the uniqueness of proposal IDs. This could lead to issues if proposals with duplicate IDs are created. Implementing a checking mechanism or using a unique identifier generator could prevent this vulnerability.
+
+3) insufficient gas - the function endExecute() checks if the balance of the contract multiplied by 2 is greater than the total supply of the voting token, which could consume a significant amount of gas if the balance and total supply are both large numbers. This could result in out-of-gas errors during execution. Consider optimizing the gas usage or splitting the check into smaller operations to reduce gas consumption.

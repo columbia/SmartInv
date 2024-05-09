@@ -1,0 +1,48 @@
+The contract provided for analysis:
+contract Ecommerce{
+    address public admin;
+
+    struct Product {
+        uint productId;
+        string productName;
+        uint price;
+        uint stock;
+    }
+
+    mapping(uint => Product) public products;
+
+    constructor() public {
+        admin = msg.sender;
+    }
+
+    function addProduct(uint _productId, string memory _productName, uint _price, uint _stock) public {
+        require(msg.sender == admin, "Only admin can add products");
+        products[_productId] = Product(_productId, _productName, _price, _stock);
+    }
+
+    function updateProductPrice(uint _productId, uint _newPrice) public {
+        require(msg.sender == admin, "Only admin can update product prices");
+        Product storage product = products[_productId];
+        product.price = _newPrice;
+    }
+
+    function purchaseProduct(uint _productId, uint _quantity) public payable {
+        Product storage product = products[_productId];
+        require(product.stock >= _quantity, "Not enough stock available");
+        uint totalPrice = product.price * _quantity;
+        require(msg.value >= totalPrice, "Insufficient payment");
+
+        // Update product stock
+        products[_productId].stock -= _quantity;
+
+        // Transfer payment to admin
+        address payable adminAddr = payable(admin);
+        adminAddr.transfer(totalPrice);
+
+        // Transfer product to user
+        // (Code for transferring product to user is not included in the contract)
+    }
+}
+
+Output:
+1) potential vulnerability: incorrect visibility/ownership

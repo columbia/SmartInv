@@ -1,0 +1,24 @@
+Contract being analyzed:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(address(this)) >= _amount, "Not enough tokens in contract");
+        token.transfer(msg.sender, _amount);
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Not authorized");
+        token.transfer(msg.sender, token.balanceOf(address(this)));
+    }
+}
+
+Output:
+- Incorrect visibility/ownership

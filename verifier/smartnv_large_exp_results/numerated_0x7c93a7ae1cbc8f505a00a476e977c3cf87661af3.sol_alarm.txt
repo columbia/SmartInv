@@ -1,0 +1,25 @@
+The contract provided for analysis is:
+
+```solidity
+contract PaymentProcessor {
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function processPayment(uint amount) external {
+        require(msg.sender == owner, "Only owner can process payments");
+        // Process payment logic here
+    }
+
+    function updateOwner(address newOwner) external {
+        require(msg.sender == owner, "Only owner can update owner");
+        owner = newOwner;
+    }
+}
+```
+
+Potential vulnerabilities in the provided contract:
+1) Privilege escalation
+2) Incorrect visibility/ownership

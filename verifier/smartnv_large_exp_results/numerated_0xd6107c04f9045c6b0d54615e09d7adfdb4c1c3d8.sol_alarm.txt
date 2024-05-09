@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract Crowdsale {
+     IERC20 public token;
+     address public owner;
+     uint public rate;
+     uint public totalSupply;
+
+     constructor(IERC20 _token, uint _rate, uint _totalSupply) {
+         token = _token;
+         rate = _rate;
+         totalSupply = _totalSupply;
+         owner = msg.sender;
+     }
+
+     function buyTokens(uint _amount) public {
+         require(_amount > 0, "Amount must be greater than 0");
+         token.transfer(msg.sender, _amount * rate);
+     }
+
+     function endSale() public {
+         require(msg.sender == owner, "Only owner can end the sale");
+         token.transfer(owner, token.balanceOf(address(this)));
+         selfdestruct(msg.sender);
+     }
+}
+
+Output: 
+1) Suicidal contracts

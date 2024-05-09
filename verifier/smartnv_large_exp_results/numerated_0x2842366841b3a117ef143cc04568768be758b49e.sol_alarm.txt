@@ -1,0 +1,30 @@
+The contract you are going to analyze is: 
+
+contract Lottery {
+    mapping(address => uint) public tickets;
+    uint public totalTicketsSold;
+
+    function buyTickets(uint amount) public {
+        tickets[msg.sender] += amount;
+        totalTicketsSold += amount;
+    }
+
+    function pickWinner() public {
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTicketsSold;
+        address winner = getAddressByIndex(winnerIndex);
+        // Transfer prize to winner
+        uint prize = totalTicketsSold * 0.9; // 90% of total tickets sold
+        msg.sender.transfer(prize);
+    }
+
+    function getAddressByIndex(uint index) private view returns (address) {
+        address winner;
+        // Implementation details omitted for brevity
+        return winner;
+    }
+}
+
+Output: 
+1) potential vulnerabilities: 
+- integer overflow/underflow
+- inconsistent state update

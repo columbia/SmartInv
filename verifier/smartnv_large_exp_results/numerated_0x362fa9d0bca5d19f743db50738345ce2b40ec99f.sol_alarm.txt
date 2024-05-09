@@ -1,0 +1,26 @@
+<\contract\> 
+contract Marketplace {
+    mapping(uint => address) public items;
+    mapping(address => uint) public itemPrices;
+    
+    function addItem(uint itemId, address itemAddress, uint price) public {
+        items[itemId] = itemAddress;
+        itemPrices[itemAddress] = price;
+    }
+    
+    function buyItem(uint itemId) public payable {
+        address itemAddress = items[itemId];
+        uint price = itemPrices[itemAddress];
+        require(msg.value >= price, "Insufficient funds");
+        (bool success, ) = itemAddress.call{value: price}("");
+        require(success, "Transaction failed");
+        // Other logic for item ownership transfer
+    }
+}
+<\contract\> 
+
+<\output\> 
+- Incorrect visibility/ownership in `itemPrices` and `items` mapping making them publicly accessible. 
+- Potential reentrancy vulnerability in `buyItem` function.
+- Insufficient gas for performing the operations within the transactions.
+- Possible atomicity violation in the `buyItem` function.

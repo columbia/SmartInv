@@ -1,0 +1,37 @@
+contract MultiSigWallet {
+    address[] public owners;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    modifier onlyOwner {
+        bool isOwner = false;
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == msg.sender) {
+                isOwner = true;
+            }
+        }
+        require(isOwner, "Not an owner");
+        _;
+    }
+
+    function submitTransaction(address destination, uint value, bytes memory data) public onlyOwner {
+        transactions[transactionCount] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public onlyOwner {
+        require(transactionId < transactionCount, "Invalid transaction ID");
+        Transaction storage txn = transactions[transactionId];
+        require(!txn.executed, "Transaction already executed");
+        (bool success, ) = txn.destination.call{value: txn.value}(txn.data);
+        require(success, "Transaction execution failed");
+        txn.executed = true;
+    }
+}

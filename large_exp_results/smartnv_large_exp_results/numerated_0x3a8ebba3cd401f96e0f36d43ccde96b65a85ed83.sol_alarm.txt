@@ -1,0 +1,28 @@
+Contract Analysis:
+
+The contract below contains potential vulnerabilities:
+
+contract PaymentSystem {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        msg.sender.transfer(amount);
+        balances[msg.sender] -= amount;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[to] += amount;
+        balances[msg.sender] -= amount;
+    }
+}
+
+Potential Vulnerabilities:
+1) Integer overflow/underflow: There is a potential for integer underflow in the withdraw function if the amount to be withdrawn is greater than the balance of the sender. This can lead to unexpected behavior.
+2) Incorrect visibility/ownership: The owner variable is declared as public, which exposes it to the outside world. This can potentially lead to unauthorized access and manipulation of the owner state.

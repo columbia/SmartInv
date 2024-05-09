@@ -1,0 +1,29 @@
+Contract to analyze:
+
+contract Insurance {
+    address public owner;
+    uint256 public premium;
+    mapping(address => uint256) public insurancePayouts;
+
+    constructor() public {
+        owner = msg.sender;
+        premium = 1 ether;
+    }
+
+    function purchaseInsurance() public payable {
+        require(msg.value == premium, "Incorrect premium amount");
+        insurancePayouts[msg.sender] = premium * 2;
+    }
+
+    function claimInsurance() public {
+        uint256 payoutAmount = insurancePayouts[msg.sender];
+        require(payoutAmount > 0, "No insurance payout available");
+        msg.sender.transfer(payoutAmount);
+        insurancePayouts[msg.sender] = 0;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) incorrect premium amount
+2) insufficient payout amount
+3) reentrancy

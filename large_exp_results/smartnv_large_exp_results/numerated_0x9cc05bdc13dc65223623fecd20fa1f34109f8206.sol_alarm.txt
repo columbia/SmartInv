@@ -1,0 +1,26 @@
+The contract provided in the question is:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public pendingReturns;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid amount too low");
+        
+        if (highestBid != 0) {
+            pendingReturns[highestBidder] += highestBid;
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        uint amount = pendingReturns[msg.sender];
+        pendingReturns[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+
+output: potential vulnerablities for the contract are reentrancy, inconsistent state update.

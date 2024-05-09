@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 id;
+        uint256 tokens;
+        bool hasVoted;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalTokens;
+    uint256 public tokenPrice;
+
+    function buyTokens(uint256 _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        totalTokens += _amount;
+        voters[msg.sender].tokens += _amount;
+    }
+
+    function vote(uint256 _tokens) public {
+        require(voters[msg.sender].tokens >= _tokens, "Not enough tokens");
+        require(!voters[msg.sender].hasVoted, "Already voted");
+        voters[msg.sender].tokens -= _tokens;
+        voters[msg.sender].hasVoted = true;
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership: The variables totalTokens and tokenPrice are publicly accessible, providing potential for manipulation or unauthorized access.
+- Insufficient gas: If the tokenPrice is set too high, users may not have enough gas to execute the buyTokens function successfully.
+- Inconsistent state update: The totalTokens count is updated in the buyTokens function, but no check is performed to ensure that the totalTokens count does not exceed a certain limit or that it is updated correctly in all transactions.

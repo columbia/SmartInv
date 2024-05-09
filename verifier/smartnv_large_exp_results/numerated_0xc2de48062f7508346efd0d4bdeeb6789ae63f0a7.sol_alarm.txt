@@ -1,0 +1,18 @@
+<\contract\>
+contract PaymentContract {
+     mapping(address => uint) public payments;
+
+     function makePayment(address _recipient, uint _amount) public {
+         require(msg.sender == owner, "Only owner can make payments");
+         require(_amount <= payments[msg.sender], "Insufficient balance");
+         payments[_recipient] += _amount;
+         payments[msg.sender] -= _amount;
+     }
+
+     function withdrawPayment(uint _amount) public {
+         require(_amount <= payments[msg.sender], "Insufficient balance");
+         msg.sender.transfer(_amount);
+         payments[msg.sender] -= _amount;
+     }
+}
+<\contract\>

@@ -1,0 +1,37 @@
+<\contract\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+    bool public saleActive;
+
+    constructor(address _token, uint _price) public {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function startSale() public {
+        require(msg.sender == owner, "only owner can start sale");
+        saleActive = true;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(saleActive, "sale is not active");
+        uint totalPrice = _amount * price;
+        require(msg.value >= totalPrice, "insufficient funds provided");
+        // transfer tokens to buyer
+        Token(token).transfer(msg.sender, _amount);
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "only owner can end sale");
+        // transfer remaining tokens back to owner
+        uint remainingTokens = Token(token).balanceOf(address(this));
+        Token(token).transfer(owner, remainingTokens);
+        // transfer remaining ETH to owner
+        msg.sender.transfer(address(this).balance);
+        saleActive = false;
+    }
+}
+<\contract\>

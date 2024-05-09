@@ -1,0 +1,33 @@
+<\Contract\>
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    address public beneficiary;
+    uint public tokenPrice;
+    uint public tokenAmount;
+    
+    constructor(IERC20 _token, address _beneficiary, uint _tokenPrice, uint _tokenAmount) {
+        token = _token;
+        owner = msg.sender;
+        beneficiary = _beneficiary;
+        tokenPrice = _tokenPrice;
+        tokenAmount = _tokenAmount;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        require(token.balanceOf(address(this)) >= _amount, "Not enough tokens for sale");
+        token.transfer(msg.sender, _amount);
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner || msg.sender == beneficiary, "You are not allowed to withdraw");
+        token.transfer(beneficiary, token.balanceOf(address(this)));
+    }
+}
+<\Contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Reentrancy: In the buyTokens function, the token transfer is done before updating the balances, which can potentially allow reentrancy attacks.
+2) Incorrect visibility/ownership: The withdraw function does not have a proper access control mechanism. It allows anyone other than the owner or beneficiary to withdraw funds.
+3) Inconsistent state update: There is no check to ensure that the tokenPrice and tokenAmount remain consistent and accurate throughout the contract execution.

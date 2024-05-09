@@ -1,0 +1,52 @@
+<\contract\> 
+contract SupplyChain {
+     address public owner;
+     uint public totalItems;
+     mapping(uint => Item) public items;
+     
+     struct Item {
+          uint itemId;
+          string itemName;
+          uint itemPrice;
+          address itemOwner;
+          bool paid;
+          uint deliveryStatus; // 0: pending, 1: shipped, 2: delivered
+          }
+
+     constructor() {
+          owner = msg.sender;
+          totalItems = 0;
+          }
+
+     function addItem(uint _itemId, string memory _itemName, uint _itemPrice) public {
+          require(msg.sender == owner, "only owner can add items");
+          totalItems++;
+          items[_itemId] = Item(_itemId, _itemName, _itemPrice, address(0), false, 0);
+          }
+
+     function purchaseItem(uint _itemId) public payable {
+          require(items[_itemId].itemOwner == address(0), "item already sold");
+          require(msg.value >= items[_itemId].itemPrice, "insufficient payment");
+          
+          address itemOwner = items[_itemId].itemOwner;
+          items[_itemId].itemOwner = msg.sender;
+          items[_itemId].paid = true;
+          itemOwner.transfer(items[_itemId].itemPrice);
+          }
+
+    function shipItem(uint _itemId) public {
+          require(items[_itemId].itemOwner == msg.sender, "only item owner can ship");
+          require(items[_itemId].paid == true, "item not paid for");
+          items[_itemId].deliveryStatus = 1;
+          }
+
+    function deliverItem(uint _itemId) public {
+          require(items[_itemId].itemOwner == msg.sender, "only item owner can deliver");
+          require(items[_itemId].deliveryStatus == 1, "item not shipped");
+          items[_itemId].deliveryStatus = 2;
+          }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

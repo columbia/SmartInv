@@ -1,0 +1,29 @@
+The contract to be analyzed:
+
+contract TokenSale {
+    address public owner;
+    uint public price;
+    uint public totalSold;
+    mapping(address => uint) public balances;
+
+    constructor(uint _price) {
+        owner = msg.sender;
+        price = _price;
+        totalSold = 0;
+    }
+
+    function buyTokens(uint _quantity) public payable {
+        require(msg.value == _quantity * price, "Incorrect payment amount");
+        balances[msg.sender] += _quantity;
+        totalSold += _quantity;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "You are not the owner");
+        address payable recipient = msg.sender;
+        recipient.transfer(address(this).balance);
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

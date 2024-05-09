@@ -1,0 +1,29 @@
+Contract: 
+contract Marketplace {
+    uint256 public totalItems;
+    mapping(uint256 => Item) public items;
+    
+    struct Item {
+        address seller;
+        string name;
+        uint256 price;
+        bool sold;
+    }
+    
+    function createItem(string memory _name, uint256 _price) public {
+        totalItems++;
+        items[totalItems] = Item(msg.sender, _name, _price, false);
+    }
+    
+    function buyItem(uint256 _itemId) public payable {
+        Item storage item = items[_itemId];
+        require(item.sold == false, "Item already sold");
+        require(msg.value >= item.price, "Not enough ether sent");
+        
+        item.sold = true;
+        item.seller.transfer(item.price);
+    }
+}
+Output: 
+1) inconsistent state update
+2) atomicity violation

@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentContract {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Withdrawal amount must be greater than 0");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function getBalance() public view returns (uint) {
+        return balances[msg.sender];
+    }
+}
+<\contract\> 
+
+Output:
+- Insufficient gas
+- Inconsistent state update

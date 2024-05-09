@@ -1,0 +1,59 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+     struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate; 
+          uint256 vote; 
+          }
+     struct Proposal {
+          uint256 voteCount; 
+          address creator; 
+          bool executed; 
+          }
+     address public chairperson;
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+
+    modifier onlyChairperson {
+         require(msg.sender == chairperson,"You are not the chairperson");
+         _;
+       }
+
+    function delegate(address to) public {
+         Voter storage sender = voters[msg.sender];
+         require(!sender.voted,"You already voted");
+         require(to != msg.sender,"Self-delegation is not allowed");
+         while (voters[to].delegate != address(0)) {
+              to = voters[to].delegate;
+         }
+         sender.voted = true;
+         sender.delegate = to;
+         Voter storage delegate_ = voters[to];
+         if (delegate_.voted) {
+              proposals[delegate_.vote].voteCount += sender.weight;
+         } else {
+              delegate_.weight += sender.weight;
+         }
+     }
+
+    function vote(uint256 proposal) public {
+         Voter storage sender = voters[msg.sender];
+         require(sender.weight > 0,"No right to vote");
+         require(!sender.voted,"Already voted");
+         sender.voted = true;
+         sender.vote = proposal;
+         proposals[proposal].voteCount += sender.weight;
+    }
+
+    function execute(uint256 proposal) public onlyChairperson {
+         Proposal storage p = proposals[proposal];
+         require(!p.executed,"Already executed");
+         p.executed = true;
+         // Execute the proposal logic
+    }
+}
+
+Output: 
+1) No vulnerabilities found. Healthy.

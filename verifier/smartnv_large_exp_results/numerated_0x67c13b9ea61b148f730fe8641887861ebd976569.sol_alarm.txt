@@ -1,0 +1,19 @@
+<\contract_to_analyze\>
+contract VotingContract {
+    mapping(address => uint256) public voteCount;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote(uint256 amount) public {
+        voteCount[msg.sender] += amount;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

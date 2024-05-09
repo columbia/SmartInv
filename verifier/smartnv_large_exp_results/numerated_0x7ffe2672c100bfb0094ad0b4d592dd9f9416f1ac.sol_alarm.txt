@@ -1,0 +1,32 @@
+Contract to be analyzed:
+
+contract VotingSystem {
+     address public admin;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+     
+     constructor() {
+         admin = msg.sender;
+         totalVotes = 0;
+     }
+
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         
+         hasVoted[msg.sender] = true;
+         totalVotes++;
+     }
+
+     function resetVotes() public {
+         require(msg.sender == admin, "Only admin can reset votes");
+         
+         totalVotes = 0;
+         for (uint i = 0; i < totalVotes; i++) {
+             hasVoted[msg.sender] = false;
+         }
+     }
+}
+
+Output:
+1) The resetVotes function has a logic flaw as the loop condition should be i < totalVotes instead of i < totalVotes.
+2) resetVotes function has incorrect visibility/ownership vulnerability as any user can potentially reset the votes if they know the admin's address.

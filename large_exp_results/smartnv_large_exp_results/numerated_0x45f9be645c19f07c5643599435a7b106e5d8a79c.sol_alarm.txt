@@ -1,0 +1,29 @@
+<\contract\> 
+contract Marketplace {
+    address public owner;
+    mapping(uint => address) public itemOwners;
+    mapping(uint => uint) public itemPrices;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(uint itemId, uint price) {
+        require(msg.sender == owner, "You are not the owner.");
+        itemOwners[itemId] = msg.sender;
+        itemPrices[itemId] = price;
+    }
+
+    function buyItem(uint itemId) payable {
+        require(msg.value >= itemPrices[itemId], "Insufficient funds.");
+        address seller = itemOwners[itemId];
+        itemOwners[itemId] = msg.sender;
+        seller.transfer(msg.value);
+    }
+
+    function withdraw() {
+        require(msg.sender == owner, "You are not the owner.");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract\>

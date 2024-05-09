@@ -1,0 +1,36 @@
+<\contract_to_be_analyzed\>
+contract Crowdsale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokens;
+
+    constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _tokenAmount) public payable {
+        require(msg.value >= _tokenAmount * tokenPrice, "Insufficient payment");
+        require(totalTokens >= _tokenAmount, "Not enough tokens available");
+
+        totalTokens -= _tokenAmount;
+        // Transfer tokens to buyer
+        // Transfer payment to owner
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+
+        // Transfer funds to owner
+    }
+
+    function changeTokenPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can change token price");
+        
+        tokenPrice = _newPrice;
+    }
+}
+<\contract_to_be_analyzed\>

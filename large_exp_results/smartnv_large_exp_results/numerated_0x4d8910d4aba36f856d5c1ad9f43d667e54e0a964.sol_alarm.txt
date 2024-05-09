@@ -1,0 +1,60 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    address public owner;
+    mapping(address => Voter) public voters;
+    address[] public voterList;
+    mapping(address => bool) public hasVoted;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function giveRightToVote(address _voter) public {
+        require(msg.sender == owner, "Only owner can give right to vote");
+        require(!voters[_voter].voted, "Voter has already voted");
+        
+        voters[_voter].weight = 1;
+        voterList.push(_voter);
+    }
+
+    function delegate(address _delegate) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted");
+
+        while (voters[_delegate].delegate != address(0) && voters[_delegate].delegate != msg.sender) {
+            _delegate = voters[_delegate].delegate;
+        }
+
+        if (_delegate == msg.sender) {
+            revert("Delegate loop detected");
+        }
+
+        sender.voted = true;
+        sender.delegate = _delegate;
+        Voter storage delegate_ = voters[_delegate];
+        if (delegate_.voted) {
+            voters[delegate_.vote].weight += sender.weight;
+        } else {
+            delegate_.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 _vote) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "You don't have the right to vote");
+        require(!sender.voted, "Already voted");
+
+        sender.voted = true;
+        sender.vote = _vote;
+
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract\>

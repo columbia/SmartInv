@@ -1,0 +1,28 @@
+Contract to be analyzed:
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    address public owner;
+    uint256 public totalVotes;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote() external {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function changeOwner(address newOwner) external {
+        require(msg.sender == owner, "Only owner can change owner");
+        
+        owner = newOwner;
+    }
+} 
+
+Potential vulnerabilities:
+- Privilege escalation (changeOwner function should have additional checks to prevent unauthorized users from changing the owner)
+- Incorrect visibility/ownership (owner variable should be made private to prevent external access and manipulation)
+- ID uniqueness violation (the hasVoted mapping may not provide unique identification for voters, leading to potential vulnerabilities)

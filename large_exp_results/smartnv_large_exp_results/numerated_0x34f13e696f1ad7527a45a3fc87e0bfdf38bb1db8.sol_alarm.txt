@@ -1,0 +1,38 @@
+<\the_contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbitrator;
+    uint public depositAmount;
+    bool public sellerApproved;
+    bool public arbitratorApproved;
+
+    function createEscrow(address _seller, address _arbitrator) external payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        buyer = msg.sender;
+        seller = _seller;
+        arbitrator = _arbitrator;
+        depositAmount = msg.value;
+    }
+
+    function approveSeller() external {
+        require(msg.sender == seller, "Only seller can approve");
+        sellerApproved = true;
+    }
+
+    function approveArbitrator() external {
+        require(msg.sender == arbitrator, "Only arbitrator can approve");
+        arbitratorApproved = true;
+    }
+
+    function releaseFunds() external {
+        require(sellerApproved && arbitratorApproved, "Both seller and arbitrator must approve");
+        payable(seller).transfer(depositAmount);
+    }
+
+    function refundBuyer() external {
+        require(!sellerApproved || !arbitratorApproved, "Either seller or arbitrator must not approve");
+        payable(buyer).transfer(depositAmount);
+    }
+}
+<\the_contract\> 

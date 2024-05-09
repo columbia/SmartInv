@@ -1,0 +1,26 @@
+<\contract\> 
+contract Vault {
+     struct User {
+         address userAddress;
+         uint256 balance;
+     }
+     mapping(address => User) public users;
+     uint256 public totalBalance;
+
+     function deposit() public payable {
+         users[msg.sender].balance += msg.value;
+         totalBalance += msg.value;
+     }
+
+     function withdraw(uint256 amount) public {
+         require(users[msg.sender].balance >= amount, "Insufficient balance");
+         users[msg.sender].balance -= amount;
+         totalBalance -= amount;
+         msg.sender.transfer(amount);
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) inconsistent state update
+2) integer overflow/underflow

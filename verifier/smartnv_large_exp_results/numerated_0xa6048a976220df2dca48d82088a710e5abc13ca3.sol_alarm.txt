@@ -1,0 +1,25 @@
+The contract provided for analysis is:
+
+```solidity
+contract Storage {
+    mapping(address => uint256) public data;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function setData(uint256 _data) public {
+        require(msg.sender == owner, "Only owner can set data");
+        data[msg.sender] = _data;
+    }
+    
+    function getData(address _addr) public view returns(uint256) {
+        return data[_addr];
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+
+1) incorrect visibility/ownership

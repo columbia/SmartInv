@@ -1,0 +1,23 @@
+Contract you are analyzing:
+contract Market {
+         uint public price;
+         
+         function setPrice(uint _price) public {
+             price = _price;
+         }
+         
+         function buy() public payable {
+             require(msg.value >= price, "Insufficient funds to purchase");
+             // perform buying logic
+         }
+         
+         function sell(uint _amount) public {
+             require(_amount > 0, "Amount must be greater than zero");
+             // perform selling logic
+         }
+     } 
+
+Output: 
+- Arithmetic flaw (potential underflow in sell function)
+- Insufficient gas (if the logic inside buy or sell functions consume too much gas)
+- Incorrect visibility/ownership (functions are public, consider if they should be restricted to certain users)

@@ -1,0 +1,22 @@
+<\contract\>
+contract TokenMarket {
+         IERC20 public token;
+         uint public tokenPrice;
+
+         function buyTokens(uint amount) external {
+             uint totalPrice = amount * tokenPrice;
+             token.transferFrom(msg.sender, address(this), totalPrice);
+             token.transfer(msg.sender, amount);
+         }
+
+         function setTokenPrice(uint price) external {
+             require(msg.sender == owner, "only owner can set token price");
+             tokenPrice = price;
+         }
+}
+<\contract\>
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The `owner` variable is referenced in the `setTokenPrice` function without being defined or initialized, potentially leading to an ownership vulnerability.
+2) Insufficient gas: If `buyTokens` function requires a significant amount of gas to be executed, there might be a risk of running out of gas and the transaction failing.
+3) Ether leakage: The contract does not handle Ether transactions, which might result in Ether leakage if any is sent to the contract accidentally.

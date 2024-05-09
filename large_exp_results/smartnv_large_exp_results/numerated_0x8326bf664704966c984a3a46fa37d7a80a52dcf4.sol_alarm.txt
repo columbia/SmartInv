@@ -1,0 +1,32 @@
+<\Your_contract\> 
+contract MultiSigWallet {
+    mapping(address => uint256) public balances;
+    address[] public owners;
+    uint public required;
+    
+    function addOwner(address _owner) public {
+        owners.push(_owner);
+        required++;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function transfer(address _to, uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        balances[_to] += _amount;
+    }
+
+    function submitTransaction(address _to, uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        require(owners.length > required, "Not enough owners");
+        // create transaction 
+    }
+
+    function executeTransaction() public {
+        // execute transaction 
+    }
+}
+<\Your_contract\>

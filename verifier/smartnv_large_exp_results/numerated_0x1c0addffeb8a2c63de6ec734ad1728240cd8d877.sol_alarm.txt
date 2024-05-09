@@ -1,0 +1,21 @@
+<\contract\> 
+contract TokenExchange {
+         IERC20 public token1;
+         IERC20 public token2;
+         uint public exchangeRate;
+
+         function tradeTokens(uint amount1) public {
+             uint amount2 = amount1 * exchangeRate;
+             token1.transferFrom(msg.sender, address(this), amount1);
+             token2.transfer(msg.sender, amount2);
+         }
+
+         function updateExchangeRate(uint newRate) public {
+             exchangeRate = newRate;
+         }
+}
+<\contract\>
+output:
+The contract TokenExchange contains the potential vulnerabilities:
+5) atomicity violation
+8) reentrancy

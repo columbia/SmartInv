@@ -1,0 +1,34 @@
+<\contract\> 
+contract Insurance {
+         mapping(address => uint) public policyAmount;
+         mapping(address => uint) public claimAmount;
+         address public insuranceCompany;
+         uint public totalPayout;
+
+         function buyPolicy(uint amount) public {
+             require(policyAmount[msg.sender] == 0, "policy already exists");
+             policyAmount[msg.sender] = amount;
+         }
+
+         function fileClaim(uint amount) public {
+             require(claimAmount[msg.sender] == 0, "claim already filed");
+             claimAmount[msg.sender] = amount;
+         }
+
+         function processClaim(address user) public {
+             require(insuranceCompany == msg.sender, "only insurance company can process claims");
+             require(claimAmount[user] > 0, "no claim to process");
+             totalPayout += claimAmount[user];
+             claimAmount[user] = 0;
+         }
+
+         function changeInsuranceCompany(address newCompany) public {
+             insuranceCompany = newCompany;
+         }
+  }
+<\contract\> 
+
+Potential vulnerabilities:
+1) incorrect visibility/ownership in changeInsuranceCompany function.
+2) inconsistent state update in processClaim function.
+3) privilege escalation in processClaim function.

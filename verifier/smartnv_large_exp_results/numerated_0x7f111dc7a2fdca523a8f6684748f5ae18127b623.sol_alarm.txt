@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The `proposal.votedAmount` is being updated directly in the `execute()` function, which could lead to inconsistent state if multiple transactions try to update it simultaneously.
+2) Incorrect visibility/ownership: The `proposal` struct is not defined with any visibility specifier, making it publicly accessible.
+3) Insufficient gas: The `endExecute()` function may fail if there is insufficient gas for the `transfer()` function call, potentially leaving the contract in an inconsistent state.
+4) ID uniqueness violation: There is no mechanism in place to ensure the uniqueness of proposal IDs, which could lead to conflicts or confusion.
+5) Business logic flaw: The condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` in the `endExecute()` function could potentially have a flawed business logic, as it checks if the locked funds are more than twice the total supply of the voting token.

@@ -1,0 +1,27 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    uint public amount;
+    bool public paid;
+
+    constructor(address _payer, address _payee, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        amount = _amount;
+        paid = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit funds");
+        require(msg.value == amount, "Incorrect deposit amount");
+    }
+
+    function withdraw() public {
+        require(msg.sender == payee, "Only payee can withdraw funds");
+        require(address(this).balance >= amount, "Insufficient funds in escrow");
+        payee.transfer(amount);
+        paid = true;
+    }
+}
+<\contract\>

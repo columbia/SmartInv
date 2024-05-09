@@ -1,0 +1,18 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+}
+
+Potential vulnerabilities in the contract:
+
+- ID uniqueness violation: There is no check for unique voter IDs, allowing the same address to vote multiple times.
+- Incorrect visibility/ownership: The `hasVoted` mapping is public, exposing the voters' information publicly.
+- Insufficient gas: As the contract grows with more voters, the gas cost for executing the `vote` function can increase significantly.

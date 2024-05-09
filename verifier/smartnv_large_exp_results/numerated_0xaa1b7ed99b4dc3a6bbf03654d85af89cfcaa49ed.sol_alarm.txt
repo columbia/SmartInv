@@ -1,0 +1,31 @@
+Contract to analyze:
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public price;
+     uint public releaseTime;
+     bool public sellerAgreed;
+     bool public buyerAgreed;
+
+     constructor(address _buyer, address _seller, uint _price, uint _releaseTime) {
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+         releaseTime = _releaseTime;
+     }
+
+     function agreeToTerms() public {
+         if (msg.sender == buyer) {
+             buyerAgreed = true;
+         }
+         if (msg.sender == seller) {
+             sellerAgreed = true;
+         }
+     }
+
+     function releaseFunds() public {
+         require(releaseTime < block.timestamp, "Release time has not yet passed");
+         require(sellerAgreed && buyerAgreed, "Both parties must agree to release funds");
+         payable(seller).transfer(price);
+     }
+}

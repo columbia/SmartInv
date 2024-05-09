@@ -1,0 +1,29 @@
+<\contract\> 
+contract TokenSale {
+     address public owner;
+     IERC20 public token;
+     uint public price;
+     mapping(address => uint) public balances;
+
+     constructor(address _token, uint _price) {
+         owner = msg.sender;
+         token = IERC20(_token);
+         price = _price;
+     }
+
+     function buyTokens(uint amount) public payable {
+         require(msg.value == amount * price, "Incorrect amount sent");
+         token.transfer(msg.sender, amount);
+         balances[msg.sender] += amount;
+     }
+
+     function withdrawFunds() public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         address payable recipient = payable(msg.sender);
+         recipient.transfer(address(this).balance);
+     }
+}
+<\contract\> 
+
+Output:
+1) incorrect visibility/ownership

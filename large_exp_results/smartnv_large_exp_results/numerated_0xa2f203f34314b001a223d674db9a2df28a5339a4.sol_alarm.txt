@@ -1,0 +1,33 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public owner;
+    IERC20 public token;
+    mapping(address => bool) public completedTransactions;
+    uint public totalBalance;
+
+    constructor(address _token) {
+        owner = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function deposit(uint amount) public {
+        require(token.transferFrom(msg.sender, address(this), amount), "Transfer failed");
+        totalBalance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        require(totalBalance >= amount, "Insufficient balance");
+        require(token.transfer(msg.sender, amount), "Transfer failed");
+        totalBalance -= amount;
+    }
+
+    function completeTransaction(address recipient, uint amount) public {
+        require(!completedTransactions[recipient], "Transaction already completed");
+        require(totalBalance >= amount, "Insufficient balance");
+        require(token.transfer(recipient, amount), "Transfer failed");
+        totalBalance -= amount;
+        completedTransactions[recipient] = true;
+    }
+}
+<\contract_to_analyze\>

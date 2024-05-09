@@ -1,0 +1,35 @@
+The contract provided for analysis is:
+
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    address public owner;
+
+    constructor(address[] _payees, uint256[] _shares) payable {
+        require(_payees.length == _shares.length);
+        require(_payees.length > 0);
+
+        for (uint i = 0; i < _payees.length; i++) {
+            payees.push(_payees[i]);
+            shares.push(_shares[i]);
+        }
+        owner = msg.sender;
+    }
+
+    function release() public {
+        require(msg.sender == owner, "only owner can release funds");
+
+        for (uint i = 0; i < payees.length; i++) {
+            address payee = payees[i];
+            uint256 amount = address(this).balance * shares[i] / 100;
+            payee.transfer(amount);
+        }
+    }
+}
+
+Based on the analysis of the provided contract, the potential vulnerabilities are:
+
+1) Incorrect visibility/ownership: The release function allows any user to release funds as long as they are the owner. This might lead to unauthorized access and misuse of funds by someone who is not the intended owner.
+2) Arithmetic flaw: In the release function, the calculation for the amount to be transferred might result in arithmetic flaws due to the division of the balance by the percentage shares. This can potentially lead to unexpected behavior and fund discrepancies.
+
+Therefore, the potential vulnerabilities in the contract are incorrect visibility/ownership and arithmetic flaw.

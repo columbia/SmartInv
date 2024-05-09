@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function without proper synchronization mechanisms, potentially leading to inconsistent state.
+
+2) Atomicity violation: The `execute` function performs multiple operations that should ideally be atomic, but there is no mechanism to ensure atomicity.
+
+3) Cross bridge inconsistency: The `execute` function transfers tokens using `votingToken.transferFrom`, which may lead to inconsistencies if the token contract has its own internal state changes.
+
+4) Incorrect visibility/ownership: The `votingToken` variable is not explicitly defined with `public` or `internal` visibility, which may lead to potential issues with visibility and ownership control.
+
+5) Insufficient gas: The `endExecute` function may run out of gas due to the computation required, potentially causing execution failures.
+
+6) Business logic flaw: The condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` in the `endExecute` function may have a flawed business logic that could lead to unexpected results.
+
+7) Possible reentrancy vulnerability: There is no explicit check to prevent reentrancy attacks in the contract, which could potentially lead to vulnerabilities.

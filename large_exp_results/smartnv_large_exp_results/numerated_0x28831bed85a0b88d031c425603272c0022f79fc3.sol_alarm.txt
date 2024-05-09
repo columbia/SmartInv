@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+    mapping(uint => uint) public payments;
+    uint public totalPayments;
+    
+    function processPayment(uint paymentId, uint amount) public {
+        require(payments[paymentId] == 0, "payment already processed");
+        payments[paymentId] = amount;
+        totalPayments += amount;
+    }
+    
+    function refundPayment(uint paymentId) public {
+        require(payments[paymentId] > 0, "no payment to refund");
+        totalPayments -= payments[paymentId];
+        payments[paymentId] = 0;
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,25 @@
+The contract that needs to be analyzed for potential vulnerabilities is:
+
+```solidity
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+
+     constructor(address _token) {
+         token = IERC20(_token);
+         owner = msg.sender;
+     }
+
+     function buyTokens(uint _amount) external {
+         require(token.balanceOf(owner) >= _amount, "Not enough tokens available");
+         token.transfer(msg.sender, _amount);
+     }
+
+     function withdrawTokens(uint _amount) external {
+         require(msg.sender == owner, "Only owner can withdraw tokens");
+         token.transfer(owner, _amount);
+     }
+}
+```
+
+Please identify potential vulnerabilities in the above contract.

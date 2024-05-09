@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract SupplyChain {
+    uint public totalItems;
+    mapping(uint => Item) public items;
+
+    struct Item {
+        uint sku;
+        string name;
+        uint price;
+        address payable owner;
+        bool exists;
+    }
+
+    function createItem(string memory _name, uint _price) public {
+        uint _sku = totalItems;
+        Item memory newItem = Item(_sku, _name, _price, msg.sender, true);
+        items[_sku] = newItem;
+        totalItems++;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation: The SKU generation logic could potentially result in duplicate SKUs, leading to ID uniqueness violations.
+2) Incorrect visibility/ownership: The "owner" field in the Item struct is public and can be manipulated by external actors, potentially leading to ownership manipulation vulnerabilities.

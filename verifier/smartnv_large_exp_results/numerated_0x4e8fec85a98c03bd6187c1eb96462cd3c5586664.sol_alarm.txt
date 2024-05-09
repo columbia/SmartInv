@@ -1,0 +1,23 @@
+<\contract\>
+contract Crowdsale {
+    IERC20 public token;
+    address public owner;
+    address public wallet;
+    uint public rate;
+    uint public weiRaised;
+
+    constructor(IERC20 _token, address _wallet, uint _rate) {
+        token = _token;
+        owner = msg.sender;
+        wallet = _wallet;
+        rate = _rate;
+    }
+
+    function buyTokens() public payable {
+        uint256 amount = msg.value * rate;
+        token.transfer(msg.sender, amount);
+        wallet.transfer(msg.value);
+        weiRaised += msg.value;
+    }
+}
+<\contract\>

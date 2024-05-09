@@ -1,0 +1,38 @@
+Contract:
+
+contract Escrow {
+     address public seller;
+     address public buyer;
+     address public arbiter;
+     uint public amount;
+     enum State {Created, Locked, Inactive}
+     State public state;
+
+     constructor(address _seller, address _buyer, address _arbiter, uint _amount) payable {
+         seller = _seller;
+         buyer = _buyer;
+         arbiter = _arbiter;
+         amount = _amount;
+         state = State.Created;
+     }
+
+     function lockFunds() public {
+         require(msg.sender == buyer, "Only buyer can lock funds");
+         require(state == State.Created, "Funds are already locked or inactive");
+         state = State.Locked;
+     }
+
+     function releaseFunds() public {
+         require(msg.sender == arbiter, "Only arbiter can release funds");
+         require(state == State.Locked, "Funds are not locked");
+         amount -= 2; // reduce amount for arbiter fee
+         payable(seller).transfer(amount/2);
+         payable(buyer).transfer(amount/2);
+         state = State.Inactive;
+     }
+
+}
+
+Output:
+1) Inconsistent state update
+2) Integer overflow/underflow

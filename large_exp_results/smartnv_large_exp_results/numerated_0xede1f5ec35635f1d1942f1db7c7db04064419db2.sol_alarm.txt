@@ -1,0 +1,28 @@
+The contract provided for analysis is:
+
+```solidity
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) external {
+        require(msg.value == _amount * price, "Incorrect payment amount");
+        IERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function setPrice(uint _price) external {
+        require(msg.sender == owner, "Not authorized to set price");
+        price = _price;
+    }
+}
+```
+
+Output: 
+- incorrect visibility/ownership

@@ -1,0 +1,30 @@
+The contract being analyzed:
+
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+        totalTokensSold = 0;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount * tokenPrice, "Insufficient balance");
+        require(token.transferFrom(msg.sender, address(this), _amount * tokenPrice), "Transfer failed");
+        totalTokensSold += _amount;
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only owner can end the sale");
+        require(token.transfer(owner, token.balanceOf(address(this))), "Transfer failed");
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Insufficient gas
+2) Incorrect visibility/ownership

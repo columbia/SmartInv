@@ -1,0 +1,23 @@
+Contract:
+
+contract TokenSale {
+     address public token;
+     address public owner;
+     uint public price;
+
+     constructor(address _token, uint _price) {
+         token = _token;
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * price, "Incorrect payment amount");
+         // Transfer tokens to buyer
+         TransferHelper.safeTransferFrom(token, owner, msg.sender, _amount);
+     }
+}
+
+Output:
+- possible price manipulation
+- atomicity violation

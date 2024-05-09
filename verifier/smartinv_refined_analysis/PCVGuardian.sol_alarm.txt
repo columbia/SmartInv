@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The 'execute' function updates the 'votedAmount' field of the proposal struct, but there is no check to ensure that this update is done atomically, which could lead to inconsistent state if multiple transactions try to update the same proposal simultaneously.
+2) ID uniqueness violation: The code snippet does not enforce uniqueness of the proposal ID, which could result in conflicts if multiple proposals are created with the same ID.
+3) Cross bridge inconsistency: The 'startExecute' function interacts with external contracts (such as 'votingToken' and 'startingBalanceList') without ensuring that these interactions are done in a secure manner, potentially leading to inconsistencies or vulnerabilities across different smart contracts.

@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract are:
+1) Inconsistent state update: The function `startExecute` updates the state variables `proposal.sTime` and `startingBalanceList[proposal.addr]`, but does not guard against reentrancy or other potential issues that may result in inconsistent state updates.
+2) Atomicity violation: In the `execute` function, multiple state changes are made without being wrapped in a single atomic transaction, potentially allowing for unexpected behavior if one of the changes fails.
+3) Incorrect visibility/ownership: The contract implements the `IERC20` interface but does not provide implementations for all required functions, which may lead to incorrect visibility or ownership issues.

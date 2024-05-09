@@ -1,0 +1,35 @@
+<\Contract\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token) {
+        admin = msg.sender;
+        token = _token;
+    }
+
+    function buyTokens(uint amount) public {
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens in the contract");
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawTokens() public {
+        require(balances[msg.sender] > 0, "No tokens to withdraw");
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        token.transfer(msg.sender, amount);
+    }
+
+    function changeAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can change admin");
+        admin = newAdmin;
+    }
+}
+<\Contract\> 
+
+Potential vulnerabilities in the contract:
+- incorrect visibility/ownership: The function `changeAdmin` allows any address to change the admin, not just the current admin. This can lead to privilege escalation if an unauthorized user calls this function.
+- insufficient gas: The `buyTokens` function does not handle out-of-gas scenarios, which can result in users losing gas fees without receiving tokens.
+- inconsistent state update: In the `buyTokens` function, the balance of the sender is updated before the token transfer is made. If the transfer fails, the user's balance will be incorrect, leading to inconsistent state.

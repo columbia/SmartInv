@@ -1,0 +1,23 @@
+Contract you are going to analyze:
+
+contract PaymentGateway {
+     address public admin;
+     mapping(address => uint) public balances;
+     
+     constructor() {
+         admin = msg.sender;
+     }
+     
+     function deposit() public payable {
+         balances[msg.sender] += msg.value;
+     }
+     
+     function withdraw(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         balances[msg.sender] -= amount;
+         payable(msg.sender).transfer(amount);
+     }
+}
+Potential vulnerabilities:
+1) insufficient gas
+2) incorrect visibility/ownership

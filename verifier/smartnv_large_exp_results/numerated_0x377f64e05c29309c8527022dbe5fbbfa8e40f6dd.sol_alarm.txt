@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote(address proposal) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        votes[proposal]++;
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function execute(address winningProposal) public {
+        require(totalVotes > 0, "No votes cast");
+        require(votes[winningProposal] > totalVotes / 2, "Proposal does not have majority votes");
+
+        // Execute proposal
+    }
+}
+<\contract_to_analyze\>

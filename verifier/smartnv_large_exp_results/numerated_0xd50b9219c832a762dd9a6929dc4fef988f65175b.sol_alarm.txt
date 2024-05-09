@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) privilege escalation: The contract TimelockController does not have proper access control mechanisms to prevent unauthorized users from performing critical functions like starting or ending proposal executions.
+
+2) business logic flaw: The endExecute function in the TimelockController contract has a business logic flaw where it checks if the locked funds are more than double the total supply of the votingToken, which may not be a correct condition for successful execution.
+
+3) inconsistent state update: The execute function in the TimelockController contract updates the proposal's votedAmount without proper checks or validations, potentially leading to inconsistent state updates.
+
+4) atomicity violation: There is a lack of atomicity in the liquidate function of the ExchangeTokens contract, where multiple state changes are made without being wrapped in a single transaction, leaving room for possible race conditions.
+
+5) arithmetic flaw: The calculatePrice function in the ExchangeTokens contract uses a calculation that involves division, which can result in arithmetic flaws like integer division rounding errors.
+
+6) ether leakage: The TimelockController contract does not address potential ether leakage vulnerabilities that can arise from accepting ether transfers in its functions without appropriate handling.
+
+7) incorrect visibility/ownership: The visibility of functions and variables in both contracts should be carefully reviewed to prevent unauthorized access or manipulation by external or internal actors.

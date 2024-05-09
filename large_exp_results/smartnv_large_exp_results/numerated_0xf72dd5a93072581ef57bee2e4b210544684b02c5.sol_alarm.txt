@@ -1,0 +1,29 @@
+The contract given for analysis is:
+
+```solidity
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public price;
+
+     constructor(IERC20 _token, uint _price) public {
+         token = _token;
+         owner = msg.sender;
+         price = _price;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * price, "Incorrect payment amount");
+         token.transfer(msg.sender, _amount);
+     }
+
+     function setPrice(uint _newPrice) public {
+         require(msg.sender == owner, "You are not the owner");
+         price = _newPrice;
+     }
+}
+```
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Privilege escalation
+2) Price manipulation

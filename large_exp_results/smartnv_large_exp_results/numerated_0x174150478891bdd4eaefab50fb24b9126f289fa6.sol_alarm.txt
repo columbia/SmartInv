@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The liquidate function in the ExchangeTokens contract updates the debt and collateral mappings without proper synchronization or checks, leading to potential inconsistencies in the data.
+2) Atomicity violation: The calculatePrice function in the ExchangeTokens contract calculates the price based on balances obtained from external contracts, which may not provide atomic operations, leading to potential race conditions or inconsistencies.
+3) Ether leakage: The liquidate function in the ExchangeTokens contract transfers USDC tokens to the contract address without checking if the contract can handle Ether transfers, potentially resulting in Ether leakage if the contract is not equipped to handle synthetic tokens like USDC which are Ether-based.

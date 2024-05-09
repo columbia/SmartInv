@@ -1,0 +1,16 @@
+The contract to analyze:
+
+contract TokenExchange {
+         IERC20 public token1;
+         IERC20 public token2;
+
+         function exchange(uint amount1, uint amount2) public {
+             token1.transferFrom(msg.sender, address(this), amount1);
+             token2.transfer(msg.sender, amount2);
+         }
+}
+
+Potential vulnerabilities in the contract:
+1) atomicity violation
+2) insufficient gas
+3) incorrect visibility/ownership

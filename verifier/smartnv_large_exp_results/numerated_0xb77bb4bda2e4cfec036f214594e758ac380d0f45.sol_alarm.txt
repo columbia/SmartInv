@@ -1,0 +1,34 @@
+The contract provided for analysis is: 
+
+contract Escrow {
+    address public seller;
+    address public buyer;
+    bool public sellerApproval;
+    bool public buyerApproval;
+
+    function initiate(address _seller, address _buyer) public {
+        seller = _seller;
+        buyer = _buyer;
+    }
+
+    function approve(bool _isSeller) public {
+        require(msg.sender == seller || msg.sender == buyer, "not authorized");
+        
+        if (_isSeller) {
+            sellerApproval = true;
+        } else {
+            buyerApproval = true;
+        }
+    }
+
+    function releaseFunds() public {
+        require(sellerApproval && buyerApproval, "not approved");
+        address _this = address(this);
+        payable(seller).transfer(_this.balance / 2);
+        payable(buyer).transfer(_this.balance);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

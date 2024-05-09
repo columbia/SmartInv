@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentContract {
+    address public owner;
+    uint public amount;
+
+    constructor() {
+        owner = msg.sender;
+        amount = 0;
+    }
+
+    function deposit(uint _amount) public {
+        amount += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(amount >= _amount, "Insufficient funds");
+        amount -= _amount;
+    }
+}
+<\contract\> 
+
+5) Atomicity violation
+12) Ether leakage
+14) Incorrect visibility/ownership

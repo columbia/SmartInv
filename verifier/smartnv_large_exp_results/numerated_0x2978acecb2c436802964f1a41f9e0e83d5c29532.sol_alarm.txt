@@ -1,0 +1,19 @@
+<\contract\>
+contract SwapContract {
+         IERC20 public token1;
+         IERC20 public token2;
+         uint public rate;
+
+         function swapTokens(uint amount) public {
+             require(token1.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             uint amountToReceive = amount * rate;
+             token1.transferFrom(msg.sender, address(this), amount);
+             token2.transfer(msg.sender, amountToReceive);
+         }
+}
+<\contract\>
+
+The potential vulnerabilities in the SwapContract are:
+- Arithmetic flaw in the calculation of amountToReceive.
+- Insufficient gas for executing the swapTokens function.
+- Incorrect visibility/ownership in the token1 and token2 variables.

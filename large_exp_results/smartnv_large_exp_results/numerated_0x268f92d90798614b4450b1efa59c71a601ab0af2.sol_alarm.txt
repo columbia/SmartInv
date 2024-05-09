@@ -1,0 +1,22 @@
+The contract provided:
+
+contract SaleContract {
+    uint public price;
+    address public seller;
+    address public buyer;
+    
+    function setPrice(uint _price) public {
+        require(msg.sender == seller, "Only seller can set the price");
+        price = _price;
+    }
+    
+    function buy() public payable {
+        require(msg.sender == buyer, "Only buyer can buy");
+        require(msg.value >= price, "Insufficient funds");
+        seller.transfer(msg.value);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership: Lack of proper access control mechanisms can lead to unauthorized parties gaining control over critical functions and data of the contract. 
+2) inconsistent state update: There is a possibility of inconsistent state updates due to the lack of proper synchronization mechanisms, potentially leading to unexpected behavior.

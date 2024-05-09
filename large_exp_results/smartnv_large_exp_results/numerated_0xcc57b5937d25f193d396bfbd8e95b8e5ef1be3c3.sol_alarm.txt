@@ -1,0 +1,22 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+
+    function vote(uint256 amount) public {
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function revokeVote(uint256 amount) public {
+        require(userVotes[msg.sender] >= amount, "Not enough votes to revoke");
+        totalVotes -= amount;
+        userVotes[msg.sender] -= amount;
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the analyzed contract are:
+1) inconsistent state update - The totalVotes and userVotes mapping can be updated separately, leading to inconsistencies in the contract state.
+2) integer overflow/underflow - Addition or subtraction of the amount in vote and revokeVote functions could potentially lead to integer overflow/underflow if not handled properly.
+3) insufficient gas - If the totalVotes reaches a very high value, it may require more gas than the block gas limit to update, causing the function to fail.

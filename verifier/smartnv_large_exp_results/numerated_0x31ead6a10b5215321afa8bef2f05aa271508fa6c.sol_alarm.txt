@@ -1,0 +1,22 @@
+contract PaymentProcessor {
+    uint256 public totalPayments;
+    mapping(address => uint256) public payments;
+
+    function pay() public payable {
+        require(msg.value > 0, "Payment amount must be greater than 0");
+        payments[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdraw() public {
+        uint256 payment = payments[msg.sender];
+        require(payment > 0, "No payments to withdraw");
+        require(address(this).balance >= payment, "Contract has insufficient balance to fulfill the payment");
+        
+        (bool success, ) = msg.sender.call{value: payment}("");
+        require(success, "Failed to send payment");
+
+        payments[msg.sender] = 0;
+        totalPayments -= payment;
+    }
+}

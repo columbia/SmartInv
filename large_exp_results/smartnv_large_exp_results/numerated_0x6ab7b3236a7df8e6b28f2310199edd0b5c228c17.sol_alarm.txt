@@ -1,0 +1,28 @@
+
+Contract you are going to analyze:
+
+contract Vault {
+    address public owner;
+    uint public balance;
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        require(amount <= balance, "Insufficient funds");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function changeOwner(address newOwner) public {
+        owner = newOwner;
+    }
+}
+
+Potential vulnerabilities:
+- privilege escalation: The owner can be changed by anyone, not just the current owner.
+- atomicity violation: The balance is being updated without using atomic operations, which can lead to race conditions.
+- incorrect visibility/ownership: The owner should be made private to prevent unauthorized access.
+- ether leakage: When withdrawing funds, the transfer is done before updating the balance, which can lead to reentrancy attacks.

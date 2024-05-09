@@ -1,0 +1,25 @@
+The contract to analyze is:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote() public {
+        votes[msg.sender]++;
+        totalVotes++;
+    }
+
+    function withdrawVotes() public {
+        uint voteAmount = votes[msg.sender];
+        require(voteAmount > 0, "No votes to withdraw");
+        msg.sender.transfer(voteAmount);
+        votes[msg.sender] = 0;
+        totalVotes -= voteAmount;
+    }
+}
+
+Potential vulnerabilities:
+12) Ether leakage: The 'withdrawVotes' function directly transfers Ether to the caller without verifying the potential consequences of transferring Ether.
+14) Incorrect visibility/ownership: The 'votes' mapping and 'totalVotes' variable are public, allowing anyone to view and modify the voting data.
+
+Therefore, the identified potential vulnerabilities in the contract are ether leakage and incorrect visibility/ownership.

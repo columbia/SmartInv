@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract SupplyChain {
+    uint public totalItems;
+    mapping(uint => Item) public items;
+
+    struct Item {
+        uint itemId;
+        string itemName;
+        uint quantity;
+        address owner;
+    }
+
+    function addItem(uint _itemId, string memory _itemName, uint _quantity) public {
+        totalItems++;
+        Item memory newItem = Item(_itemId, _itemName, _quantity, msg.sender);
+        items[_itemId] = newItem;
+    }
+
+    function updateItemQuantity(uint _itemId, uint _newQuantity) public {
+        require(items[_itemId].owner == msg.sender, "You are not the owner of this item");
+        items[_itemId].quantity = _newQuantity;
+    }
+}
+
+Output:
+- ID uniqueness violation: The addItem function doesn't check for existing items with the same itemId, potentially leading to duplicate itemId entries in the items mapping.
+
+Therefore, the potential vulnerability in the contract is ID uniqueness violation.

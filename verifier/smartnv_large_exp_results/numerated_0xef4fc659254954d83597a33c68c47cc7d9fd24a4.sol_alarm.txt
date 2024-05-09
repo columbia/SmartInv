@@ -1,0 +1,23 @@
+<\contract_to_analyze\> 
+contract PaymentSplitter {
+    address[] internal payees;
+    uint256[] internal shares;
+    mapping(address => uint) internal balances;
+
+    function initPayees(address[] memory _payees, uint256[] memory _shares) public {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        payees = _payees;
+        shares = _shares;
+    }
+
+    function release(address payable payee) public {
+        uint256 totalShares = 0;
+        for (uint i = 0; i < shares.length; i++) {
+            totalShares += shares[i];
+        }
+
+        uint amount = (balances[payee] * totalShares) / shares.length;
+        balances[payee] = 0;
+        payee.transfer(amount);
+    }
+}

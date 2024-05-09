@@ -1,0 +1,22 @@
+<\contract\> 
+contract SwapTokens {
+         address public tokenA;
+         address public tokenB;
+         address public owner;
+     
+         function swap(uint amount) public {
+             require(msg.sender == owner, "only owner can swap tokens");
+             ERC20(tokenA).transferFrom(msg.sender, address(this), amount);
+             ERC20(tokenB).transfer(msg.sender, amount);
+         }
+    
+         function changeOwner(address newOwner) public {
+             require(msg.sender == owner, "only owner can change owner");
+             owner = newOwner;
+         }
+     }
+<\contract\> 
+
+Potential vulnerabilities in the contract:
+1) privilege escalation
+2) incorrect visibility/ownership

@@ -1,0 +1,31 @@
+Contract TokenStaking {
+         IERC20 public token;
+         mapping(address => uint) public stakedBalance;
+         mapping(address => uint) public rewardsBalance;
+         address public owner;
+
+         function stake(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+             stakedBalance[msg.sender] += amount;
+         }
+
+         function unstake(uint amount) public {
+             require(stakedBalance[msg.sender] >= amount, "Insufficient staked balance");
+             stakedBalance[msg.sender] -= amount;
+             token.transfer(msg.sender, amount);
+         }
+
+         function claimRewards() public {
+             uint rewards = rewardsBalance[msg.sender];
+             rewardsBalance[msg.sender] = 0;
+             token.transfer(msg.sender, rewards);
+         }
+
+         function setRewards(uint amount) public {
+             rewardsBalance[msg.sender] += amount;
+         }
+     } 
+
+Output: 
+1) reentrancy
+2) inconsistent state update

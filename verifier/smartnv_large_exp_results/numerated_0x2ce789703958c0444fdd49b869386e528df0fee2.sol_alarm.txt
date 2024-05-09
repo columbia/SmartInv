@@ -1,0 +1,21 @@
+<\analyzed_contract\>
+contract Marketplace {
+     IERC20 public token;
+     mapping(address => uint) public balances;
+     mapping(address => bool) public isItemSold;
+
+     function buyItem(uint itemId, uint price) public {
+          require(isItemSold[itemId] == false, "Item has already been sold");
+          require(token.balanceOf(msg.sender) >= price, "Insufficient balance to buy item");
+          token.transferFrom(msg.sender, address(this), price);
+          balances[msg.sender] -= price;
+          isItemSold[itemId] = true;
+     }
+
+     function sellItem(uint itemId, uint price) public {
+          require(isItemSold[itemId] == false, "Item has already been sold");
+          token.transfer(msg.sender, price);
+          balances[msg.sender] += price;
+     }
+}
+<\analyzed_contract\>

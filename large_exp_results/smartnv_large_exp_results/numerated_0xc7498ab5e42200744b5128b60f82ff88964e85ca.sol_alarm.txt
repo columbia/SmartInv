@@ -1,0 +1,25 @@
+<\contract\> 
+contract PaymentSplitter {
+         address owner;
+         address[] public payees;
+         uint256[] public shares;
+         
+         constructor(address[] memory _payees, uint256[] memory _shares) {
+             owner = msg.sender;
+             require(_payees.length == _shares.length, "Payees and shares should have the same length");
+             payees = _payees;
+             shares = _shares;
+         }
+
+         function release() public {
+             require(msg.sender == owner, "Only owner can release funds");
+             for (uint i = 0; i < payees.length; i++) {
+                 payable(payees[i]).transfer(shares[i]);
+             }
+         }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The release function should be restricted to only the owner to ensure that unauthorized users cannot release funds.
+- Insufficient gas: The transfer function within the release function may fail if the gas provided is not enough for all transfers to complete successfully, leaving some payees without their shares.

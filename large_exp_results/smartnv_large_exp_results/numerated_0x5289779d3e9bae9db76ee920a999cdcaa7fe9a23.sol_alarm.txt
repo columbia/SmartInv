@@ -1,0 +1,40 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    enum State { CREATED, LOCKED, RELEASED, INACTIVE }
+    State public state;
+
+    constructor(address _buyer, address _seller, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        price = _price;
+        state = State.CREATED;
+    }
+
+    function lockFunds() public payable {
+        require(msg.value == price, "Incorrect amount sent");
+        require(msg.sender == buyer, "Only buyer can lock funds");
+        state = State.LOCKED;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(state == State.LOCKED, "Funds not locked");
+        payable(seller).transfer(price);
+        state = State.RELEASED;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == buyer, "Only buyer can refund funds");
+        require(state == State.LOCKED, "Funds not locked");
+        payable(buyer).transfer(price);
+        state = State.INACTIVE;
+    }
+}
+<\contract\> 
+
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

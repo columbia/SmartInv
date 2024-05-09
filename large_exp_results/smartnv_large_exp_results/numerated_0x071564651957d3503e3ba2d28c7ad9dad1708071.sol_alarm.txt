@@ -1,0 +1,19 @@
+The contract provided is:
+contract VotingSystem {
+    struct Voter {
+        address addr;
+        uint256 votedProposal;
+    }
+    mapping(address => bool) public hasVoted;
+    mapping(uint256 => uint256) public proposalVotes;
+    uint256 public totalVotes;
+
+    function vote(uint256 proposalId) external {
+        require(!hasVoted[msg.sender], "Already voted");
+        Voter memory voter = Voter({addr: msg.sender, votedProposal: proposalId});
+        hasVoted[msg.sender] = true;
+        proposalVotes[proposalId]++;
+        totalVotes++;
+    }
+}
+This contract does not contain any potential vulnerabilities. It is healthy.

@@ -1,0 +1,41 @@
+The contract provided for analysis:
+
+```solidity
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    address public tokenWallet;
+    uint public tokenPrice;
+    uint public totalTokens;
+    uint public tokensSold;
+    
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, address _tokenWallet, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        token = _token;
+        tokenWallet = _tokenWallet;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _tokenAmount) public {
+        require(_tokenAmount > 0, "Token amount must be greater than 0");
+        require(token.balanceOf(msg.sender) >= _tokenAmount, "Insufficient balance");
+        uint totalCost = _tokenAmount * tokenPrice;
+        require(token.allowance(msg.sender, address(this)) >= totalCost, "Insufficient allowance");
+
+        token.transferFrom(msg.sender, tokenWallet, _tokenAmount);
+        balances[msg.sender] += _tokenAmount;
+        tokensSold += _tokenAmount;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only the owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+```
+
+Output: 
+- `suicidal contracts`

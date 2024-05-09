@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership: The variables `lockedFunds`, `startingBalanceList`, and `proposal` are not specified with any visibility modifier, making them publicly accessible which can potentially lead to unauthorized access or manipulation of data.
+2) inconsistent state update: The `proposal.votedAmount` is updated directly in the `execute` function without checking if the caller has already voted, potentially leading to inconsistent state updates.
+3) insufficient gas: The `endExecute` function checks if the balance of the contract is greater than twice the total supply, which might consume a lot of gas if the total supply is large, potentially leading to out of gas errors.
+4) business logic flaw: The calculation in the `liquidate` function for liquidation may not be accurate or prone to manipulation due to the lack of precise conditions.
+5) atomicity violation: The `liquidate` function performs multiple actions (TransferFrom) which are not atomic and can be interfered with by other transactions.
+6) incorrect visibility/ownership: The `calculatePrice` function is public and can be accessed by anyone, which might not be intended based on the logic of the contract.

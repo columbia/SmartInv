@@ -1,0 +1,42 @@
+<\contract\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public deposit;
+     enum State { Created, Locked, Inactive }
+     State public state;
+
+     constructor() public {
+         arbiter = msg.sender;
+     }
+
+     function initiate(address _seller) public payable {
+         require(state == State.Created, "Escrow already initiated");
+
+         buyer = msg.sender;
+         seller = _seller;
+         deposit = msg.value;
+         state = State.Locked;
+     }
+
+     function releaseToSeller() public {
+         require(msg.sender == arbiter, "Only arbiter can release funds");
+         require(state == State.Locked, "Escrow not in locked state");
+
+         seller.transfer(deposit);
+         state = State.Inactive;
+     }
+
+     function refundToBuyer() public {
+         require(msg.sender == arbiter, "Only arbiter can refund funds");
+         require(state == State.Locked, "Escrow not in locked state");
+
+         buyer.transfer(deposit);
+         state = State.Inactive;
+     }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

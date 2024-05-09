@@ -1,0 +1,22 @@
+<\contract\>
+contract PaymentProcessor {
+    mapping(address => uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Payment transfer failed");
+        balances[msg.sender] -= amount;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) Integer overflow/underflow in the deposit function.
+2) Ether leakage in the withdraw function.
+3) Insufficient gas in the withdraw function.
+4) Incorrect visibility/ownership of the balances mapping.

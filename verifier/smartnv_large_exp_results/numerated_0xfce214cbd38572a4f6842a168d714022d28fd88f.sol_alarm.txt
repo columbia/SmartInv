@@ -1,0 +1,41 @@
+<\analyzed_contract\>
+contract SupplyChain {
+     mapping(uint => Product) public products;
+     uint public productCount;
+
+     struct Product {
+           uint id;
+           string name;
+           address owner;
+           bool isProcessed;
+           bool isPacked;
+           bool isShipped;
+     }
+
+     function produceProduct(string memory _name) public {
+           productCount++;
+           products[productCount] = Product(productCount, _name, msg.sender, false, false, false);
+     }
+
+     function processProduct(uint _productId) public {
+           require(products[_productId].owner == msg.sender, "Not the owner");
+           require(!products[_productId].isProcessed, "Already processed");
+           products[_productId].isProcessed = true;
+     }
+
+     function packProduct(uint _productId) public {
+           require(products[_productId].owner == msg.sender, "Not the owner");
+           require(products[_productId].isProcessed, "Not processed yet");
+           require(!products[_productId].isPacked, "Already packed");
+           products[_productId].isPacked = true;
+     }
+
+     function shipProduct(uint _productId) public {
+           require(products[_productId].owner == msg.sender, "Not the owner");
+           require(products[_productId].isPacked, "Not packed yet");
+           require(!products[_productId].isShipped, "Already shipped");
+           products[_productId].isShipped = true;
+     }
+
+}
+<\analyzed_contract\>

@@ -1,0 +1,24 @@
+The contract below potentially contains the following vulnerabilities:
+
+3) business logic flaw
+
+<\contract\> 
+contract Payment {
+    mapping(address => uint) public balances;
+
+    function pay(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        
+        // Vulnerability: Business logic flaw - allows the user to withdraw more than their balance
+        balances[msg.sender] -= amount;
+    }
+}
+<\contract\>
+
+The potential vulnerability in the contract is a business logic flaw where the `withdraw` function allows the user to withdraw more than their balance.

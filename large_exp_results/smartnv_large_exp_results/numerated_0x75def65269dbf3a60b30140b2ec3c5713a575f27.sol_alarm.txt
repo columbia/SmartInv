@@ -1,0 +1,47 @@
+<\Contract\>
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public participants;
+    uint public totalParticipants;
+    uint public totalPrize;
+
+    constructor() {
+        owner = msg.sender;
+        totalParticipants = 0;
+        totalPrize = 0;
+    }
+
+    function enterLottery() public payable {
+        require(msg.value > 0, "Must send some ether to participate.");
+        totalParticipants++;
+        participants[msg.sender] = msg.value;
+        totalPrize += msg.value;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "Only the owner can pick the winner.");
+        uint index = random() % totalParticipants;
+        address winner = getAddressByIndex(index);
+        payable(winner).transfer(address(this).balance);
+        totalParticipants = 0;
+        totalPrize = 0;
+    }
+
+    function random() private view returns(uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, totalParticipants)));
+    }
+
+    function getAddressByIndex(uint index) private view returns (address) {
+        address[] memory keys = new address[](totalParticipants);
+        
+        for (uint i = 0; i < totalParticipants; i++) {
+            keys[i] = msg.sender;
+        }
+
+        return keys[index];
+    }
+}
+<\Contract\> 
+
+Output: 
+1) incorrect visibility/ownership

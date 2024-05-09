@@ -1,0 +1,36 @@
+The contract to analyze for potential vulnerabilities:
+
+contract SupplyChain {
+     struct Product {
+         uint productId;
+         string productName;
+         uint quantity;
+         address owner;
+     }
+
+     mapping(uint => Product) public products;
+     uint public productCount;
+
+     function addProduct(string memory _name, uint _quantity) public {
+         productCount++;
+         products[productCount] = Product(productCount, _name, _quantity, msg.sender);
+     }
+
+     function updateProduct(uint _productId, uint _newQuantity) public {
+         require(products[_productId].owner == msg.sender, "You are not the owner of this product.");
+         products[_productId].quantity = _newQuantity;
+     }
+
+     function transferProduct(uint _productId, address _newOwner) public {
+         require(products[_productId].owner == msg.sender, "You are not the owner of this product.");
+         products[_productId].owner = _newOwner;
+     }
+
+     function getProductDetails(uint _productId) public view returns (uint, string memory, uint, address) {
+         return (products[_productId].productId, products[_productId].productName, products[_productId].quantity, products[_productId].owner);
+     }
+}
+
+Output: 
+- ID uniqueness violation: There is a potential vulnerability in the contract related to the uniqueness of product IDs, as the productCount variable is used to assign IDs, which may lead to duplicate IDs in the mapping.
+- Incorrect visibility/ownership: The functions updateProduct and transferProduct do not have proper access control mechanisms, allowing any user to manipulate product quantities and transfer ownership.

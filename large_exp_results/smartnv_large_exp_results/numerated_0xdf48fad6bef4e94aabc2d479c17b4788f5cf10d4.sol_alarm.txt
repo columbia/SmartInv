@@ -1,0 +1,25 @@
+Contract ExampleContract {
+    uint256 public totalSupply;
+    mapping(address => uint256) public balanceOf;
+
+    function transfer(address to, uint256 value) public {
+        require(balanceOf[msg.sender] >= value, "Insufficient balance");
+        balanceOf[msg.sender] -= value;
+        balanceOf[to] += value;
+    }
+
+    function mint(uint256 amount) public {
+        totalSupply += amount;
+        balanceOf[msg.sender] += amount;
+    }
+
+    function burn(uint256 amount) public {
+        require(totalSupply >= amount, "Insufficient total supply");
+        totalSupply -= amount;
+        balanceOf[msg.sender] -= amount;
+    }
+} 
+
+Output:
+1) atomicity violation
+2) inconsistent state update

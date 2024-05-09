@@ -1,0 +1,33 @@
+The contract provided for analysis is:
+
+contract Lottery {
+    address public owner;
+    uint public jackpot;
+
+    mapping(address => uint) public players;
+
+    constructor() {
+        owner = msg.sender;
+        jackpot = 0;
+    }
+
+    function buyTicket(uint amount) external payable {
+        require(msg.value == amount, "Incorrect amount sent");
+
+        players[msg.sender] += msg.value;
+        jackpot += msg.value;
+    }
+
+    function drawWinner() external {
+        require(msg.sender == owner, "Only owner can draw winner");
+
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % players.length;
+        address winner = players.keys[winnerIndex];
+        payable(winner).transfer(jackpot);
+        jackpot = 0;
+    }
+}
+
+The potential vulnerabilities in the given contract are:
+1) Inconsistent state update: The jackpot amount is reset to 0 after a winner is drawn, but the jackpot variable is not reset in the buyTicket function. This can lead to inconsistencies in the contract state.
+2) Insufficient gas: The drawWinner function uses a loop over the keys of the players mapping, but Solidity does not support iterating over mappings. This can lead to running out of gas and the function failing to execute properly.

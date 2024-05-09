@@ -1,0 +1,26 @@
+<\your_contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public amount;
+     bool public isPaid;
+
+     function deposit() public payable {
+         require(msg.sender == buyer, "Only buyer can deposit funds");
+         amount += msg.value;
+     }
+
+     function release() public {
+         require(msg.sender == seller, "Only seller can release funds");
+         require(isPaid == false, "Funds have already been released");
+         isPaid = true;
+         payable(buyer).transfer(amount);
+     }
+
+     function cancel() public {
+         require(msg.sender == buyer, "Only buyer can cancel");
+         require(isPaid == false, "Funds have already been released");
+         payable(buyer).transfer(amount);
+     }
+}
+<\your_contract\>

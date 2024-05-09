@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+
+     function deposit() public payable {
+         require(msg.sender == buyer, "Only buyer can deposit");
+         uint256 amount = msg.value;
+         escrowBalance += amount;
+         emit Deposit(msg.sender, amount);
+     }
+
+     function withdraw() public {
+         require(msg.sender == seller, "Only seller can withdraw");
+         uint256 amount = escrowBalance;
+         escrowBalance = 0;
+         (bool success, ) = seller.call{value: amount}("");
+         require(success, "Transfer failed.");
+         emit Withdrawal(msg.sender, amount);
+     }
+
+     event Deposit(address indexed from, uint256 amount);
+     event Withdrawal(address indexed to, uint256 amount);
+}
+<\contract_to_analyze\>

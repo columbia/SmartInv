@@ -1,0 +1,38 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address internal admin;
+     IERC20 votingToken;
+
+    function startVoting() external {
+              uint256 startingBalance;
+              require(proposal.startTime == 0, "proposal already initiated");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.proposer);
+              startingBalanceList[proposal.proposer] = startingBalance; 
+        }
+
+    function vote(uint256 amount) external {
+              require(proposal.startTime + 24 > block.timestamp, "voting period has ended");
+              require(proposal.votedAmount == 0, "votes already cast"); 
+              votingToken.transferFrom(proposal.proposer, address(this), amount);
+              proposal.votedAmount += amount; 
+              addVotedProposal(proposal); 
+        }
+    
+    function endVoting() external {
+              require(proposal.startTime != 0, "no proposal initiated");
+              require(proposal.startTime + 24 < block.timestamp, "voting period has not ended");
+              require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "voting failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Output: 
+- insufficient gas
+- incorrect visibility/ownership

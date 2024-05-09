@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract SupplyChain {
+    struct Product {
+        uint productId;
+        string productName;
+        uint quantity;
+        address owner;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function addProduct(string memory _productName, uint _quantity) public {
+        productCount++;
+        products[productCount] = Product(productCount, _productName, _quantity, msg.sender);
+    }
+
+    function updateProductQuantity(uint _productId, uint _newQuantity) public {
+        require(products[_productId].owner == msg.sender, "You are not the owner of this product");
+        products[_productId].quantity = _newQuantity;
+    }
+}
+
+Output: 
+- Inconsistent state update
+- Incorrect visibility/ownership

@@ -1,0 +1,10 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The contract allows for the execution of proposals even after the voting period has ended, leading to inconsistent state updates.
+2) Integer underflow: There is a risk of integer underflow in the endExecute function when checking if the locked funds are greater than half of the total voting token supply.
+3) Incorrect visibility: The visibility of the `votedProposal` function is not specified, which could lead to potential issues with access control.
+4) Insufficient gas: The endExecute function performs a balance check that may consume a significant amount of gas, potentially leading to out-of-gas errors.
+5) Privilege escalation: The startExecute function does not perform proper access control checks before updating the proposal, allowing for potential privilege escalation attacks.
+6) Cross bridge inconsistency: The contract interacts with external tokens (IERC20) and does not handle potential inconsistencies between different token balances correctly.
+7) ID uniqueness violation: The contract does not enforce ID uniqueness for proposals, potentially leading to conflicts or unexpected behavior.
+8) Ether leakage: The contract does not handle ether transfers or interactions, leaving the possibility of unintended ether leakage.

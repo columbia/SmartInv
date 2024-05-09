@@ -1,0 +1,22 @@
+<\contract_to_be_analyzed\> 
+contract Marketplace {
+    IERC20 public token;
+    mapping(address => uint) public balances;
+
+    function deposit(uint amount) external {
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        token.transfer(msg.sender, amount);
+    }
+
+    function updatePrice(uint newPrice) external {
+        require(msg.sender == owner, "Only owner can update price");
+        token.updatePrice(newPrice);
+    }
+}
+<\contract_to_be_analyzed\>

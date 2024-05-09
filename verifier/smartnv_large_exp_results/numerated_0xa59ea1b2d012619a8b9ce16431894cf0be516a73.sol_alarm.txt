@@ -1,0 +1,12 @@
+Potential vulnerabilities in the contract provided:
+
+1) Inconsistent state update: The function execute() updates the state variable proposal.votedAmount without ensuring that the voter has the required balance or checking if the voter has already voted. This could potentially lead to incorrect state updates and unauthorized voting.
+
+2) Incorrect visibility/ownership: The internal variable owner is not being used or modified in the contract. This could potentially lead to confusion in the ownership structure of the contract.
+
+3) Atomicity violation: The function endExecute() checks for a condition (require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply())) and updates the state variable lockedFunds. However, if another transaction modifies the state variables related to votingToken in between these two operations, it could result in an inconsistent state.
+
+Therefore, the potential vulnerabilities in the contract are:
+1) Inconsistent state update
+2) Incorrect visibility/ownership
+3) Atomicity violation

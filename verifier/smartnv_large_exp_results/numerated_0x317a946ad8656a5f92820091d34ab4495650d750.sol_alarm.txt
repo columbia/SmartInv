@@ -1,0 +1,31 @@
+<\analyzed_contract\> 
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public deposit;
+     bool public isConfirmedByBuyer;
+     bool public isConfirmedBySeller;
+
+     function confirmDeposit() public {
+          require(msg.sender == buyer, "only buyer can confirm deposit");
+          isConfirmedByBuyer = true;
+     }
+
+     function confirmDelivery() public {
+          require(msg.sender == seller, "only seller can confirm delivery");
+          isConfirmedBySeller = true;
+     }
+
+     function releaseFunds() public {
+          require(isConfirmedByBuyer == true, "buyer has not confirmed deposit");
+          require(isConfirmedBySeller == true, "seller has not confirmed delivery");
+          seller.transfer(deposit); 
+     }
+}
+<\analyzed_contract\> 
+
+Output:
+1) Inconsistent state update: The state variables isConfirmedByBuyer and isConfirmedBySeller can be manipulated independently, potentially leading to an inconsistent state where one party confirms their action, but the other party does not, allowing for unexpected behavior.
+2) Incorrect visibility/ownership: The functions confirmDeposit and confirmDelivery have unrestricted visibility, allowing anyone to call them. This can lead to unauthorized confirmations and potential manipulation of the transaction flow.
+3) Atomicity violation: There is no check for atomicity in the releaseFunds function, where the transfer of funds occurs after confirming actions by both parties. This can lead to a race condition where one party confirms after the check but before the transfer, allowing for potential fund release without proper confirmation.

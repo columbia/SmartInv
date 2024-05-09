@@ -1,0 +1,11 @@
+<\contract_to_be_analyzed\>
+contract PaymentProcessor {
+     address public merchant;
+     mapping(address => uint256) public balances;
+
+     function pay() public payable {
+          balances[msg.sender] += msg.value;
+          merchant.transfer(msg.value);
+     }
+}
+<\contract_to_be_analyzed\>

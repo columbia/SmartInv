@@ -1,0 +1,18 @@
+<\contract\> 
+contract BuySellStocks {
+    mapping(address => uint) public stocksBalance;
+    mapping(address => uint) public funds;
+
+    function buyStocks(uint amount, uint price) public {
+        require(funds[msg.sender] >= amount * price, "Insufficient funds");
+        funds[msg.sender] -= amount * price;
+        stocksBalance[msg.sender] += amount;
+    }
+
+    function sellStocks(uint amount, uint price) public {
+        require(stocksBalance[msg.sender] >= amount, "Insufficient stocks balance");
+        funds[msg.sender] += amount * price;
+        stocksBalance[msg.sender] -= amount;
+    }
+}
+<\contract\>

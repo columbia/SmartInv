@@ -1,0 +1,25 @@
+<\contract\>
+contract Payment {
+    uint public totalPayment;
+    mapping(address => uint) public payments;
+
+    constructor() {
+        totalPayment = 0;
+    }
+
+    function makePayment(address recipient, uint amount) public {
+        require(amount > 0, "Payment amount must be greater than 0");
+        require(amount <= address(this).balance, "Insufficient balance in contract");
+
+        payments[recipient] += amount;
+        totalPayment += amount;
+
+        address payable payableRecipient = payable(recipient);
+        payableRecipient.transfer(amount);
+    }
+
+    function getBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+}
+<\contract\>

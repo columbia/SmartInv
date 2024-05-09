@@ -1,0 +1,30 @@
+<\contract\>
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public price;
+
+    constructor(address _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * price;
+        require(msg.value >= totalCost, "Insufficient payment");
+        
+        ERC20(token).transfer(msg.sender, _amount);
+    }
+
+    function updatePrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can update price");
+        price = _newPrice;
+    }
+
+    function withdrawFunds(uint _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(_amount);
+    }
+}
+<\contract\>

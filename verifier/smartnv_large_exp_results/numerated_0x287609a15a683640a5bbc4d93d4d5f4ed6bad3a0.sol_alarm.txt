@@ -1,0 +1,35 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    bool public isFundsReleased;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+        isFundsReleased = false;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(!isFundsReleased, "Funds already released");
+        // transfer funds to seller
+        payable(seller).transfer(amount); 
+        isFundsReleased = true;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == buyer, "Only buyer can request refund");
+        require(!isFundsReleased, "Funds already released");
+        // transfer funds back to buyer
+        payable(buyer).transfer(amount); 
+        isFundsReleased = true;
+    }
+}
+<\contract\> 
+
+
+Output:
+-incorrect visibility/ownership

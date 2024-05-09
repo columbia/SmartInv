@@ -1,0 +1,10 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update:
+- The function liquidate in the ExchangeTokens contract updates the debt and collateral mappings without any check on whether the user actually has enough debt or collateral. This can lead to inconsistent state if the update is based on incorrect information.
+
+2) Business logic flaw:
+- The liquidate function in the ExchangeTokens contract has a business logic flaw where it calculates the liquidation amount using a fixed formula (80% of collateral) without considering other factors that may affect the liquidation process.
+
+3) Integer overflow/underflow:
+- There is a potential for integer overflow in the calculatePrice function of the ExchangeTokens contract when calculating the price, as the division result may exceed the maximum value that can be stored in a uint type variable.

@@ -1,0 +1,6 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility: The visibility of functions like `votedProposal` and `getStartingBalance` is not specified, making them publicly accessible and potentially exposing sensitive functionality.
+2) Integer overflow/underflow: There are operations where integer overflow or underflow may occur, such as in the calculation for `startingBlance` and `proposal.votedAmount += amount`.
+3) Insufficient gas: The `endExecute` function may run out of gas if there are a large number of token holders, as the gas cost increases with the number of token holders.
+4) Inconsistent state update: There are scenarios where the state may not be consistently updated, such as when `require(proposal.votedAmount == 0, "voting hasn't gone through");` is checked before updating `proposal.votedAmount` in the `execute` function.

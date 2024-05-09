@@ -1,0 +1,17 @@
+The contract to be analyzed for potential vulnerabilities:
+
+contract TokenSwap {
+         IERC20 public token1;
+         IERC20 public token2;
+         mapping(address => uint) public balances;
+
+         function swapTokens(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             token1.transferFrom(msg.sender, address(this), amount);
+             token2.transfer(msg.sender, amount);
+         }
+}
+
+Potential vulnerabilities in the contract:
+- insufficient gas

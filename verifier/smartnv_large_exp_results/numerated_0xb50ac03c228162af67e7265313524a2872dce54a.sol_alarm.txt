@@ -1,0 +1,26 @@
+Contract being analyzed:
+contract Purchase {
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    constructor(address _seller, uint _price) {
+        seller = _seller;
+        price = _price;
+    }
+
+    function buy() public payable {
+        require(msg.value == price, "Incorrect amount sent");
+        seller.transfer(msg.value);
+        buyer = msg.sender;
+    }
+
+    function confirmTransaction() public {
+        require(msg.sender == seller || msg.sender == buyer, "You are not authorized");
+        require(buyer != address(0), "Buyer has not been set yet");
+        // perform transaction
+    }
+}
+
+Output:
+1) Correct and healthy

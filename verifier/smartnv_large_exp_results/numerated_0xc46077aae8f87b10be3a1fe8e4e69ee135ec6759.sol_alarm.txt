@@ -1,0 +1,42 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+    bool public buyerPaid;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _escrowAmount) public {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        escrowAmount = _escrowAmount;
+        buyerPaid = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer && msg.value == escrowAmount, "Only buyer can deposit escrow amount");
+    }
+
+    function confirmPayment() public {
+        require(msg.sender == buyer, "Only buyer can confirm payment");
+        buyerPaid = true;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == arbiter, "Only arbiter can release amount");
+        require(buyerPaid == true, "Buyer has not paid yet");
+        seller.transfer(escrowAmount);
+    }
+
+    function refundAmount() public {
+        require(msg.sender == arbiter, "Only arbiter can refund amount");
+        require(buyerPaid == false, "Buyer has already paid");
+        buyer.transfer(escrowAmount);
+    }
+}
+<\contract\> 
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

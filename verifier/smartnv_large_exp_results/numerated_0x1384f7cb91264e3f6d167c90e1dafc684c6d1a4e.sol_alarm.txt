@@ -1,0 +1,20 @@
+The contract provided for analysis is:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCount;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        voteCount[msg.sender]++;
+        totalVotes++;
+    }
+
+    function getVoteCount(address voter) public view returns (uint) {
+        return voteCount[voter];
+    }
+}
+
+There are no vulnerabilities found in the contract provided.

@@ -1,0 +1,42 @@
+<\contract\> 
+contract SimpleEscrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public amount;
+    enum State { Created, Locked, Released }
+    State public state;
+
+    constructor(address _payee, address _arbiter) payable {
+        payer = msg.sender;
+        payee = _payee;
+        arbiter = _arbiter;
+        amount = msg.value;
+        state = State.Created;
+    }
+
+    function lockFunds() public {
+        require(msg.sender == payer, "Only payer can lock funds");
+        state = State.Locked;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(state == State.Locked, "Funds are not locked");
+        payee.transfer(amount);
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can refund");
+        require(state == State.Locked, "Funds are not locked");
+        payer.transfer(amount);
+        state = State.Released;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Correct Visibility/Ownership: The functions `releaseFunds` and `refund` can be executed by the `arbiter` without any additional checks, potentially leading to privilege escalation.
+- Atomicity Violation: The process of releasing funds or refunding is not done atomically, allowing for potential inconsistencies in the contract state.
+- Insufficient Gas: If the contract balance runs out of gas during fund release or refund, it can result in failed transactions, leaving funds in an inconsistent state.

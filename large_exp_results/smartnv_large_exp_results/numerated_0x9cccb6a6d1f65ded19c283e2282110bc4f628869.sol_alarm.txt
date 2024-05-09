@@ -1,0 +1,27 @@
+contract Marketplace {
+    address public owner;
+    mapping(uint => address) public tokenIdToOwner;
+    mapping(address => uint) public ownerTokenCount;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function buyToken(uint tokenId, uint price) public payable {
+        require(tokenIdToOwner[tokenId] != msg.sender, "Cannot buy your own token");
+        require(msg.value == price, "Incorrect payment amount");
+        
+        address seller = tokenIdToOwner[tokenId];
+        tokenIdToOwner[tokenId] = msg.sender;
+        ownerTokenCount[seller]--;
+        ownerTokenCount[msg.sender]++;
+        
+        payable(seller).transfer(msg.value);
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}

@@ -1,0 +1,29 @@
+The contract provided for analysis is:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        address payable payee = msg.sender;
+        uint balance = address(this).balance;
+        payee.transfer(balance);
+    }
+}
+
+The potential vulnerabilities in the TokenSale contract are:
+1) Incorrect visibility/ownership in withdrawFunds function
+2) Insufficient gas for operations involving transferring funds
+
+Output:
+incorrect visibility/ownership, insufficient gas

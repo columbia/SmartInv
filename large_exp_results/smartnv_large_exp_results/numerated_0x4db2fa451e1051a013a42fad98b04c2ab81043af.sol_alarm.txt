@@ -1,0 +1,14 @@
+Contract ExampleContract {
+    address public owner;
+    uint public balance;
+
+    function deposit() external payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+}

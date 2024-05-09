@@ -1,0 +1,34 @@
+<\contract\> 
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => address) public itemSeller;
+    mapping(uint256 => uint256) public itemPrice;
+    mapping(address => uint256) public balance;
+    
+    constructor() public {
+        owner = msg.sender;
+    }
+    
+    function buyItem(uint256 itemId) public payable {
+        require(msg.value == itemPrice[itemId], "Incorrect price");
+        address seller = itemSeller[itemId];
+        seller.transfer(msg.value);
+        balance[seller] += msg.value;
+        itemSeller[itemId] = address(0);
+        itemPrice[itemId] = 0;
+    }
+    
+    function registerItem(uint256 itemId, uint256 price) public {
+        require(msg.sender == owner, "Only owner can register items");
+        itemSeller[itemId] = msg.sender;
+        itemPrice[itemId] = price;
+    }
+    
+    function withdrawBalance() public {
+        uint256 amount = balance[msg.sender];
+        require(amount > 0, "No balance to withdraw");
+        balance[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\>

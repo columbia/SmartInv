@@ -1,0 +1,9 @@
+<\example_1\> 
+Potential vulnerabilities:
+1) Inconsistent state update: There is no check to ensure that the same proposal is not being overwritten when calling the startExecute function multiple times.
+2) Integer overflow: The variable startingBalance is not initialized, and if getStartingBalance returns a very large value, it could result in an integer overflow when assigning it to startingBalanceList[proposal.addr].
+
+<\example_2\> 
+Potential vulnerabilities:
+1) Price manipulation: The liquidate function does not properly calculate the liquidation price in relation to the debt and collateral amounts. This could potentially allow for price manipulation by the user to avoid being liquidated.
+2) Incorrect visibility: The calculatePrice function is public, which may expose sensitive information about the contract's internal state.

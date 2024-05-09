@@ -1,0 +1,18 @@
+The contract being analyzed for potential vulnerabilities is:
+
+```solidity
+contract TokenSwap {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+
+    function swap(uint amount) public {
+        require(amount > 0, "Invalid amount");
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+```
+
+The potential vulnerabilities in the contract are:
+1) insufficient gas 
+2) inconsistent state update

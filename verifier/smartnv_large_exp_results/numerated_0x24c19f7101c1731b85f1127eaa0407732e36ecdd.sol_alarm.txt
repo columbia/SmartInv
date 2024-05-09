@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The `startingBlance` variable in the `startExecute` function is not properly scoped, making it accessible to other functions within the contract. 
+2) ID uniqueness violation: There is no mechanism in place to ensure uniqueness of proposals, which could lead to confusion or incorrect processing.
+3) Inconsistent state update: There is a discrepancy between `startingBlance` and `startingBalanceList[proposal.addr]`, as the former is being updated but the latter is not updated, leading to inconsistency.
+4) Insufficient gas: The `endExecute` function may fail due to running out of gas as it does not have any gas stipend for the transfer operations.

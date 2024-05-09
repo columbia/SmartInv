@@ -1,0 +1,26 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    struct Voter {
+        address id;
+        uint256 tokensOwned;
+        bool hasVoted;
+    }
+    
+    mapping(address => Voter) public voters;
+    mapping(address => bool) public hasVoted;
+
+    function vote(address _voter, uint256 _tokens) public {
+        require(voters[_voter].tokensOwned >= _tokens, "Not enough tokens owned");
+        require(!hasVoted[_voter], "Already voted");
+        
+        voters[_voter].tokensOwned -= _tokens;
+        hasVoted[_voter] = true;
+    }
+
+    function distributeTokens(address[] memory _voters, uint256 _tokensPerVoter) public {
+        for (uint i = 0; i < _voters.length; i++) {
+            voters[_voters[i]].tokensOwned += _tokensPerVoter;
+        }
+    }
+}
+<\contract_to_analyze\>

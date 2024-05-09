@@ -1,0 +1,28 @@
+Contract analyzed:
+
+contract VotingContract {
+    struct Vote {
+        address voter;
+        bool inSupport;
+    }
+    
+    mapping(address => bool) public voted;
+    mapping(uint => Vote) public votes;
+    uint public totalVotes;
+    
+    function vote(bool inSupport) public {
+        require(!voted[msg.sender], "Already voted");
+        votes[totalVotes] = Vote(msg.sender, inSupport);
+        voted[msg.sender] = true;
+        totalVotes++;
+    }
+    
+    function getVoteCount() public view returns (uint) {
+        return totalVotes;
+    }
+}
+
+Potential vulnerabilities:
+- ID uniqueness violation: The totalVotes variable is used as an index to store votes in the votes mapping, but it's not guaranteed to be unique, which can lead to overwriting existing votes.
+- Incorrect visibility/ownership: The voted mapping is public, allowing anyone to see if a specific address has voted, which can lead to privacy concerns.
+- Insufficient gas: The contract does not implement gas mitigation strategies, which can lead to out of gas errors during execution.

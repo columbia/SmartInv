@@ -1,0 +1,7 @@
+The contract contains potential vulnerabilities in the following areas:
+
+1) Inconsistent state update: The `endExecute()` function updates the `lockedFunds` variable without ensuring that this update is done atomically, which could lead to inconsistent state if multiple calls are made concurrently.
+
+2) Cross bridge inconsistency: The `execute()` function transfers tokens from the `proposal.addr` to the contract without validating the token transfer was successful, which could lead to inconsistency in the bridge between different token balances.
+
+3) ID uniqueness violation: The contract does not have a mechanism to ensure that each proposal has a unique identifier, which could lead to issues with identifying and tracking specific proposals accurately.

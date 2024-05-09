@@ -1,0 +1,30 @@
+<\contract\>
+contract Crowdsale {
+     address public owner;
+     mapping(address => uint) public contributions;
+     uint public totalContributions;
+     uint public tokenPrice;
+
+     constructor(uint _tokenPrice) {
+         owner = msg.sender;
+         tokenPrice = _tokenPrice;
+     }
+
+     function contribute() public payable {
+         require(msg.value > 0, "Contribution must be greater than 0");
+         uint tokens = (msg.value / tokenPrice) * 10;
+         contributions[msg.sender] += tokens;
+         totalContributions += tokens;
+     }
+
+     function withdraw() public {
+         require(msg.sender == owner, "Only owner can withdraw");
+         uint balance = address(this).balance;
+         msg.sender.transfer(balance);
+     }
+
+     function getTokenBalance() public view returns(uint) {
+         return contributions[msg.sender];
+     }
+}
+<\contract\>

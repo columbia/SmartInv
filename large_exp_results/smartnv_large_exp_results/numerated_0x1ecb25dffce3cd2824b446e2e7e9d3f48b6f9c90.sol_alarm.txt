@@ -1,0 +1,42 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State { INITIALIZED, PAID, DELIVERED, DISPUTED, RESOLVED }
+    State public state;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+
+        state = State.INITIALIZED;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(state == State.INITIALIZED, "Funds already deposited");
+        state = State.PAID;
+    }
+
+    function deliver() public {
+        require(msg.sender == seller, "Only seller can confirm delivery");
+        require(state == State.PAID, "Funds not yet deposited");
+        state = State.DELIVERED;
+    }
+
+    function dispute() public {
+        require(msg.sender == buyer || msg.sender == seller, "Dispute allowed by buyer or seller only");
+        require(state == State.DELIVERED, "Goods not yet delivered");
+        state = State.DISPUTED;
+    }
+
+    function resolve() public {
+        require(msg.sender == arbiter, "Only arbiter can resolve dispute");
+        require(state == State.DISPUTED, "No dispute ongoing");
+        state = State.RESOLVED;
+    }
+}
+<\contract\>

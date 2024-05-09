@@ -1,0 +1,37 @@
+Contract:
+```solidity
+contract Crowdsale {
+    address public owner;
+    uint public goal;
+    uint public endTime;
+    uint public totalAmountRaised;
+
+    mapping(address => uint) public contributions;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor(uint _goal, uint _endTime) {
+        owner = msg.sender;
+        goal = _goal;
+        endTime = _endTime;
+    }
+
+    function contribute() public payable {
+        require(block.timestamp < endTime, "Crowdsale has ended");
+        contributions[msg.sender] += msg.value;
+        totalAmountRaised += msg.value;
+    }
+
+    function withdrawFunds() public onlyOwner {
+        require(block.timestamp >= endTime, "Cannot withdraw funds yet");
+        require(totalAmountRaised >= goal, "Goal not reached");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+```
+
+Output:
+healthy

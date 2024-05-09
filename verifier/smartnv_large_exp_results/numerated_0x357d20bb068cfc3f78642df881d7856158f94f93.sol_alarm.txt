@@ -1,0 +1,57 @@
+The contract provided below does not contain any vulnerabilities.
+
+contract MultiSigWallet {
+    address[] public owners;
+    uint public numConfirmationsRequired;
+
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+        uint numConfirmations;
+    }
+
+    mapping(uint => Transaction) public transactions;
+    mapping(uint => mapping(address => bool)) public confirmations;
+    uint public nonce;
+
+    constructor(address[] memory _owners, uint _numConfirmationsRequired) {
+        owners = _owners;
+        numConfirmationsRequired = _numConfirmationsRequired;
+    }
+
+    function submitTransaction(address to, uint value, bytes memory data) public {
+        require(to != address(0), "Invalid transaction target");
+        uint txNonce = nonce++;
+        transactions[txNonce] = Transaction({
+            to: to,
+            value: value,
+            data: data,
+            executed: false,
+            numConfirmations: 0
+        });
+    }
+
+    function confirmTransaction(uint txIndex) public {
+        require(txIndex < nonce, "Transaction does not exist");
+        require(confirmations[txIndex][msg.sender] == false, "Transaction already confirmed");
+        confirmations[txIndex][msg.sender] = true;
+        transactions[txIndex].numConfirmations++;
+
+        if (transactions[txIndex].numConfirmations >= numConfirmationsRequired) {
+            transactions[txIndex].executed = true;
+            executeTransaction(txIndex);
+        }
+    }
+
+    function executeTransaction(uint txIndex) public {
+        require(transactions[txIndex].executed == false, "Transaction already executed");
+        require(transactions[txIndex].numConfirmations >= numConfirmationsRequired, "Not enough confirmations");
+
+        (bool success, ) = transactions[txIndex].to.call{value: transactions[txIndex].value}(transactions[txIndex].data);
+        require(success, "Transaction execution failed");
+
+        transactions[txIndex].executed = true;
+    }
+}

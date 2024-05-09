@@ -1,0 +1,11 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The state variable `lockedFunds` is updated in the `endExecute()` function but it is not clear how it is being used or whether it could lead to inconsistent state updates.
+
+2) Atomicity violation: The `execute()` function involves multiple state changes like transferring tokens and updating `proposal.votedAmount`, which may cause atomicity violations if these operations are not performed together in a single transaction.
+
+3) Integer overflow/underflow: Potential risks of integer overflow or underflow exist in the calculations involving `startingBlance` in the `startExecute()` function or within other arithmetic operations in the contract.
+
+4) Insufficient gas: The contract does not include any gas-related checks or optimizations, which might result in out-of-gas errors during execution if the gas limits are exceeded.
+
+5) Incorrect visibility/ownership: The visibility and access control of functions and data variables are not explicitly defined in the contract, which could lead to unauthorized access or manipulation by external actors.

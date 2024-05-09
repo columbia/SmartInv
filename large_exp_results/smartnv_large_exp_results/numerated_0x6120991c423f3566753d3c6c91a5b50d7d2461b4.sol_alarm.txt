@@ -1,0 +1,19 @@
+<\contract\>
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function resetVotes() public {
+        totalVotes = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerability in the contract is: 
+- ID uniqueness violation: There is no uniqueness check on who is allowed to vote, leading to the possibility of a single address being able to vote multiple times.

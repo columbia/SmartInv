@@ -1,0 +1,41 @@
+<\contract\>
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public numConfirmationsRequired;
+
+    function addOwner(address _owner) public {
+        require(!isOwner[_owner], "Owner already exists");
+        owners.push(_owner);
+        isOwner[_owner] = true;
+    }
+
+    function removeOwner(address _owner) public {
+        require(isOwner[_owner], "Owner does not exist");
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == _owner) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                isOwner[_owner] = false;
+                break;
+            }
+        }
+    }
+
+    function changeRequirement(uint _numConfirmationsRequired) public {
+        numConfirmationsRequired = _numConfirmationsRequired;
+    }
+
+    function submitTransaction(address _to, uint _value, bytes memory _data) public {
+        // Submit transaction logic
+    }
+
+    function confirmTransaction(uint _txIndex) public {
+        // Confirm transaction logic
+    }
+
+    function executeTransaction(uint _txIndex) public {
+        // Execute transaction logic
+    }
+}
+<\contract\>

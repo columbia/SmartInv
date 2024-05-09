@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract Escrow {
+    IERC20 public token;
+    address public seller;
+    address public buyer;
+    bool public released;
+    
+    constructor(address _token, address _seller, address _buyer) {
+        token = IERC20(_token);
+        seller = _seller;
+        buyer = _buyer;
+        released = false;
+    }
+    
+    function release() external {
+        require(msg.sender == seller, "Only the seller can release funds");
+        require(!released, "Funds already released");
+        
+        token.transfer(buyer, token.balanceOf(address(this)));
+        released = true;
+    }
+}
+<\contract_to_analyze\>

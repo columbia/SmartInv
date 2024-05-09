@@ -1,0 +1,26 @@
+<\The_contract_you_are_analyzing\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() external payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        require(msg.sender != highestBidder, "You are already the highest bidder");
+        
+        highestBid = msg.value;
+        highestBidder = msg.sender;
+    }
+
+    function withdraw() external {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw funds");
+        
+        uint amount = highestBid;
+        highestBidder = address(0);
+        highestBid = 0;
+        
+        msg.sender.transfer(amount);
+    }
+} 
+
+Output: 
+healthy

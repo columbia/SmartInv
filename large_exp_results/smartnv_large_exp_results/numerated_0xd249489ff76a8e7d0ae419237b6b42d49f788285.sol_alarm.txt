@@ -1,0 +1,19 @@
+<\analyzed_contract\> 
+contract Marketplace {
+         IERC20 public token;
+         mapping(address => uint) public balances;
+         mapping(uint => address) public items;
+
+         function buyItem(uint itemId) public {
+             uint price = items[itemId];
+             require(balances[msg.sender] >= price, "insufficient balance");
+             token.transferFrom(msg.sender, address(this), price);
+             token.transfer(items[itemId], price);
+             balances[msg.sender] -= price;
+         }
+} 
+
+<\analyzed_contract\> 
+Output: 
+- inconsistent state update
+- insufficient gas

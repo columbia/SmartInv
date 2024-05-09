@@ -1,0 +1,25 @@
+<\contract\> 
+contract TokenSale {
+     address public admin;
+     IERC20 public token;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(IERC20 _token, uint _tokenPrice) public {
+         admin = msg.sender;
+         token = _token;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+         token.transfer(msg.sender, _amount);
+         tokensSold += _amount;
+     }
+
+     function updateTokenPrice(uint _newPrice) public {
+         require(msg.sender == admin, "Unauthorized access");
+         tokenPrice = _newPrice;
+     }
+ }
+<\contract\>

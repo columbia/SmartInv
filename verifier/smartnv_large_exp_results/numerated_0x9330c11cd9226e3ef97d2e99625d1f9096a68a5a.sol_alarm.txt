@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract Crowdsale {
+     address public owner;
+     uint public tokenPrice;
+     mapping(address => uint) public balances;
+
+     constructor(uint _tokenPrice) {
+          owner = msg.sender;
+          tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public {
+          require(msg.value == _amount * tokenPrice, "Insufficient funds");
+          balances[msg.sender] += _amount;
+     }
+
+     function withdraw() public {
+          require(msg.sender == owner, "Only owner can withdraw");
+          uint amount = address(this).balance;
+          msg.sender.transfer(amount);
+     }
+}
+
+Output: 
+1) price manipulation
+2) incorrect visibility/ownership

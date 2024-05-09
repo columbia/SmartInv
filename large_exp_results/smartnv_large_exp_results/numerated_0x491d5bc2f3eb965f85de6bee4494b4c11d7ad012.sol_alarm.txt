@@ -1,0 +1,37 @@
+The contract provided for analysis is:
+
+contract Marketplace {
+    struct Product {
+        uint productId;
+        address owner;
+        string name;
+        uint price;
+        uint quantity;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCount;
+
+    function addProduct(string memory _name, uint _price, uint _quantity) public {
+        productCount++;
+        products[productCount] = Product(productCount, msg.sender, _name, _price, _quantity);
+    }
+
+    function purchaseProduct(uint _productId, uint _quantity) public payable {
+        Product memory product = products[_productId];
+        require(product.productId != 0, "Product does not exist");
+        require(product.quantity >= _quantity, "Quantity requested is not available");
+        require(msg.value >= product.price * _quantity, "Insufficient funds sent");
+
+        product.owner.transfer(product.price * _quantity);
+        product.quantity -= _quantity;
+    }
+
+    function withdrawFunds() public {
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Output:
+- atomicity violation
+- ether leakage

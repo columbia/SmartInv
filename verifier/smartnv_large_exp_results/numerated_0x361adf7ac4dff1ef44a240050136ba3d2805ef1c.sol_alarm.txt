@@ -1,0 +1,34 @@
+<\contract_to_analyze\> 
+contract Crowdsale {
+    mapping(address => uint256) public balanceOf;
+    address public owner;
+    uint256 public tokenPrice;
+    uint256 public totalSupply;
+    address public token;
+
+    constructor(uint256 _tokenPrice, uint256 _totalSupply, address _token) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalSupply = _totalSupply;
+        token = _token;
+    }
+
+    function buyTokens(uint256 amount) external payable {
+        require(msg.value == amount * tokenPrice, "Incorrect value sent");
+        require(totalSupply >= amount, "Not enough tokens left");
+
+        balanceOf[msg.sender] += amount;
+        totalSupply -= amount;
+        token.transfer(msg.sender, amount);
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "Only owner can withdraw");
+        payable(msg.sender).transfer(address(this).balance);
+    }
+}
+<\contract_to_analyze\> 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership vulnerability in the withdraw function: The withdraw function allows anyone to call it, leading to unauthorized withdrawal of funds.
+2) Integer overflow/underflow vulnerability in the buyTokens function: There is no check for integer overflow when updating the totalSupply and balanceOf mapping, which can lead to unexpected behavior if the values exceed the maximum limit for uint256.

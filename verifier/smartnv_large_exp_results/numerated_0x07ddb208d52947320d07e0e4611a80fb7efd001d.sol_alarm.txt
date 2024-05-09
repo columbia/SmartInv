@@ -1,0 +1,18 @@
+Contract to analyze:
+contract Marketplace {
+         address public owner;
+         mapping(uint => address) public items;
+      
+         function addItem(uint itemId) public {
+             items[itemId] = msg.sender;
+         }
+        function buyItem(uint itemId) public {
+             require(items[itemId] != address(0), "Item does not exist");
+             address seller = items[itemId];
+             // Transfer funds to seller
+             (bool success, ) = seller.call{value: msg.value}("");
+             require(success, "Transfer failed");
+             // Update item mapping
+             items[itemId] = msg.sender;
+        }
+}

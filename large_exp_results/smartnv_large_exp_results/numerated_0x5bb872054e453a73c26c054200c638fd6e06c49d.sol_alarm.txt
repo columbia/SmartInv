@@ -1,0 +1,23 @@
+The contract to analyze:
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCount;
+
+    function vote(bool inFavor) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        if (inFavor) {
+            voteCount[msg.sender]++;
+        } else {
+            voteCount[msg.sender]--;
+        }
+        hasVoted[msg.sender] = true;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        uint totalVotes = 0;
+        for (uint i = 0; i < address.length; i++) {
+            totalVotes += voteCount[address(i)];
+        }
+        return totalVotes;
+    }
+}

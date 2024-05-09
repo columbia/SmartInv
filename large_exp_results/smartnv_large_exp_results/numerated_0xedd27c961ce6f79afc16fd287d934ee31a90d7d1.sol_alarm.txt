@@ -1,0 +1,23 @@
+contract Marketplace {
+    mapping(uint => address) public productOwners;
+    mapping(uint => uint) public productPrices;
+    mapping(address => uint) public userBalances;
+
+    function buyProduct(uint productId) public {
+        require(productPrices[productId] > 0, "Product is not available");
+        require(userBalances[msg.sender] >= productPrices[productId], "Insufficient balance");
+
+        address owner = productOwners[productId];
+        userBalances[owner] += productPrices[productId];
+        userBalances[msg.sender] -= productPrices[productId];
+
+        productOwners[productId] = msg.sender;
+    }
+
+    function addProduct(uint productId, uint price) public {
+        require(productOwners[productId] == address(0), "Product already exists");
+
+        productOwners[productId] = msg.sender;
+        productPrices[productId] = price;
+    }
+}

@@ -1,0 +1,22 @@
+<\contract\>
+contract Escrow {
+    uint public depositAmount;
+    address public user;
+    
+    function deposit(uint amount) external {
+        require(msg.sender == user, "only user can deposit");
+        depositAmount += amount;
+    }
+    
+    function withdraw() external {
+        require(msg.sender == user, "only user can withdraw");
+        msg.sender.transfer(depositAmount);
+        depositAmount = 0;
+    }
+}
+<\contract\>
+
+The potential vulnerabilities in the contract are:
+1) Incorrect ownership visibility: The user variable is not marked as private, allowing potential manipulation of the user address.
+2) Privilege escalation: There is a privilege escalation vulnerability as any user can call the deposit function if they know the user address and potentially deposit funds on behalf of the user.
+3) Reentrancy: The withdraw function may be susceptible to reentrancy attacks if the user address is manipulated to repeatedly withdraw before updating the depositAmount to 0.

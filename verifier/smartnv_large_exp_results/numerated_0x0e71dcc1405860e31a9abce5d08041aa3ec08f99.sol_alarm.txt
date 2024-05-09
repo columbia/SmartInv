@@ -1,0 +1,32 @@
+<\contract\>
+contract Escrow {
+     address public owner;
+     uint public value;
+     mapping(address => uint) public deposits;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function deposit() public payable {
+         deposits[msg.sender] += msg.value;
+     }
+
+     function withdraw() public {
+         uint amount = deposits[msg.sender];
+         require(amount > 0, "No funds to withdraw");
+         msg.sender.transfer(amount);
+         deposits[msg.sender] = 0;
+     }
+
+     function transferOwnership(address newOwner) public {
+         require(msg.sender == owner, "Only owner can transfer ownership");
+         owner = newOwner;
+     }
+
+     function updateValue(uint newValue) public {
+         require(msg.sender == owner, "Only owner can update value");
+         value = newValue;
+     }
+}
+<\contract\>

@@ -1,0 +1,55 @@
+Contract: 
+contract Lottery {
+    address public owner;
+    uint public prize;
+    mapping(address => uint) public tickets;
+
+    constructor() {
+        owner = msg.sender;
+        prize = 0;
+    }
+
+    function buyTicket() public payable {
+        require(msg.value > 0, "Value must be greater than 0");
+        tickets[msg.sender] += msg.value;
+        prize += msg.value;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        require(prize > 0, "Prize must be greater than 0");
+        
+        address winner = generateWinner();
+        // send prize to winner
+        payable(winner).transfer(prize);
+        prize = 0;
+    }
+
+    function generateWinner() internal view returns (address) {
+        uint totalTickets = 0;
+        address[] memory participants;
+        
+        for (uint i = 0; i < participants.length; i++) {
+            totalTickets += tickets[participants[i]];
+        }
+
+        uint randomNum = uint(keccak256(abi.encodePacked(block.timestamp, totalTickets))) % totalTickets;
+        address winner;
+        uint accumulated = 0;
+        
+        for (uint i = 0; i < participants.length; i++) {
+            accumulated += tickets[participants[i]];
+            if (accumulated >= randomNum) {
+                winner = participants[i];
+                break;
+            }
+        }
+        
+        return winner;
+    }
+}
+Output: 
+- business logic flaw 
+- inconsistent state update 
+- integer overflow/underflow 
+- incorrect visibility/ownership

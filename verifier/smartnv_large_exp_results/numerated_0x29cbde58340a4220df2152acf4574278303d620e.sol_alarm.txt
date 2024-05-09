@@ -1,0 +1,25 @@
+<\contract\> 
+contract TokenExchange {
+         address public tokenA;
+         address public tokenB;
+         uint public ratio;
+         
+         function setRatio(uint _ratio) public {
+             require(msg.sender == owner, "only owner can set ratio");
+             ratio = _ratio;
+         }
+         
+         function trade(uint amountA) public {
+             require(amountA > 0, "invalid amount");
+             uint amountB = amountA * ratio;
+             require(ERC20(tokenA).balanceOf(msg.sender) >= amountA, "insufficient balance of tokenA");
+             require(ERC20(tokenB).balanceOf(address(this)) >= amountB, "insufficient balance of tokenB");
+             ERC20(tokenA).transferFrom(msg.sender, address(this), amountA);
+             ERC20(tokenB).transfer(msg.sender, amountB);
+         }
+}
+<\contract\> 
+
+5) atomicity violation
+8) reentrancy
+14) incorrect visibility/ownership

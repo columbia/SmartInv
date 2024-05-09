@@ -1,0 +1,34 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public paymentAmount;
+    bool public complete;
+
+    constructor(address _payer, address _payee, address _arbiter, uint _paymentAmount) {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+        paymentAmount = _paymentAmount;
+        complete = false;
+    }
+
+    function releasePayment() public {
+        require(msg.sender == arbiter, "Only arbiter can release payment");
+        require(complete == false, "Payment has already been released");
+        payee.transfer(paymentAmount);
+        complete = true;
+    }
+
+    function refundPayment() public {
+        require(msg.sender == arbiter, "Only arbiter can refund payment");
+        require(complete == false, "Payment has already been refunded");
+        payer.transfer(paymentAmount);
+        complete = true;
+    }
+}
+<\contract\> 
+
+Output:
+- incorrect visibility/ownership

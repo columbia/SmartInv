@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract PaymentContract {
+    address public owner;
+    uint public price;
+    mapping(address => uint) public balances;
+
+    constructor(uint _price) {
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function pay() public payable {
+        require(msg.value >= price, "Insufficient payment");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        uint amount = balances[msg.sender];
+        msg.sender.transfer(amount);
+        balances[msg.sender] = 0;
+    }
+}
+<\contract_to_analyze\>

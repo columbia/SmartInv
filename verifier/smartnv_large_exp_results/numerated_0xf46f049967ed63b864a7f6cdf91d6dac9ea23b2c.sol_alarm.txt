@@ -1,0 +1,25 @@
+<\contract\>
+contract Auction {
+     IERC20 public token;
+     address public highestBidder;
+     uint public highestBid;
+
+     function placeBid(uint _amount) public {
+         require(_amount > highestBid, "Bid amount must be higher than current highest bid");
+         require(token.balanceOf(msg.sender) >= _amount, "Not enough tokens to place bid");
+         token.transferFrom(msg.sender, address(this), _amount);
+         if(highestBidder != address(0)){
+             token.transfer(highestBidder, highestBid);
+         }
+         highestBidder = msg.sender;
+         highestBid = _amount;
+     }
+
+     function withdraw() public {
+         require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+         token.transfer(msg.sender, highestBid);
+         highestBidder = address(0);
+         highestBid = 0;
+     }
+}
+<\contract\>

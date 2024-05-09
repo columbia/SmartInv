@@ -1,0 +1,40 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    
+    enum State {AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED}
+    State public state;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        state = State.AWAITING_PAYMENT;
+    }
+    
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == price, "Deposit amount must be equal to price");
+        state = State.AWAITING_DELIVERY;
+    }
+    
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can confirm delivery");
+        state = State.COMPLETE;
+        payable(seller).transfer(price);
+    }
+    
+    function refund() public {
+        require(msg.sender == arbiter, "Only arbiter can initiate refund");
+        state = State.REFUNDED;
+        payable(buyer).transfer(price);
+    }
+} 
+
+Output: 
+1) inconsistent state update
+2) incorrect visibility/ownership

@@ -1,0 +1,22 @@
+The contract to analyze for potential vulnerabilities is:
+
+contract Purchase {
+     address public seller;
+     address public buyer;
+     uint public price;
+
+     function setPrice(uint _price) public {
+         require(msg.sender == seller, "only seller can set the price");
+         price = _price;
+     }
+
+     function buy() public {
+         require(msg.sender == buyer, "only buyer can buy");
+         require(msg.value == price, "incorrect amount sent");
+         seller.transfer(msg.value);
+     }
+}
+
+The potential vulnerabilities in the Purchase contract are:
+1) incorrect visibility/ownership for the setPrice function as it only checks if the caller is the seller without checking for ownership verification.
+2) reentrancy vulnerability in the buy function as it allows the buyer to call another external function after sending the funds which opens up to potential reentrancy attacks.

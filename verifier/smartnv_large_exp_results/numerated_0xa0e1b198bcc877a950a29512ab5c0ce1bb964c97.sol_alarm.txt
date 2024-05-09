@@ -1,0 +1,42 @@
+Contract to analyze:
+contract Vesting {
+    uint public totalTokens;
+    uint public startTime;
+    uint public cliffDuration;
+    uint public vestingDuration;
+    uint public interval;
+    mapping(address => uint) public released;
+    mapping(address => uint) public vestedTokens;
+
+    constructor(uint _totalTokens, uint _startTime, uint _cliffDuration, uint _vestingDuration, uint _interval) {
+        totalTokens = _totalTokens;
+        startTime = _startTime;
+        cliffDuration = _cliffDuration;
+        vestingDuration = _vestingDuration;
+        interval = _interval;
+    }
+
+    function release(address beneficiary) public {
+        require(block.timestamp > startTime, "Vesting has not started yet");
+        require(vestedTokens[beneficiary] > 0, "No tokens to release");
+
+        uint releasable = vestedTokens[beneficiary] * (block.timestamp - startTime) / vestingDuration - released[beneficiary];
+        require(releasable > 0, "No tokens to release");
+
+        released[beneficiary] += releasable;
+        // Transfer releasable tokens to beneficiary
+    }
+
+    function calculateVestedTokens(address beneficiary) public view returns (uint) {
+        uint timeElapsed = block.timestamp - startTime;
+        if (timeElapsed < cliffDuration) {
+            return 0;
+        } else if (timeElapsed >= vestingDuration) {
+            return vestedTokens[beneficiary] - released[beneficiary];
+        } else {
+            return vestedTokens[beneficiary] * timeElapsed / vestingDuration - released[beneficiary];
+        }
+    }
+}
+Output:
+healthy

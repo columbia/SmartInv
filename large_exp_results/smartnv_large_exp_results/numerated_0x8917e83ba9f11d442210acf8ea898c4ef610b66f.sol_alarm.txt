@@ -1,0 +1,31 @@
+The contract provided for analysis:
+contract Lottery {
+     uint256 public totalTickets;
+     address public winner;
+     mapping(address => uint256) public tickets;
+
+     function buyTickets(uint256 numTickets) public payable {
+         require(msg.value >= numTickets * 0.1 ether, "Insufficient payment");
+         totalTickets += numTickets;
+         tickets[msg.sender] += numTickets;
+     }
+
+     function selectWinner() public {
+         uint256 randomNumber = uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets + 1;
+         address selectedWinner;
+         uint256 count = 0;
+         for (uint i = 1; i <= totalTickets; i++) {
+             if (tickets[i] > 0) {
+                 count += tickets[i];
+                 if (count >= randomNumber) {
+                     selectedWinner = addresses[i];
+                     break;
+                 }
+             }
+         }
+         winner = selectedWinner;
+     }
+}
+Output: 
+- Business logic flaw: The function selectWinner doesn't ensure a fair selection of the winner.
+- Incorrect visibility/ownership: The variables addresses[i] and totalTickets are not defined, which may lead to incorrect behavior.

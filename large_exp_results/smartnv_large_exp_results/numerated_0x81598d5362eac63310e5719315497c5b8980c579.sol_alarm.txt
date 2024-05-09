@@ -1,0 +1,20 @@
+contract VotingSystem {
+     uint public totalVotes;
+     mapping(address => bool) public hasVoted;
+
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         totalVotes++;
+         hasVoted[msg.sender] = true;
+     }
+
+     function unvote() public {
+         require(hasVoted[msg.sender], "Has not voted yet");
+         totalVotes--;
+         hasVoted[msg.sender] = false;
+     }
+} 
+
+<\Potential vulnerabilities\> 
+1) ID uniqueness violation
+2) Inconsistent state update

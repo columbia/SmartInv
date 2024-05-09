@@ -1,0 +1,20 @@
+<\contract\> 
+contract TokenSale {
+     address public admin;
+     IERC20 public tokenContract;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(IERC20 _tokenContract, uint _tokenPrice) public {
+         admin = msg.sender;
+         tokenContract = _tokenContract;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _numTokens) public payable {
+         require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+         tokenContract.transfer(msg.sender, _numTokens);
+         tokensSold += _numTokens;
+     }
+}
+<\contract\>

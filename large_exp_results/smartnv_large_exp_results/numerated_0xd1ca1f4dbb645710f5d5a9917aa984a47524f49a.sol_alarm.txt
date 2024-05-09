@@ -1,0 +1,26 @@
+Contract:
+contract TokenSale {
+     IERC20 public token;
+     address public owner;
+     uint public tokenPrice;
+
+     constructor(IERC20 _token, uint _tokenPrice) public {
+          token = _token;
+          owner = msg.sender;
+          tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public payable {
+          require(msg.value == _amount * tokenPrice, "Incorrect amount sent");
+          token.transfer(msg.sender, _amount);
+     }
+
+     function withdrawEther() public {
+          require(msg.sender == owner, "You are not the owner");
+          msg.sender.transfer(address(this).balance);
+     }
+}
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership
+2) Atomicity violation

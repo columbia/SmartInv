@@ -1,0 +1,7 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The function `endExecute` updates the `lockedFunds` without resetting the `proposal` struct, which can lead to inconsistent state updates.
+2) Incorrect visibility/ownership: The `proposal` struct is not defined with proper visibility, which can lead to possible data leaks or unauthorized access.
+3) Insufficient gas: The function `endExecute` may run out of gas if the calculation of `votingToken.balanceOf(address(this))*2` consumes a significant amount of gas.
+4) Atomicity violation: The operations in the `execute` function are not performed atomically, leaving room for potential race conditions and inconsistent results.
+5) Ether leakage: There is a risk of ether leakage in the contract if ether is not handled properly in transactions and calls.

@@ -1,0 +1,39 @@
+Contract to be analyzed:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(voters[msg.sender].weight > 0, "Only registered voters can delegate their vote");
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint256 option) public {
+        require(voters[msg.sender].weight > 0, "Only registered voters can vote");
+        require(!voters[msg.sender].voted, "The voter has already voted");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+    }
+
+    function getVote(address voter) public view returns(uint256) {
+        require(voters[msg.sender].voted, "Voter has not voted yet");
+        return voters[voter].vote;
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

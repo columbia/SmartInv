@@ -1,0 +1,39 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public tokenBalance;
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not the owner");
+        _;
+    }
+
+    constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(_numTokens > 0, "Invalid number of tokens");
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        
+        tokenBalance[msg.sender] += _numTokens;
+        totalTokens -= _numTokens;
+        token.transfer(msg.sender, _numTokens);
+    }
+
+    function withdrawTokens() public onlyOwner {
+        uint amount = tokenBalance[msg.sender];
+        require(amount > 0, "No tokens to withdraw");
+        
+        tokenBalance[msg.sender] = 0;
+        totalTokens += amount;
+        token.transfer(owner, amount);
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,37 @@
+<\analyzed_contract\> 
+
+contract VotingSystem {
+    address public admin;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function adminResetVotes(address _user) public {
+        require(msg.sender == admin, "Only admin can reset votes");
+        require(hasVoted[_user], "User hasn't voted yet");
+        hasVoted[_user] = false;
+        totalVotes--;
+    }
+
+    function updateAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only admin can update admin");
+        admin = newAdmin;
+    }
+}
+
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the provided contract are:
+1) privilege escalation: The function adminResetVotes allows the admin to reset votes for any user without proper restrictions in place, which could lead to privilege escalation.
+2) incorrect visibility/ownership: The state variable admin is public and can be potentially manipulated by external entities, which could lead to ownership control issues. 
+
+Please note that the contract is missing important functionalities such as security checks and access control mechanisms.

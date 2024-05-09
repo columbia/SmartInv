@@ -1,0 +1,23 @@
+<\contract\>
+contract Marketplace {
+    mapping(uint => uint) public productPrices;
+    mapping(address => uint) public balances;
+
+    function buyProduct(uint productId) external {
+        uint price = productPrices[productId];
+        require(balances[msg.sender] >= price, "Insufficient balance");
+        balances[msg.sender] -= price;
+        // Perform product purchase
+    }
+
+    function addProduct(uint productId, uint price) external {
+        require(productPrices[productId] == 0, "Product already exists");
+        productPrices[productId] = price;
+    }
+
+    function updateProductPrice(uint productId, uint newPrice) external {
+        require(productPrices[productId] != 0, "Product does not exist");
+        productPrices[productId] = newPrice;
+    }
+}
+<\contract\>

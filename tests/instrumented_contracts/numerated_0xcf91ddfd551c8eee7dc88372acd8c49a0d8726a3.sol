@@ -1,0 +1,211 @@
+1 pragma solidity ^0.4.18;
+2 
+3 // ----------------------------------------------------------------------------
+4 // (c) by Moritz Neto with BokkyPooBah / Bok Consulting Pty Ltd Au 2017. The MIT Licence.
+5 // ----------------------------------------------------------------------------
+6 
+7 // ----------------------------------------------------------------------------
+8 // Safe maths
+9 // ----------------------------------------------------------------------------
+10 contract SafeMath {
+11     function safeAdd(uint a, uint b) public pure returns (uint c) {
+12         c = a + b;
+13         require(c >= a);
+14     }
+15     function safeSub(uint a, uint b) public pure returns (uint c) {
+16         require(b <= a);
+17         c = a - b;
+18     }
+19     function safeMul(uint a, uint b) public pure returns (uint c) {
+20         c = a * b;
+21         require(a == 0 || c / a == b);
+22     }
+23     function safeDiv(uint a, uint b) public pure returns (uint c) {
+24         require(b > 0);
+25         c = a / b;
+26     }
+27 }
+28 
+29 
+30 // ----------------------------------------------------------------------------
+31 // ERC Token Standard #20 Interface
+32 // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
+33 // ----------------------------------------------------------------------------
+34 contract ERC20Interface {
+35     function totalSupply() public constant returns (uint);
+36     function balanceOf(address tokenOwner) public constant returns (uint balance);
+37     function allowance(address tokenOwner, address spender) public constant returns (uint remaining);
+38     function transfer(address to, uint tokens) public returns (bool success);
+39     function approve(address spender, uint tokens) public returns (bool success);
+40     function transferFrom(address from, address to, uint tokens) public returns (bool success);
+41 
+42     event Transfer(address indexed from, address indexed to, uint tokens);
+43     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+44 }
+45 
+46 
+47 // ----------------------------------------------------------------------------
+48 // Contract function to receive approval and execute function in one call
+49 //
+50 // Borrowed from MiniMeToken
+51 // ----------------------------------------------------------------------------
+52 contract ApproveAndCallFallBack {
+53     function receiveApproval(address from, uint256 tokens, address token, bytes data) public;
+54 }
+55 
+56 
+57 // ----------------------------------------------------------------------------
+58 // Owned contract
+59 // ----------------------------------------------------------------------------
+60 contract Owned {
+61     address public owner;
+62     address public newOwner;
+63 
+64     event OwnershipTransferred(address indexed _from, address indexed _to);
+65 
+66     function Owned() public {
+67         owner = msg.sender;
+68     }
+69 
+70     modifier onlyOwner {
+71         require(msg.sender == owner);
+72         _;
+73     }
+74 
+75     function transferOwnership(address _newOwner) public onlyOwner {
+76         newOwner = _newOwner;
+77     }
+78     function acceptOwnership() public {
+79         require(msg.sender == newOwner);
+80         OwnershipTransferred(owner, newOwner);
+81         owner = newOwner;
+82         newOwner = address(0);
+83     }
+84 }
+85 
+86 
+87 // ----------------------------------------------------------------------------
+88 // ERC20 Token, with the addition of symbol, name and decimals and assisted
+89 // token transfers
+90 // ----------------------------------------------------------------------------
+91 contract Alecrypto is ERC20Interface, Owned, SafeMath {
+92     string public symbol;
+93     string public  name;
+94     uint8 public decimals;
+95     uint public _totalSupply;
+96 
+97     mapping(address => uint) balances;
+98     mapping(address => mapping(address => uint)) allowed;
+99 
+100 
+101     // ------------------------------------------------------------------------
+102     // Constructor
+103     // ------------------------------------------------------------------------
+104     function Alecrypto() public {
+105         symbol = "ALE";
+106         name = "Alecrypto";
+107         decimals = 18;
+108         _totalSupply = 100000000000000000000000000;
+109         balances[0x86F35b8BFcd841e8CC6719cCC1B4eeFeF1B3F252] = _totalSupply;
+110         Transfer(address(0), 0x86F35b8BFcd841e8CC6719cCC1B4eeFeF1B3F252, _totalSupply);
+111     }
+112 
+113     // ------------------------------------------------------------------------
+114     // Total supply
+115     // ------------------------------------------------------------------------
+116     function totalSupply() public constant returns (uint) {
+117         return _totalSupply  - balances[address(0)];
+118     }
+119 
+120 
+121     // ------------------------------------------------------------------------
+122     // Get the token balance for account tokenOwner
+123     // ------------------------------------------------------------------------
+124     function balanceOf(address tokenOwner) public constant returns (uint balance) {
+125         return balances[tokenOwner];
+126     }
+127 
+128 
+129     // ------------------------------------------------------------------------
+130     // Transfer the balance from token owner's account to to account
+131     // - Owner's account must have sufficient balance to transfer
+132     // - 0 value transfers are allowed
+133     // ------------------------------------------------------------------------
+134     function transfer(address to, uint tokens) public returns (bool success) {
+135         balances[msg.sender] = safeSub(balances[msg.sender], tokens);
+136         balances[to] = safeAdd(balances[to], tokens);
+137         Transfer(msg.sender, to, tokens);
+138         return true;
+139     }
+140 
+141 
+142     // ------------------------------------------------------------------------
+143     // Token owner can approve for spender to transferFrom(...) tokens
+144     // from the token owner's account
+145     //
+146     // https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20-token-standard.md
+147     // recommends that there are no checks for the approval double-spend attack
+148     // as this should be implemented in user interfaces 
+149     // ------------------------------------------------------------------------
+150     function approve(address spender, uint tokens) public returns (bool success) {
+151         allowed[msg.sender][spender] = tokens;
+152         Approval(msg.sender, spender, tokens);
+153         return true;
+154     }
+155 
+156 
+157     // ------------------------------------------------------------------------
+158     // Transfer tokens from the from account to the to account
+159     // 
+160     // The calling account must already have sufficient tokens approve(...)-d
+161     // for spending from the from account and
+162     // - From account must have sufficient balance to transfer
+163     // - Spender must have sufficient allowance to transfer
+164     // - 0 value transfers are allowed
+165     // ------------------------------------------------------------------------
+166     function transferFrom(address from, address to, uint tokens) public returns (bool success) {
+167         balances[from] = safeSub(balances[from], tokens);
+168         allowed[from][msg.sender] = safeSub(allowed[from][msg.sender], tokens);
+169         balances[to] = safeAdd(balances[to], tokens);
+170         Transfer(from, to, tokens);
+171         return true;
+172     }
+173 
+174 
+175     // ------------------------------------------------------------------------
+176     // Returns the amount of tokens approved by the owner that can be
+177     // transferred to the spender's account
+178     // ------------------------------------------------------------------------
+179     function allowance(address tokenOwner, address spender) public constant returns (uint remaining) {
+180         return allowed[tokenOwner][spender];
+181     }
+182 
+183 
+184     // ------------------------------------------------------------------------
+185     // Token owner can approve for spender to transferFrom(...) tokens
+186     // from the token owner's account. The spender contract function
+187     // receiveApproval(...) is then executed
+188     // ------------------------------------------------------------------------
+189     function approveAndCall(address spender, uint tokens, bytes data) public returns (bool success) {
+190         allowed[msg.sender][spender] = tokens;
+191         Approval(msg.sender, spender, tokens);
+192         ApproveAndCallFallBack(spender).receiveApproval(msg.sender, tokens, this, data);
+193         return true;
+194     }
+195 
+196 
+197     // ------------------------------------------------------------------------
+198     // Don't accept ETH
+199     // ------------------------------------------------------------------------
+200     function () public payable {
+201         revert();
+202     }
+203 
+204 
+205     // ------------------------------------------------------------------------
+206     // Owner can transfer out any accidentally sent ERC20 tokens
+207     // ------------------------------------------------------------------------
+208     function transferAnyERC20Token(address tokenAddress, uint tokens) public onlyOwner returns (bool success) {
+209         return ERC20Interface(tokenAddress).transfer(owner, tokens);
+210     }
+211 }

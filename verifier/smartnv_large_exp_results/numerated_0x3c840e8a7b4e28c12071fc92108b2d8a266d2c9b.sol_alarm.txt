@@ -1,0 +1,39 @@
+<\contract\> 
+
+contract Insurance {
+    address public owner;
+    uint public totalPayouts;
+
+    struct Policy {
+        address policyHolder;
+        uint premium;
+        uint payoutAmount;
+        bool isPaidOut;
+    }
+
+    mapping(uint => Policy) public policies;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyPolicy(uint premium, uint payoutAmount) public {
+        Policy memory newPolicy = Policy(msg.sender, premium, payoutAmount, false);
+        policies[totalPayouts] = newPolicy;
+        totalPayouts++;
+    }
+
+    function claimInsurance(uint policyNumber) public {
+        require(policies[policyNumber].policyHolder == msg.sender, "You are not the policy holder");
+
+        require(!policies[policyNumber].isPaidOut, "Insurance already claimed");
+
+        policies[policyNumber].isPaidOut = true;
+
+        require(address(this).balance >= policies[policyNumber].payoutAmount, "Contract balance too low");
+        
+        payable(msg.sender).transfer(policies[policyNumber].payoutAmount);
+    }
+}
+
+<\contract\> 

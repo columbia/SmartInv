@@ -1,0 +1,33 @@
+The contract provided for analysis:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public totalAmount;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _totalAmount) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        totalAmount = _totalAmount;
+    }
+
+    function releaseAmountToSeller() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        seller.transfer(totalAmount);
+    }
+
+    function refundAmountToBuyer() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        buyer.transfer(totalAmount);
+    }
+
+    function depositAmount() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == totalAmount, "Incorrect deposit amount");
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

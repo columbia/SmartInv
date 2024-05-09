@@ -1,0 +1,17 @@
+The contract provided for analysis:
+contract ExchangeTokens {
+         IERC20 public WETH;
+         IERC20 public USDC;
+         function  calculatePrice() public payable returns (uint) {
+            return (USDC.balanceOf(address(pair)) /WETH.balanceOf(address(pair)));
+      }
+}
+
+Potential vulnerabilities in the given contract:
+1) Price manipulation: The calculatePrice function depends on the balance of USDC and WETH tokens stored at the address of 'pair'. If external actors can manipulate the balances of these tokens at the 'pair' address, it could result in price manipulation.
+
+2) Cross bridge inconsistency: There is a possibility of cross bridge inconsistency if the 'pair' address is used across different smart contracts or systems and there is a lack of coordination or synchronization between them, leading to inconsistent data handling.
+
+3) Inconsistent state update: If the balances of WETH and USDC tokens change unpredictably or are not updated consistently, it could lead to inaccurate price calculations in the calculatePrice function.
+
+Therefore, the potential vulnerabilities in the given contract are Price manipulation, Cross bridge inconsistency, and Inconsistent state update.

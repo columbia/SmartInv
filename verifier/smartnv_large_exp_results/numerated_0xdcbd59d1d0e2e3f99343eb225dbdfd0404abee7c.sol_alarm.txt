@@ -1,0 +1,30 @@
+Contract to be analyzed:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public numVotes;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        numVotes[msg.sender]++;
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function changeVote() public {
+        require(hasVoted[msg.sender], "Hasn't voted yet");
+        numVotes[msg.sender]--;
+        totalVotes--;
+        hasVoted[msg.sender] = false;
+    }
+}
+
+Potential vulnerabilities:
+1) ID uniqueness violation: The contract doesn't ensure the uniqueness of voter addresses, which could lead to improper vote counting or manipulation.
+2) Inconsistent state update: The contract allows for changing a vote without verifying the original vote, which may result in incorrect vote tally.
+3) Incorrect visibility/ownership: The state variables are public, allowing anyone to access and potentially manipulate the data. This could lead to unauthorized changes in the voting system.
+4) Suicidal contracts: There are no checks to prevent the contract from self-destructing, which could result in the loss of all data stored in the contract.
+5) Insufficient gas: The contract operations might consume more gas than provided, causing transaction failures or contract operations to be incomplete.
+
+Output: ID uniqueness violation, Inconsistent state update, Incorrect visibility/ownership, Suicidal contracts, Insufficient gas.

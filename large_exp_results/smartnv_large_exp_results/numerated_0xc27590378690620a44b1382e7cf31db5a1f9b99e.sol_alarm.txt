@@ -1,0 +1,32 @@
+<\contract_to_be_analyzed\>
+contract PaymentProcessor {
+    mapping(address => uint256) public balances;
+    address public owner;
+    uint256 public totalBalance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transfer(address to, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract_to_be_analyzed\>
+
+The potential vulnerabilities in the contract are:
+- None. This contract does not contain any evident vulnerabilities based on the provided analysis criteria.

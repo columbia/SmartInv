@@ -1,0 +1,42 @@
+<\contract_3\>
+contract Escrow {
+         address public payer;
+         address public recipient;
+         address public arbiter;
+         bool public payerApproval;
+         bool public recipientApproval;
+         bool public arbiterApproval;
+         uint public amount;
+
+         constructor(address _payer, address _recipient, address _arbiter, uint _amount) {
+             payer = _payer;
+             recipient = _recipient;
+             arbiter = _arbiter;
+             amount = _amount;
+         }
+
+         function confirmPayment() public {
+             require(msg.sender == payer, "Only payer can confirm the payment");
+             payerApproval = true;
+             if (recipientApproval == true && arbiterApproval == true) {
+                 recipient.transfer(amount);
+             }
+         }
+
+         function confirmDelivery() public {
+             require(msg.sender == recipient, "Only recipient can confirm the delivery");
+             recipientApproval = true;
+             if (payerApproval == true && arbiterApproval == true) {
+                 payer.transfer(amount);
+             }
+         }
+
+         function setArbiterApproval(bool _arbiterApproval) public {
+             require(msg.sender == arbiter, "Only arbiter can set approval status");
+             arbiterApproval = _arbiterApproval;
+             if (payerApproval == true && recipientApproval == true && arbiterApproval == true) {
+                 recipient.transfer(amount);
+             }
+         }
+}
+<\contract_3\>

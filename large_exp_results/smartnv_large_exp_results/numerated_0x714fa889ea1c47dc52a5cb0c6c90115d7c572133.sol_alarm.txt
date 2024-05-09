@@ -1,0 +1,44 @@
+<\contract_to_be_analyzed\> 
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    
+    address public leader;
+    uint256 public winningProposal;
+    
+    function delegate(address to) public {
+        require(msg.sender != to, "Self-delegation is not allowed");
+        require(!voters[msg.sender].voted, "You have already voted");
+        
+        voters[msg.sender].delegate = to;
+        
+        if (voters[to].voted) {
+            winningProposal += voters[to].weight;
+        }
+    }
+    
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        
+        require(!sender.voted, "You have already voted");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+        
+        winningProposal += sender.weight;
+    }
+    
+    function winningProposal() public view returns (uint256) {
+        return winningProposal;
+    }
+} 
+
+Output:
+1) inconsistent state update
+2) incorrect visibility/ownership

@@ -1,0 +1,15 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `startExecute()` sets the `proposal` state without checking if a proposal is already ongoing, potentially leading to multiple proposals being started at the same time.
+
+2) ID uniqueness violation: The contract does not have any mechanism to ensure uniqueness of proposals' IDs, which could lead to conflicts and unexpected behavior.
+
+3) Incorrect visibility/ownership: The `proposal` struct is declared as internal, which might inadvertently expose sensitive data.
+
+4) Insufficient gas: The function `endExecute()` performs a check which involves calculating the balance of the contract, which could potentially consume a significant amount of gas, leading to insufficient gas for the transaction.
+
+5) Business logic flaw: The condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` in the `endExecute()` function might not be a secure way to determine if the execution should fail, as it indirectly depends on the total supply of the token. 
+
+6) Atomicity violation: The function `execute()` transfers tokens from `proposal.addr` to the contract, which could result in a partial execution of the transaction, leaving the contract in an inconsistent state if something fails after the transfer.
+
+7) Ether leakage: The contract does not handle Ether transactions explicitly, leaving it vulnerable to Ether leakage if the contract receives Ether unintentionally.

@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     address public token;
+     address public admin;
+     mapping(address => uint) public balances;
+     
+     constructor(address _token) {
+         token = _token;
+         admin = msg.sender;
+     }
+     
+     function buyTokens(uint amount) public {
+         require(amount > 0, "Amount cannot be zero");
+         ERC20(token).transferFrom(msg.sender, address(this), amount);
+         balances[msg.sender] += amount; 
+     }
+     
+     function withdrawTokens(uint amount) public {
+         require(amount > 0, "Amount cannot be zero");
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         ERC20(token).transfer(msg.sender, amount);
+         balances[msg.sender] -= amount; 
+     }
+}
+<\contract_to_analyze\>

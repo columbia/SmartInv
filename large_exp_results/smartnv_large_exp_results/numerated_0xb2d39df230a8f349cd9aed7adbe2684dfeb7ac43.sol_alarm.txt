@@ -1,0 +1,26 @@
+<\contract\>
+contract TokenSale {
+    uint public totalSupply;
+    uint public tokenPrice;
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor(uint _totalSupply, uint _tokenPrice) {
+        totalSupply = _totalSupply;
+        tokenPrice = _tokenPrice;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect amount sent");
+
+        balances[msg.sender] += amount;
+        totalSupply -= amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\>

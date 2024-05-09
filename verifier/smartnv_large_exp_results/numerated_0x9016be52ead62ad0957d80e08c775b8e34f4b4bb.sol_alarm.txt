@@ -1,0 +1,33 @@
+The contract for analysis is as follows:
+
+contract Voting {
+    uint256 public totalVotes;
+    mapping(address => uint256) public userVotes;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function vote(uint256 amount) public {
+        totalVotes += amount;
+        userVotes[msg.sender] += amount;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == admin, "Only admin can reset votes");
+        totalVotes = 0;
+        for (uint256 i = 0; i < totalVotes; i++) {
+            address user = getUserByIndex(i);
+            userVotes[user] = 0;
+        }
+    }
+
+    function getUserByIndex(uint256 index) internal view returns (address) {
+        // implementation
+    }
+}
+
+Output: 
+1) Inconsistent state update: The resetVotes function resets user votes based on the totalVotes count, which may not accurately represent the current userVotes mapping.
+2) Incorrect visibility/ownership: The admin variable is public, allowing anyone to view and potentially modify the contract's admin status, which can lead to privilege escalation vulnerabilities.

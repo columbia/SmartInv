@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is incremented in the `execute` function, but there is no validation to ensure that the same proposal can't be voted on multiple times with different amounts. This could lead to inconsistencies in the state of the proposal.
+
+2) ID uniqueness violation: The `proposal` struct does not have a unique identifier for each proposal. This could lead to confusion or conflicts if multiple proposals are created simultaneously or in quick succession.
+
+3) Privilege escalation: The `startExecute` function does not perform any access control checks to restrict who can create a new proposal. This could allow unauthorized users to start a proposal and potentially manipulate the execution process.
+
+4) Business logic flaw: The `endExecute` function calculates the success of the execution based on the balance of the contract being greater than half the total supply of the voting token. This logic may not accurately reflect the successful execution of the proposal and could lead to incorrect outcomes.
+
+5) Atomicity violation: The operations in the `execute` function are not wrapped in a single atomic transaction, which could lead to inconsistencies if one of the operations fails midway through execution.

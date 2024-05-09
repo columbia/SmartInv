@@ -1,0 +1,19 @@
+Contract being analyzed:
+<\contract_to_analyze\>
+contract PaymentGateway {
+         address public owner;
+         mapping(address => uint) public balances;
+         
+         function deposit() public payable {
+             balances[msg.sender] += msg.value;
+         }
+         
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             msg.sender.transfer(amount);
+         }
+}
+Potential vulnerabilities in the contract:
+1) integer overflow/underflow
+2) insufficient gas

@@ -1,0 +1,24 @@
+Contract being analyzed:
+contract Bank {
+     mapping(address => uint) public balances;
+     uint public totalBalance;
+
+     function deposit() public payable {
+          balances[msg.sender] += msg.value;
+          totalBalance += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+          require(amount <= balances[msg.sender], "Insufficient balance");
+          balances[msg.sender] -= amount;
+          totalBalance -= amount;
+          msg.sender.transfer(amount);
+     }
+} 
+
+Potential vulnerabilities in the contract:
+1) integer overflow/underflow: There is a potential vulnerability with integer underflow in the withdraw function if the amount parameter is higher than the balance of the sender, as it directly subtracts the amount from the balance without checking for negative balances.
+2) insufficient gas: The withdrawal function may fail if the gas provided by the user is insufficient to complete the transfer process, which could lead to a denial of service attack.
+3) incorrect visibility/ownership: The balances mapping and totalBalance variable are set to public, which allows anyone to view and potentially manipulate the balances of all users in the contract, posing a privacy concern.
+4) atomicity violation: The deposit and withdraw functions involve multiple state changes which are not atomic, making the contract vulnerable to race conditions and reentrancy attacks.
+5) ether leakage: If there are errors in the contract logic or vulnerabilities in the transfer process, there is a risk of ether leakage, where ether gets trapped in the contract and cannot be retrieved by the users appropriately.

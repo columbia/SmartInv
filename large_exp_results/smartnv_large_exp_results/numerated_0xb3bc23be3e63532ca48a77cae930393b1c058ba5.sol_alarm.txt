@@ -1,0 +1,36 @@
+<\contract\>
+contract VotingSystem {
+    struct Proposal {
+        uint256 startTime;
+        uint256 votedAmount;
+        address proposer;
+    }
+    
+    address public owner;
+    IERC20 public votingToken;
+    mapping(address => uint256) startingBalanceList;
+    Proposal public currentProposal;
+    
+    function startVoting() external {
+        require(currentProposal.startTime == 0, "voting already in progress");
+        currentProposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalanceList[currentProposal.proposer] = getStartingBalance(currentProposal.proposer);
+    }
+    
+    function vote(uint256 amount) external {
+        require(currentProposal.startTime != 0, "no active proposal");
+        require(currentProposal.startTime + 24 > block.timestamp, "voting period ended");
+        
+        votingToken.transferFrom(msg.sender, address(this), amount);
+        currentProposal.votedAmount += amount;
+    }
+    
+    function endVoting() external {
+        require(currentProposal.startTime != 0, "no active proposal");
+        require(currentProposal.startTime + 24 < block.timestamp, "voting period not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "not enough votes for proposal");
+    }
+}
+Output: 
+1) inconsistent state update
+2) atomicity violation

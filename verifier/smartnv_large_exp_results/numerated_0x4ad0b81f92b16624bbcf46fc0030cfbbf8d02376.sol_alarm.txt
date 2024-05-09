@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Privilege escalation: The contract does not implement access control mechanisms to restrict sensitive functions like `endExecute`, `execute`, and `startExecute` to only authorized users. This could lead to unauthorized individuals executing these functions.
+
+2) Incorrect visibility/ownership: The `owner` variable is declared as internal, but it is not used or initialized in the contract. This could lead to unexpected or unintended behavior if ownership is meant to be controlled by this variable.
+
+3) Inconsistent state update: The `proposal` struct is updated in multiple functions (`startExecute`, `execute`, `endExecute`), which could lead to inconsistent state changes if these functions are called out of order or multiple times for the same proposal.
+
+4) Insufficient gas: The `endExecute` function performs a potentially expensive operation of checking if the balance of the contract exceeds twice the total supply of the voting token. If the contract runs out of gas during this operation, it could lead to the execution of this function failing unexpectedly. 
+
+5) Incorrect arithmetic: The calculation in the `liquidate` function uses the getPrice() result in an arithmetic operation that could result in unintended outcomes due to potential rounding errors or unexpected values returned by getPrice(). This could lead to incorrect liquidation decisions.

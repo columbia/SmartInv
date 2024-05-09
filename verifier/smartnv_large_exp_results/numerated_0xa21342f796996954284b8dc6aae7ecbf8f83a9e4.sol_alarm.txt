@@ -1,0 +1,25 @@
+<\contract_to_analyze\> 
+contract Lottery {
+    address public owner;
+    mapping(uint => address) public participants;
+    uint public totalParticipants;
+
+    constructor() public {
+        owner = msg.sender;
+        totalParticipants = 0;
+    }
+
+    function joinLottery() public payable {
+        require(msg.value == 1 ether, "You must send exactly 1 ether to join the lottery");
+        participants[totalParticipants] = msg.sender;
+        totalParticipants++;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "Only the owner can pick the winner");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty, totalParticipants))) % totalParticipants;
+        address winner = participants[winnerIndex];
+        payable(winner).transfer(address(this).balance);
+    }
+}
+<\contract_to_analyze\>

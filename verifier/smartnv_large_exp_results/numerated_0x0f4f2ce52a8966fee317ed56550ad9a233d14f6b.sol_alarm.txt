@@ -1,0 +1,33 @@
+The contract to analyze for potential vulnerabilities:
+
+contract MyContract {
+    address public owner;
+    mapping(uint => bool) usedIDs;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function setID(uint id) public {
+        require(!usedIDs[id], "ID already used");
+        usedIDs[id] = true;
+    }
+
+    function updateOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can update owner");
+        owner = newOwner;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        // Withdraw funds here
+    }
+
+    function calculate(uint x, uint y) public pure returns (uint) {
+        return x * y;
+    }
+}
+
+Output:
+1) ID uniqueness violation
+2) incorrect visibility/ownership

@@ -1,0 +1,31 @@
+<\analyzed_contract\>
+contract Vesting {
+    address public beneficiary;
+    address public owner;
+    uint public unlockTime;
+    uint public totalAmount;
+    uint public unlockedAmount;
+
+    constructor(address _beneficiary, uint _unlockTime, uint _totalAmount) {
+        owner = msg.sender;
+        beneficiary = _beneficiary;
+        unlockTime = _unlockTime;
+        totalAmount = _totalAmount;
+        unlockedAmount = 0;
+    }
+
+    function unlock() public {
+        require(msg.sender == owner, "Only owner can unlock funds");
+        require(block.timestamp >= unlockTime, "Funds cannot be unlocked yet");
+        
+        unlockedAmount = totalAmount;
+        beneficiary.transfer(unlockedAmount);
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the analyzed contract include:
+1) incorrect visibility/ownership: The `unlock` function can only be called by the owner, which may not be intended. This could lead to privilege escalation if other parties need to unlock the funds.
+2) atomicity violation: The update of `unlockedAmount` and transfer of funds to the beneficiary are not done atomically, which may result in inconsistent state updates.
+3) ether leakage: There is a potential for ether leakage if the transfer of funds to the beneficiary fails or reverts, causing the funds to be stuck in the contract.
+4) insufficient gas: The transfer of funds to the beneficiary may fail if there is not enough gas provided, resulting in the funds being inaccessible.

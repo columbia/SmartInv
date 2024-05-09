@@ -1,0 +1,23 @@
+<\contract_3\> 
+contract Crowdsale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(address _token, uint _price) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _price;
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalPrice = tokenPrice * _amount;
+        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), totalPrice);
+        token.transfer(msg.sender, _amount);
+    }
+}
+Potential vulnerabilities: 
+1) integer overflow/underflow: There is a risk of integer underflow if the calculation of totalPrice results in a value larger than the available balance of the buyer's account.
+2) incorrect visibility/ownership: The owner variable should be marked as private to prevent unauthorized access and modification.
+3) inconsistent state update: The transfer function should ideally be the last operation to prevent potential reentrancy attacks.

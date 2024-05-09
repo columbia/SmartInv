@@ -1,0 +1,26 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        address voterAddress;
+        uint256 voteCount;
+    }
+
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+
+    function vote() public {
+        require(voters[msg.sender].voteCount == 0, "Already voted");
+        voters[msg.sender].voteCount = 1;
+        totalVotes++;
+    }
+
+    function revokeVote() public {
+        require(voters[msg.sender].voteCount == 1, "Hasn't voted yet");
+        voters[msg.sender].voteCount = 0;
+        totalVotes--;
+    }
+}
+Output:
+- Incorrect visibility/ownership: The voters mapping is public, exposing all voter information to anyone, which may compromise user privacy.
+- ID uniqueness violation: There is no check for duplicate votes from the same address, potentially allowing a single address to vote multiple times.
+- Inconsistent state update: The totalVotes count is updated directly without considering potential race conditions, leading to potential inconsistencies.

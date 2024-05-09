@@ -1,0 +1,17 @@
+contract TokenSwap {
+    mapping(address => uint256) public balances;
+
+    function swapTokens(address token1, address token2, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        
+        balances[msg.sender] -= amount;
+        // Swap logic here
+        uint256 newAmount = amount * calculateExchangeRate(token1, token2);
+        balances[msg.sender] += newAmount;
+    }
+
+    function calculateExchangeRate(address token1, address token2) public view returns(uint256) {
+        // Simplified exchange rate calculation, actual logic should be more complex
+        return balances[token1] / balances[token2];
+    }
+}

@@ -1,0 +1,35 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+
+    mapping(address => uint) public deposits;
+
+    constructor(address _payee, address _arbiter) {
+        payer = msg.sender;
+        payee = _payee;
+        arbiter = _arbiter;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only the payer can deposit");
+        deposits[msg.sender] += msg.value;
+    }
+
+    function releaseToPayee() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        payee.transfer(deposits[payee]);
+        deposits[payee] = 0;
+    }
+
+    function refundToPayer() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        payer.transfer(deposits[payer]);
+        deposits[payer] = 0;
+    }
+}
+<\contract\> 
+
+Output: 
+Healthy

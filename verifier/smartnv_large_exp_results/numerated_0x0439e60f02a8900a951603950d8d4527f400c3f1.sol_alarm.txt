@@ -1,0 +1,32 @@
+<\contract\>
+contract Vesting {
+    address public beneficiary;
+    uint public releaseTime;
+    uint public amountReleased;
+    uint public totalAmount;
+    bool public released;
+
+    constructor(address _beneficiary, uint _releaseTime, uint _totalAmount) {
+        beneficiary = _beneficiary;
+        releaseTime = _releaseTime;
+        totalAmount = _totalAmount;
+        released = false;
+    }
+
+    function release() external {
+        require(msg.sender == beneficiary, "You are not the beneficiary");
+        require(!released, "Tokens have already been released");
+        require(block.timestamp >= releaseTime, "Tokens cannot be released yet");
+
+        amountReleased = totalAmount;
+        released = true;
+    }
+
+    function updateBeneficiary(address newBeneficiary) external {
+        require(msg.sender == beneficiary, "You are not the beneficiary");
+
+        beneficiary = newBeneficiary;
+    }
+}
+Output: 
+privilege escalation

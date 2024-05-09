@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract MultisigWallet {
+    address public owner;
+    mapping(address => uint256) public balances;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(address payable recipient, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        recipient.transfer(amount);
+        balances[msg.sender] -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only the owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

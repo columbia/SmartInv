@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function startExecute() updates the state variables proposal and startingBalanceList without ensuring that they are updated atomically. This could lead to inconsistent states if one update succeeds and the other fails.
+2) Privilege escalation: The access control in the contract is not clearly defined, which could potentially allow unauthorized users to call sensitive functions like execute() and endExecute().
+3) ID uniqueness violation: The function startExecute() does not check for duplicate proposals, which may result in multiple proposals being created with the same sTime value, leading to confusion or inconsistencies in decision-making.

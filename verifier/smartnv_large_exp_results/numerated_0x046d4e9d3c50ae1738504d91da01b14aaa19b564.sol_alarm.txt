@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Arithmetic flaw in the function calculatePrice() where division might result in an integer underflow if either USDC.balanceOf(address(pair)) or WETH.balanceOf(address(pair)) is lower than the other.
+2) Insufficient gas in the liquidate function, as it involves transferring tokens which might require more gas than the default gas limit.
+3) Incorrect visibility in the debt and collateral mappings, as they are public and can potentially expose sensitive information.
+4) ID uniqueness violation if there is no mechanism in place to ensure unique user addresses in the liquidate function.

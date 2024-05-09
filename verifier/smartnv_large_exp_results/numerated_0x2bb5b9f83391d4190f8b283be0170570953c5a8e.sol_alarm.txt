@@ -1,0 +1,31 @@
+<Contract to analyze>
+contract TokenSale {
+      IERC20 public token;
+      address public owner;
+      uint public tokenPrice;
+      uint public tokenSupply;
+
+      constructor(IERC20 _token, uint _tokenPrice, uint _tokenSupply) {
+            token = _token;
+            owner = msg.sender;
+            tokenPrice = _tokenPrice;
+            tokenSupply = _tokenSupply;
+       }
+
+      function buyTokens(uint amount) public {
+            require(token.balanceOf(owner) >= amount * tokenPrice, "Not enough tokens for sale");
+            token.transfer(msg.sender, amount);
+      }
+
+      function setTokenPrice(uint newPrice) public {
+            require(msg.sender == owner, "Only owner can set token price");
+            tokenPrice = newPrice;
+      }
+
+      function withdrawTokens() public {
+            require(msg.sender == owner, "Only owner can withdraw tokens");
+            token.transfer(owner, token.balanceOf(address(this)));
+      }
+}
+<Output>
+healthy

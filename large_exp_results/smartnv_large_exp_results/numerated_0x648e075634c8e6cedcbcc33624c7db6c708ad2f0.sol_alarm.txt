@@ -1,0 +1,32 @@
+Both contracts provided as examples contain vulnerabilities, but we will only focus on the contract you want us to analyze. 
+Contract to be analyzed:
+
+contract VotingSystem {
+     struct Voter {
+           uint weight; 
+           bool voted;
+           address delegate;
+           uint vote;
+                }
+     mapping(address => Voter) public voters;
+     address public winner;
+     uint public winningVoteCount;
+
+     function vote(uint proposal) public {
+           Voter storage sender = voters[msg.sender];
+           require(!sender.voted, "Already voted.");
+           sender.voted = true;
+           sender.vote = proposal;
+           if (sender.weight > winningVoteCount) {
+                  winningVoteCount = sender.weight;
+                  winner = msg.sender;
+           }
+     }
+}
+
+Potential vulnerabilities:
+1) Incorrect state update: The winner is determined based on the sender's weight, which could lead to incorrect results if the weight calculation is manipulated.
+2) Inconsistent state update: The winningVoteCount and winner are updated before checking if the sender has voted, leading to potential inconsistencies.
+3) Atomicity violation: The state updates for winningVoteCount and winner are not performed atomically, which could lead to race conditions and unexpected behavior.
+4) Lack of visibility/ownership: The voter mapping is public, which exposes voter information to all, potentially compromising privacy.
+5) ID uniqueness violation: The address of the winner is set without any verification or uniqueness check, leading to a possible violation of uniqueness.

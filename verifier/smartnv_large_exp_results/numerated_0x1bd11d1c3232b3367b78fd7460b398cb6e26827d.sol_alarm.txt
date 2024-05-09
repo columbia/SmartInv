@@ -1,0 +1,30 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    mapping(address => uint) public balances;
+
+    constructor(address _token, uint _tokenPrice) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(owner) >= _amount * tokenPrice, "Not enough tokens available for sale");
+        token.transferFrom(owner, msg.sender, _amount * tokenPrice);
+        balances[msg.sender] += _amount;
+    }
+
+    function withdrawTokens() public {
+        uint amount = balances[msg.sender] * tokenPrice;
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens available for withdrawal");
+        token.transfer(msg.sender, amount);
+        balances[msg.sender] = 0;
+    }
+}
+
+Output:
+- healthy

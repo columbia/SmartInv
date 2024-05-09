@@ -1,0 +1,35 @@
+Given the provided contract:
+
+contract InvestmentPool {
+     IERC20 public token;
+     address public owner;
+     uint public totalInvested;
+     mapping(address => uint) public balances;
+
+     constructor(address _token) {
+          token = IERC20(_token);
+          owner = msg.sender;
+     }
+
+     function invest(uint amount) public {
+          require(token.balanceOf(msg.sender) >= amount, "Insufficient token balance");
+          token.transferFrom(msg.sender, address(this), amount);
+          balances[msg.sender] += amount;
+          totalInvested += amount;
+     }
+
+     function withdraw(uint amount) public {
+          require(balances[msg.sender] >= amount, "Insufficient balance to withdraw");
+          balances[msg.sender] -= amount;
+          totalInvested -= amount;
+          token.transfer(msg.sender, amount);
+     }
+}
+
+Based on the contract provided, the potential vulnerabilities that may exist are:
+
+1) Incorrect visibility/ownership: The owner variable is public which allows anyone to view the owner address. It is good practice to make sensitive variables like owner private.
+
+2) Insufficient gas: If the contract accumulates a large number of investors and balances, the gas cost for executing functions like withdraw can become prohibitively expensive for users.
+
+Therefore, the potential vulnerabilities in the contract are incorrect visibility/ownership and insufficient gas.

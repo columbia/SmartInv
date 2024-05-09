@@ -1,0 +1,28 @@
+The contract you are going to analyze is:
+
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public token;
+    address public owner;
+
+    constructor(address _token) {
+        token = _token;
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        balances[msg.sender] += amount;
+        Token(token).transfer(msg.sender, amount);
+    }
+
+    function withdrawTokens() public {
+        uint amount = balances[msg.sender];
+        require(amount > 0, "Insufficient balance");
+        balances[msg.sender] = 0;
+        Token(token).transfer(msg.sender, amount);
+    }
+}
+
+Output: 
+1) correct.

@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership: The `execute` and `endExecute` functions are currently set as external, which may expose them to unwanted external access. Consider making them internal if intended for internal use only.
+- Inconsistent state update: In the `execute` function, the increment of `proposal.votedAmount` may lead to inconsistent state updates if the operation fails after the token transfer but before updating `votedProposal`.
+- Insufficient gas: The `endExecute` function performs a balance check, `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, which could potentially consume too much gas and lead to transaction revert if insufficient gas is provided.
+- ID uniqueness violation: The use of `proposal` struct may not ensure uniqueness of proposals, leading to potential issues with concurrent or conflicting proposals. Consider implementing a unique identifier mechanism for proposals.

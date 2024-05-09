@@ -1,0 +1,16 @@
+<\analyzed_contract\>
+contract TokenSwap {
+    IERC20 public token1;
+    IERC20 public token2;
+    
+    function swapTokens(uint amount1, uint amount2) external {
+        require(amount1 > 0 && amount2 > 0, "Invalid amounts");
+        
+        token1.transferFrom(msg.sender, address(this), amount1);
+        token2.transfer(msg.sender, amount2);
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerability in the TokenSwap contract is:
+- Insufficient gas: There is no gas stipend in the transfer functions, which could lead to out-of-gas exceptions and failed transactions.

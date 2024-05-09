@@ -1,0 +1,31 @@
+The contract to be analyzed for potential vulnerabilities is:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    IERC20 public token;
+    uint public tokenPrice;
+    
+    constructor(address _tokenAddress, uint _price) public {
+        owner = msg.sender;
+        token = IERC20(_tokenAddress);
+        tokenPrice = _price;
+    }
+    
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        balances[msg.sender] += _amount;
+        token.transfer(msg.sender, _amount);
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        owner.transfer(address(this).balance);
+    }
+}
+
+Potential vulnerabilities in the TokenSale contract:
+1) Inconsistent state update: The balances mapping is updated in the buyTokens function without considering potential reentrancy issues.
+2) Incorrect visibility/ownership: The withdraw function does not have a visibility specifier (public, external, internal, private), which can lead to unintended access control issues.
+3) Insufficient gas: The owner.transfer() in the withdraw function may fail if the contract does not have enough gas to transfer funds out.
+4) Integer underflow: If the tokenPrice is set to 0, there could be an integer underflow in the require statement in the buyTokens function.

@@ -1,0 +1,19 @@
+<\contract\> 
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+         mapping(address => uint) public bids;
+
+         function placeBid(uint bidAmount) public {
+             require(bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+             highestBidder.transfer(highestBid); 
+             highestBidder = msg.sender;
+             highestBid = bidAmount;
+             bids[msg.sender] = bidAmount;
+         }
+}
+<\contract\>
+
+The potential vulnerabilities in the given contract are:
+1) reentrancy: The transfer function in the placeBid method can be susceptible to reentrancy attacks.
+2) inconsistent state update: Changing the highestBidder and highestBid variables before transferring the previous highestBid amount can lead to inconsistent state.

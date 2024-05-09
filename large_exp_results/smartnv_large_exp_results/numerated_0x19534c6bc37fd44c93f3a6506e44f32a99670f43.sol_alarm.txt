@@ -1,0 +1,44 @@
+The contract provided for analysis:
+contract PaymentSplitter {
+     using SafeMath for uint256;
+     address[] internal payees;
+     mapping(address => uint256) internal shares;
+     uint256 internal totalShares;
+     mapping(address => uint256) internal released;
+     uint256 internal totalReleased;
+     constructor(address[] memory _payees, uint256[] memory _shares) public {
+         require(_payees.length == _shares.length, "Payees and shares length mismatch");
+         require(_payees.length > 0, "No payees specified");
+         for (uint256 i = 0; i < _payees.length; i++) {
+             addPayee(_payees[i], _shares[i]);
+         }
+     }
+     function addPayee(address _payee, uint256 _shares) internal  {
+         require(_payee != address(0), "Invalid payee");
+         require(_shares > 0, "Shares should be greater than 0");
+         require(shares[_payee] == 0, "Payee already added");
+         payees.push(_payee);
+         shares[_payee] = _shares;
+         totalShares = totalShares.add(_shares);
+         released[_payee] = 0;
+     }
+
+     function release(address payable _payee) internal  {
+         require(shares[_payee] > 0, "Invalid payee");
+         uint256 payment = _calculatePayment(_payee);
+         require(payment > 0, "No payment available for address");
+         released[_payee] = released[_payee].add(payment);
+         totalReleased = totalReleased.add(payment);
+         _payee.transfer(payment);
+     }
+     function _calculatePayment(address _payee) internal view returns (uint256) {
+         uint256 payment = shares[_payee].mul(address(this).balance).div(totalShares).sub(released[_payee]);
+         return payment;
+     }
+} 
+
+The potential vulnerabilities in the provided contract are:
+1) Inconsistent state update: The state variables totalShares and totalReleased are updated in the addPayee and release functions without proper synchronization, which may lead to inconsistent state updates.
+2) Incorrect visibility/ownership: The addPayee and release functions are marked as internal, which means they can only be accessed within the contract. If they are intended to be called from external contracts or users, the visibility should be changed to public.
+3) Insufficient gas: The release function transfers funds to the payee without checking for out-of-gas scenarios, which could lead to failed transfers and loss of funds.
+4) ID uniqueness violation: The addPayee function does not check for duplicate payees, which could result in the same payee being added multiple times with different shares.

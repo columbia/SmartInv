@@ -1,0 +1,35 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+     struct Voter {
+          uint256 vote; 
+          bool voted; 
+          }
+     mapping(address => Voter) public voters;
+     address public owner;
+
+    function vote(uint256 _choice) external {
+              require(!voters[msg.sender].voted,"already voted");
+              voters[msg.sender].vote = _choice; 
+              voters[msg.sender].voted = true; 
+              
+        }
+
+    function tally(uint256 _totalChoices) external {
+              uint256[] memory voteCounts = new uint256[](_totalChoices);
+              for (uint256 i = 0; i < _totalChoices; i++) {
+                  voteCounts[i] = 0;
+              }
+              for (uint256 i = 0; i < _totalChoices; i++) {
+                  voteCounts[voters[msg.sender].vote]++;
+              }
+        }
+
+    function endVoting() external {
+              require(msg.sender == owner, "only owner can end voting");
+              selfdestruct(msg.sender); 
+        }
+}
+
+Output: 
+- privilege escalation: The `endVoting` function allows only the owner to end voting, which could be exploited to escalate privileges.

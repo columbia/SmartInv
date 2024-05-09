@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract Lottery {
+    mapping(address => uint) public tickets;
+    address[] public participants;
+    uint public totalTickets;
+    uint public winningTicket;
+    
+    function buyTicket(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        tickets[msg.sender] += amount;
+        totalTickets += amount;
+    }
+    
+    function drawWinner() public {
+        require(participants.length > 0, "No participants");
+        winningTicket = uint(keccak256(abi.encodePacked(blockhash(block.number-1), totalTickets))) % totalTickets;
+        address winner = participants[winningTicket];
+        // Transfer rewards to winner
+    }
+    
+    function joinLottery() public {
+        require(tickets[msg.sender] > 0, "Must have tickets to join");
+        participants.push(msg.sender);
+    }
+}
+<\contract_to_analyze\>

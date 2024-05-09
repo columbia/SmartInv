@@ -1,0 +1,5 @@
+potential vulnerabilities: 
+1) Inconsistent state update: The function execute() updates the state variable proposal.votedAmount without properly synchronizing or updating other related variables, which could lead to inconsistent state updates.
+2) Incorrect visibility/ownership: The variables votingToken and lockedFunds are declared without specifying their visibility (public, internal, private), which could lead to unintended visibility and potential ownership issues.
+3) Insufficient gas: The endExecute() function might fail due to running out of gas, especially when checking if the balanceOf(address(this)) is greater than half of the totalSupply(). This could result in the function not executing as expected.
+4) Arithmetic flaw: In the liquidate() function of ExchangeTokens contract, there is a potential arithmetic flaw in calculating whether a user's fund can be liquidated, as it multiplies the price by cAmount and 80/100 before comparing it with dAmount. This could lead to incorrect calculations and potential vulnerabilities.

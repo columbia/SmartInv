@@ -1,0 +1,22 @@
+The contract presented for analysis:
+
+contract Auction {
+         address public highestBidder;
+         uint public highestBid;
+         uint public endTime;
+
+         function bid() public payable {
+             require(block.timestamp < endTime, "Auction has ended");
+             require(msg.value > highestBid, "Bid must be higher than current highest bid");
+
+             if (highestBid != 0) {
+                 payable(highestBidder).transfer(highestBid); 
+             }
+
+             highestBidder = msg.sender;
+             highestBid = msg.value;
+         }
+}
+Potential vulnerabilities in the contract:
+- Insufficient gas
+- Incorrect visibility/ownership

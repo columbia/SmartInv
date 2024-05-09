@@ -1,0 +1,25 @@
+<\contract\> 
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public bids;
+
+    function placeBid(uint _amount) public {
+        require(_amount > highestBid, "Bid must be higher than current highest bid");
+        highestBid = _amount;
+        highestBidder = msg.sender;
+        bids[msg.sender] += _amount;
+    }
+
+    function withdrawBid() public {
+        require(msg.sender == highestBidder, "Only highest bidder can withdraw bid");
+        uint amount = bids[msg.sender];
+        bids[msg.sender] = 0;
+        highestBidder = address(0);
+        highestBid = 0;
+    }
+}
+<\contract\> 
+
+Output:
+- There is no vulnerability identified in the contract provided. Therefore, the output should be "healthy".

@@ -1,0 +1,31 @@
+The contract for analysis is as follows: 
+
+contract StakingPool {
+     IERC20 public stakingToken;
+     address public owner;
+     mapping(address => uint256) public stakingBalance;
+
+     function stake(uint256 amount) external {
+         require(amount > 0, "Cannot stake 0 tokens");
+         stakingToken.transferFrom(msg.sender, address(this), amount);
+         stakingBalance[msg.sender] += amount;
+     }
+
+     function unstake(uint256 amount) external {
+         require(amount > 0, "Cannot unstake 0 tokens");
+         require(stakingBalance[msg.sender] >= amount, "Insufficient staked balance");
+         stakingBalance[msg.sender] -= amount;
+         stakingToken.transfer(msg.sender, amount);
+     }
+
+     function withdrawAll() external {
+         uint256 balance = stakingBalance[msg.sender];
+         require(balance > 0, "No staked balance to withdraw");
+         stakingBalance[msg.sender] = 0;
+         stakingToken.transfer(msg.sender, balance);
+     }
+}
+
+The potential vulnerabilities in the StakingPool contract are:
+
+- correct Output: healthy

@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: There are several instances where the state variables like proposal.sTime, proposal.votedAmount, and lockedFunds are updated without proper synchronization, which may lead to inconsistencies in the contract state.
+
+2) Incorrect visibility/ownership: The contract TimelockController claims to implement the interface IERC20, but it does not define all the required functions. This can lead to unexpected behavior when interacting with other contracts that rely on the IERC20 interface.
+
+3) Insufficient gas: The endExecute function performs a potentially gas-intensive operation by checking if votingToken.balanceOf(address(this))*2 is greater than votingToken.totalSupply(). If this condition is evaluated frequently, it might consume a significant amount of gas and pose a risk of running out of gas during execution.
+
+4) Integer overflow/underflow: There is a potential risk of integer overflow in the calculation in the liquidate function of the ExchangeTokens contract when multiplying getPrice() * cAmount * 80.
+
+5) Privilege escalation: The visibility of the variables debt and collateral as public in the ExchangeTokens contract can expose sensitive information, potentially allowing unauthorized access to user data.
+
+6) Inconsistent state update: The calculatePrice function in the ExchangeTokens contract does not update any state variables directly, but the result of this function might be used in other parts of the contract that could lead to inconsistent state updates if not handled carefully.

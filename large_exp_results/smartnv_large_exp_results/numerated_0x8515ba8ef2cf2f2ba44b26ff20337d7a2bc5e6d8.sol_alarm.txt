@@ -1,0 +1,33 @@
+Contract to be analyzed:
+```
+contract Escrow {
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        require(msg.value == price, "Incorrect amount deposited");
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        payable(seller).transfer(price);
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == seller, "Only seller can refund buyer");
+        payable(buyer).transfer(price);
+    }
+}
+```
+
+Potential vulnerabilities in the Escrow contract:
+1) Insufficient gas
+2) Incorrect visibility/ownership

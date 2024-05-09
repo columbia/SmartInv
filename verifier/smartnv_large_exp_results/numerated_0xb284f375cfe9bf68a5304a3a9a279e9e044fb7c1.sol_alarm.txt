@@ -1,0 +1,21 @@
+<\contract\> 
+contract PaymentContract {
+     address public owner;
+     mapping(uint => uint) public payments;
+
+     function makePayment(uint paymentID, uint amount) public {
+          require(msg.sender == owner, "Only owner can make payments");
+          payments[paymentID] += amount;
+     }
+
+     function getPaymentAmount(uint paymentID) public view returns(uint) {
+          return payments[paymentID];
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the PaymentContract are:
+1) privilege escalation - The makePayment function does not restrict access to the owner when making payments. Any address can call this function and make payments. 
+2) incorrect visibility/ownership - The owner variable is public, which exposes it to potential manipulation. 
+
+Therefore, the identified vulnerabilities are privilege escalation and incorrect visibility/ownership in the PaymentContract.

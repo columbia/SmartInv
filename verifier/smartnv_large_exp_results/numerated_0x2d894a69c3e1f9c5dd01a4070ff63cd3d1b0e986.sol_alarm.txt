@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership: The `votingToken` and `lockedFunds` variables are not specified with a visibility modifier, making them publicly accessible which can lead to unauthorized access and manipulation.
+2) Inconsistent state update: The `proposal.votedAmount` is directly updated inside the `execute` function without proper synchronization or locking mechanism, which can lead to data inconsistency and potential manipulation.
+3) Insufficient gas: The `endExecute` function could potentially run out of gas if there are a large number of token holders, as the gas cost for checking the balance could be high, leading to the function not executing properly.

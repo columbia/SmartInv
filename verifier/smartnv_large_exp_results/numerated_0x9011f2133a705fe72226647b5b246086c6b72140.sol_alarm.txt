@@ -1,0 +1,22 @@
+Contract being analyzed:
+
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public tickets;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyTickets(uint amount) public payable {
+        tickets[msg.sender] += amount;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only the owner can draw the winner");
+        // Select a winner based on tickets and award the prize
+    }
+}
+
+Potential vulnerabilities in the Lottery contract:
+1) incorrect visibility/ownership

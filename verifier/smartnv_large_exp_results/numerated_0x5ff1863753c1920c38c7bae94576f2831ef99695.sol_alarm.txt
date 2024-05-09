@@ -1,0 +1,42 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBalance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+The potential vulnerabilities in the contract:
+1) Inconsistent state update: The proposal struct is not initialized properly, leading to potential issues with state updates.
+2) Incorrect visibility/ownership: The ownership of certain functions and variables is not specified, which could lead to control issues.
+3) Business logic flaw: The execution logic may not cover all necessary cases and checks, potentially leading to unexpected behavior.
+4) Insufficient gas: The functions in the contract may not have enough gas allocated to them, which could result in transaction failures.
+5) ID uniqueness violation: The uniqueness of IDs within the contract is not guaranteed, which could lead to conflicts or errors in data handling.

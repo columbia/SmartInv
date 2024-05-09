@@ -1,0 +1,46 @@
+<\contract\> 
+contract Lottery {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public totalBalance;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount > 0, "Withdrawal amount must be greater than 0");
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function endLottery() public {
+        require(msg.sender == owner, "Only the owner can end the lottery");
+        uint winnerIndex = uint(keccak256(abi.encodePacked(block.timestamp))) % totalBalance;
+        address winner;
+        for (uint i = 0; i <= balances.length; i++) {
+            if (winnerIndex < balances[i]) {
+                winner = i;
+                break;
+            } else {
+                winnerIndex -= balances[i];
+            }
+        }
+        balances[winner] = 0;
+        totalBalance = 0;
+        payable(winner).transfer(totalBalance);
+    }
+}
+<\contract\> 
+
+Incorrect Visibility/Ownership
+Integer Overflow/Underflow
+Inconsistent State Update

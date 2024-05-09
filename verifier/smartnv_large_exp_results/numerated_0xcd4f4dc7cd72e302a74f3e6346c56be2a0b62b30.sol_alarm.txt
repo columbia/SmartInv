@@ -1,0 +1,36 @@
+<\contract\> 
+contract Escrow {
+     address public payer;
+     address public payee;
+     address public arbiter;
+     uint public amount;
+     enum State {Created, Locked, Released, Inactive}
+     State public state;
+
+     constructor(address _payer, address _payee, address _arbiter, uint _amount) public {
+          payer = _payer;
+          payee = _payee;
+          arbiter = _arbiter;
+          amount = _amount;
+          state = State.Created;
+     }
+     
+     function lockFunds() public {
+          require(msg.sender == payer, "Only payer can lock funds");
+          state = State.Locked;
+     }
+     
+     function releaseFunds() public {
+          require(msg.sender == arbiter, "Only arbiter can release funds");
+          require(state == State.Locked, "Funds are not locked");
+          payee.transfer(amount);
+          state = State.Released;
+     }
+} 
+
+The potential vulnerabilities in the Escrow contract are:
+1) Incorrect visibility/ownership: The lockFunds function doesn't restrict access to only the payer, allowing anyone to potentially lock the funds.
+2) Inconsistent state update: There might be a scenario where the state is set to Locked but the funds are not actually locked, leading to inconsistencies.
+3) Cross bridge inconsistency: There is a transfer of funds using payee.transfer(amount) without checking the success status of the transfer, which can lead to inconsistencies in the contract state if the transfer fails.
+4) Insufficient gas: The transfer of funds in the releaseFunds function might fail if there's not enough gas provided, leading to a failed fund release.
+5) ID uniqueness violation: There are no checks to ensure unique addresses for payer, payee, and arbiter, which could potentially lead to unauthorized access or confusion in the contract execution.

@@ -1,0 +1,38 @@
+Contract to analyze:
+
+contract MultiSigWallet {
+     address[] public owners;
+     uint public transactionCount;
+     mapping(uint => Transaction) public transactions;
+
+     struct Transaction {
+         address destination;
+         uint value;
+         bytes data;
+         bool executed;
+     }
+
+     function submitTransaction(address destination, uint value, bytes memory data) public {
+         uint transactionId = transactionCount; 
+         transactions[transactionId] = Transaction({
+             destination: destination,
+             value: value,
+             data: data,
+             executed: false
+         });
+         transactionCount++;
+     }
+
+     function executeTransaction(uint transactionId) public {
+         Transaction storage transaction = transactions[transactionId];
+         require(!transaction.executed, "Transaction already executed");
+         (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+         require(success, "Transaction execution failed");
+         transaction.executed = true;
+     }
+}
+
+Output:
+1) potential vulnerabilities: 
+- inconsistent state update
+- reentrancy

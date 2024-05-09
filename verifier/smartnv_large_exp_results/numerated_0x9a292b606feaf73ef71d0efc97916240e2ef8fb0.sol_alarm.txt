@@ -1,0 +1,30 @@
+Contract to analyze:
+contract VotingSystem {
+     address public admin;
+     mapping(address => bool) public hasVoted;
+     uint public totalVotes;
+
+     constructor() {
+         admin = msg.sender;
+     }
+
+     function vote() public {
+         require(hasVoted[msg.sender] == false, "Already voted");
+         hasVoted[msg.sender] = true; 
+         totalVotes++;
+     }
+
+     function resetVotes() public {
+         require(msg.sender == admin, "Only admin can reset votes");
+         totalVotes = 0;
+         for (uint i = 0; i < totalVotes; i++) {
+             hasVoted[msg.sender] = false;
+         }
+     }
+}
+   
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The loop in the resetVotes function is not correctly resetting the hasVoted mapping, as it should iterate over the totalVotes variable, not until the totalVotes variable.
+2) Incorrect visibility/ownership: The admin variable is public, allowing anyone to see who the admin is, which may not be desired.
+3) Business logic flaw: The resetVotes function does not reset the totalVotes variable after resetting the hasVoted mapping, which could lead to an incorrect count of total votes.
+4) ID uniqueness violation: There is no check for ensuring that addresses used for voting are unique, potentially allowing the same address to vote multiple times.

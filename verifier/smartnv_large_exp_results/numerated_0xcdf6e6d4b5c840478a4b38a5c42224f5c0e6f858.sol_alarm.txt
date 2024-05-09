@@ -1,0 +1,32 @@
+<\contract\> 
+contract Crowdsale {
+     address public owner;
+     mapping(address => uint) public contributions;
+     uint public totalContributions;
+     uint public goal;
+     uint public deadline;
+     uint public raisedAmount;
+     
+     constructor(uint _goal, uint _deadline) {
+        owner = msg.sender;
+        goal = _goal;
+        deadline = block.timestamp + _deadline;
+     }
+     
+     function contribute() public payable {
+        require(block.timestamp < deadline, "Crowdsale has ended");
+        contributions[msg.sender] += msg.value;
+        totalContributions += msg.value;
+     }
+     
+     function withdrawFunds() public {
+        require(block.timestamp >= deadline, "Crowdsale has not ended yet");
+        require(raisedAmount >= goal, "Goal not met");
+        owner.transfer(address(this).balance);
+     }
+} 
+
+Output:
+1) The contract contains inconsistent state update vulnerability.
+2) The contract may have atomicity violation.
+3) The contract may have ether leakage vulnerability.

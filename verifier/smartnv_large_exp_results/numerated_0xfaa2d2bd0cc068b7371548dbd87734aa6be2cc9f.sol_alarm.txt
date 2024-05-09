@@ -1,0 +1,45 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    address public admin;
+    mapping(address => Voter) public voters;
+    mapping(address => uint256) public votesReceived;
+    uint256 public totalVotes;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(!voters[msg.sender].voted, "You have already voted.");
+        require(to != msg.sender, "Self-delegation is not allowed.");
+
+        if (voters[to].voted) {
+            votesReceived[voters[to].vote] += voters[msg.sender].weight;
+        } else {
+            voters[to].weight += voters[msg.sender].weight;
+        }
+        voters[msg.sender].voted = true;
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint256 option) public {
+        require(!voters[msg.sender].voted, "You have already voted.");
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = option;
+        votesReceived[option] += voters[msg.sender].weight;
+        totalVotes += voters[msg.sender].weight;
+    }
+
+    function endVoting() public {
+        require(msg.sender == admin, "Only admin can end the voting.");
+        // Logic to determine the winning option based on received votes
+    }
+}
+<\contract_to_analyze\>

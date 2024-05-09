@@ -1,0 +1,11 @@
+The potential vulnerabilities in the contract are:
+
+1) Incorrect visibility/ownership: The variables `WETH`, `USDC`, and `pair` are declared as public, which can expose sensitive information and allow unauthorized access to these variables.
+
+2) Inconsistent state update: The `liquidate` function updates the state variables `debt` and `collateral` without proper validations, which could lead to inconsistent or unintended changes in the contract state.
+
+3) Business logic flaw: The calculation in the `liquidate` function might lead to incorrect liquidation decisions due to potential flaws in the logic of comparing debt and collateral amounts.
+
+4) Insufficient gas: The `calculatePrice` function calculates the price based on the balances of `USDC` and `WETH` in the `pair`, but if there is insufficient gas to complete the calculation, it could lead to incorrect price calculations.
+
+5) Cross bridge inconsistency: The use of `transferFrom` functions in the contract could cause inconsistencies or issues when interacting with external contracts or interfaces, leading to potential vulnerabilities.

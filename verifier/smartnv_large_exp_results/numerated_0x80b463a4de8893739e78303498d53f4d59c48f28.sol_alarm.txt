@@ -1,0 +1,48 @@
+The contract to analyze:
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerPaid;
+    bool public sellerPaid;
+    bool public disputeResolved;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        buyerPaid = false;
+        sellerPaid = false;
+        disputeResolved = false;
+    }
+    
+    function paySeller() public {
+        require(msg.sender == buyer, "Only the buyer can pay the seller");
+        require(address(this).balance >= price, "Insufficient funds in escrow to pay the seller");
+        seller.transfer(price);
+        sellerPaid = true;
+    }
+    
+    function payBuyer() public {
+        require(msg.sender == seller, "Only the seller can pay the buyer");
+        require(buyerPaid == true, "Buyer has not paid yet");
+        buyer.transfer(price);
+    }
+    
+    function resolveDispute(bool verdict) public {
+        require(msg.sender == arbiter, "Only the arbiter can resolve the dispute");
+        disputeResolved = true;
+        if (verdict == true) {
+            seller.transfer(address(this).balance);
+        } else {
+            buyer.transfer(address(this).balance);
+        }
+    }
+}
+
+Potential vulnerabilities in the contract:
+- Incorrect visibility/ownership: The functions paySeller, payBuyer, and resolveDispute may potentially allow unauthorized users to perform actions meant for specific parties (e.g., buyer paying instead of seller, non-arbiter resolving dispute).
+- Insufficient gas: The resolveDispute function could potentially run out of gas during execution if the balance of the contract is very high, leading to an incomplete or failed resolution of the dispute.

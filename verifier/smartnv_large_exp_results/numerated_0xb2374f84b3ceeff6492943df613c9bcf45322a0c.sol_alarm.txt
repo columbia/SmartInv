@@ -1,0 +1,27 @@
+<\contract\> 
+contract FarmingPool {
+    mapping(address => uint) public deposits;
+
+    function deposit(uint amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        deposits[msg.sender] += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount <= deposits[msg.sender], "Not enough balance");
+        deposits[msg.sender] -= amount;
+    }
+
+    function emergencyWithdraw() external {
+        uint amount = deposits[msg.sender];
+        deposits[msg.sender] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the FarmingPool contract:
+- Insufficient gas: The emergencyWithdraw function attempts to transfer the entire balance to the caller. If the contract does not have enough gas to complete the transfer, the operation will fail, leaving the funds stuck in the contract.
+- Incorrect visibility/ownership: The deposits mapping is public, allowing anyone to view the deposits of any address. This lack of privacy could potentially lead to exploitation.
+- Reentrancy: The withdrawal process is not protected against reentrancy attacks where an external contract could exploit the contract's state changes during execution.
+- Atomicity violation: The deposit and withdraw functions do not use mutex or atomic operations, allowing potential race conditions or inconsistent state updates.

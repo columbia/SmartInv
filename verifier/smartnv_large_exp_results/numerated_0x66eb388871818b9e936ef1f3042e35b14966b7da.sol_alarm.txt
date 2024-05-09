@@ -1,0 +1,27 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    IERC20 public tokenContract;
+
+    constructor(IERC20 _tokenContract) public {
+        owner = msg.sender;
+        tokenContract = _tokenContract;
+    }
+
+    function buyTokens(uint amount) public {
+        balances[msg.sender] += amount;
+        tokenContract.transfer(msg.sender, amount);
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "only owner can withdraw");
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        tokenContract.transfer(msg.sender, amount);
+    }
+}
+
+Output: 
+- incorrect visibility/ownership

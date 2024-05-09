@@ -1,0 +1,7 @@
+The contract contains potential vulnerabilities: 
+
+1) Inconsistent state update: The function `endExecute()` updates `lockedFunds` based on the balance of `votingToken` held by the contract. However, this calculation does not consider any potential changes in the token balance that may have occurred between different require statements or function calls, leading to an inconsistent state update if the balance changes unexpectedly.
+
+2) Incorrect visibility/ownership: The contract does not specify the visibility of the variable `lockedFunds`, which could potentially lead to unintended access or manipulation of this variable by external contracts.
+
+3) Business logic flaw: The function `endExecute()` includes a check to determine if the balance of `votingToken` held by the contract is greater than half of the total token supply. However, this logic may not accurately reflect the intended conditions for successful execution, allowing for potential business logic flaws in the contract.

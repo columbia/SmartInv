@@ -1,0 +1,19 @@
+<\contract\>
+contract StakingPool {
+    mapping(address => uint256) public stakingBalance;
+    mapping(address => bool) public isStaking;
+
+    function deposit(uint256 _amount) public {
+        stakingBalance[msg.sender] += _amount;
+        isStaking[msg.sender] = true;
+    }
+
+    function withdraw(uint256 _amount) public {
+        require(stakingBalance[msg.sender] >= _amount, "Insufficient staked amount");
+        stakingBalance[msg.sender] -= _amount;
+        if (stakingBalance[msg.sender] == 0) {
+            isStaking[msg.sender] = false;
+        }
+    }
+}
+<\contract\>

@@ -1,0 +1,48 @@
+<\contract\> 
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    uint public required;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+   
+    struct Transaction {
+        address destination;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+    
+    constructor(address[] memory _owners, uint _required) {
+        owners = _owners;
+        required = _required;
+        for (uint i = 0; i < _owners.length; i++) {
+            isOwner[_owners[i]] = true;
+        }
+    }
+    
+    function submitTransaction(address destination, uint value, bytes memory data) public {
+        require(isOwner[msg.sender], "Not an owner");
+        transactions[transactionCount] = Transaction(destination, value, data, false);
+        transactionCount++;
+    }
+    
+    function executeTransaction(uint transactionId) public {
+        Transaction storage transaction = transactions[transactionId];
+        require(transaction.executed == false, "Transaction already executed");
+        transaction.executed = true;
+        (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction execution failed");
+    }
+    
+    function revokeTransaction(uint transactionId) public {
+        Transaction storage transaction = transactions[transactionId];
+        require(isOwner[msg.sender], "Not an owner");
+        require(transaction.executed == false, "Transaction already executed");
+        delete transactions[transactionId];
+    }
+} 
+
+Output:
+- insufficient gas
+- incorrect visibility/ownership

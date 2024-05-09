@@ -1,0 +1,35 @@
+Contract being analyzed:
+
+contract PaymentSplitter {
+     address[] public payees;
+     uint256[] public shares;
+     uint256 public totalShares;
+     mapping(address => uint) public released;
+     address public owner;
+
+     function release(address payable _payee) public {
+         require(msg.sender == owner, "only the owner can release funds");
+         require(released[_payee] < shares[_payee], "all funds already released");
+         uint256 payment = (shares[_payee] * address(this).balance) / totalShares;
+         released[_payee] = released[_payee] + payment;
+         _payee.transfer(payment);
+     }
+
+     function setPayees(address[] memory _payees, uint256[] memory _shares) public {
+         require(msg.sender == owner, "only the owner can set payees");
+         require(_payees.length == _shares.length, "payees and shares length mismatch");
+         
+         for(uint i = 0; i < _payees.length; i++) {
+             payees.push(_payees[i]);
+             shares.push(_shares[i]);
+             totalShares += _shares[i];
+         }
+     }
+
+     function totalBalance() public view returns(uint256) {
+         return address(this).balance;
+     }
+}
+
+Output:
+healthy

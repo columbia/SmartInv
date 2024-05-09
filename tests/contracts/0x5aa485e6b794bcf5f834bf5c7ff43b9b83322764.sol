@@ -1,0 +1,190 @@
+/**
+ *Submitted for verification at Etherscan.io on 2020-06-01
+*/
+
+/**
+ *Submitted for verification at Etherscan.io on 2019-12-31
+*/
+
+/**
+ *Submitted for verification at Etherscan.io on 2018-08-01 - Adopted from 0x1fa301a740b039e08f88389ef561c4126f652ed0
+*/
+
+pragma solidity 0.5.12;
+
+/**
+ * @title SafeMath
+ * @dev Math operations with safety checks that throw on error
+ */
+library SafeMath {
+  function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+    if (a == 0) {
+      return 0;
+    }
+    uint256 c = a * b;
+    assert(c / a == b);
+    return c;
+  }
+
+  function div(uint256 a, uint256 b) internal pure returns (uint256) {
+    // assert(b > 0); // Solidity automatically throws when dividing by 0
+    uint256 c = a / b;
+    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+    return c;
+  }
+
+  function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+    assert(b <= a);
+    return a - b;
+  }
+
+  function add(uint256 a, uint256 b) internal pure returns (uint256) {
+    uint256 c = a + b;
+    assert(c >= a);
+    return c;
+  }
+}
+
+contract  ERC20 {
+  function totalSupply()public view returns (uint total_Supply);
+  function balanceOf(address who)public view returns (uint256);
+  function allowance(address owner, address spender)public view returns (uint);
+  function transferFrom(address from, address to, uint value)public returns (bool ok);
+  function approve(address spender, uint value)public returns (bool ok);
+  function transfer(address to, uint value)public returns (bool ok);
+  event Transfer(address indexed from, address indexed to, uint value);
+  event Approval(address indexed owner, address indexed spender, uint value);
+}
+
+
+contract Mandi is ERC20
+{ using SafeMath for uint256;
+    // Name of the token
+    string private constant _name = "Mandi";
+
+    // Symbol of token
+    string private constant _symbol = "Mandi";
+    uint8 private constant _decimals = 8;
+    uint public Totalsupply = 10000000000 * 10 ** 8 ;
+    address public owner;  // Owner of this contract
+    uint256 no_of_tokens;
+    address public admin_account;
+    mapping(address => uint) balances;
+    mapping(address => mapping(address => uint)) allowed;
+
+    event ChangeOwnerShip(address indexed newOwner);
+    event ChangeAdmin(address indexed administrative_Acccount);
+
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only Owner is allowed");
+        _;
+    }
+
+     modifier onlyadminAccount {
+        require(msg.sender == admin_account, "Only Admin is allowed");
+        _;
+    }
+
+
+    constructor() public
+    {
+        owner = msg.sender;
+        balances[owner] = Totalsupply;  
+        emit Transfer(address(0), owner, balances[owner]);
+
+    }
+
+       function name() public pure returns (string memory) {
+        return _name;
+    }
+
+    function symbol() public pure returns (string memory) {
+        return _symbol;
+    }
+
+    function decimals() public pure returns (uint8) {
+        return _decimals;
+    }
+
+
+
+  // Adding new Admin , can be done only by Owner of the contract
+     function set_centralAccount(address administrative_Acccount) external onlyOwner
+     {
+        require( administrative_Acccount != address(0), "Address can not be 0x0");
+	    uint256 _previousAdminBalance = balances[admin_account];
+	    balances[administrative_Acccount] = (balances[administrative_Acccount]).add(balances[admin_account]);
+	    balances[admin_account] = 0;
+	    admin_account = administrative_Acccount;
+	    emit ChangeAdmin(administrative_Acccount);
+	    emit Transfer(msg.sender, administrative_Acccount, _previousAdminBalance);
+     }
+
+    // what is the total supply of the ech tokens
+     function totalSupply() public view returns (uint256 total_Supply) {
+         total_Supply = Totalsupply;
+     }
+
+      // what is the total supply of the Mandi token
+     function currentSupply() public view returns (uint256 current_Supply) {
+         current_Supply = Totalsupply.sub(balances[owner]);
+     }
+
+    // What is the balance of a particular account?
+     function balanceOf(address _owner)public view returns (uint256 balance) {
+         return balances[_owner];
+     }
+
+    // Send _value amount of tokens from address _from to address _to
+     // The transferFrom method is used for a withdraw workflow, allowing contracts to send
+     // tokens on your behalf, for example to "deposit" to a contract address and/or to charge
+     // fees in sub-currencies; the command should fail unless the _from account has
+     // deliberately authorized the sender of the message via some mechanism; we propose
+     // these standardized APIs for approval:
+     function transferFrom( address _from, address _to, uint256 _amount )public returns (bool success) {
+     require( _to != address(0), "Receiver can not be 0x0");
+     require(balances[_from] >= _amount && allowed[_from][msg.sender] >= _amount && _amount >= 0);
+     balances[_from] = (balances[_from]).sub(_amount);
+     allowed[_from][msg.sender] = (allowed[_from][msg.sender]).sub(_amount);
+     balances[_to] = (balances[_to]).add(_amount);
+     emit Transfer(_from, _to, _amount);
+     return true;
+         }
+
+   // Allow _spender to withdraw from your account, multiple times, up to the _value amount.
+     // If this function is called again it overwrites the current allowance with _value.
+     function approve(address _spender, uint256 _amount)public returns (bool success) {
+         require( _spender != address(0), "Address can not be 0x0");
+         allowed[msg.sender][_spender] = _amount;
+         emit Approval(msg.sender, _spender, _amount);
+         return true;
+     }
+
+     function allowance(address _owner, address _spender)public view returns (uint256 remaining) {
+         require( _owner != address(0) && _spender !=address(0));
+         return allowed[_owner][_spender];
+   }
+
+     // Transfer the balance from owner's account to another account
+     function transfer(address _to, uint256 _amount)public returns (bool success) {
+        require( _to != address(0), "Address can not be 0x0");
+        require(balances[msg.sender] >= _amount && _amount >= 0);
+        balances[msg.sender] = (balances[msg.sender]).sub(_amount);
+        balances[_to] = (balances[_to]).add(_amount);
+        emit Transfer(msg.sender, _to, _amount);
+             return true;
+         }
+
+    //In case the ownership needs to be transferred
+	function transferOwnership(address newOwner) external onlyOwner
+	{
+	    require( newOwner != address(0), "Address can not be 0x0");
+	    uint256 _previousOwnerBalance = balances[owner];
+	    balances[newOwner] = (balances[newOwner]).add(balances[owner]);
+	    balances[owner] = 0;
+	    owner = newOwner;
+	    emit ChangeOwnerShip(newOwner);
+	    emit Transfer(msg.sender, newOwner, _previousOwnerBalance);
+	}
+}

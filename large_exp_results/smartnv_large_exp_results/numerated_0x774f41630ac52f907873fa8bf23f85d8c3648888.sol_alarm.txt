@@ -1,0 +1,32 @@
+<\contract_to_analyze\> 
+contract Insurance {
+    struct Policy {
+        uint policyID;
+        address insured;
+        uint premium;
+        uint coverageAmount;
+        bool isClaimed;
+    }
+    mapping(uint => Policy) public policies;
+    uint public policyCount;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+        policyCount = 0;
+    }
+    
+    function createPolicy(address _insured, uint _premium, uint _coverageAmount) public {
+        require(msg.sender == owner, "Only owner can create policy");
+        policyCount++;
+        policies[policyCount] = Policy(policyCount, _insured, _premium, _coverageAmount, false);
+    }
+    
+    function claimPolicy(uint _policyID) public {
+        require(policies[_policyID].insured == msg.sender, "Only the insured can claim the policy");
+        require(policies[_policyID].isClaimed == false, "Policy has already been claimed");
+        policies[_policyID].isClaimed = true;
+        // Process claim...
+    }
+}
+<\contract_to_analyze\>

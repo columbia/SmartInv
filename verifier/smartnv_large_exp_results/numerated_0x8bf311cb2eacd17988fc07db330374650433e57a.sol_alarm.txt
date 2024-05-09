@@ -1,0 +1,23 @@
+<\Contract\> 
+contract TokenExchange {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    uint public exchangeRate;
+
+    function setExchangeRate(uint _rate) public {
+        require(msg.sender == owner, "Only owner can set the exchange rate");
+        exchangeRate = _rate;
+    }
+
+    function exchangeToken(uint amountA) public {
+        require(tokenA.balanceOf(msg.sender) >= amountA, "Not enough balance to exchange");
+        uint amountB = amountA * exchangeRate;
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transfer(msg.sender, amountB);
+    }
+}
+<\Contract\> 
+
+The potential vulnerabilities in the provided contract could be:
+- incorrect visibility/ownership: The owner variable is used in the setExchangeRate function but it is not defined in the contract, which can lead to ownership vulnerabilities.
+- arithmetic flaw: In the exchangeToken function, the calculation for amountB (amountA * exchangeRate) can potentially lead to arithmetic flaws such as integer overflow or underflow if not handled properly.

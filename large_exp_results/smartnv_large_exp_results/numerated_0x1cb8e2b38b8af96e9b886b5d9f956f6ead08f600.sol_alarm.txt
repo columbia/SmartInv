@@ -1,0 +1,30 @@
+<\contract\> 
+contract PaymentChannel {
+    address public sender;
+    address public receiver;
+    uint public amount;
+
+    constructor(address _receiver) {
+        sender = msg.sender;
+        receiver = _receiver;
+        amount = 0;
+    }
+
+    function openChannel(uint _amount) public {
+        require(msg.sender == sender, "Only sender can open channel");
+        amount = _amount;
+    }
+
+    function closeChannel() public {
+        require(msg.sender == sender || msg.sender == receiver, "Only sender or receiver can close channel");
+        if (msg.sender == receiver) {
+            receiver.transfer(amount);
+            selfdestruct(sender);
+        }
+    }
+}
+<\contract\> 
+
+1) privilege escalation
+2) inconsistent state update
+3) reentrancy

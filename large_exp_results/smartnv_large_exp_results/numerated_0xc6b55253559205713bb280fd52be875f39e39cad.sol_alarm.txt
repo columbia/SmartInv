@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Integer overflow/underflow: In function liquidate, there is a calculation where an integer overflow or underflow could occur if the values of getPrice(), cAmount, or dAmount are not properly validated.
+
+2) Inconsistent state update: In function liquidate, the debt and collateral mappings are being updated based on the user's address without proper validation, which could lead to an inconsistent state if the user address is not valid.
+
+3) Incorrect visibility/ownership: The visibility of the mappings debt and collateral is set to public, which could expose sensitive information to unauthorized parties.
+
+4) Insufficient gas: Depending on the amount of gas provided, the execution of functions in this contract could fail due to insufficient gas, potentially leaving the contract in an inconsistent state.
+
+5) Cross bridge inconsistency: The contract is interacting with external contracts (USDC and WETH) without proper validation, which could lead to inconsistencies or vulnerabilities if the external contracts behave unexpectedly.

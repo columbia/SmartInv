@@ -1,0 +1,26 @@
+The contract to be analyzed for potential vulnerabilities:
+
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if (highestBid != 0) {
+            payable(highestBidder).transfer(highestBid);
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == highestBidder, "Only the highest bidder can withdraw");
+        uint amount = highestBid;
+        highestBid = 0;
+        payable(msg.sender).transfer(amount);
+    }
+}
+
+Potential vulnerabilities in the contract Auction:
+1) Insufficient gas
+2) Incorrect visibility/ownership

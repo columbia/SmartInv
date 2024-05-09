@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: 
+- The function startExecute() updates the state variables proposal and startingBalanceList without ensuring atomicity, which could lead to inconsistent state updates.
+
+2) Cross bridge inconsistency:
+- The function execute() transfers tokens from the proposal.addr to the contract without proper validation, which could lead to cross-bridge inconsistencies if the transfer fails midway.
+
+3) ID uniqueness violation:
+- The Proposal struct does not include a unique identifier for each proposal, which could result in ID uniqueness violations and potential conflicts. 
+
+4) Business logic flaw:
+- The endExecute() function checks for an execution failure based on the balance of the contract, which may not accurately reflect the success or failure of the execution. This could lead to a business logic flaw.

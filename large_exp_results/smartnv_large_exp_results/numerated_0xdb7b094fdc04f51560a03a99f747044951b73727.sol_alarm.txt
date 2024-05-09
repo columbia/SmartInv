@@ -1,0 +1,27 @@
+<\analyzed_contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint => uint) public payments;
+    uint public totalPayments;
+
+    constructor() {
+        owner = msg.sender;
+        totalPayments = 0;
+    }
+
+    function makePayment(uint _id, uint _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_id] = _amount;
+        totalPayments += _amount;
+    }
+
+    function getPayment(uint _id) public view returns (uint) {
+        return payments[_id];
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\analyzed_contract\>

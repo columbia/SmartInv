@@ -1,0 +1,60 @@
+The contract provided for analysis:
+
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproved;
+     bool public sellerApproved;
+     bool public arbiterApproved;
+     uint public funds;
+     
+     modifier onlyBuyer() {
+         require(msg.sender == buyer, "Only buyer can call this function");
+         _;
+     }
+     
+     modifier onlySeller() {
+         require(msg.sender == seller, "Only seller can call this function");
+         _;
+     }
+     
+     modifier onlyArbiter() {
+         require(msg.sender == arbiter, "Only arbiter can call this function");
+         _;
+     }
+     
+     constructor(address _buyer, address _seller, address _arbiter) {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+     }
+     
+     function depositFunds() public payable onlyBuyer {
+         funds += msg.value;
+     }
+     
+     function approveTransaction() public {
+         if (msg.sender == buyer) {
+             buyerApproved = true;
+         } else if (msg.sender == seller) {
+             sellerApproved = true;
+         } else if (msg.sender == arbiter) {
+             arbiterApproved = true;
+         }
+     }
+     
+     function releaseFunds() public onlyBuyer {
+         require(buyerApproved && sellerApproved, "Transaction not approved by seller");
+         seller.transfer(funds);
+     }
+     
+     function refundFunds() public onlyBuyer {
+         require(!buyerApproved || !sellerApproved, "Transaction already approved by both parties");
+         buyer.transfer(funds);
+     }
+}
+The potential vulnerabilities in the contract are:
+
+1) inconsistent state update
+2) incorrect visibility/ownership

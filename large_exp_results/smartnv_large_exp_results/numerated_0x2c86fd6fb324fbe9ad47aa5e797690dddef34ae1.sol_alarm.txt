@@ -1,0 +1,33 @@
+<\contract\> 
+contract Crowdsale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public tokenPrice;
+    IERC20 public token;
+
+    constructor(uint _tokenPrice, address _tokenAddress) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        token = IERC20(_tokenAddress);
+    }
+
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        require(token.balanceOf(address(this)) >= _amount, "Insufficient token balance");
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += totalCost;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        uint balance = balances[msg.sender];
+        balances[msg.sender] = 0;
+        msg.sender.transfer(balance);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) price manipulation
+2) privilege escalation
+3) inconsistent state update

@@ -1,0 +1,34 @@
+<\contract_to_be_analyzed\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public refundAmount;
+    bool public refundApprovedByArbiter;
+    bool public refundPaid;
+
+    constructor(address _seller, address _arbiter, uint _refundAmount) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        refundAmount = _refundAmount;
+        refundApprovedByArbiter = false;
+        refundPaid = false;
+    }
+
+    function approveRefundByArbiter() public {
+        require(msg.sender == arbiter, "only arbiter can approve refund");
+        refundApprovedByArbiter = true;
+    }
+
+    function withdrawRefund() public {
+        require(msg.sender == buyer, "only buyer can withdraw refund");
+        require(refundApprovedByArbiter, "refund not approved by arbiter");
+        require(!refundPaid, "refund already paid");
+        // Send refund amount to the buyer
+        (bool success, ) = msg.sender.call{value: refundAmount}("");
+        require(success, "transfer failed");
+        refundPaid = true;
+    }
+}
+<\contract_to_be_analyzed\>

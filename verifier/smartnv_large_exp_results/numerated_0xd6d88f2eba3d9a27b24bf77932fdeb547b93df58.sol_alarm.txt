@@ -1,0 +1,30 @@
+Contract:
+contract TokenSale {
+    address public owner;
+    address public token;
+    
+    mapping(address => uint) public balances;
+    
+    constructor(address _token) {
+        owner = msg.sender;
+        token = _token;
+    }
+    
+    function buyTokens(uint _amount) external {
+        require(_amount > 0, "Amount must be greater than 0");
+        
+        uint totalAmount = _amount * getPrice();
+        
+        balances[msg.sender] += _amount;
+        
+        require(token.transferFrom(owner, msg.sender, totalAmount), "Transfer failed");
+    }
+    
+    function getPrice() internal view returns (uint) {
+        return 100; // Placeholder price
+    }
+} 
+
+Output:
+1) price manipulation
+2) incorrect visibility/ownership

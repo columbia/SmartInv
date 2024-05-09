@@ -1,0 +1,27 @@
+<\contract\>
+contract InsurancePolicy {
+       struct Policy {
+             address holder;
+             uint premium;
+             uint payout;
+        }
+      address public owner;
+      mapping(address => Policy) public policies;
+
+     function purchasePolicy(uint _premium, uint _payout) public {
+           Policy memory newPolicy = Policy(msg.sender, _premium, _payout);
+           policies[msg.sender] = newPolicy;
+     }
+
+     function claimPolicy(address policyHolder) public {
+           require(msg.sender == owner, "Only owner can claim policy");
+           require(policies[policyHolder].holder == policyHolder, "Policy holder does not exist");
+           uint amount = policies[policyHolder].payout;
+           msg.sender.transfer(amount);
+     }
+
+     function cancelPolicy() public {
+           delete policies[msg.sender];
+     }
+}
+<\contract\>

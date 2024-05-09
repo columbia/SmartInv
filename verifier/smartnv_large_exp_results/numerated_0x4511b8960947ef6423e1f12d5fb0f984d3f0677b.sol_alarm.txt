@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     address public admin;
+     IERC20 public token;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(IERC20 _token, uint _tokenPrice) {
+         admin = msg.sender;
+         token = _token;
+         tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _numTokens) public payable {
+         require(msg.value == _numTokens * tokenPrice, "Incorrect amount sent"); 
+         token.transfer(msg.sender, _numTokens); 
+         tokensSold += _numTokens;
+     }
+
+     function withdraw() public {
+         require(msg.sender == admin, "Only admin can withdraw");
+         token.transfer(admin, token.balanceOf(address(this)));
+     }
+}
+<\contract_to_analyze\>

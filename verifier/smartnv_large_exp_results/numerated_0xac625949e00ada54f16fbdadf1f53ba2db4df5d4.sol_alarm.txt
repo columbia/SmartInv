@@ -1,0 +1,35 @@
+<\contract_to_analyze\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    enum State { Created, Locked, Released, Inactive }
+    State public state;
+
+    constructor(address _seller, address _arbiter) public payable {
+            buyer = msg.sender;
+            seller = _seller;
+            arbiter = _arbiter;
+            amount = msg.value;
+            state = State.Created;
+        }
+
+    function lockFunds() public {
+            require(msg.sender == buyer, "Only the buyer can lock the funds");
+            state = State.Locked;
+        }
+
+    function releaseFunds() public {
+            require(msg.sender == arbiter, "Only the arbiter can release the funds");
+            state = State.Released;
+            seller.transfer(amount);
+        }
+
+    function refundFunds() public {
+            require(msg.sender == arbiter, "Only the arbiter can refund the funds");
+            state = State.Inactive;
+            buyer.transfer(amount);
+        }
+}
+<\contract_to_analyze\>

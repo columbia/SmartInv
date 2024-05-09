@@ -1,0 +1,17 @@
+Potential vulnerabilities in the contract:
+
+1) Incorrect visibility/ownership: The "votingToken" and "lockedFunds" variables are accessed without specifying their visibility (public/private/internal). This can lead to unexpected behavior or unauthorized access.
+
+2) Inconsistent state update: The "proposal.votedAmount" is updated directly in the "execute" function without proper synchronization or validation, which may result in incorrect data representation.
+
+3) Insufficient gas: The "endExecute" function checks for a condition based on the balance of the contract, which can consume a significant amount of gas and potentially cause out-of-gas exceptions.
+
+4) Integer overflow/underflow: The calculations involving balances and amounts in the contract are not checked for potential integer overflow/underflow scenarios, which can lead to unexpected results or vulnerabilities.
+
+5) Atomicity violation: The operations in the "startExecute" and "execute" functions are not atomic, meaning that if one operation fails, the contract state may end up in an inconsistent state.
+
+6) Cross bridge inconsistency: The contract interacts with external tokens (votingToken) and may be prone to inconsistencies or vulnerabilities if the external token changes its behavior.
+
+7) Privilege escalation: The "owner" variable is used in the contract, but it's not clear how ownership is managed or whether there are any vulnerabilities related to privilege escalation.
+
+8) Business logic flaw: There may be potential business logic flaws in the contract that can be exploited by malicious actors to manipulate the contract state or behavior.

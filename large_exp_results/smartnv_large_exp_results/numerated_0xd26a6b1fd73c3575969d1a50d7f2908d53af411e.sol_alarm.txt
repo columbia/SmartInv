@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract TradeContract is IERC20 {
+    uint public totalSupply;
+    mapping(address => uint) public balances;
+    address public owner;
+
+    function deposit(uint amount) external {
+        balances[msg.sender] += amount;
+        totalSupply += amount; 
+    }
+
+    function withdraw(uint amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalSupply -= amount; 
+    }
+
+    function transfer(address to, uint amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount; 
+    }
+
+    function setOwner(address _owner) external {
+        owner = _owner;
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,45 @@
+The contract being analyzed:
+
+contract VotingSystem {
+    struct Voter {
+        address id;
+        uint vote;
+    }
+    mapping(address => bool) public hasVoted;
+    mapping(address => Voter) public voters;
+    
+    function vote(uint _vote) public {
+        require(_vote == 0 || _vote == 1, "Invalid vote");
+        
+        Voter storage sender = voters[msg.sender];
+        require(sender.id == address(0), "Already voted");
+        
+        sender.id = msg.sender;
+        sender.vote = _vote;
+        hasVoted[msg.sender] = true;
+    }
+    
+    function tallyVotes() public returns (uint) {
+        uint votesFor0 = 0;
+        uint votesFor1 = 0;
+        
+        for (uint i = 0; i < voters.length; i++) {
+            if (voters[i].vote == 0) {
+                votesFor0++;
+            } else {
+                votesFor1++;
+            }
+        }
+        
+        if (votesFor0 > votesFor1) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+}
+
+Output:
+- Business logic flaw
+- Inconsistent state update
+- Incorrect visibility/ownership

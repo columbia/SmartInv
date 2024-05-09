@@ -1,0 +1,46 @@
+<\analyzed_contract\> 
+contract TokenSale {
+         address public admin;
+         IERC20 public token;
+         uint public tokenPrice;
+         uint public availableTokens;
+         uint public soldTokens;
+
+         mapping(address => uint) public tokenBalance;
+
+         constructor(address _token, uint _tokenPrice, uint _availableTokens) {
+             admin = msg.sender;
+             token = IERC20(_token);
+             tokenPrice = _tokenPrice;
+             availableTokens = _availableTokens;
+             soldTokens = 0;
+         }
+
+         function buyTokens(uint _amount) public {
+             require(tokenBalance[msg.sender] + _amount <= availableTokens, "Not enough tokens available");
+             require(token.balanceOf(msg.sender) >= _amount * tokenPrice, "Not enough funds to buy tokens");
+
+             uint totalPrice = _amount * tokenPrice;
+             tokenBalance[msg.sender] += _amount;
+             soldTokens += _amount;
+
+             token.transferFrom(msg.sender, address(this), totalPrice);
+             token.transfer(msg.sender, _amount);
+         }
+
+         function withdrawTokens(uint _amount) public {
+             require(msg.sender == admin, "Only admin can withdraw tokens");
+             require(_amount <= token.balanceOf(address(this)), "Not enough tokens in contract");
+
+             token.transfer(admin, _amount);
+         }
+
+         function changeTokenPrice(uint _newPrice) public {
+             require(msg.sender == admin, "Only admin can change token price");
+             tokenPrice = _newPrice;
+         }
+}
+<\analyzed_contract\> 
+
+Output:
+1) healthy

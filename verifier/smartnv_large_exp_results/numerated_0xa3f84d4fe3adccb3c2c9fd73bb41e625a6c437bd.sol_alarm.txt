@@ -1,0 +1,28 @@
+Contract to be analyzed: 
+
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    
+    constructor(address _tokenAddress, uint _price) {
+        admin = msg.sender;
+        token = IERC20(_tokenAddress);
+        tokenPrice = _price;
+    }
+    
+    function buyTokens(uint _amount) public {
+        uint totalPrice = tokenPrice * _amount;
+        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), totalPrice);
+        token.transfer(msg.sender, _amount);
+    }
+
+    function updateTokenPrice(uint _newPrice) public {
+        require(msg.sender == admin, "Only admin can update price");
+        tokenPrice = _newPrice;
+    }
+}
+Output: 
+- Incorrect visibility/ownership: The `updateTokenPrice` function does not restrict access to only the admin, making it vulnerable to privilege escalation.
+- Arithmetic flaw: In the `buyTokens` function, the calculation of `totalPrice = tokenPrice * _amount` could potentially lead to arithmetic flaws like integer overflow/underflow if not handled properly.

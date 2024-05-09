@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+contract Marketplace {
+     address public owner;
+     mapping(address => uint) public balance;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function deposit() external payable {
+         balance[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) external {
+         require(balance[msg.sender] >= amount, "Insufficient balance");
+         balance[msg.sender] -= amount;
+         (bool success,) = msg.sender.call{value: amount}("");
+         require(success, "Transfer failed.");
+     }
+
+     function transferOwnership(address newOwner) external {
+         require(msg.sender == owner, "Not authorized");
+         owner = newOwner;
+     }
+}
+
+Output: 
+- incorrect visibility/ownership

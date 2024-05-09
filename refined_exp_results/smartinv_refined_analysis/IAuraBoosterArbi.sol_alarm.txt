@@ -1,0 +1,15 @@
+<\contract\>
+contract TokenExchange {
+    IERC20 public token1;
+    IERC20 public token2;
+
+    function exchangeTokens(uint amount) external {
+        token1.transferFrom(msg.sender, address(this), amount);
+        token2.transfer(msg.sender, amount);
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Inconsistent state update: The contract does not update the state of both tokens atomically, which could lead to an inconsistent state if one transfer fails and the other succeeds.
+2) Cross bridge inconsistency: The contract transfers one token first before transferring the other token, which can lead to inconsistencies if the second transfer fails after the first one has already been completed.

@@ -1,0 +1,23 @@
+The contract below contains potential vulnerabilities:
+
+1) ID uniqueness violation
+2) Incorrect visibility/ownership
+
+Contract:
+contract TokenMarket {
+     mapping(uint256 => uint256) public tokenPrices;
+     address public owner;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function setTokenPrice(uint256 tokenId, uint256 price) public {
+         require(msg.sender == owner, "Only owner can set token price");
+         tokenPrices[tokenId] = price;
+     }
+
+     function getTokenPrice(uint256 tokenId) public view returns (uint256) {
+         return tokenPrices[tokenId];
+     }
+}

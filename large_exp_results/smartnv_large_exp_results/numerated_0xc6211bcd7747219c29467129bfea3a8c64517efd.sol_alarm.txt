@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function liquidate in the ExchangeTokens contract updates the debt and collateral mapping but does not include any checks to ensure that the updates are done correctly and consistently.
+
+2) Arithmetic flaw: The liquidate function in the ExchangeTokens contract performs arithmetic calculations to determine if a user's fund can be liquidated, but there may be potential overflow or underflow issues if the numbers involved are very large or small.
+
+3) Cross-bridge inconsistency: The ExchangeTokens contract interacts with different tokens (WETH and USDC), which can potentially lead to inconsistencies or unexpected behavior if the bridges between the tokens are not handled properly.
+
+4) Incorrect visibility/ownership: The visibility of the debt and collateral mappings in the ExchangeTokens contract is set to public, which may expose sensitive information about the users' debt and collateral amounts to anyone who interacts with the contract. 
+
+5) Insufficient gas: The calculatePrice function in the ExchangeTokens contract returns the result of a calculation involving token balances, which may require significant gas to execute, potentially leading to gas exhaustion issues.

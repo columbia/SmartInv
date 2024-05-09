@@ -1,0 +1,42 @@
+<\Contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public value;
+    enum State { Created, Locked, Released, InDispute }
+    State public state;
+
+    constructor() payable {
+        buyer = msg.sender;
+        value = msg.value / 2;
+    }
+
+    function confirmPurchase() public {
+        require(msg.sender == buyer, "Only the buyer can confirm the purchase");
+        require(state == State.Created, "Purchase has already been confirmed");
+        state = State.Locked;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only the buyer or seller can confirm the received");
+        require(state == State.Locked, "Purchase has not been confirmed yet");
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == seller, "Only the seller can issue a refund");
+        require(state == State.Locked, "Purchase has not been confirmed yet");
+        state = State.Created;
+        payable(buyer).transfer(value * 2);
+    }
+
+    function dispute() public {
+        require(msg.sender == arbiter, "Only the arbiter can initiate a dispute");
+        require(state == State.Locked, "Purchase has not been confirmed yet");
+        state = State.InDispute;
+    }
+}
+Potential vulnerabilities: 
+- ID uniqueness violation 
+- Incorrect visibility/ownership

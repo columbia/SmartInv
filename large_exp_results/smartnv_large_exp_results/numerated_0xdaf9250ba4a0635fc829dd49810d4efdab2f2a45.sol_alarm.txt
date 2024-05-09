@@ -1,0 +1,19 @@
+<\contract\>
+contract Marketplace {
+    mapping(uint256 => uint256) public items;
+
+    function addItem(uint256 id, uint256 price) public {
+        require(items[id] == 0, "Item already exists");
+        items[id] = price;
+    }
+
+    function purchaseItem(uint256 id) public payable {
+        require(items[id] != 0, "Item does not exist");
+        require(msg.value >= items[id], "Insufficient funds");
+
+        address payable seller = msg.sender;
+        seller.transfer(msg.value);
+        items[id] = 0;
+    }
+}
+<\contract\>

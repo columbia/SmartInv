@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract VotingSystem {
+     uint public totalVotes;
+     mapping(address => uint) public votes;
+     
+     function vote() public {
+         totalVotes++;
+         votes[msg.sender]++;
+     }
+
+     function revokeVote() public {
+         require(votes[msg.sender] > 0, "You have no votes to revoke");
+         totalVotes--;
+         votes[msg.sender]--;
+     }
+}
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation: The contract doesn't have any mechanism to ensure that each address can only vote once, potentially allowing for multiple votes from the same address.
+- Inconsistent state update: The totalVotes and votes mapping are updated separately in the vote() and revokeVote() functions, which could lead to inconsistencies in the data.
+- Incorrect visibility/ownership: The totalVotes and votes mappings are public, which could expose sensitive information about the voting details to unauthorized users.
+- Reentrancy: The vote() and revokeVote() functions are not protected against reentrancy attacks, which could lead to unexpected behavior if an attacker exploits this vulnerability. 
+
+Therefore, the potential vulnerabilities in the contract are ID uniqueness violation, inconsistent state update, incorrect visibility/ownership, and reentrancy.

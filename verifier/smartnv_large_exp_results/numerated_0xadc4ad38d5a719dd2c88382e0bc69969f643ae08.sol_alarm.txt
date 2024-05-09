@@ -1,0 +1,21 @@
+<\contract\>
+contract PaymentContract {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] -= amount;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The withdraw function allows any address to call it, which can lead to unauthorized withdrawals.
+- Ether leakage: The transfer of ETH to withdraw might fail, causing the funds to be trapped in the contract.
+- Insufficient gas: The transfer of ETH in the withdraw function may consume more gas than available, leading to a failed transfer and frozen funds.

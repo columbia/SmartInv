@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The `startExecute` function updates the `proposal` state but does not check if the proposal already exists. This could lead to unexpected behavior as multiple proposals may coexist.
+2) Incorrect visibility/ownership: The `votingToken` variable is declared as internal, which may expose sensitive information to external contracts. It should be declared as private to restrict access.
+3) Insufficient gas: The `endExecute` function checks if the locked funds exceed a certain threshold but does not consider gas costs for the transaction. This could result in failed executions due to insufficient gas.

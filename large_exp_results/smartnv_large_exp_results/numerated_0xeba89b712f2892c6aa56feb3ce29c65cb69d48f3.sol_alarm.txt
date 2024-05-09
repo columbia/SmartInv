@@ -1,0 +1,21 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+     IERC20 public token;
+     mapping(address => uint) public votes;
+
+     function vote(uint amount) public {
+         token.transferFrom(msg.sender, address(this), amount);
+         votes[msg.sender] += amount;
+     }
+
+     function redeem() public {
+         uint amount = votes[msg.sender];
+         token.transfer(msg.sender, amount);
+         votes[msg.sender] = 0;
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) Insufficient gas: There is a risk that the contract may run out of gas during the execution of functions due to potentially costly operations.
+2) Incorrect visibility/ownership: The ownership and visibility of functions and variables in the contract may not be appropriately secured, leading to potential security risks.

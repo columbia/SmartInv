@@ -1,0 +1,13 @@
+contract SplitPayment {
+    mapping(address => uint) public balances;
+
+    function split(address[] memory recipients, uint amount) public {
+        uint amountPerRecipient = amount / recipients.length;
+        for (uint i = 0; i < recipients.length; i++) {
+            balances[recipients[i]] += amountPerRecipient;
+        }
+    }
+} 
+
+Potential vulnerabilities in the SplitPayment contract:
+- Integer overflow/underflow: There is a potential for integer division rounding errors if the amount to split is not divisible evenly among the recipients.

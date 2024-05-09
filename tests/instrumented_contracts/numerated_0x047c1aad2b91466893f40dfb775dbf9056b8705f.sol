@@ -1,0 +1,42 @@
+1 {{
+2   "language": "Solidity",
+3   "settings": {
+4     "evmVersion": "istanbul",
+5     "libraries": {},
+6     "metadata": {
+7       "bytecodeHash": "ipfs",
+8       "useLiteralContent": true
+9     },
+10     "optimizer": {
+11       "enabled": false,
+12       "runs": 200
+13     },
+14     "remappings": [],
+15     "outputSelection": {
+16       "*": {
+17         "*": [
+18           "evm.bytecode",
+19           "evm.deployedBytecode",
+20           "devdoc",
+21           "userdoc",
+22           "metadata",
+23           "abi"
+24         ]
+25       }
+26     }
+27   },
+28   "sources": {
+29     "@openzeppelin/contracts/access/Ownable.sol": {
+30       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (access/Ownable.sol)\n\npragma solidity ^0.8.0;\n\nimport \"../utils/Context.sol\";\n\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n *\n * By default, the owner account will be the one that deploys the contract. This\n * can later be changed with {transferOwnership}.\n *\n * This module is used through inheritance. It will make available the modifier\n * `onlyOwner`, which can be applied to your functions to restrict their use to\n * the owner.\n */\nabstract contract Ownable is Context {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /**\n     * @dev Initializes the contract setting the deployer as the initial owner.\n     */\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    /**\n     * @dev Returns the address of the current owner.\n     */\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    /**\n     * @dev Throws if called by any account other than the owner.\n     */\n    modifier onlyOwner() {\n        require(owner() == _msgSender(), \"Ownable: caller is not the owner\");\n        _;\n    }\n\n    /**\n     * @dev Leaves the contract without owner. It will not be possible to call\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\n     *\n     * NOTE: Renouncing ownership will leave the contract without an owner,\n     * thereby removing any functionality that is only available to the owner.\n     */\n    function renounceOwnership() public virtual onlyOwner {\n        _transferOwnership(address(0));\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Can only be called by the current owner.\n     */\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        _transferOwnership(newOwner);\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Internal function without access restriction.\n     */\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n"
+31     },
+32     "@openzeppelin/contracts/utils/Context.sol": {
+33       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes calldata) {\n        return msg.data;\n    }\n}\n"
+34     },
+35     "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol": {
+36       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.5.0) (utils/cryptography/MerkleProof.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev These functions deal with verification of Merkle Trees proofs.\n *\n * The proofs can be generated using the JavaScript library\n * https://github.com/miguelmota/merkletreejs[merkletreejs].\n * Note: the hashing algorithm should be keccak256 and pair sorting should be enabled.\n *\n * See `test/utils/cryptography/MerkleProof.test.js` for some examples.\n */\nlibrary MerkleProof {\n    /**\n     * @dev Returns true if a `leaf` can be proved to be a part of a Merkle tree\n     * defined by `root`. For this, a `proof` must be provided, containing\n     * sibling hashes on the branch from the leaf to the root of the tree. Each\n     * pair of leaves and each pair of pre-images are assumed to be sorted.\n     */\n    function verify(\n        bytes32[] memory proof,\n        bytes32 root,\n        bytes32 leaf\n    ) internal pure returns (bool) {\n        return processProof(proof, leaf) == root;\n    }\n\n    /**\n     * @dev Returns the rebuilt hash obtained by traversing a Merklee tree up\n     * from `leaf` using `proof`. A `proof` is valid if and only if the rebuilt\n     * hash matches the root of the tree. When processing the proof, the pairs\n     * of leafs & pre-images are assumed to be sorted.\n     *\n     * _Available since v4.4._\n     */\n    function processProof(bytes32[] memory proof, bytes32 leaf) internal pure returns (bytes32) {\n        bytes32 computedHash = leaf;\n        for (uint256 i = 0; i < proof.length; i++) {\n            bytes32 proofElement = proof[i];\n            if (computedHash <= proofElement) {\n                // Hash(current computed hash + current element of the proof)\n                computedHash = _efficientHash(computedHash, proofElement);\n            } else {\n                // Hash(current element of the proof + current computed hash)\n                computedHash = _efficientHash(proofElement, computedHash);\n            }\n        }\n        return computedHash;\n    }\n\n    function _efficientHash(bytes32 a, bytes32 b) private pure returns (bytes32 value) {\n        assembly {\n            mstore(0x00, a)\n            mstore(0x20, b)\n            value := keccak256(0x00, 0x40)\n        }\n    }\n}\n"
+37     },
+38     "contracts/ERC721Minter.sol": {
+39       "content": "pragma solidity ^0.8.0;\n\nimport \"@openzeppelin/contracts/access/Ownable.sol\";\nimport \"@openzeppelin/contracts/utils/cryptography/MerkleProof.sol\";\n\ninterface IERC721 {\n    function mint(address to) external;\n}\n\ncontract ERC721Minter is Ownable {\n    IERC721 public erc721;\n\n    //used to verify whitelist user\n    bytes32 public merkleRoot;\n    uint256 public mintQuantity;\n    uint256 public price;\n    mapping(address => uint256) public claimed;\n\n    constructor(IERC721 erc721_, bytes32 merkleRoot_) {\n        erc721 = erc721_;\n\n        merkleRoot = merkleRoot_;\n        mintQuantity = 1;\n        price = 110000000000000000;\n    }\n\n    function setMerkleRoot(bytes32 merkleRoot_) public onlyOwner {\n        merkleRoot = merkleRoot_;\n    }\n\n    function setNFT(IERC721 erc721_) public onlyOwner {\n        erc721 = erc721_;\n    }\n    function setQuantity(uint256 newQ) public onlyOwner {\n        mintQuantity = newQ;\n    }\n\n\n    function mint(bytes32[] calldata merkleProof_, uint256 quantity_) public payable{\n        //requires that user has not already claimed\n        require(msg.value >= price,\"Insuffient Funds Provided\");\n\n        require(claimed[msg.sender] + quantity_ <= mintQuantity, \"Already claimed.\");\n\n        //requires that user is in whitelsit\n        claimed[msg.sender] = claimed[msg.sender] + quantity_;\n\n        for(uint256 i = 0; i < quantity_; i++){\n            erc721.mint(msg.sender);\n        }\n    }\n\n    function withdraw(address to) public onlyOwner {\n        (bool sent, ) = to.call{value: address(this).balance}(\"\");\n        require(sent, \"withdraw failed\");\n    }\n\n\n}"
+40     }
+41   }
+42 }}

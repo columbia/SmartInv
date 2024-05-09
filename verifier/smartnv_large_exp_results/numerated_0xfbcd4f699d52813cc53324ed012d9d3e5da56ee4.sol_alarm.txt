@@ -1,0 +1,30 @@
+contract PaymentGateway {
+     address public owner;
+
+     uint public totalAmount;
+     mapping(bytes32 => uint) public payments;
+
+     event PaymentReceived(bytes32 paymentID, uint amount);
+
+     constructor() {
+         owner = msg.sender;
+         totalAmount = 0;
+     }
+
+     function receivePayment(bytes32 paymentID, uint amount) public {
+         require(msg.sender == owner, "Only owner can receive payments");
+         totalAmount += amount;
+         payments[paymentID] = amount;
+         emit PaymentReceived(paymentID, amount);
+     }
+
+     function getPaymentAmount(bytes32 paymentID) public view returns (uint) {
+         return payments[paymentID];
+     }
+
+     function withdrawFunds() public {
+         require(msg.sender == owner, "Only owner can withdraw funds");
+         payable(owner).transfer(totalAmount);
+         totalAmount = 0;
+     }
+}

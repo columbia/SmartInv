@@ -1,0 +1,36 @@
+<\contract\> 
+contract VotingSystem {
+     struct Voter {
+          uint256 voteCount; 
+          bool hasVoted;
+          }
+     mapping(address => Voter) public voters;
+     address public candidate; 
+     uint256 public totalVotes;
+
+    function vote() public {
+              require(!voters[msg.sender].hasVoted, "voter has already voted");
+              voters[msg.sender].voteCount += 1; 
+              voters[msg.sender].hasVoted = true;
+              totalVotes += 1;
+        }
+
+    function nominateCandidate(address _candidate) public {
+              require(msg.sender == owner, "only owner can nominate a candidate"); 
+              candidate = _candidate;
+        }
+
+    function endVoting() public {
+              require(candidate != address(0), "no candidate nominated");
+              require(totalVotes > 0, "no votes received");
+              
+              if (totalVotes > 50) {
+                  // Candidate wins election
+              } else {
+                  // Election results in a tie
+              }
+        }
+}
+<\contract\> 
+Output:
+business logic flaw

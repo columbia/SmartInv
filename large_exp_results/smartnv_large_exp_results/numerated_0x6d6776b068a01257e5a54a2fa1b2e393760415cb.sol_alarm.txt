@@ -1,0 +1,35 @@
+The contract provided for analysis is:
+
+contract Crowdsale {
+    address public owner;
+    uint public totalTokens;
+    uint public tokenPrice;
+
+    mapping(address => uint) public balances;
+
+    constructor(uint _totalTokens, uint _tokenPrice) {
+        owner = msg.sender;
+        totalTokens = _totalTokens;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        require(totalTokens >= _numTokens, "Not enough tokens left");
+
+        balances[msg.sender] += _numTokens;
+        totalTokens -= _numTokens;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        
+        uint amount = address(this).balance;
+        payable(owner).transfer(amount);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership: The 'owner' variable is public, allowing anyone to view the owner's address. This may expose sensitive information and potentially lead to privilege escalation if the owner's address is compromised.
+2) inconsistent state update: The 'totalTokens' variable is decremented in the buyTokens function without checking for potential integer underflow, which can lead to unexpected behavior.
+3) insufficient gas: The withdrawFunds function does not specify a gas limit for the transfer operation, which could potentially result in the transaction failing due to running out of gas.

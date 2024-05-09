@@ -1,0 +1,23 @@
+<\contract\>
+contract PaymentGateway {
+     address public owner;
+     mapping(address => uint) public userBalances;
+     
+     constructor() {
+         owner = msg.sender;
+     }
+     
+     function deposit() public payable {
+         userBalances[msg.sender] += msg.value;
+     }
+     
+     function withdraw(uint amount) public {
+         require(userBalances[msg.sender] >= amount, "Insufficient balance");
+         userBalances[msg.sender] -= amount;
+         payable(msg.sender).transfer(amount);
+     }
+}
+<\contract\> 
+
+Output:
+- potential vulnerability: integer overflow/underflow

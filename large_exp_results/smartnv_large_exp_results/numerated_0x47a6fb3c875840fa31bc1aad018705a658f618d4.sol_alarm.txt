@@ -1,0 +1,28 @@
+Contract to be analyzed:
+
+contract TokenSale {
+    address public owner;
+    address public token;
+    uint public price;
+
+    constructor(address _token, uint _price) {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public {
+        require(msg.value == amount * price, "Incorrect payment amount");
+        IERC20(token).transfer(msg.sender, amount);
+    }
+
+    function changePrice(uint newPrice) public {
+        require(msg.sender == owner, "Only owner can change price");
+        price = newPrice;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The owner can change the price, potentially causing inconsistencies in the pricing system.
+2) Incorrect visibility/ownership: The changePrice function does not have the correct visibility and ownership check, allowing anyone to change the price.
+3) Insufficient gas: The buyTokens function does not handle gas issues, potentially leading to transactions failing due to insufficient gas.

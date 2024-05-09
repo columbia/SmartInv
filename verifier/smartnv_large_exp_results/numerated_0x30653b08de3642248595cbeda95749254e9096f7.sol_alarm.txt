@@ -1,0 +1,28 @@
+The contract provided for analysis:
+
+contract TokenSale {
+     address public tokenAddress;
+     address public owner;
+     uint public tokenPrice;
+
+     constructor(address _tokenAddress, uint _tokenPrice) {
+          tokenAddress = _tokenAddress;
+          tokenPrice = _tokenPrice;
+          owner = msg.sender;
+     }
+
+     function buyTokens(uint _amount) public payable {
+          require(msg.value == _amount * tokenPrice, "Incorrect amount sent");
+          IERC20 token = IERC20(tokenAddress);
+          token.transfer(msg.sender, _amount);
+     }
+
+     function withdrawFunds() public {
+          require(msg.sender == owner, "Unauthorized");
+          payable(msg.sender).transfer(address(this).balance);
+     }
+}
+
+Output:
+- cross bridge inconsistency
+- incorrect visibility/ownership

@@ -1,0 +1,23 @@
+<\contract_to_be_analyzed\>
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public bids;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+
+        bids[msg.sender] += msg.value;
+    }
+
+    function withdraw() public {
+        uint amount = bids[msg.sender];
+        require(amount > 0, "No funds to withdraw");
+        msg.sender.transfer(amount);
+        bids[msg.sender] = 0;
+    }
+}
+<\contract_to_be_analyzed\>

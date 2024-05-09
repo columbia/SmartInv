@@ -1,0 +1,14 @@
+Contract: 
+contract TokenSwap {
+     IERC20 public token1;
+     IERC20 public token2;
+
+     function swap(uint amount) public {
+         token1.transferFrom(msg.sender, address(this), amount);
+         token2.transfer(msg.sender, amount);
+     }
+}
+
+Potential vulnerabilities:
+1) Reentrancy
+2) Incorrect visibility/ownership

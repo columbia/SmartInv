@@ -1,0 +1,16 @@
+The contract provided for analysis:
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid(uint amount) public {
+          require(amount > highestBid, "bid amount not higher");
+          highestBidder.transfer(highestBid);
+          highestBidder = msg.sender;
+          highestBid = amount;
+     }
+}
+Potential vulnerabilities:
+- Atomicity violation: This contract is vulnerable to atomicity violations as the transfer function is called before updating the highestBidder's state. This could potentially allow reentrancy attacks.
+- Ether leakage: If the contract's highestBidder is a contract, the transfer function could fail, leading to ether lost in the transaction. 
+- Incorrect visibility/ownership: The highestBidder and highestBid variables are currently public, which exposes sensitive information. Consider using private or internal visibility for these variables.

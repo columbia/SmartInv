@@ -1,0 +1,32 @@
+Contract to analyze:
+
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    
+    modifier onlyOwner {
+        require(isOwner[msg.sender], "Not an owner");
+        _;
+    }
+    
+    function addOwner(address newOwner) public onlyOwner {
+        owners.push(newOwner);
+        isOwner[newOwner] = true;
+    }
+    
+    function removeOwner(address ownerToRemove) public onlyOwner {
+        require(owners.length > 1, "Cannot remove the last owner");
+        isOwner[ownerToRemove] = false;
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == ownerToRemove) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                break;
+            }
+        }
+    }
+}
+  
+Potential vulnerabilities in the contract:
+7) ID uniqueness violation
+8) reentrancy

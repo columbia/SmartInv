@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract Insurance {
+         IERC20 public token;
+         mapping(address => uint) public premium;
+         mapping(address => bool) public isInsured;
+
+         function payPremium(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+             premium[msg.sender] = amount;
+             isInsured[msg.sender] = true;
+         }
+
+         function claimInsurance() public {
+             require(isInsured[msg.sender], "not insured");
+             uint payout = premium[msg.sender] * 2;
+             token.transfer(msg.sender, payout);
+             isInsured[msg.sender] = false;
+         }
+
+         function cancelInsurance() public {
+             require(isInsured[msg.sender], "not insured");
+             token.transfer(msg.sender, premium[msg.sender]);
+             isInsured[msg.sender] = false;
+         }
+}
+
+Output: 
+- integer overflow/underflow: The multiplication in the claimInsurance function could potentially result in an integer overflow if the premium amount is very large.
+- inconsistent state update: The cancelInsurance function cancels insurance without updating the premium amount in the mapping, leading to an inconsistent state.
+- incorrect visibility/ownership: The premium and isInsured mappings are public, which exposes sensitive data to all users. Consider changing visibility to internal or private.

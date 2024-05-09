@@ -1,0 +1,25 @@
+Contract:
+contract TokenTransfer {
+     address public owner;
+     mapping(uint => address) public tokenAddresses;
+     
+     constructor() public {
+         owner = msg.sender;
+     }
+     
+     function addToken(uint tokenId, address tokenAddress) public {
+         require(msg.sender == owner, "Only owner can add token");
+         tokenAddresses[tokenId] = tokenAddress;
+     }
+     
+     function transferToken(uint tokenId, address to, uint amount) public {
+         require(tokenAddresses[tokenId] != address(0), "Token does not exist");
+         // Perform token transfer logic
+     }
+}
+
+Potential vulnerabilities:
+1) Incorrect visibility/ownership: The owner variable is public, which exposes the owner's address to the public. This can potentially lead to privilege escalation or unauthorized access if the owner's address is known.
+2) Missing input validation: The function transferToken does not check if the amount being transferred is valid or if the recipient address is valid, opening up risks for vulnerabilities such as integer overflow/underflow or transfer to invalid addresses.
+3) Unprotected function: The addToken function only checks for owner authorization but does not have any restrictions on the tokenId or tokenAddress being added, making it susceptible to potential vulnerabilities like inconsistent state update or unauthorized additions.
+4) Lack of transaction isolation: The transferToken function does not ensure atomicity in the token transfer process, leaving room for vulnerabilities like atomicity violation or reentrancy attacks.

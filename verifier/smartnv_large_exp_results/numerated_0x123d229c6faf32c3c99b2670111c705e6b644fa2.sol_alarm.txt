@@ -1,0 +1,28 @@
+<\contract\> 
+contract Escrow {
+     address public seller;
+     address public buyer;
+     bool public sellerApproved;
+     bool public buyerApproved;
+     uint public amount;
+     
+     function createEscrow(uint _amount, address _buyer) external {
+          require(msg.sender != _buyer, "seller cannot be the same as the buyer");
+          seller = msg.sender;
+          buyer = _buyer;
+          amount = _amount;
+     }
+     
+     function approve() external {
+          if(msg.sender == seller) {
+               sellerApproved = true;
+          } else if(msg.sender == buyer) {
+               buyerApproved = true;
+          }
+     }
+     
+     function refund() external {
+          require(sellerApproved && buyerApproved, "both parties must approve before refunding");
+          payable(buyer).transfer(amount);
+     }
+}

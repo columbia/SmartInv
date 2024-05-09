@@ -1,0 +1,15 @@
+<\analyzed_contract\> 
+contract TokenBridge {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         bool public isCrossBridge;
+         
+         function transferTokens(uint amount, address recipient) external {
+              require(isCrossBridge == true, "Cross bridge not enabled");
+              tokenA.transferFrom(msg.sender, address(this), amount);
+              tokenB.transfer(recipient, amount);
+         }
+} 
+
+<\potential_vulnerabilities\> 
+1) cross bridge inconsistency

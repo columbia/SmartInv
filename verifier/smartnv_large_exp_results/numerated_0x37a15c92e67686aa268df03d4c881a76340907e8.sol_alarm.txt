@@ -1,0 +1,37 @@
+Contract to be analyzed:
+
+contract StakePool {
+     IERC20 public stakedToken;
+     IERC20 public rewardToken;
+     address public rewardDistribution;
+
+     mapping(address => uint) public stakes;
+     mapping(address => uint) public rewards;
+
+     function stake(uint amount) external {
+         require(amount > 0, "Cannot stake zero amount");
+         stakedToken.transferFrom(msg.sender, address(this), amount);
+         stakes[msg.sender] += amount;
+     }
+
+     function withdraw(uint amount) external {
+         require(amount > 0, "Cannot withdraw zero amount");
+         require(stakes[msg.sender] >= amount, "Insufficient staked amount");
+         stakes[msg.sender] -= amount;
+         stakedToken.transfer(msg.sender, amount);
+     }
+
+     function claimReward() external {
+         uint reward = rewards[msg.sender];
+         rewards[msg.sender] = 0;
+         rewardToken.transfer(msg.sender, reward);
+     }
+
+     function updateReward(address recipient, uint amount) external {
+         rewards[recipient] += amount;
+     }
+}
+
+Output:
+1) Incorrect visibility/ownership
+2) Inconsistent state update

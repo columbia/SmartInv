@@ -1,0 +1,27 @@
+1 {{
+2   "language": "Solidity",
+3   "sources": {
+4     "contracts/BRCEVMVault.sol": {
+5       "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface ERC20 {\n    function transferFrom(\n        address sender,\n        address recipient,\n        uint256 amount\n    ) external returns (bool);\n\n    function transfer(\n        address recipient,\n        uint256 amount\n    ) external returns (bool);\n\n    function balanceOf(address account) external view returns (uint256);\n}\n\ninterface NO_STANDARD_ERC20 {\n    function transferFrom(address from, address to, uint value) external;\n\n    function transfer(address to, uint value) external;\n}\n\ninterface WETH {\n    function deposit() external payable;\n\n    function withdraw(uint256 amount) external;\n\n    function transfer(address to, uint256 amount) external returns (bool);\n}\n\ncontract BRCEVMVault {\n    address public admin;\n\n    address public wethAddress;\n    mapping(address => bool) public whitelistToken;\n    mapping(address => bool) public isNoStandardERC20;\n    mapping(bytes32 => bool) public usedTxids;\n\n    // Deposit token\n    event Deposit(\n        address indexed from,\n        address indexed to,\n        address indexed tokenAddress,\n        uint256 amount\n    );\n\n    // Withdraw token\n    event Withdraw(\n        address indexed to,\n        address indexed tokenAddress,\n        uint256 amount,\n        bytes32 txid\n    );\n\n    // Withdraw token\n    event AdminChanged(address indexed admin, address indexed newAdmin);\n\n    constructor(address _wethAddress) {\n        admin = msg.sender;\n        wethAddress = _wethAddress;\n        whitelistToken[_wethAddress] = true;\n    }\n\n    modifier onlyAdmin() {\n        require(msg.sender == admin, \"Only admin can call this function\");\n        _;\n    }\n\n    receive() external payable {}\n\n    function changeAdmin(address newAdmin) public onlyAdmin {\n        require(newAdmin != address(0), \"Invalid address\");\n        emit AdminChanged(admin, newAdmin);\n        admin = newAdmin;\n    }\n\n    function setWETHAddress(address _wethAddress) public onlyAdmin {\n        wethAddress = _wethAddress;\n        whitelistToken[_wethAddress] = true;\n    }\n\n    function setNoStandardERC20(address tokenAddress) public onlyAdmin {\n        isNoStandardERC20[tokenAddress] = true;\n    }\n\n    function removeNoStandardERC20(address tokenAddress) public onlyAdmin {\n        isNoStandardERC20[tokenAddress] = false;\n    }\n\n    function setWhitelistToken(\n        address[] memory tokenAddresses\n    ) public onlyAdmin {\n        for (uint256 i = 0; i < tokenAddresses.length; i++) {\n            whitelistToken[tokenAddresses[i]] = true;\n        }\n    }\n\n    function removeWhitelistToken(\n        address[] memory tokenAddresses\n    ) public onlyAdmin {\n        for (uint256 i = 0; i < tokenAddresses.length; i++) {\n            whitelistToken[tokenAddresses[i]] = false;\n        }\n    }\n\n    function deposit(\n        address tokenAddress,\n        address to,\n        uint256 amount\n    ) public payable {\n        if (tokenAddress == address(0)) {\n            WETH weth = WETH(wethAddress);\n            weth.deposit{value: msg.value}();\n\n            emit Deposit(msg.sender, to, wethAddress, msg.value);\n        } else {\n            require(\n                whitelistToken[tokenAddress],\n                \"Token address is not whitelisted\"\n            );\n\n            if (isNoStandardERC20[tokenAddress]) {\n                NO_STANDARD_ERC20(tokenAddress).transferFrom(\n                    msg.sender,\n                    address(this),\n                    amount\n                );\n            } else {\n                require(\n                    ERC20(tokenAddress).transferFrom(\n                        msg.sender,\n                        address(this),\n                        amount\n                    ),\n                    \"Token transfer failed\"\n                );\n            }\n\n            emit Deposit(msg.sender, to, tokenAddress, amount);\n        }\n    }\n\n    function withdraw(\n        address tokenAddress,\n        address to,\n        uint256 amount,\n        bytes32 txid\n    ) public onlyAdmin {\n        require(\n            whitelistToken[tokenAddress],\n            \"Token address is not whitelisted\"\n        );\n\n        require(!usedTxids[txid], \"Txid used\");\n\n        if (wethAddress == tokenAddress) {\n            WETH weth = WETH(tokenAddress);\n            weth.withdraw(amount);\n            (bool success, ) = to.call{value: amount}(\"\");\n            require(success, \"Token transfer failed\");\n        } else {\n            if (isNoStandardERC20[tokenAddress]) {\n                NO_STANDARD_ERC20(tokenAddress).transfer(to, amount);\n            } else {\n                require(\n                    ERC20(tokenAddress).transfer(to, amount),\n                    \"Token transfer failed\"\n                );\n            }\n        }\n\n        usedTxids[txid] = true;\n\n        emit Withdraw(to, tokenAddress, amount, txid);\n    }\n}\n"
+6     }
+7   },
+8   "settings": {
+9     "optimizer": {
+10       "enabled": false,
+11       "runs": 200
+12     },
+13     "outputSelection": {
+14       "*": {
+15         "*": [
+16           "evm.bytecode",
+17           "evm.deployedBytecode",
+18           "devdoc",
+19           "userdoc",
+20           "metadata",
+21           "abi"
+22         ]
+23       }
+24     },
+25     "libraries": {}
+26   }
+27 }}

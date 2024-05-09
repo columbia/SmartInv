@@ -1,0 +1,28 @@
+Given the below contract, potential vulnerabilities include:
+1) privilege escalation
+2) inconsistent state update
+3) insufficient gas
+
+Contract to analyze:
+contract UserManager {
+    mapping(address => uint) public userBalance;
+    mapping(address => bool) public isAdmin;
+
+    function deposit() public payable {
+        userBalance[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(userBalance[msg.sender] >= amount, "Insufficient balance");
+        userBalance[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function grantAdmin(address user) public {
+        isAdmin[user] = true;
+    }
+
+    function removeAdmin(address user) public {
+        isAdmin[user] = false;
+    }
+}

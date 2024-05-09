@@ -1,0 +1,21 @@
+<\contract\> 
+contract PaymentGateway {
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+         require(msg.value > 0, "Deposit amount must be greater than 0");
+         balances[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(amount > 0, "Withdrawal amount must be greater than 0");
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+         msg.sender.transfer(amount);
+         balances[msg.sender] -= amount;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+- Insufficient gas: There is no gas stipend provided for the withdrawal function, which can lead to failures in the withdrawal process due to out-of-gas errors.
+- Incorrect visibility/ownership: The balances mapping is public, which exposes sensitive information about users' balances to anyone who interacts with the contract.

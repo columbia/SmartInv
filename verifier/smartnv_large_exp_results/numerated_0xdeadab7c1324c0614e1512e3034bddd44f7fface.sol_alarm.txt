@@ -1,0 +1,35 @@
+The contract you are going to analyze is:
+
+contract OrderBook {
+    uint256 public orderCount;
+    mapping(uint256 => Order) public orders;
+
+    struct Order {
+        address maker;
+        uint256 price;
+        uint256 quantity;
+        bool executed;
+    }
+
+    function createOrder(uint256 _price, uint256 _quantity) public {
+        Order memory newOrder = Order(msg.sender, _price, _quantity, false);
+        orders[orderCount] = newOrder;
+        orderCount++;
+    }
+
+    function executeOrder(uint256 _orderId) public {
+        Order storage order = orders[_orderId];
+
+        require(!order.executed, "Order already executed");
+        require(msg.sender == order.maker, "Unauthorized execution");
+
+        // Execute order logic
+
+        order.executed = true;
+    }
+}
+
+There are potential vulnerabilities in the contract:
+
+1) Incorrect visibility/ownership
+2) Business logic flaw

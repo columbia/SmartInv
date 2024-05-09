@@ -1,0 +1,20 @@
+<\provided_contract\>
+contract Crowdsale {
+    uint public totalTokens;
+    uint public tokenPrice;
+    address public tokenAddress;
+
+    function buyTokens(uint amount) external payable {
+        require(msg.value >= amount * tokenPrice, "Insufficient payment");
+        
+        uint tokensToTransfer = amount;
+        totalTokens -= tokensToTransfer;
+        
+        ERC20(tokenAddress).transfer(msg.sender, tokensToTransfer);
+    }
+
+    function setTokenPrice(uint newPrice) external {
+        tokenPrice = newPrice;
+    }
+}
+<\provided_contract\>

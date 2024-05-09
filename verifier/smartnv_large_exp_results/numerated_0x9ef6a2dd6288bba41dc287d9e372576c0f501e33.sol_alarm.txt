@@ -1,0 +1,27 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public isPaid;
+    
+    constructor(address _seller, uint _price) {
+        buyer = msg.sender;
+        seller = _seller;
+        price = _price;
+        isPaid = false;
+    }
+    
+    function pay() public payable {
+        require(msg.sender == buyer, "Only buyer can pay");
+        require(msg.value == price, "Incorrect payment amount");
+        isPaid = true;
+    }
+    
+    function release() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        require(isPaid == true, "Payment has not been made");
+        payable(seller).transfer(price);
+    }
+}
+<\contract\>

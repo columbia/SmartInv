@@ -1,0 +1,40 @@
+<\Contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    uint public arbiterFee;
+    enum State { Created, Paid, Delivered, Refunded }
+    State public state;
+
+    constructor(address _seller, address _arbiter, uint _arbiterFee) public {
+        seller = _seller;
+        arbiter = _arbiter;
+        price = 0;
+        arbiterFee = _arbiterFee;
+        state = State.Created;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer && state == State.Created, "Invalid user or State");
+        price = msg.value;
+        state = State.Paid;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer && state == State.Paid, "Invalid user or State");
+        seller.transfer(price - arbiterFee);
+        arbiter.transfer(arbiterFee);
+        state = State.Delivered;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer && (state == State.Created || state == State.Paid), "Invalid user or State");
+        if(state == State.Paid) {
+            seller.transfer(price);
+        }
+        state = State.Refunded;
+    }
+}
+<\Contract\>

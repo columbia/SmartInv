@@ -1,0 +1,43 @@
+Contract to analyze: 
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight; 
+        bool voted; 
+        address delegate; 
+        uint256 vote; 
+    }
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted");
+        require(to != msg.sender, "Self-delegation is not allowed");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation");
+        }
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegateVoter = voters[to];
+        if (delegateVoter.voted) {
+            totalVotes += sender.weight;
+        } else {
+            delegateVoter.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 option) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "Already voted");
+        sender.voted = true;
+        sender.vote = option;
+
+        totalVotes += sender.weight;
+    }
+}
+Potential vulnerabilities: 
+- No major vulnerabilities found in the contract - healthy.

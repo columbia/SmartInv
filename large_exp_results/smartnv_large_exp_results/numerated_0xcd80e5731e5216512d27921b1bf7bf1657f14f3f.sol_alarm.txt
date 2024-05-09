@@ -1,0 +1,28 @@
+<\contract\> 
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public tokenPrice;
+
+         constructor(IERC20 _token, uint _tokenPrice) {
+             token = _token;
+             owner = msg.sender;
+             tokenPrice = _tokenPrice;
+         }
+
+         function buyTokens(uint _amount) public payable {
+             require(msg.value == _amount * tokenPrice, "Incorrect token amount or price");
+             token.transfer(msg.sender, _amount);
+         }
+
+         function setTokenPrice(uint _newPrice) public {
+             require(msg.sender == owner, "Only owner can set token price");
+             tokenPrice = _newPrice;
+         }
+}
+<\contract\> 
+
+The potential vulnerabilities in the given contract are:
+1) Privilege escalation: The `setTokenPrice` function allows anyone to set the token price if they call this function, instead of just the owner.
+2) Inconsistent state update: The `buyTokens` function does not update the state of the contract after transferring tokens, which can lead to inconsistencies in the contract state.
+3) Incorrect visibility/ownership: The `owner` variable is declared as public, exposing it to everyone and potentially violating the principle of ownership privacy.

@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The function `endExecute` updates the `lockedFunds` variable without initializing it or keeping track of previous values, potentially leading to inconsistent state updates.
+
+2) Incorrect visibility: The variables `WETH`, `USDC`, and `pair` are declared as public, which exposes sensitive information to all external callers. Consider using more restrictive visibility modifiers like private or internal to protect sensitive data.
+
+3) Insufficient gas: The function `calculatePrice` performs an operation that involves interacting with external contracts (via `balanceOf` calls) and returning a value, which may consume a significant amount of gas. Ensure that there is enough gas provided when calling this function to prevent out-of-gas errors.

@@ -1,0 +1,29 @@
+The contract being analyzed:
+
+contract PaymentContract {
+        IERC20 public token;
+        address public owner;
+        mapping(address => uint) public balances;
+        
+        constructor(IERC20 _token) {
+            token = _token;
+            owner = msg.sender;
+        }
+        
+        function deposit(uint amount) public {
+            token.transferFrom(msg.sender, address(this), amount);
+            balances[msg.sender] += amount;
+        }
+        
+        function withdraw(uint amount) public {
+            require(balances[msg.sender] >= amount, "Insufficient balance");
+            token.transfer(msg.sender, amount);
+            balances[msg.sender] -= amount;
+        }
+}
+
+The potential vulnerabilities in the contract are:
+1) privilege escalation
+2) inconsistent state update
+3) atomicity violation
+4) reentrancy

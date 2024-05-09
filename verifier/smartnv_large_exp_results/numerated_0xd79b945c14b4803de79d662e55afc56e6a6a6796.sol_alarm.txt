@@ -1,0 +1,44 @@
+Contract to analyze:
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerConfirmed;
+    bool public sellerConfirmed;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        buyerConfirmed = false;
+        sellerConfirmed = false;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorized to confirm");
+        if (msg.sender == buyer) {
+            buyerConfirmed = true;
+        } else {
+            sellerConfirmed = true;
+        }
+
+        if (buyerConfirmed && sellerConfirmed) {
+            releaseFunds();
+        }
+    }
+
+    function releaseFunds() private {
+        require(address(this).balance >= price, "Not enough funds in contract to release");
+        seller.transfer(price);
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Unauthorized to refund");
+        require(!buyerConfirmed || !sellerConfirmed, "Transaction already confirmed");
+        buyer.transfer(price);
+    }
+
+    receive() external payable {}
+}

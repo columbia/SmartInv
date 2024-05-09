@@ -1,0 +1,59 @@
+Contract to analyze:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+    address public admin;
+    uint256 public totalVotes;
+    bool public votingOpen;
+
+    constructor() {
+        admin = msg.sender;
+        votingOpen = false;
+        totalVotes = 0;
+    }
+
+    function startVoting() public {
+        require(msg.sender == admin, "Only admin can start voting");
+        require(!votingOpen, "Voting is already open");
+        votingOpen = true;
+    }
+
+    function endVoting() public {
+        require(msg.sender == admin, "Only admin can end voting");
+        require(votingOpen, "Voting is not open");
+        votingOpen = false;
+    }
+
+    function vote(uint256 _proposal) public {
+        require(votingOpen, "Voting is not open");
+        require(!voters[msg.sender].voted, "Already voted");
+        voters[msg.sender].weight = 1;
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = _proposal;
+        totalVotes++;
+    }
+
+    function tallyVotes() public view returns(uint256 proposal1Votes, uint256 proposal2Votes) {
+        uint256 countProposal1 = 0;
+        uint256 countProposal2 = 0;
+        for (uint256 i = 0; i < totalVotes; i++) {
+            address voter = address(i);
+            if (voters[voter].vote == 1) {
+                countProposal1 += voters[voter].weight;
+            } else if (voters[voter].vote == 2) {
+                countProposal2 += voters[voter].weight;
+            }
+        }
+        return (countProposal1, countProposal2);
+    }
+}
+
+Output:
+- Incorrect visibility/ownership
+- Business logic flaw

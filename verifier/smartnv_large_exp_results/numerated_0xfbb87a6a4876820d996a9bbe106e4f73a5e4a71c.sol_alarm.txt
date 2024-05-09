@@ -1,0 +1,31 @@
+contract EscrowContract {
+         address public buyer;
+         address public seller;
+         uint public amount;
+         bool public isPaid;
+
+         constructor(address _buyer, address _seller, uint _amount) {
+             buyer = _buyer;
+             seller = _seller;
+             amount = _amount;
+             isPaid = false;
+         }
+
+         function deposit() public payable {
+             require(msg.sender == buyer, "Only the buyer can deposit funds");
+             require(msg.value == amount, "Incorrect deposit amount");
+             isPaid = true;
+         }
+
+         function release() public {
+             require(msg.sender == seller, "Only the seller can release funds");
+             require(isPaid, "Funds have not been deposited yet");
+             payable(seller).transfer(amount);
+         }
+
+         function cancel() public {
+             require(msg.sender == buyer, "Only the buyer can cancel the transaction");
+             require(!isPaid, "Funds have already been deposited");
+             payable(buyer).transfer(amount);
+         }
+     }

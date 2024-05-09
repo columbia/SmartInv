@@ -1,0 +1,14 @@
+SpecFilesDir = /home/sallyjunsongwang/SmartInv/verifier
+... running Solc on /home/sallyjunsongwang/SmartInv/verifier/visor.sol
+... running SolToBoogie to translate Solidity to Boogie
+... running /home/sallyjunsongwang/SmartInv/verisol/bin/Debug/boogie -doModSetAnalysis -inline:spec -noinfer -contractInfer -inlineDepth:100 -proc:BoogieEntry_* __SolToBoogieTest_out.bpl
+	*** Did not find a proof (see boogie.txt)
+... running /home/sallyjunsongwang/SmartInv/verisol/bin/Debug/corral /recursionBound:4 /k:1 /main:CorralEntry_simplifiedVisor /tryCTrace /printDataValues:1 __SolToBoogieTest_out.bpl
+	*** Found a counterexample (see corral.txt)
+	-----Transaction Sequence for Defect ------
+/home/sallyjunsongwang/SmartInv/verifier/visor.sol(9,1): : simplifiedVisor::Constructor (this = address!0, msg.sender = address!2, msg.value = 10)
+/home/sallyjunsongwang/SmartInv/verifier/visor.sol(18,1): : simplifiedVisor::liquidate (this = address!0, msg.sender = address!3, msg.value = 12, ceil = 13)
+/home/sallyjunsongwang/SmartInv/verifier/visor.sol(20,1): : ASSERTION FAILS!
+	---------------
+
+	See full execution trace inside corral.txt

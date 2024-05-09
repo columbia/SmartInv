@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract PaymentContract {
+         IERC20 public token;
+         address public beneficiary;
+         uint public amount;
+
+         constructor(IERC20 _token, address _beneficiary, uint _amount) {
+             token = _token;
+             beneficiary = _beneficiary;
+             amount = _amount;
+         }
+
+         function makePayment() public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+             token.transferFrom(msg.sender, beneficiary, amount);
+         }
+     }
+<\contract_to_analyze\>

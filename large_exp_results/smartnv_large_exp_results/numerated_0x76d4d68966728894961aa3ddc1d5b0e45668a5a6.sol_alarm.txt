@@ -1,0 +1,19 @@
+Contract being analyzed: 
+
+contract Vault {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+Potential vulnerabilities:
+- Integer Overflow/Underflow: vulnerability could occur in the `deposit()` function if the `balances[msg.sender] += msg.value;` operation results in an overflow situation.
+- Insufficient Gas: if the `withdraw()` function requires a large amount of gas to process, it could be susceptible to running out of gas and failing midway, leaving the contract in an inconsistent state.
+- Ether Leakage: in the `withdraw()` function, if an external call fails after `msg.sender.transfer(amount);` but before `balances[msg.sender] -= amount;`, it could result in funds being stuck in the contract.

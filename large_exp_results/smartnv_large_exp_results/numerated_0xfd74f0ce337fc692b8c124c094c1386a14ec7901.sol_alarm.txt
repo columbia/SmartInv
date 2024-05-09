@@ -1,0 +1,29 @@
+<\contract\>
+contract Crowdsale {
+     address public owner;
+     address public tokenAddress;
+     uint public tokenPrice;
+     uint public totalTokens;
+     mapping(address => uint) public balance;
+
+     constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+         owner = msg.sender;
+         tokenAddress = _tokenAddress;
+         tokenPrice = _tokenPrice;
+         totalTokens = _totalTokens;
+     }
+
+     function buyTokens(uint _amount) external payable {
+         require(msg.value == _amount * tokenPrice, "Insufficient payment");
+         require(totalTokens >= _amount, "Not enough tokens left");
+         balance[msg.sender] += _amount;
+         totalTokens -= _amount;
+         ERC20(tokenAddress).transfer(msg.sender, _amount);
+     }
+
+     function withdraw() external {
+         require(msg.sender == owner, "Not authorized");
+         payable(msg.sender).transfer(address(this).balance);
+     }
+}
+<\contract\>

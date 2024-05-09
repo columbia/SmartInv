@@ -1,0 +1,30 @@
+<\contract\>
+contract MultiSigWallet {
+    mapping(address => uint) public balances;
+    mapping(address => bool) public isOwner;
+    uint public transactionCount;
+    
+    constructor(address[] memory owners, uint threshold) {
+        for (uint i = 0; i < owners.length; i++) {
+            isOwner[owners[i]] = true;
+        }
+        transactionCount = 0;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function transfer(address payable to, uint amount) public {
+        require(isOwner[msg.sender], "Permission denied");
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        to.transfer(amount);
+        balances[msg.sender] -= amount;
+        transactionCount++;
+    }
+
+    function getTransactionCount() public view returns (uint) {
+        return transactionCount;
+    }
+}
+<\contract\>

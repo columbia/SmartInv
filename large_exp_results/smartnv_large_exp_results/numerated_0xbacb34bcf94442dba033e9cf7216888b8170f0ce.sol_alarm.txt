@@ -1,0 +1,39 @@
+Contract:
+
+contract Marketplace {
+    address public owner;
+    mapping(uint => string) public itemRegistry;
+    mapping(address => uint) public itemPrices;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(uint itemId, string memory itemDetails, uint price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        itemRegistry[itemId] = itemDetails;
+        itemPrices[msg.sender] = price;
+    }
+
+    function purchaseItem(uint itemId) public payable {
+        uint price = itemPrices[itemId];
+        require(msg.value == price, "Incorrect payment amount");
+        address payable seller = payable(owner);
+        seller.transfer(msg.value);
+    }
+
+    function updateItemPrice(uint itemId, uint newPrice) public {
+        itemPrices[itemId] = newPrice;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        address payable ownerPayable = payable(owner);
+        ownerPayable.transfer(address(this).balance);
+    }
+}
+
+Output:
+- privilege escalation
+- inconsistent state update
+- incorrect visibility/ownership

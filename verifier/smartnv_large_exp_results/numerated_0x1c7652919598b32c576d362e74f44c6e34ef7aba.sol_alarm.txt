@@ -1,0 +1,28 @@
+The contract provided for analysis:
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+
+    constructor() {
+        owner = msg.sender;
+        balances[owner] = 1000;
+    }
+
+    function buyToken() public payable {
+        uint tokenPrice = 1 ether;
+        require(msg.value >= tokenPrice, "Insufficient funds");
+        uint tokens = msg.value / tokenPrice;
+        balances[msg.sender] += tokens;
+        balances[owner] -= tokens;
+        payable(owner).transfer(msg.value);
+    }
+
+    function transferToken(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership
+2) Ether leakage.

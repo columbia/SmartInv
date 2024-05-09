@@ -1,0 +1,39 @@
+The contract below potentially contains the following vulnerabilities:
+
+1) Inconsistent state update
+2) Insufficient gas
+
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    
+    enum State { Created, Locked, Inactive }
+    State public state;
+
+    constructor(address _seller, address _arbiter) payable {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = msg.value;
+        state = State.Created;
+    }
+
+    function confirmPayment() public {
+        require(msg.sender == buyer, "Only buyer can confirm payment");
+        require(state == State.Created, "Invalid state for payment confirmation");
+        
+        state = State.Locked;
+    }
+
+    function confirmReceived() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm received");
+        require(state == State.Locked, "Invalid state for confirmation of receipt");
+        
+        seller.transfer(amount);
+        state = State.Inactive;
+    }
+}
+<\contract\>

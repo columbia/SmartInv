@@ -1,0 +1,43 @@
+<\contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public voteCount;
+
+    address public admin;
+
+    constructor() public {
+        admin = msg.sender;
+    }
+
+    function delegate(address to) public {
+        require(admin == msg.sender, "Only admin can delegate");
+        voters[msg.sender].delegate = to;
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "Not eligible to vote");
+
+        sender.voted = true;
+        sender.vote = proposal;
+
+        voteCount[proposal] += sender.weight;
+    }
+
+    function getVoteCount(uint256 proposal) public view returns (uint256) {
+        return voteCount[proposal];
+    }
+
+    function endVoting() public {
+        require(admin == msg.sender, "Only admin can end voting");
+        // Calculate final result based on voteCount
+    }
+}
+<\contract\>

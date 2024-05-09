@@ -1,0 +1,23 @@
+The contract to analyze:
+
+contract Vesting {
+    uint public totalTokens;
+    uint public releaseDate;
+    address public beneficiary;
+
+    constructor(uint _totalTokens, uint _releaseDate, address _beneficiary) {
+        totalTokens = _totalTokens;
+        releaseDate = _releaseDate;
+        beneficiary = _beneficiary;
+    }
+
+    function releaseTokens() public {
+        require(block.timestamp >= releaseDate, "Tokens cannot be released yet");
+        require(msg.sender == beneficiary, "You are not the beneficiary");
+        // Transfer totalTokens to beneficiary
+    }
+}
+
+The potential vulnerabilities in the contract are:
+3) business logic flaw
+7) ID uniqueness violation

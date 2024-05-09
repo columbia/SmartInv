@@ -1,0 +1,24 @@
+Contract to be analyzed:
+
+contract Auction {
+     address public highestBidder;
+     uint public highestBid;
+
+     function bid() external payable {
+         require(msg.value > highestBid, "Bid not high enough");
+         require(msg.sender != highestBidder, "You are already the highest bidder");
+         highestBidder.transfer(highestBid); 
+         highestBidder = msg.sender;
+         highestBid = msg.value;
+     }
+
+     function withdraw() external {
+         require(msg.sender == highestBidder, "You are not the highest bidder");
+         uint amount = highestBid;
+         highestBidder = address(0);
+         highestBid = 0;
+         msg.sender.transfer(amount);
+     }
+}
+Output: 
+1) potential vulnerability: reentrancy

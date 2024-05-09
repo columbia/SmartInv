@@ -1,0 +1,49 @@
+<\contract\>
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public releasedToSeller;
+    bool public releasedToBuyer;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        _;
+    }
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        releasedToSeller = false;
+        releasedToBuyer = false;
+    }
+
+    function releaseToSeller() public onlySeller {
+        require(releasedToSeller == false, "Funds already released to seller");
+        releasedToSeller = true;
+    }
+
+    function releaseToBuyer() public onlyBuyer {
+        require(releasedToBuyer == false, "Funds already released to buyer");
+        releasedToBuyer = true;
+    }
+
+    function releaseToArbiter() public onlyArbiter {
+        require(releasedToSeller == true && releasedToBuyer == true, "Funds not released by both parties");
+        seller.transfer(price);
+    }
+}
+<\contract\>

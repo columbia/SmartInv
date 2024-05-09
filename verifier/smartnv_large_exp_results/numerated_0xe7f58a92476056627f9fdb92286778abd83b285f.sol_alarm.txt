@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract Marketplace {
+     address public owner;
+     mapping(address => uint) public items;
+
+     function addItem(address _item, uint _price) public {
+         require(items[_item] == 0, "item already exists");
+         items[_item] = _price;
+     }
+
+     function buyItem(address _item) public payable {
+         require(items[_item] != 0, "item does not exist");
+         require(msg.value >= items[_item], "insufficient funds");
+         owner.transfer(items[_item]);
+         // Transfer item ownership logic
+     }
+}
+<\contract_to_analyze\>

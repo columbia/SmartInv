@@ -1,0 +1,22 @@
+<\contract_to_analyze\> 
+contract PaymentGateway {
+    uint public totalPayments;
+    mapping(address => uint) public balances;
+
+    function makePayment() external payable {
+        require(msg.value > 0, "Payment must be greater than 0");
+        balances[msg.sender] += msg.value;
+        totalPayments += msg.value;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalPayments -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract_to_analyze\> 
+
+8) reentrancy
+9) integer overflow/underflow

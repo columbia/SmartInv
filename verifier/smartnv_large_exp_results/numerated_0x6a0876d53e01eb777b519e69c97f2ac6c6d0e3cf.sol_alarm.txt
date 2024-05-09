@@ -1,0 +1,19 @@
+<\contract\> 
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint256) public voteCount;
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        if (msg.sender.balance > 0) {
+            voteCount[msg.sender] += 1;
+        }
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) arithmetic flaw: The comparison `msg.sender.balance > 0` might lead to an arithmetic flaw since 'balance' returns the balance of the address in Wei, and comparing it directly to 0 may not be the intended behavior. 
+2) inconsistent state update: There is a potential for inconsistent state update if the state variables `hasVoted` and `voteCount` are not updated atomically, leading to unexpected behavior.

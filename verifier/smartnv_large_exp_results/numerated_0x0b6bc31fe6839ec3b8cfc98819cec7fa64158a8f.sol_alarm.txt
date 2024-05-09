@@ -1,0 +1,35 @@
+The contract provided is:
+
+```solidity
+contract Auction {
+        uint public highestBid;
+        address public highestBidder;
+        address public owner;
+        uint public auctionEndTime;
+
+        function startAuction() public {
+            require(msg.sender == owner, "Only owner can start auction");
+            auctionEndTime = block.timestamp + 86400; // 24 hours
+        }
+
+        function bid() public payable {
+            require(block.timestamp < auctionEndTime, "Auction has ended");
+            require(msg.value > highestBid, "Bid must be higher than current highest bid");
+            if (highestBid != 0) {
+                payable(highestBidder).transfer(highestBid);
+            }
+            highestBid = msg.value;
+            highestBidder = msg.sender;
+        }
+
+        function endAuction() public {
+            require(block.timestamp >= auctionEndTime, "Auction has not ended yet");
+            require(msg.sender == owner, "Only owner can end auction");
+            address _this = address(this);
+            payable(owner).transfer(address(this).balance);
+        }
+}
+```
+
+Output:
+- The contract does not contain any potential vulnerabilities. It is healthy.

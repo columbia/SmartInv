@@ -1,0 +1,37 @@
+<\Contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE, REFUNDED }
+    State public currentState;
+
+    mapping(address => uint) public funds;
+
+    constructor(address _seller, address _arbiter) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer && currentState == State.AWAITING_PAYMENT, "Only buyer can deposit in AWAITING_PAYMENT state");
+        funds[buyer] += msg.value;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer, "Only buyer can confirm delivery");
+        currentState = State.COMPLETE;
+        funds[seller] += funds[buyer];
+        funds[buyer] = 0;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer || msg.sender == arbiter, "Only buyer or arbiter can initiate a refund");
+        currentState = State.REFUNDED;
+        funds[buyer] = 0;
+    }
+}
+<\Contract\> 

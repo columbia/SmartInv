@@ -1,0 +1,6 @@
+Potential vulnerabilities in the following contract:
+1) Inconsistent state update: The state of the proposal struct changes in the execute function but may remain inconsistent with the actual execution status.
+2) Incorrect visibility/ownership: The startExecute, execute, and endExecute functions are missing visibility modifiers which can lead to unexpected behaviors.
+3) Insufficient gas: If the gas limit is not set adequately, certain functions like execute or endExecute may fail due to running out of gas.
+4) ID uniqueness violation: The usage of proposal.addr as a key in startingBalanceList may lead to conflicts or unexpected behaviors.
+5) Business logic flaw: The endExecute function's condition for determining execution failure (votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()) may not accurately reflect the desired business logic.

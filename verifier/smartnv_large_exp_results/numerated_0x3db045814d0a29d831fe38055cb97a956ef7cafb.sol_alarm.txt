@@ -1,0 +1,65 @@
+<\contract_to_be_analyzed\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight; 
+        bool voted; 
+        address delegate;
+        uint256 vote;
+    }
+    
+    address public chairperson;
+    mapping(address => Voter) public voters;
+    uint256 public totalVotes;
+    
+    constructor() {
+        chairperson = msg.sender;
+        voters[chairperson].weight = 1;
+        totalVotes = 1;
+    }
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        
+        require(to != msg.sender, "Self-delegation is disallowed.");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Circular delegation is disallowed.");
+        }
+        
+        sender.voted = true;
+        sender.delegate = to;
+        
+        Voter storage delegateVoter = voters[to];
+        if (delegateVoter.voted) {
+            voters[delegateVoter.vote].weight += sender.weight;
+        } else {
+            delegateVoter.weight += sender.weight;
+        }
+    }
+    
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight != 0, "Only valid voters can vote.");
+        require(!sender.voted, "You already voted.");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+        totalVotes += sender.weight;
+    }
+    
+    function winningProposal() public view returns (uint256 winningProposal_) {
+        uint256 winningVoteCount = 0;
+        for (uint256 p = 0; p < totalVotes; p++) {
+            if (p == 0) {
+                winningVoteCount = voters[p].weight;
+                winningProposal_ = p;
+            } else if (voters[p].weight > winningVoteCount) {
+                winningVoteCount = voters[p].weight;
+                winningProposal_ = p;
+            }
+        }
+    }
+}
+<\contract_to_be_analyzed\>

@@ -1,0 +1,37 @@
+<\contract\> 
+contract VotingSystem {
+         struct Proposal {
+              uint256 startTime; 
+              uint256 endTime; 
+              address creator; 
+              uint256 voteCount; 
+              bool executed; 
+              mapping(address => bool) hasVoted; 
+         }
+         mapping(uint256 => Proposal) public proposals; 
+         uint256 public proposalCounter; 
+
+         function createProposal(uint256 _startTime, uint256 _endTime) public {
+              require(_startTime < _endTime, "Invalid proposal times");
+              proposals[proposalCounter] = Proposal(_startTime, _endTime, msg.sender, 0, false);
+              proposalCounter++;
+         }
+
+         function vote(uint256 proposalId) public {
+              require(proposals[proposalId].startTime <= block.timestamp, "Voting has not started yet");
+              require(proposals[proposalId].endTime >= block.timestamp, "Voting has ended");
+              require(!proposals[proposalId].executed, "Proposal already executed");
+              require(!proposals[proposalId].hasVoted[msg.sender], "Already voted");
+              proposals[proposalId].voteCount++;
+              proposals[proposalId].hasVoted[msg.sender] = true;
+         }
+
+         function executeProposal(uint256 proposalId) public {
+              require(proposals[proposalId].endTime < block.timestamp, "Voting is still ongoing");
+              require(proposals[proposalId].creator == msg.sender, "Only creator can execute proposal");
+              require(proposals[proposalId].voteCount > 0, "No votes on the proposal");
+              proposals[proposalId].executed = true;
+              // Execute proposal logic 
+         }
+}
+<\contract\>

@@ -1,0 +1,28 @@
+The contract in question:
+
+contract PaymentChannel {
+    address public sender;
+    address public receiver;
+    uint256 public depositAmount;
+
+    function openChannel(address _receiver) public payable {
+        sender = msg.sender;
+        receiver = _receiver;
+        depositAmount = msg.value;
+    }
+
+    function closeChannel(uint256 amount) public {
+        require(msg.sender == sender, "Only sender can close the channel");
+        require(amount <= depositAmount, "Amount exceeds deposit");
+        receiver.transfer(amount);
+        depositAmount -= amount;
+    }
+
+    function topUp(uint256 amount) public payable {
+        require(msg.sender == sender, "Only sender can top up the channel");
+        depositAmount += amount;
+    }
+}
+
+Output:
+- potential vulnerability: inconsistent state update

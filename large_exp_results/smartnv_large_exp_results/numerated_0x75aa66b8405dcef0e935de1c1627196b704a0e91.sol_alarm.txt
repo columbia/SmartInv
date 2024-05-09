@@ -1,0 +1,28 @@
+<\Contract\> 
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function processPayment() public payable {
+        require(msg.value > 0, "Payment should be greater than 0");
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdrawPayments() public {
+        require(msg.sender == owner, "Only owner can withdraw payments");
+        uint amount = payments[msg.sender];
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        payments[msg.sender] = 0;
+    }
+}
+<\Contract\> 
+
+<\Output\>
+Potential vulnerabilities found in the contract:
+1) reentrancy
+2) inconsistent state update

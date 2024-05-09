@@ -1,0 +1,18 @@
+<\your_contract\>
+contract PaymentContract {
+    address public sender;
+    address public receiver;
+    uint public amount;
+
+    function makePayment(address _receiver, uint _amount) public {
+        require(msg.sender == sender, "Only the sender can make a payment");
+        receiver = _receiver;
+        amount = _amount;
+    }
+
+    function confirmPayment() public {
+        require(msg.sender == receiver, "Only the receiver can confirm the payment");
+        payable(receiver).transfer(amount);
+    }
+}
+<\your_contract\>

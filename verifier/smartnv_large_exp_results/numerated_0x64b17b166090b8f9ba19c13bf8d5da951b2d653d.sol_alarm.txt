@@ -1,0 +1,34 @@
+<\contract\> 
+contract PaymentChannel {
+     address public payer;
+     address public payee;
+     uint public expiration; 
+     uint public value;
+     bool public closed;
+     
+     constructor(address _payer, address _payee, uint _expiration) {
+         payer = _payer;
+         payee = _payee;
+         expiration = _expiration;
+     }
+     
+     function deposit(uint _value) public {
+         require(msg.sender == payer, "only payer can deposit");
+         require(_value > 0, "value must be greater than 0");
+         require(!closed, "channel is closed");
+         value += _value;
+     }
+     
+     function withdraw(uint _value) public {
+         require(msg.sender == payee, "only payee can withdraw");
+         require(now < expiration, "channel has expired");
+         require(_value <= value, "insufficient funds");
+         value -= _value;
+         if (value == 0) {
+             closed = true;
+         }
+     }
+}
+
+Output:
+- healthy

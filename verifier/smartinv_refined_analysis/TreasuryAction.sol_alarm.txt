@@ -1,0 +1,24 @@
+The contract provided for analysis is:
+
+contract ExchangeTokens {
+         IERC20 public WETH;
+         IERC20 public USDC;
+         function  calculatePrice() public payable returns (uint) {
+             
+            return (USDC.balanceOf(address(pair)) /
+             WETH.balanceOf(address(pair)));
+      }
+  }
+
+Potential vulnerabilities in the provided contract:
+
+1) Price manipulation vulnerability: The function calculatePrice relies on the balances of USDC and WETH tokens in the pair address to calculate the price. This could potentially be manipulated if an attacker gains control over the pair address, allowing them to manipulate the price calculation.
+
+2) Cross bridge inconsistency vulnerability: The function does not provide any checks or validations to ensure that the pair address is valid or that the tokens being used for calculations are correct. This could lead to inconsistencies in the bridge between different tokens, potentially resulting in incorrect price calculations.
+
+3) Business logic flaw: The function does not include any logic to handle unexpected scenarios such as invalid token addresses or insufficient token balances. This lack of error handling could result in unexpected behavior or vulnerabilities in the contract.
+
+Therefore, the potential vulnerabilities in the provided contract are:
+1) Price manipulation
+2) Cross bridge inconsistency
+3) Business logic flaw

@@ -1,0 +1,21 @@
+contract PaymentProcessor {
+    mapping(address => uint256) public payments;
+    address public admin;
+
+    constructor(address _admin) {
+        admin = _admin;
+    }
+
+    function processPayment(address _recipient, uint256 _amount) external {
+        require(msg.sender == admin, "Only admin can process payments");
+        payments[_recipient] += _amount;
+    }
+
+    function withdrawPayment(address _recipient) external {
+        uint256 payment = payments[_recipient];
+        require(payment > 0, "No payment to withdraw");
+        payments[_recipient] = 0;
+        (bool success, ) = _recipient.call{value: payment}("");
+        require(success, "Payment transfer failed");
+    }
+}

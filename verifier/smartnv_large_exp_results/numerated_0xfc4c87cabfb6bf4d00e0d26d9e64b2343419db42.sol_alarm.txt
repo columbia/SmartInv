@@ -1,0 +1,50 @@
+<\contract\> 
+contract VotingSystem {
+     struct Voter {
+          bool voted;
+          uint256 vote;
+          address delegate;
+          }
+     struct Proposal {
+          uint256 voteCount;
+          address creator;
+          bool executed;
+          }
+     mapping(address => Voter) public voters;
+     Proposal[] public proposals;
+     uint256 public totalVotes;
+     
+     function delegate(address to) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "Already voted.");
+          require(to != msg.sender, "Self-delegation is not allowed.");
+          while (voters[to].delegate != address(0)) {
+               to = voters[to].delegate;
+          }
+          sender.voted = true;
+          sender.delegate = to;
+          Voter storage delegate_ = voters[to];
+          if (delegate_.voted) {
+               proposals[delegate_.vote].voteCount += 1;
+          } else {
+               totalVotes += 1;
+          }
+     }
+     
+     function vote(uint256 proposalId) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "Already voted.");
+          sender.voted = true;
+          sender.vote = proposalId;
+          proposals[proposalId].voteCount += 1;
+          totalVotes += 1;
+     }
+     
+     function executeProposal(uint256 proposalId) public {
+          Proposal storage proposal = proposals[proposalId];
+          require(!proposal.executed, "Proposal already executed.");
+          require(proposal.voteCount > totalVotes/2, "Not enough votes to execute.");
+          // execute proposal logic
+          proposal.executed = true;
+     }
+}

@@ -1,0 +1,43 @@
+<\contract\> 
+contract Escrow {
+     address public payer;
+     address public payee;
+     address public arbiter;
+     uint public amount;
+     
+     enum State { Created, Locked, Released, Inactive }
+     State public state;
+
+     constructor(address _payee, address _arbiter) {
+         payer = msg.sender;
+         payee = _payee;
+         arbiter = _arbiter;
+         state = State.Created;
+     }
+
+     function deposit() public payable {
+         require(msg.sender == payer, "Only payer can deposit funds");
+         require(state == State.Created, "Funds already deposited or transaction finished");
+         amount = msg.value;
+         state = State.Locked;
+     }
+
+     function release() public {
+         require(msg.sender == payer || msg.sender == payee, "Only payer or payee can release funds");
+         require(state == State.Locked, "Funds not locked");
+         state = State.Released;
+         payee.transfer(amount);
+     }
+
+     function refund() public {
+         require(msg.sender == payer, "Only payer can refund funds");
+         require(state == State.Locked, "Funds not locked");
+         state = State.Inactive;
+         payer.transfer(amount);
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) insufficient gas
+2) incorrect visibility/ownership

@@ -1,0 +1,28 @@
+Contract to analyze:
+```solidity
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        votes[msg.sender] = 1;
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function resetVotes() public {
+        require(msg.sender == owner, "Only owner can reset votes");
+        for (uint i = 0; i < totalVotes; i++) {
+            delete votes[address(i)];
+            hasVoted[address(i)] = false;
+        }
+        totalVotes = 0;
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Incorrect visibility/ownership
+2) Privilege escalation

@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract Escrow {
+    mapping(address => uint) public balances;
+    address public admin;
+
+    constructor(address _admin) {
+        admin = _admin;
+    }
+
+    function deposit() external payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint _amount) external {
+        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        balances[msg.sender] -= _amount;
+        (bool success, ) = msg.sender.call{value: _amount}("");
+        require(success, "Transfer failed");
+    }
+
+    function transferOwnership(address newAdmin) external {
+        require(msg.sender == admin, "Only admin can transfer ownership");
+        admin = newAdmin;
+    }
+}
+<\analyzed_contract\>

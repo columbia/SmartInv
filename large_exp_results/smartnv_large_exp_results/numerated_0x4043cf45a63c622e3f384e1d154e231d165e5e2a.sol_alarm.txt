@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract ExampleContract {
+    address public owner;
+    uint256 public balance;
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = newOwner;
+    }
+}
+
+The potential vulnerabilities in the contract:
+1) reentrancy: The withdraw function allows for potential reentrancy attack if the order of operations is not carefully considered.
+2) incorrect visibility/ownership: The changeOwner function does not restrict the visibility and can allow anyone to call this function, potentially leading to privilege escalation.

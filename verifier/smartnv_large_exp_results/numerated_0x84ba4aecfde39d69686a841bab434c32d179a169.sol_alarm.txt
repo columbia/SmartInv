@@ -1,0 +1,21 @@
+Contract to analyze:
+
+contract Payment {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        msg.sender.transfer(amount);
+        balances[msg.sender] -= amount;
+    }
+}
+
+Potential vulnerabilities in the Payment contract:
+1) Integer overflow/underflow: There is a potential for integer underflow if a user attempts to withdraw more funds than they have deposited, resulting in a negative balance.
+2) Insufficient gas: The withdrawal process relies on transferring funds to the msg.sender, which may fail due to insufficient gas if the contract balance is low.
+3) Incorrect visibility/ownership: The use of public for the balances mapping allows any external entity to view all balances, potentially revealing sensitive information.
+4) Cross bridge inconsistency: There is potential for inconsistencies in the contract state if external contracts interact with the Payment contract without proper synchronization.

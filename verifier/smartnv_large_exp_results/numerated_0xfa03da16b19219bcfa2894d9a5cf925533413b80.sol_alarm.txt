@@ -1,0 +1,31 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public price;
+    bool public buyerPaid;
+    bool public sellerPaid;
+
+    function initiate(address _seller, uint _price) public {
+        require(seller == address(0), "Escrow already initiated");
+        seller = _seller;
+        price = _price;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == price, "Incorrect deposit amount");
+        buyerPaid = true;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer, "Only buyer can confirm delivery");
+        require(buyerPaid == true, "Buyer hasn't paid yet");
+        seller.transfer(price);
+        sellerPaid = true;
+    }
+} 
+
+Output: 
+1) atomicity violation
+2) incorrect visibility/ownership

@@ -1,0 +1,25 @@
+The contract:
+
+contract Payment {
+         IERC20 public token;
+         mapping(uint => uint) public payments;
+         uint public totalPayments;
+
+         function makePayment(uint paymentId, uint amount) external {
+             require(token.balanceOf(msg.sender) >= amount,
+             "Insufficient balance");
+             token.transferFrom(msg.sender, address(this), amount);
+             payments[paymentId] += amount;
+             totalPayments += amount;
+         }
+         function refundPayment(uint paymentId, uint amount) external {
+             require(amount <= payments[paymentId], "Invalid refund amount");
+             msg.sender.transfer(amount);
+             payments[paymentId] -= amount;
+             totalPayments -= amount;
+         }
+     }
+	 
+Output: 
+1) integer overflow/underflow
+2) insufficient gas

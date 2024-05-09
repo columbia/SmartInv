@@ -1,0 +1,38 @@
+<\analyzed_contract\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+     }
+     mapping(address => Proposal) public proposals;
+     address public admin;
+     IERC20 public token;
+
+     function createProposal() external {
+          Proposal storage newProposal = proposals[msg.sender];
+          require(newProposal.startTime == 0, "proposal already exists");
+          newProposal.startTime = block.timestamp;
+          newProposal.proposer = msg.sender;
+     }
+
+     function vote(uint256 amount) external {
+          Proposal storage proposal = proposals[msg.sender];
+          require(proposal.startTime != 0, "no proposal found");
+          token.transferFrom(msg.sender, address(this), amount);
+          proposal.votedAmount += amount;
+     }
+
+     function endProposal() external {
+          Proposal storage proposal = proposals[msg.sender];
+          require(proposal.startTime != 0, "no proposal found");
+          require(block.timestamp >= proposal.startTime + 24 hours, "voting period not over");
+          token.transfer(proposal.proposer, proposal.votedAmount);
+          delete proposals[msg.sender];
+     }
+}
+
+<\output\>
+- Inconsistent state update: The endProposal function allows for the deletion of a proposal without checking for any conditions or restrictions, potentially leading to inconsistent state updates.
+- Insufficient gas: If the endProposal function requires a considerable amount of gas to execute, there might be insufficient gas provided by the user, leading to the function failing to execute completely.
+- Incorrect visibility/ownership: The admin variable is publicly accessible, which could potentially lead to unauthorized changes to the contract state.

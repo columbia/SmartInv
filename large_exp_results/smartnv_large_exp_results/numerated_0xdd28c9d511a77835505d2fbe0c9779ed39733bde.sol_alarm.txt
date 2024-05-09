@@ -1,0 +1,22 @@
+Given the contract provided for analysis:
+
+contract SwapTokens {
+        IERC20 public tokenA;
+        IERC20 public tokenB;
+        uint public totalSupply;
+
+        function swap(uint amount) public {
+            require(tokenA.balanceOf(msg.sender) >= amount, "insufficient balance");
+            tokenA.transferFrom(msg.sender, address(this), amount);
+            tokenB.transfer(msg.sender, amount);
+            totalSupply += amount;
+        }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The totalSupply variable is increased without any check or validation, which could lead to inconsistent state updates if not managed carefully.
+
+2) Incorrect visibility/ownership: The tokenA and tokenB variables are declared as public, which may expose sensitive information about these tokens to external parties.
+
+Therefore, the identified potential vulnerabilities in the contract SwapTokens are inconsistent state update and incorrect visibility/ownership.

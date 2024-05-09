@@ -1,0 +1,45 @@
+<\contract\> 
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public amount;
+    enum State {Created, Locked, Inactive}
+    State public state;
+
+    constructor(address _payer, address _payee, address _arbiter, uint _amount) public {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+        amount = _amount;
+        state = State.Created;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only the payer can deposit");
+        require(state == State.Created, "Cannot deposit in the current state");
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        require(state == State.Locked, "Cannot release funds in the current state");
+        payee.transfer(amount);
+        state = State.Inactive;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only the arbiter can refund funds");
+        require(state == State.Locked, "Cannot refund funds in the current state");
+        payer.transfer(amount);
+        state = State.Inactive;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) ID uniqueness violation - There is no check to ensure that the IDs for each instance of the Escrow contract are unique, which could lead to confusion or conflicts.
+2) Incorrect visibility/ownership - The functions deposit, release, and refund do not restrict access based on ownership of the contract, allowing potentially unauthorized users to interact with the contract.
+3) Inconsistent state update - The state variable is updated in the deposit function without proper checks, which could lead to unexpected behavior.
+4) Insufficient gas - If the transfer of funds in the release or refund functions fails due to running out of gas, the contract will be in an inconsistent state, with funds locked.
+5) Cross bridge inconsistency - The contract does not handle potential inconsistencies between different blockchains or tokens involved in the escrow transaction, leading to vulnerabilities in accounting for funds.

@@ -1,0 +1,49 @@
+The contract provided for analysis is:
+
+```
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+```
+
+This contract may have the following potential vulnerabilities:
+
+1) Incorrect visibility/ownership: The `owner` variable is declared as internal, but it is not clear if it is meant to be accessed by inheriting contracts or only within the current contract. This can lead to ownership-related vulnerabilities if not handled properly.
+
+2) ID uniqueness violation: There does not seem to be any mechanism in place to ensure the uniqueness of proposal IDs. This could potentially lead to conflicts or unexpected behavior if multiple proposals are created with the same ID.
+
+3) Inconsistent state update: There are multiple state updates happening without proper checks and validation, such as in the `execute` function where `proposal.votedAmount` is being incremented without sufficient validation checks.
+
+4) Insufficient gas: The contract does not consider gas costs for external contract calls like `votingToken.transferFrom`. This can potentially lead to out-of-gas errors during execution.
+
+5) Business logic flaw: There may be underlying flaws in the business logic of the contract that could lead to unexpected behavior or vulnerabilities. This would require a more thorough analysis of the contract's intent and functionality.

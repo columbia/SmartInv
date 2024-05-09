@@ -1,0 +1,34 @@
+<\contract\>
+contract TokenSale {
+     IERC20 public token;  
+     address public owner;
+     address public admin;
+
+     constructor(address _token) {
+         token = IERC20(_token);
+         owner = msg.sender;
+         admin = msg.sender;
+     }
+
+     modifier onlyOwner {
+         require(msg.sender == owner, "Unauthorized");
+         _;
+     }
+
+     modifier onlyAdmin {
+         require(msg.sender == admin || msg.sender == owner, "Unauthorized");
+         _;
+     }
+
+     function setTokenPrice(uint _price) public onlyAdmin {
+         token.setPrice(_price);
+     }
+
+     function buyTokens(uint _amount) public {
+         require(_amount > 0, "Cannot buy 0 tokens");
+         uint totalCost = _amount * token.getPrice();
+         token.transferFrom(msg.sender, address(this), totalCost);
+         token.transfer(msg.sender, _amount);
+     }
+}
+<\contract\>

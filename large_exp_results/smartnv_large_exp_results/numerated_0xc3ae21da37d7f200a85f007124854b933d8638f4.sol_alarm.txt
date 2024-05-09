@@ -1,0 +1,29 @@
+<\analyzed_contract\> 
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint256 public tokenPrice;
+    uint256 public tokensSold;
+
+    constructor(IERC20 _token, uint256 _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint256 _numberOfTokens) public payable {
+        require(msg.value == _numberOfTokens * tokenPrice, "Insufficient funds");
+        require(token.balanceOf(address(this)) >= _numberOfTokens, "Not enough tokens available");
+        
+        token.transfer(msg.sender, _numberOfTokens);
+        tokensSold += _numberOfTokens;
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the TokenSale contract are:
+- Price manipulation: There is a risk of price manipulation if the tokenPrice is manipulated by the admin.
+- Inconsistent state update: The tokensSold variable is updated without proper synchronization measures, potentially leading to inconsistent state.
+- Incorrect visibility/ownership: The admin variable is public, which exposes the contract owner's identity. 
+
+Output: price manipulation, inconsistent state update, incorrect visibility/ownership

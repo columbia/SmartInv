@@ -1,0 +1,51 @@
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address internal admin;
+     mapping(address => uint) internal startingBalanceList;
+     Proposal internal proposal;
+
+    function startVoting() external {
+              uint256 startingBalance;
+              require(proposal.startTime == 0, "voting already in progress");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.proposer);
+              startingBalanceList[proposal.proposer] = startingBalance; 
+
+        }
+
+    function vote(uint256 amount) external {
+              require(proposal.startTime + 48 > block.timestamp, "voting period over");
+              require(proposal.votedAmount == 0, "already voted");
+              transferToAdmin(amount);
+              proposal.votedAmount += amount; 
+              sendVoteNotification(proposal); 
+
+        }
+        
+    function endVoting() external {
+              require(proposal.startTime != 0, "no active proposal");
+              require(proposal.startTime + 48 < block.timestamp, "voting period not ended");
+              require(admin == msg.sender, "only admin can end voting");
+              handleVotingResults();
+        }
+        
+    function getStartingBalance(address proposer) internal returns(uint256) {
+        // implementation details to retrieve the starting balance of the proposer
+    }
+    
+    function transferToAdmin(uint256 amount) internal {
+        // implementation details to transfer the voting amount to the admin
+    }
+    
+    function sendVoteNotification(Proposal storage proposal) internal {
+        // implementation details to send notification about the vote
+    }
+    
+    function handleVotingResults() internal {
+        // implementation details to process the results of the voting
+    }
+}  

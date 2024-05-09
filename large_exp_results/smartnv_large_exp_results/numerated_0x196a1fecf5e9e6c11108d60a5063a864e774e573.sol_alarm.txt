@@ -1,0 +1,31 @@
+<\contract_to_analyze\>
+contract Vault {
+    uint public totalDeposits;
+    mapping(address => uint) public userBalances;
+    address public owner;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        userBalances[msg.sender] += msg.value;
+        totalDeposits += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(userBalances[msg.sender] >= amount, "Insufficient balance");
+        msg.sender.transfer(amount);
+        userBalances[msg.sender] -= amount;
+        totalDeposits -= amount;
+    }
+
+    function withdrawAll() public {
+        uint amount = userBalances[msg.sender];
+        userBalances[msg.sender] = 0;
+        totalDeposits -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,33 @@
+<\contract\>
+contract MultiSigWallet {
+    mapping(address => bool) public isOwner;
+    uint public maxOwners;
+    address[] public owners;
+
+    function addOwner(address newOwner) public {
+        require(msg.sender == owners[0], "Only the first owner can add new owners");
+        require(owners.length < maxOwners, "Max number of owners reached");
+        isOwner[newOwner] = true;
+        owners.push(newOwner);
+    }
+
+    function removeOwner(address owner) public {
+        require(msg.sender == owners[0], "Only the first owner can remove owners");
+        require(isOwner[owner], "Owner does not exist");
+        isOwner[owner] = false;
+        for (uint i = 0; i < owners.length; i++) {
+            if (owners[i] == owner) {
+                owners[i] = owners[owners.length - 1];
+                owners.pop();
+                break;
+            }
+        }
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(isOwner[newOwner], "New owner must be an existing owner");
+        isOwner[msg.sender] = false;
+        isOwner[newOwner] = true;
+    }
+}
+<\contract\>

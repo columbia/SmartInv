@@ -1,0 +1,51 @@
+contract VotingSystem {
+    struct Voter {
+        bool voted;
+        uint256 vote;
+        address delegate;
+    }
+
+    mapping(address => Voter) public voters;
+    mapping(uint256 => uint256) public voteCount;
+
+    address public owner;
+    uint256 public totalVotes;
+    bool public votingOpen;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        votingOpen = true;
+    }
+
+    function startVoting() public onlyOwner {
+        require(votingOpen == false, "Voting is already ongoing");
+        votingOpen = true;
+    }
+
+    function endVoting() public onlyOwner {
+        require(votingOpen == true, "Voting has already ended");
+        votingOpen = false;
+    }
+
+    function vote(uint256 candidate) public {
+        require(votingOpen == true, "Voting is not open at the moment");
+        require(voters[msg.sender].voted == false, "You have already voted");
+
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = candidate;
+
+        voteCount[candidate]++;
+        totalVotes++;
+    }
+} 
+
+Output: 
+- Business logic flaw: Lack of validation for delegate in the Voter struct could lead to unauthorized voting if not properly controlled.
+- ID uniqueness violation: There is a possibility of voters voting multiple times by exploiting the lack of check for unique voter identifiers.
+- Inconsistent state update: Not ensuring atomicity in vote() function can lead to inconsistent data if multiple votes are made concurrently.
+- Incorrect visibility/ownership: The visibility of voters and voteCount could expose sensitive information and the owner attribute could be exploited if not properly secured.

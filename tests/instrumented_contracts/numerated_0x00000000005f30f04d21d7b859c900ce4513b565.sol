@@ -1,0 +1,50 @@
+1 {{
+2   "language": "Solidity",
+3   "sources": {
+4     "src/Fundrop/GasRewardsDistributor.sol": {
+5       "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.20;\n\nimport {Ownable} from \"openzeppelin/access/Ownable.sol\";\nimport {MerkleProofLib} from \"solmate/utils/MerkleProofLib.sol\";\n\ncontract GasRewardsDistributor is Ownable {\n    receive() external payable {}\n\n    mapping(bytes32 root => uint16 round) public rootsToRounds;\n    mapping(uint16 round => uint64 endTime) public roundEndTimes;\n    mapping(bytes32 packedRecipientAndRound => bool used) public claimedRewards;\n\n    event Claimed(address recipient, uint16 round, uint256 amount);\n\n    error RoundNotOpen();\n    error AlreadyClaimed();\n    error InvalidProof();\n    error TransferFailed();\n    error NotEnoughEtherInContract();\n    error InvalidRoundId();\n\n    constructor() {\n        if (msg.sender != tx.origin) {\n            transferOwnership(tx.origin);\n        }\n    }\n\n    function _packRecipientAndRound(address _address, uint16 _round) internal pure returns (bytes32) {\n        return (bytes32(uint256(uint160(_address))) << 96) | bytes32(uint256(_round));\n    }\n\n    function claim(bytes32 merkleRoot, uint256 amount, bytes32[] calldata proof) public payable {\n        if (amount > address(this).balance) revert NotEnoughEtherInContract();\n\n        // Look up the round for the given merkle root, verify that it's open\n        uint16 round = rootsToRounds[merkleRoot];\n        if (round == 0) revert InvalidRoundId();\n        if (block.timestamp > roundEndTimes[round]) revert RoundNotOpen();\n\n        // Verify that the user hasn't already claimed for this round\n        bytes32 packedRecipientAndRound = _packRecipientAndRound(msg.sender, round);\n        if (claimedRewards[packedRecipientAndRound]) revert AlreadyClaimed();\n\n        // Validate merkle proof\n        if (!MerkleProofLib.verify(proof, merkleRoot, keccak256(abi.encodePacked(msg.sender, amount, round)))) {\n            revert InvalidProof();\n        }\n\n        // Perform all state changes before sending Ether\n        claimedRewards[packedRecipientAndRound] = true;\n        emit Claimed(msg.sender, round, amount);\n\n        (bool success,) = payable(msg.sender).call{value: amount}(\"\");\n        if (!success) revert TransferFailed();\n    }\n\n    function setRoundEndTime(uint16 round, uint32 endTime) public onlyOwner {\n        // Round can't be 0 because that's how we check for round existence\n        if (round == 0) revert InvalidRoundId();\n        roundEndTimes[round] = endTime;\n    }\n\n    function setRoundMerkleRoot(uint16 round, bytes32 merkleRoot) public onlyOwner {\n        // We don't check if the round is 0, because that's how we delete a merkle root\n        rootsToRounds[merkleRoot] = round;\n    }\n\n    function withdraw(uint256 amount) public onlyOwner {\n        (bool success,) = payable(msg.sender).call{value: amount}(\"\");\n        if (!success) revert TransferFailed();\n    }\n}\n"
+6     },
+7     "lib/openzeppelin-contracts/contracts/access/Ownable.sol": {
+8       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.7.0) (access/Ownable.sol)\n\npragma solidity ^0.8.0;\n\nimport \"../utils/Context.sol\";\n\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n *\n * By default, the owner account will be the one that deploys the contract. This\n * can later be changed with {transferOwnership}.\n *\n * This module is used through inheritance. It will make available the modifier\n * `onlyOwner`, which can be applied to your functions to restrict their use to\n * the owner.\n */\nabstract contract Ownable is Context {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /**\n     * @dev Initializes the contract setting the deployer as the initial owner.\n     */\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    /**\n     * @dev Throws if called by any account other than the owner.\n     */\n    modifier onlyOwner() {\n        _checkOwner();\n        _;\n    }\n\n    /**\n     * @dev Returns the address of the current owner.\n     */\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    /**\n     * @dev Throws if the sender is not the owner.\n     */\n    function _checkOwner() internal view virtual {\n        require(owner() == _msgSender(), \"Ownable: caller is not the owner\");\n    }\n\n    /**\n     * @dev Leaves the contract without owner. It will not be possible to call\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\n     *\n     * NOTE: Renouncing ownership will leave the contract without an owner,\n     * thereby removing any functionality that is only available to the owner.\n     */\n    function renounceOwnership() public virtual onlyOwner {\n        _transferOwnership(address(0));\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Can only be called by the current owner.\n     */\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        _transferOwnership(newOwner);\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Internal function without access restriction.\n     */\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n"
+9     },
+10     "lib/solmate/src/utils/MerkleProofLib.sol": {
+11       "content": "// SPDX-License-Identifier: MIT\npragma solidity >=0.8.0;\n\n/// @notice Gas optimized merkle proof verification library.\n/// @author Solmate (https://github.com/transmissions11/solmate/blob/main/src/utils/MerkleProofLib.sol)\n/// @author Modified from Solady (https://github.com/Vectorized/solady/blob/main/src/utils/MerkleProofLib.sol)\nlibrary MerkleProofLib {\n    function verify(\n        bytes32[] calldata proof,\n        bytes32 root,\n        bytes32 leaf\n    ) internal pure returns (bool isValid) {\n        assembly {\n            if proof.length {\n                // Left shifting by 5 is like multiplying by 32.\n                let end := add(proof.offset, shl(5, proof.length))\n\n                // Initialize offset to the offset of the proof in calldata.\n                let offset := proof.offset\n\n                // Iterate over proof elements to compute root hash.\n                // prettier-ignore\n                for {} 1 {} {\n                    // Slot where the leaf should be put in scratch space. If\n                    // leaf > calldataload(offset): slot 32, otherwise: slot 0.\n                    let leafSlot := shl(5, gt(leaf, calldataload(offset)))\n\n                    // Store elements to hash contiguously in scratch space.\n                    // The xor puts calldataload(offset) in whichever slot leaf\n                    // is not occupying, so 0 if leafSlot is 32, and 32 otherwise.\n                    mstore(leafSlot, leaf)\n                    mstore(xor(leafSlot, 32), calldataload(offset))\n\n                    // Reuse leaf to store the hash to reduce stack operations.\n                    leaf := keccak256(0, 64) // Hash both slots of scratch space.\n\n                    offset := add(offset, 32) // Shift 1 word per cycle.\n\n                    // prettier-ignore\n                    if iszero(lt(offset, end)) { break }\n                }\n            }\n\n            isValid := eq(leaf, root) // The proof is valid if the roots match.\n        }\n    }\n}\n"
+12     },
+13     "lib/openzeppelin-contracts/contracts/utils/Context.sol": {
+14       "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes calldata) {\n        return msg.data;\n    }\n}\n"
+15     }
+16   },
+17   "settings": {
+18     "remappings": [
+19       "ERC721A/=lib/ERC721A/contracts/",
+20       "ds-test/=lib/forge-std/lib/ds-test/src/",
+21       "forge-std/=lib/forge-std/src/",
+22       "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+23       "openzeppelin/=lib/openzeppelin-contracts/contracts/",
+24       "solady/=lib/solady/src/",
+25       "solmate/=lib/solmate/src/"
+26     ],
+27     "optimizer": {
+28       "enabled": true,
+29       "runs": 250000
+30     },
+31     "metadata": {
+32       "bytecodeHash": "ipfs",
+33       "appendCBOR": true
+34     },
+35     "outputSelection": {
+36       "*": {
+37         "*": [
+38           "evm.bytecode",
+39           "evm.deployedBytecode",
+40           "devdoc",
+41           "userdoc",
+42           "metadata",
+43           "abi"
+44         ]
+45       }
+46     },
+47     "evmVersion": "paris",
+48     "libraries": {}
+49   }
+50 }}

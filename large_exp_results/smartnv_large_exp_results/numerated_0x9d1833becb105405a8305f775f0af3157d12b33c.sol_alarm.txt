@@ -1,0 +1,20 @@
+Contract: 
+
+contract TokenExchange {
+     IERC20 public tokenA; 
+     IERC20 public tokenB; 
+
+     function exchangeTokens(uint amountA) external {
+         tokenA.transferFrom(msg.sender, address(this), amountA);
+         uint amountB = calculateAmountB(amountA); 
+         tokenB.transfer(msg.sender, amountB); 
+     }
+
+     function calculateAmountB(uint amountA) internal view returns (uint) {
+         // Calculate amount of tokenB based on amountA
+         return amountA * 2; 
+     }
+}
+
+Output: 
+- Arithmetic flaw: The calculation in the `calculateAmountB` function may result in arithmetic overflow/underflow if the input amountA is too large.

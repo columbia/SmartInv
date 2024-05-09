@@ -1,0 +1,13 @@
+Potential vulnerabilities in the contract:
+
+1) Privilege escalation: The contract allows the `startExecute` function to be called externally, which can potentially lead to privilege escalation issues if malicious actors are able to call this function and set up proposals with unauthorized actions.
+
+2) Business logic flaw: There is a potential business logic flaw in the `endExecute` function where the execution is considered failed if the balance of the contract's address is greater than half of the total voting token supply. This logic may not accurately determine the success or failure of the execution, leading to potential vulnerabilities.
+
+3) Inconsistent state update: In the `execute` function, the update of the `proposal.votedAmount` variable is not atomic, which can lead to inconsistent state updates if multiple users attempt to execute transactions simultaneously.
+
+4) Atomicity violation: The `execute` function performs multiple state changes without using atomic operations, which can lead to vulnerabilities such as reentrancy attacks or state manipulation by malicious actors.
+
+5) Cross bridge inconsistency: There is a possibility of cross bridge inconsistency when transferring tokens in the `execute` function, especially if the `votingToken` contract interacts with other contracts during the transfer process, leading to potential vulnerabilities.
+
+6) ID uniqueness violation: The contract does not have a mechanism to ensure the uniqueness of proposal IDs, which could lead to conflicts and vulnerabilities if duplicate IDs are used in the system.

@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function endVoting() public {
+        require(msg.sender == owner, "Not the owner");
+        // Calculate result based on totalVotes
+        // Implement logic to declare winner
+    }
+}
+<\contract_to_analyze\>

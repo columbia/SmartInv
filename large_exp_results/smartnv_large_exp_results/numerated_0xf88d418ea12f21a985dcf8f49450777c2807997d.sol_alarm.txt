@@ -1,0 +1,19 @@
+The contract provided for analysis: 
+
+contract Marketplace {
+    mapping(address => uint) public productPrices;
+    
+    function setProductPrice(address product, uint price) public {
+        productPrices[product] = price;
+    }
+    
+    function purchaseProduct(address product) public payable {
+        require(msg.value >= productPrices[product], "Insufficient funds provided");
+        
+        // Transfer the product to the buyer
+        product.transfer(msg.sender);
+    }
+}
+
+Output: 
+- potential vulnerability: incorrect visibility/ownership

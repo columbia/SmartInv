@@ -1,0 +1,42 @@
+The contract to be analyzed for potential vulnerabilities is:
+
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 endTime; 
+          address creator; 
+          uint256 votes; 
+          bool executed; 
+          }
+
+     mapping(uint256 => Proposal) public proposals;
+     uint256 public totalProposals;
+
+     function createProposal(uint256 _startTime, uint256 _endTime) external {
+          require(_startTime > block.timestamp, "Invalid start time");
+          require(_endTime > _startTime, "Invalid end time");
+          totalProposals++;
+          proposals[totalProposals] = Proposal(_startTime, _endTime, msg.sender, 0, false);
+     }
+
+     function vote(uint256 _proposalId) external {
+          require(_proposalId <= totalProposals, "Invalid proposal ID");
+          require(proposals[_proposalId].creator != msg.sender, "Creator can't vote");
+          require(block.timestamp >= proposals[_proposalId].startTime && block.timestamp <= proposals[_proposalId].endTime, "Voting period over");
+          proposals[_proposalId].votes++;
+     }
+
+     function executeProposal(uint256 _proposalId) external {
+          require(_proposalId <= totalProposals, "Invalid proposal ID");
+          require(msg.sender == proposals[_proposalId].creator, "Only creator can execute");
+          require(!proposals[_proposalId].executed, "Proposal already executed");
+          require(block.timestamp > proposals[_proposalId].endTime, "Voting period not over");
+          proposals[_proposalId].executed = true;
+          // Execute proposal logic
+     }
+}
+
+Output: 
+potential vulnerabilities:
+1) incorrect visibility/ownership 
+2) inconsistent state update

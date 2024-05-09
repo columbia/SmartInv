@@ -1,0 +1,30 @@
+<\contract\> 
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+
+    constructor(IERC20 _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) public {
+        require(amount > 0, "Amount must be greater than 0");
+        uint totalCost = amount * price;
+        require(token.balanceOf(msg.sender) >= totalCost, "Not enough balance to buy tokens");
+        
+        token.transferFrom(msg.sender, owner, totalCost);
+    }
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "Only owner can set the price");
+        price = _price;
+    }
+}
+<\contract\> 
+
+Output: 
+- Incorrect visibility/ownership
+- Inconsistent state update

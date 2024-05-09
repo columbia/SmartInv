@@ -1,0 +1,31 @@
+Contract to analyze:
+
+contract ExampleContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit(uint amount) public {
+        balance += amount;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+Potential vulnerabilities in the ExampleContract:
+1) Incorrect visibility/ownership (transferOwnership function only checks if the caller is the current owner without any additional permission checks)
+2) Integer overflow/underflow (in deposit and withdraw functions where balance is not checked for overflow or underflow)
+3) Insufficient gas (possible gas exhaustion if the balance grows too large and causes out-of-gas errors)
+4) Atomicity violation (lack of atomicity in deposit and withdraw functions where multiple external calls could result in inconsistent state updates)

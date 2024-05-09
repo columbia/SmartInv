@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+contract TokenSale {
+    address public tokenAddress;
+    address public owner;
+    uint public price;
+    mapping(address => uint) public balances;
+    
+    constructor(address _tokenAddress, uint _price) public {
+        tokenAddress = _tokenAddress;
+        owner = msg.sender;
+        price = _price;
+    }
+    
+    function buyTokens(uint _amount) public {
+        uint cost = _amount * price;
+        require(msg.value >= cost, "Insufficient payment");
+        
+        IERC20(tokenAddress).transfer(msg.sender, _amount);
+        balances[msg.sender] += _amount;
+    }
+    
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Unauthorized");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+
+Output:
+1) Inconsistent state update: The 'balances' mapping stores the token balances of users, but it can be manipulated by malicious actors to alter the balances.
+2) Incorrect visibility/ownership: The 'owner' variable is publicly accessible, which can lead to unauthorized access and manipulation by external users.
+3) Insufficient gas: The 'withdrawFunds' function transfers the entire contract balance to the owner, which can consume a large amount of gas if the contract holds a significant amount of funds.

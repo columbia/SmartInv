@@ -1,0 +1,23 @@
+<\contract\> 
+contract ERC20Token {
+    mapping(address => uint) public balances;
+    uint public totalSupply;
+
+    constructor(uint _totalSupply) {
+        totalSupply = _totalSupply;
+        balances[msg.sender] = _totalSupply;
+    }
+
+    function transfer(address to, uint value) public {
+        require(balances[msg.sender] >= value, "Insufficient balance");
+        balances[msg.sender] -= value;
+        balances[to] += value;
+    }
+
+    function transferFrom(address from, address to, uint value) public {
+        require(balances[from] >= value, "Insufficient balance");
+        balances[from] -= value;
+        balances[to] += value;
+    }
+}
+<\contract\>

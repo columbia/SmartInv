@@ -1,0 +1,34 @@
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbitrator;
+
+    enum State { Initialized, InEscrow, Released, Refunded }
+    State public state;
+
+    constructor(address _payer, address _payee, address _arbitrator) {
+        payer = _payer;
+        payee = _payee;
+        arbitrator = _arbitrator;
+        state = State.Initialized;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit");
+        state = State.InEscrow;
+    }
+
+    function release() public {
+        require(msg.sender == arbitrator, "Only arbitrator can release funds");
+        require(state == State.InEscrow, "Invalid state for release");
+        payee.transfer(address(this).balance);
+        state = State.Released;
+    }
+
+    function refund() public {
+        require(msg.sender == arbitrator, "Only arbitrator can refund funds");
+        require(state == State.InEscrow, "Invalid state for refund");
+        payer.transfer(address(this).balance);
+        state = State.Refunded;
+    }
+}

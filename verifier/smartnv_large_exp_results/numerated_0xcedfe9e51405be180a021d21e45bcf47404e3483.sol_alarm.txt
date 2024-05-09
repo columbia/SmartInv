@@ -1,0 +1,21 @@
+<\contract_1\>
+contract SaleContract {
+     address public seller;
+     address public buyer;
+     uint public price;
+
+     function setPrice(uint _price) public {
+         require(msg.sender == seller, "You are not authorized to set the price");
+         price = _price;
+     }
+
+     function buy() public payable {
+         require(msg.value >= price, "Insufficient payment amount");
+         buyer = msg.sender;
+         seller.transfer(msg.value);
+     }
+}
+<\contract_1\> 
+Potential vulnerabilities in the contract:
+1) incorrect visibility/ownership: The setPrice function allows anyone to set the price of the item instead of only the seller, which could lead to price manipulation.
+2) insufficient gas: The buy function does not have a gas stipend, which could potentially result in failed transaction execution due to running out of gas.

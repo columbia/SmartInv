@@ -1,0 +1,36 @@
+The contract that needs to be analyzed for potential vulnerabilities is as follows:
+
+contract Vault {
+     mapping(address => uint) public balances;
+     uint public totalBalance;
+     address public owner;
+
+     constructor() public {
+          owner = msg.sender;
+     }
+
+     function deposit() public payable {
+          require(msg.value > 0, "Invalid amount");
+          balances[msg.sender] += msg.value;
+          totalBalance += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+          require(amount > 0, "Invalid amount");
+          require(amount <= balances[msg.sender], "Insufficient balance");
+          msg.sender.transfer(amount); 
+          balances[msg.sender] -= amount;
+          totalBalance -= amount;
+     }
+
+     function transferOwnership(address newOwner) public {
+          require(msg.sender == owner, "Only owner can transfer ownership");
+          owner = newOwner;
+     }
+}
+
+The potential vulnerabilities in the contract are:
+
+1) Insufficient gas: The contract does not specify gas requirements for its functions which could lead to out of gas errors during execution.
+
+2) Incorrect visibility/ownership: The owner variable is declared as public, which exposes the owner's address publicly. This could potentially lead to unauthorized access or manipulation of the owner's address.

@@ -1,0 +1,30 @@
+The contract that needs to be analyzed for potential vulnerabilities is as follows:
+
+contract Marketplace {
+  mapping(address => uint) public balances;
+
+  function deposit() public payable {
+    balances[msg.sender] += msg.value;
+  }
+
+  function withdraw(uint amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] -= amount;
+    msg.sender.transfer(amount);
+  }
+
+  function buyItem(address seller, uint price) public {
+    require(balances[msg.sender] >= price, "Insufficient funds");
+    balances[msg.sender] -= price;
+    balances[seller] += price;
+  }
+
+  function listPrice(uint price) public {
+    emit PriceListed(msg.sender, price);
+  }
+
+  event PriceListed(address seller, uint price);
+}
+
+Output:
+- The contract does not contain any vulnerabilities.

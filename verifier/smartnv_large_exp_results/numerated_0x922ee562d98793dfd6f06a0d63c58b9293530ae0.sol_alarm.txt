@@ -1,0 +1,23 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint256) public votes;
+
+    function vote(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        votes[msg.sender] += amount;
+    }
+
+    function redeem() external {
+        uint256 voteAmount = votes[msg.sender];
+        require(voteAmount > 0, "No votes to redeem");
+        // Assume 1 vote = 1 token
+        msg.sender.transfer(voteAmount);
+        votes[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+5) atomicity violation
+9) integer overflow/underflow
+12) ether leakage

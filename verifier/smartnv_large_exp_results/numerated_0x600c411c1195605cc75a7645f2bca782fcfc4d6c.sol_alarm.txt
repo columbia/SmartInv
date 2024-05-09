@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public deposit;
+    bool public isComplete;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _deposit) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        deposit = _deposit;
+        isComplete = false;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(isComplete == false, "Funds have already been released");
+        
+        // send deposit to seller
+        payable(seller).transfer(deposit);
+        isComplete = true;
+    }
+
+    function refundFunds() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        require(isComplete == false, "Funds have already been refunded");
+        
+        // send deposit back to buyer
+        payable(buyer).transfer(deposit);
+        isComplete = true;
+    }
+}
+<\contract_to_analyze\>

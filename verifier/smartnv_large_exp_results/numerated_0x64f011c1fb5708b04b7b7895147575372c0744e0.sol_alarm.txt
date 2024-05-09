@@ -1,0 +1,24 @@
+The contract provided for analysis:
+contract MultiSigWallet {
+     address[] public owners;
+     uint public required;
+     mapping(address => uint) public funds;
+
+     function deposit() public payable {
+          funds[msg.sender] += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+          require(funds[msg.sender] >= amount, "Insufficient funds");
+          msg.sender.transfer(amount);
+          funds[msg.sender] -= amount;
+     }
+
+     function changeRequirement(uint newRequired) public {
+          required = newRequired;
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) Atomicity violation
+2) Insufficient gas

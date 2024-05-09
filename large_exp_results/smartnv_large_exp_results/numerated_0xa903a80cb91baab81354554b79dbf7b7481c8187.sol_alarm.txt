@@ -1,0 +1,53 @@
+The contract to analyze:
+
+```solidity
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+
+    struct Proposal {
+        address proposer;
+        uint votes;
+    }
+
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            proposals[delegateTo.vote].votes += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint proposalIndex) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted");
+        sender.voted = true;
+        sender.vote = proposalIndex;
+        proposals[proposalIndex].votes += sender.weight;
+    }
+}
+```
+
+The potential vulnerabilities in the contract above are:
+- Insufficient gas: It may run out of gas during delegate function execution.
+- Business logic flaw: There could be a flaw in the logic for delegate and vote functions.
+- ID uniqueness violation: There might be an issue with ensuring unique IDs for voters or proposals.

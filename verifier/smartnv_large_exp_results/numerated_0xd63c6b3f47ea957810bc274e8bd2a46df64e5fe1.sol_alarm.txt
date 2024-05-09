@@ -1,0 +1,24 @@
+<\contract_to_analyze\>
+contract TokenCrowdsale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokenSupply;
+
+    constructor(IERC20 _token, uint _tokenPrice, uint _tokenSupply) public {
+        owner = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+        tokenSupply = _tokenSupply;
+    }
+
+    function buyTokens(uint amount) public {
+        uint totalCost = amount * tokenPrice;
+        require(token.balanceOf(address(this)) >= amount, "Insufficient token balance");
+        require(tokenSupply >= amount, "Insufficient token supply");
+        token.transfer(msg.sender, amount);
+        token.transferFrom(msg.sender, address(this), totalCost);
+        tokenSupply -= amount;
+    }
+}
+<\contract_to_analyze\>

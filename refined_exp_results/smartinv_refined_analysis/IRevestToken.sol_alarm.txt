@@ -1,0 +1,46 @@
+The contract provided for analysis:
+
+```solidity
+contract MyContract {
+    struct Proposal {
+        uint256 sTime;
+        uint256 votedAmount;
+        address addr;
+    }
+    
+    address internal owner;
+    IERC20 votingToken;
+    Proposal public proposal;
+
+    function startExecute() external {
+        uint256 startingBalance;
+        require(proposal.sTime == 0, "on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBalance;
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through");
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount;
+        votedProposal(proposal);
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+```
+
+The potential vulnerabilities identified in the contract:
+1) Inconsistent state update: The contract may have inconsistencies in the state updates where the `proposal` struct is modified in different functions without proper synchronization.
+2) ID uniqueness violation: There could be a violation of ID uniqueness if the `proposal` struct is not properly managed and there is a possibility of duplicate proposals being created or executed.
+3) Privilege escalation: There is a potential for privilege escalation if there are vulnerabilities in the access control mechanisms for the `owner` and `votingToken` variables.
+4) Business logic flaw: The business logic in the contract may have flaws that could lead to unexpected behavior or security vulnerabilities if not carefully reviewed and tested.
+5) Atomicity violation: There might be a violation of atomicity if there are operations that need to be executed atomically but are not properly handled in the contract code.
+6) Cross-bridge inconsistency: There may be inconsistencies in the interactions with external contracts or services, leading to potential vulnerabilities related to cross-contract calls or external dependencies.

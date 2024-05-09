@@ -1,0 +1,24 @@
+The contract to analyze:
+contract Market {
+    IERC20 public token;
+    address public owner;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function buyTokens(uint amount) external {
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), amount);
+    }
+
+    function sellTokens(uint amount) external {
+        require(token.balanceOf(address(this)) >= amount, "Insufficient balance");
+        token.transfer(msg.sender, amount);
+    }
+}
+
+The potential vulnerabilities in the Market contract:
+- Insufficient gas
+- Incorrect visibility/ownership

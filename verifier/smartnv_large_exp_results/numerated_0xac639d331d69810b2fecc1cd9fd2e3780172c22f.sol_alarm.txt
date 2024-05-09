@@ -1,0 +1,21 @@
+<\contract\>
+contract PaymentContract {
+        address public owner;
+        uint public totalAmount;
+        
+        function pay() public payable {
+            totalAmount += msg.value;
+        }
+        
+        function withdraw() public {
+            require(msg.sender == owner, "Only owner can withdraw");
+            msg.sender.transfer(address(this).balance);
+            totalAmount = 0;
+        }
+}
+<\contract\>
+Potential vulnerabilities in the PaymentContract:
+- Incorrect visibility/ownership (Owner can be changed and not restricted properly)
+- Ether leakage (Ether can be trapped in the contract without being able to withdraw)
+- Insufficient gas (Risk of running out of gas during withdrawal)
+- Inconsistent state update (totalAmount is set to 0 after withdrawal without proper accounting)

@@ -1,0 +1,26 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    mapping(address => bool) public voted;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!voted[msg.sender], "Already voted");
+        votes[msg.sender]++;
+        voted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function reset() public {
+        require(voted[msg.sender], "Has not voted yet");
+        votes[msg.sender] = 0;
+        voted[msg.sender] = false;
+        totalVotes--;
+    }
+}
+
+Potential vulnerabilities in the contract:
+1) ID uniqueness violation: There is no check to ensure the uniqueness of voter addresses, which could potentially allow the same address to manipulate the voting process by voting multiple times.
+2) Inconsistent state update: The update to the totalVotes variable is not consistently synchronized with the individual voter's votes and voted mappings, which could lead to incorrect total vote count.
+3) Incorrect visibility/ownership: The visibility of the votes and voted mappings as public could expose sensitive voter information to unauthorized parties, compromising voter privacy and security.

@@ -1,0 +1,18 @@
+<\your_contract\>
+contract Marketplace {
+    mapping(uint256 => uint256) public productIdToPrice;
+    mapping(address => uint256) public addressToBalance;
+    
+    function purchaseProduct(uint256 productId) public {
+        require(productIdToPrice[productId] > 0, "Product does not exist");
+        
+        uint256 price = productIdToPrice[productId];
+        require(addressToBalance[msg.sender] >= price, "Insufficient balance");
+
+        addressToBalance[msg.sender] -= price;
+        
+        // Transfer funds to seller
+        addressToBalance[seller] += price;
+    }
+}
+<\your_contract\>

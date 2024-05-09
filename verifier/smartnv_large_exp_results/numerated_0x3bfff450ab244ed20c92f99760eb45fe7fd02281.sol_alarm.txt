@@ -1,0 +1,15 @@
+The contract you provided contains the following potential vulnerabilities:
+
+1) Incorrect visibility/ownership - The contract does not specify the visibility of the `lockedFunds` variable, which may lead to unintended access or modification externally.
+
+2) Inconsistent state update - The `proposal.votedAmount` is being incremented in the `execute` function, which can lead to inconsistent state if there are multiple concurrent calls trying to update the same `proposal`.
+
+3) ID uniqueness violation - The contract has a `startExecute` function that seems to allow starting multiple proposals without checking for uniqueness, which can lead to issues if multiple proposals with the same ID are created.
+
+4) Insufficient gas - The `endExecute` function may consume a large amount of gas due to the computation of `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()`, potentially causing it to run out of gas.
+
+5) Atomicity violation - There is a lack of atomicity in the `execute` function where `votingToken.transferFrom(proposal.addr, address(this), amount)` and `proposal.votedAmount += amount` are called sequentially without proper checks, leaving room for potential reentrant attacks. 
+
+6) Possible integer underflow/overflow - The calculation `getPrice() * cAmount * 80 / 100` in the `liquidate` function could potentially result in an integer underflow or overflow if not handled carefully.
+
+Therefore, the contract may have vulnerabilities that need to be addressed to ensure its security.

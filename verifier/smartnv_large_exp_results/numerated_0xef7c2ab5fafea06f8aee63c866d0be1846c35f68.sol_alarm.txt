@@ -1,0 +1,40 @@
+<\contract\> 
+contract Lottery {
+     address public owner; 
+     uint public totalTickets;
+     uint public ticketPrice;
+     mapping(address => uint) public ticketsBought;
+
+     constructor(uint _ticketPrice) {
+         owner = msg.sender;
+         totalTickets = 0;
+         ticketPrice = _ticketPrice;
+     }
+
+     function buyTicket(uint _numTickets) public payable {
+         require(msg.value == ticketPrice * _numTickets, "Incorrect amount sent");
+         for (uint i = 0; i < _numTickets; i++) {
+             totalTickets++;
+             ticketsBought[msg.sender]++;
+         }
+     }
+     
+     function chooseWinner() public {
+         require(msg.sender == owner, "Only owner can choose winner");
+         uint winningNumber = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % totalTickets + 1;
+         address winner;
+         uint count = 0;
+         for (uint i = 0; i < totalTickets; i++) {
+             if (ticketsBought[address(i)] > 0) {
+                 count += ticketsBought[address(i)];
+                 if (count >= winningNumber) {
+                     winner = address(i);
+                     break;
+                 }
+             }
+         }
+         payable(winner).transfer(address(this).balance);
+     }
+
+}
+<\contract\>

@@ -1,0 +1,62 @@
+2024-05-07 01:42:24,215: [55978] m.main:[34mINFO:[0m Registered plugins: IntrospectionAPIPlugin, <class 'manticore.ethereum.plugins.SkipRevertBasicBlocks'>, <class 'manticore.ethereum.plugins.FilterFunctions'>
+2024-05-07 01:42:24,215: [55978] m.main:[34mINFO:[0m Beginning analysis
+2024-05-07 01:42:24,221: [55978] m.e.manticore:[34mINFO:[0m Starting symbolic create contract
+2024-05-07 01:42:25,182: [55978] m.e.manticore:[34mINFO:[0m Failed to build contract None Errors : Invalid solc compilation 0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1:1: Error: Source file requires different compiler version (current compiler is 0.4.0+commit.3a456737.Darwin.appleclang - note that nightly builds are considered to be strictly less than the released version
+pragma solidity ^ 0.4.8;
+^----------------------^
+0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1022:5: Error: Identifier already declared.
+    function totalSupply() constant returns(uint totalSupply);
+    ^--------------------------------------------------------^
+The previous declaration is here: 0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1020:5: 
+    uint public totalSupply;
+    ^---------------------^
+
+0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1170:5: Error: Identifier already declared.
+    function totalSupply() constant returns(uint) {
+    ^
+Spanning multiple lines.
+The previous declaration is here: 0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1055:5: 
+    uint public totalSupply = 15000000 * 10000; // 15 million total supply includes decimals
+    ^----------------------------------------^
+
+0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1081:13: Error: Undeclared identifier.
+            revert();
+            ^----^
+0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1115:13: Error: Undeclared identifier.
+            revert();
+            ^----^
+0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1136:13: Error: Undeclared identifier.
+            revert();
+            ^----^
+0xa3a07912e74acf57f3362d8b4cda85ce652fc887.sol:1299:40: Error: Undeclared identifier.
+        if (!owner.send(this.balance)) revert();
+                                       ^----^
+
+. Solidity failed to generate bytecode for your contract. Check if all the abstract functions are implemented. 
+WARNING:manticore.core.manticore:Manticore is only supported on Linux. Proceed at your own risk!
+Traceback (most recent call last):
+  File "/Users/sallywang/opt/miniconda3/bin/manticore", line 8, in <module>
+    sys.exit(main())
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/__main__.py", line 43, in main
+    ethereum_main(args, logger)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/ethereum/cli.py", line 145, in ethereum_main
+    m.finalize(only_alive_states=args.only_alive_testcases)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/core/manticore.py", line 177, in newFunction
+    return func(self, *args, **kw)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/site-packages/manticore/ethereum/manticore.py", line 1779, in finalize
+    proc.start()
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/process.py", line 121, in start
+    self._popen = self._Popen(self)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/context.py", line 224, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/context.py", line 284, in _Popen
+    return Popen(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/popen_spawn_posix.py", line 32, in __init__
+    super().__init__(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/popen_fork.py", line 19, in __init__
+    self._launch(process_obj)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/popen_spawn_posix.py", line 47, in _launch
+    reduction.dump(process_obj, fp)
+  File "/Users/sallywang/opt/miniconda3/lib/python3.9/multiprocessing/reduction.py", line 60, in dump
+    ForkingPickler(file, protocol).dump(obj)
+AttributeError: Can't pickle local object 'ManticoreEVM.finalize.<locals>.worker_finalize'

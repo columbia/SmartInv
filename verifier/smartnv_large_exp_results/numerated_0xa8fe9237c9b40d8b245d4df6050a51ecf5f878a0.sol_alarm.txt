@@ -1,0 +1,30 @@
+<\contract\>
+contract AssetToken {
+    mapping(address => uint) balances;
+    address owner;
+    
+    constructor() {
+        owner = msg.sender;
+        balances[msg.sender] = 1000; 
+    }
+
+    function transfer(address to, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+
+    function updateOwner(address newOwner) public {
+        require(msg.sender == owner, "Unauthorized");
+        owner = newOwner;
+    }
+
+    function transferOwnership(address newOwner) public {
+        owner = newOwner;
+    }
+
+    function getBalance(address user) public view returns (uint) {
+        return balances[user];
+    }
+}
+<\contract\>

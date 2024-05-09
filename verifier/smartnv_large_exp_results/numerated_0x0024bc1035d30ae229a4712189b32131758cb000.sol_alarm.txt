@@ -1,0 +1,35 @@
+The contract provided for analysis: 
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public escrowAmount;
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only the buyer can deposit funds");
+        escrowAmount += msg.value;
+    }
+
+    function release() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        payable(seller).transfer(escrowAmount);
+        escrowAmount = 0;
+    }
+
+    function refund() public {
+        require(msg.sender == arbiter, "Only the arbiter can refund funds");
+        payable(buyer).transfer(escrowAmount);
+        escrowAmount = 0;
+    }
+}
+
+Potential vulnerabilities:
+3) business logic flaw
+8) reentrancy

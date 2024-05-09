@@ -1,0 +1,39 @@
+<\contract_3\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+
+    function deposit() external payable {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorized");
+    }
+
+    function release() external {
+        require(msg.sender == seller && buyerApproved, "Unauthorized");
+        payable(seller).transfer(address(this).balance);
+    }
+
+    function refund() external {
+        require(msg.sender == buyer && sellerApproved, "Unauthorized");
+        payable(buyer).transfer(address(this).balance);
+    }
+
+    function setArbiter(address _arbiter) external {
+        require(msg.sender == buyer || msg.sender == seller, "Unauthorized");
+        arbiter = _arbiter;
+    }
+
+    function approveRelease() external {
+        require(msg.sender == arbiter, "Unauthorized");
+        sellerApproved = true;
+    }
+
+    function approveRefund() external {
+        require(msg.sender == arbiter, "Unauthorized");
+        buyerApproved = true;
+    }
+}
+<\contract_3\>

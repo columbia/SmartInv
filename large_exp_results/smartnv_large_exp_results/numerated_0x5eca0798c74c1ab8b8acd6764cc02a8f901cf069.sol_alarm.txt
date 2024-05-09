@@ -1,0 +1,25 @@
+<\Your contract\>
+contract MyContract {
+     address public owner;
+     uint public balance;
+
+     constructor() {
+         owner = msg.sender;
+         balance = 0;
+     }
+
+     function deposit(uint amount) public {
+         balance += amount;
+     }
+
+     function withdraw(uint amount) public {
+         require(amount <= balance, "Insufficient balance");
+         balance -= amount;
+     }
+
+     function transferOwnership(address newOwner) public {
+         require(msg.sender == owner, "Only the owner can transfer ownership");
+         owner = newOwner;
+     }
+}
+<\Your contract\>

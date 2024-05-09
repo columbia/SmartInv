@@ -1,0 +1,44 @@
+<\contract\> 
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    mapping(address => uint) public pendingReturns;
+    bool public ended;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        if (highestBid != 0) {
+            pendingReturns[highestBidder] += highestBid;
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+
+    function withdraw() public returns (bool) {
+        uint amount = pendingReturns[msg.sender];
+        if (amount > 0) {
+            pendingReturns[msg.sender] = 0;
+            if (!payable(msg.sender).send(amount)) {
+                pendingReturns[msg.sender] = amount;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function endAuction() public {
+        require(!ended, "Auction already ended");
+        ended = true;
+        // transfer highestBid to highestBidder
+        if (highestBidder != address(0)) {
+            if (!payable(highestBidder).send(highestBid)) {
+                pendingReturns[highestBidder] = highestBid;
+            }
+        }
+    }
+}
+<\contract\> 
+
+Output:
+- Insufficient gas
+- Incorrect visibility/ownership

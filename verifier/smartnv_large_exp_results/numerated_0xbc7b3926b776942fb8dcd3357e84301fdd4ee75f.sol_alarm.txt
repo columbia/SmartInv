@@ -1,0 +1,24 @@
+<\The Contract to be Analyzed\>
+contract PaymentProcessor {
+     address public owner; 
+     mapping(bytes32 => uint) public payments;
+
+     constructor() {
+          owner = msg.sender; 
+     }
+
+     function processPayment(bytes32 paymentId, uint amount) public {
+          require(msg.sender == owner, "Only owner can process payments");
+          payments[paymentId] = amount; 
+     }
+
+     function getPaymentAmount(bytes32 paymentId) public view returns (uint) {
+          return payments[paymentId]; 
+     }
+
+     function withdraw() public {
+          require(msg.sender == owner, "Only owner can withdraw funds");
+          uint amount = address(this).balance;
+          owner.transfer(amount); 
+     }
+}

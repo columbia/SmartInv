@@ -1,0 +1,33 @@
+The contract I am going to analyze:
+
+contract SmartContract {
+    address public owner;
+    uint public balance;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner, "You are not the owner");
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "You are not the owner");
+        owner = newOwner;
+    }
+}
+
+Output: 
+- Inconsistent state update: The balance variable can be modified independently of the deposit or withdraw functions, potentially leading to an inconsistent state.
+- Incorrect visibility/ownership: The owner variable is public, which can expose sensitive information about the contract's ownership.
+- Privilege escalation: The transferOwnership function allows the current owner to transfer ownership to any address without proper authorization.
+- Ether leakage: The contract does not handle failed transfers in the withdraw function, which can lead to ether leakage if the transfer fails.

@@ -1,0 +1,30 @@
+<\contract_to_analyze\> 
+contract TokenSale {
+     address public token;
+     address payable public owner;
+     uint public rate;
+     uint public totalTokens;
+     uint public tokensSold;
+     
+     constructor(address _token, uint _rate, uint _totalTokens) {
+         token = _token;
+         rate = _rate;
+         totalTokens = _totalTokens;
+         owner = payable(msg.sender);
+     }
+     
+     function buyTokens(uint _tokens) public payable {
+         require(tokensSold + _tokens <= totalTokens, "Not enough tokens left");
+         uint cost = _tokens * rate;
+         require(msg.value >= cost, "Insufficient payment");
+         tokensSold += _tokens;
+         require(ERC20(token).transfer(msg.sender, _tokens), "Token transfer failed");
+         owner.transfer(msg.value);
+     }
+     
+     function withdrawTokens() public {
+         require(msg.sender == owner, "Unauthorized");
+         ERC20(token).transfer(owner, ERC20(token).balanceOf(address(this)));
+     }
+}
+<\contract_to_analyze\>

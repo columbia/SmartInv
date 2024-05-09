@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract PurchaseContract {
+    address public buyer;
+    address payable public seller;
+    uint public price;
+
+    constructor(address _seller, uint _price) {
+        seller = payable(_seller);
+        price = _price;
+    }
+
+    function purchase() public payable {
+        require(msg.value >= price, "Insufficient payment");
+
+        (bool success, ) = seller.call{value: msg.value}("");
+        require(success, "Payment failed");
+
+        buyer = msg.sender;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can refund");
+
+        (bool success, ) = buyer.call{value: price}("");
+        require(success, "Refund failed");
+
+        buyer = address(0);
+    }
+}
+<\contract_to_analyze\>

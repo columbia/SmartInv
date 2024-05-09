@@ -1,0 +1,27 @@
+Contract analyzed:
+
+contract SavingsAccount {
+         IERC20 public token;
+         mapping(address => uint) public balances;
+        address public owner;
+
+         constructor(address _token) {
+             token = IERC20(_token);
+             owner = msg.sender;
+         }
+
+         function deposit(uint amount) public {
+             require(amount > 0, "Invalid amount");
+             token.transferFrom(msg.sender, address(this), amount);
+             balances[msg.sender] += amount;
+         }
+
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             token.transfer(msg.sender, amount);
+             balances[msg.sender] -= amount;
+         }
+
+}
+Output: 
+- insufficient gas

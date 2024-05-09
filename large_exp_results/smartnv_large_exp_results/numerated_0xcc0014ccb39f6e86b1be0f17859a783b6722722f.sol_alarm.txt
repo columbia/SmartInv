@@ -1,0 +1,77 @@
+Contract to be analyzed: 
+
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public value;
+    enum State {CREATED, LOCKED, RELEASED, FUNDED, IN_DISPUTE }
+    State public state;
+
+    modifier onlyBuyer() {
+        require(msg.sender == buyer, "Only buyer can call this function");
+        _;
+    }
+
+    modifier onlySeller() {
+        require(msg.sender == seller, "Only seller can call this function");
+        _;
+    }
+
+    modifier onlyArbiter() {
+        require(msg.sender == arbiter, "Only arbiter can call this function");
+        _;
+    }
+
+    function initiate(address _seller, address _arbiter) public payable {
+        require(state == State.CREATED, "Escrow already initiated");
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        value = msg.value;
+        state = State.LOCKED;
+    }
+
+    function confirmFunds() public onlyBuyer {
+        require(state == State.LOCKED, "Funds not yet locked");
+        state = State.FUNDED;
+    }
+
+    function releaseFunds() public onlyBuyer {
+        require(state == State.FUNDED, "Funds not yet funded");
+        (bool success, ) = seller.call{value: value}("");
+        require(success, "Transfer failed");
+        state = State.RELEASED;
+    }
+
+    function claimFunds() public onlySeller {
+        require(state == State.FUNDED, "Funds not yet funded");
+        (bool success, ) = buyer.call{value: value}("");
+        require(success, "Transfer failed");
+        state = State.RELEASED;
+    }
+
+    function dispute() public onlyArbiter {
+        require(state == State.FUNDED, "Funds not yet funded");
+        state = State.IN_DISPUTE;
+    }
+
+    function resolveDispute(bool toSeller) public onlyArbiter {
+        require(state == State.IN_DISPUTE, "No ongoing dispute");
+        if (toSeller) {
+            (bool success, ) = seller.call{value: value}("");
+            require(success, "Transfer failed");
+        } else {
+            (bool success, ) = buyer.call{value: value}("");
+            require(success, "Transfer failed");
+        }
+        state = State.RELEASED;
+    }
+}
+
+Output: 
+- Incorrect visibility/ownership: The state variable should be internal or private for better encapsulation. 
+- Inconsistent state update: The state is updated directly without any checks, which could lead to unexpected state transitions. 
+- Insufficient gas: The functions that involve transferring funds may run out of gas if the gas limit is not high enough. 
+
+Please note that the above vulnerabilities are potential issues found in the Escrow contract.

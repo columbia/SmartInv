@@ -1,0 +1,31 @@
+The contract that needs to be analyzed:
+
+contract OnlineMarketplace {
+    struct Product {
+          uint productId;
+          string name;
+          uint price;
+          address owner;
+    }
+
+    mapping(uint => Product) public products;
+    uint public productCounter;
+
+    function addProduct(string memory _name, uint _price) public {
+          productCounter++;
+          products[productCounter] = Product(productCounter, _name, _price, msg.sender);
+    }
+
+    function buyProduct(uint _productId) public payable {
+          require(products[_productId].productId != 0, "Product does not exist");
+          require(msg.value == products[_productId].price, "Incorrect payment amount");
+          address payable seller = payable(products[_productId].owner);
+          seller.transfer(msg.value);
+          delete products[_productId];
+    }
+}
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update
+2) Integer overflow/underflow
+3) Incorrect visibility/ownership

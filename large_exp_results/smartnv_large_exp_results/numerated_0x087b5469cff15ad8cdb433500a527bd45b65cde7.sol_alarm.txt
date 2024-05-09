@@ -1,0 +1,22 @@
+The contract you provided:
+Contract XYZ {
+         IERC20 public token;
+         uint public totalSupply;
+
+         function buyTokens(uint amount) public {
+             require(token.balanceOf(msg.sender) >= amount, "Insufficient token balance");
+             totalSupply += amount;
+             token.transferFrom(msg.sender, address(this), amount);
+         }
+
+         function sellTokens(uint amount) public {
+             require(totalSupply >= amount, "Insufficient total token supply");
+             totalSupply -= amount;
+             token.transfer(msg.sender, amount);
+         }
+}
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The totalSupply is updated without considering the possibility of overflow/underflow, leading to inconsistent state.
+2) Incorrect visibility/ownership: The token variable is set to public, which may expose sensitive information about the token contract.
+3) Insufficient gas: The contract does not include any gas-related checks or safeguards, which could result in transaction failures due to insufficient gas.

@@ -1,0 +1,21 @@
+<\contract\> 
+contract Marketplace {
+    IERC20 public token;
+    mapping(address => uint256) public balances;
+
+    function deposit(uint256 amount) external {
+        token.transferFrom(msg.sender, address(this), amount);
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw(uint256 amount) external {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        token.transfer(msg.sender, amount);
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+- Insufficient gas: The contract does not specify any gas limits for the transfer functions, which could result in out-of-gas errors during execution.
+- Incorrect visibility/ownership: The state variable `balances` is public, allowing anyone to view the balances of any address. It should be made private for better security practices.

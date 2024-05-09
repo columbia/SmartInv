@@ -1,0 +1,17 @@
+The contract provided for analysis:
+
+contract TokenSwap {
+    IERC20 public token1;
+    IERC20 public token2;
+    
+    function swapTokens(address _sender, uint _amount1, uint _amount2) external {
+        token1.transferFrom(_sender, address(this), _amount1);
+        token2.transfer(_sender, _amount2);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update - The contract does not handle potential failure scenarios during token transfers, leading to an inconsistent state if one transfer fails.
+2) Insufficient gas - If the gas limit is too low, transactions may fail during token transfers, causing unexpected behavior.
+3) Incorrect visibility/ownership - Depending on the visibility of the token variables, sensitive information could be exposed.
+4) Atomicity violation - If one transfer succeeds and the other fails, the atomicity of the swap operation is not guaranteed.

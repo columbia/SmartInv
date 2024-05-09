@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract PaymentContract {
+    address public owner;
+    mapping(uint => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(uint paymentId, uint amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[paymentId] = amount;
+    }
+
+    function getPaymentAmount(uint paymentId) public view returns (uint) {
+        return payments[paymentId];
+    }
+}
+
+The potential vulnerabilities identified in the contract are:
+
+1) Incorrect visibility/ownership: The makePayment function should specify the visibility of the function as onlyOwner to ensure that only the contract owner can make payments.
+
+Thus, the contract contains the vulnerability of incorrect visibility/ownership.

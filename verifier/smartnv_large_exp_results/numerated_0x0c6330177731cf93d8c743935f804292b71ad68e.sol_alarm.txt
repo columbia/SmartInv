@@ -1,0 +1,28 @@
+<\contract\>
+contract VotingSystem {
+    mapping(address => uint256) public votes;
+    address[] public voters;
+    bool public votingOpen;
+    
+    function startVoting() external {
+        require(!votingOpen, "voting already open");
+        votingOpen = true;
+    }
+    
+    function vote(uint256 amount) external {
+        require(votingOpen, "voting not open");
+        votes[msg.sender] += amount;
+        voters.push(msg.sender);
+    }
+    
+    function endVoting() external {
+        require(votingOpen, "voting not open");
+        uint256 totalVotes = 0;
+        for (uint i = 0; i < voters.length; i++) {
+            totalVotes += votes[voters[i]];
+        }
+        require(totalVotes > voters.length / 2, "majority not reached");
+        votingOpen = false;
+    }
+}
+<\contract\>

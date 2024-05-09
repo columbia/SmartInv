@@ -1,0 +1,22 @@
+Contract to analyze:
+
+contract VotingSystem {
+    mapping(address => uint) public votes;
+    uint public totalVotes;
+
+    function vote(uint amount) public {
+        require(amount > 0, "Invalid vote amount");
+        votes[msg.sender] += amount;
+        totalVotes += amount;
+    }
+
+    function revokeVote(uint amount) public {
+        require(votes[msg.sender] >= amount, "Not enough votes to revoke");
+        votes[msg.sender] -= amount;
+        totalVotes -= amount;
+    }
+}
+
+Output: 
+- insufficient gas
+- integer overflow/underflow

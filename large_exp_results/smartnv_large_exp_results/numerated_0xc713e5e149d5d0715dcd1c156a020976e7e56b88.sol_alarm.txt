@@ -1,0 +1,27 @@
+<\contract\>
+contract LiquidationProtocol {
+    IERC20 public assetToken;
+    IERC20 public stablecoin;
+
+    mapping(address => uint) public debt;
+    mapping(address => uint) public collateral;
+
+    function liquidate(address user) public {
+        uint dAmount = debt[user];
+        uint cAmount = collateral[user];
+        require(getPrice() * cAmount * 80 / 100 < dAmount, "user's fund cannot be liquidated");
+
+        assetToken.transferFrom(msg.sender, address(this), dAmount);
+        stablecoin.transferFrom(address(this), msg.sender, cAmount);
+    }
+
+    function calculatePrice() public view returns (uint) {
+        return (assetToken.balanceOf(address(this)) / stablecoin.balanceOf(address(this)));
+    }
+}
+<\contract\>
+
+Output:
+- Price manipulation
+- Integer overflow/underflow
+- Inconsistent state update

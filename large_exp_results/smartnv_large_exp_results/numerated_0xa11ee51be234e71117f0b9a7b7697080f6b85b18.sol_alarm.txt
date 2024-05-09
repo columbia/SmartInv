@@ -1,0 +1,21 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+         mapping(address => uint) public votes;
+         uint public totalVotes;
+
+         function vote() public {
+             votes[msg.sender]++;
+             totalVotes++;
+         }
+
+         function changeVote(address newAddress) public {
+             require(votes[msg.sender] > 0, "No votes to change");
+             votes[newAddress]++;
+             votes[msg.sender]--;
+         }
+
+         function getTotalVotes() public view returns(uint) {
+             return totalVotes;
+         }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,33 @@
+contract TokenSale {
+  address public admin;
+  IERC20 public token;
+  address public tokenAddress;
+  uint public tokenPrice;
+  uint public tokensSold;
+
+  constructor(IERC20 _token, uint _price) {
+    admin = msg.sender;
+    token = _token;
+    tokenAddress = address(_token);
+    tokenPrice = _price;
+  }
+
+  function buyTokens(uint _numTokens) public payable {
+    require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+    require(token.balanceOf(address(this)) >= _numTokens, "Not enough tokens available");
+    
+    token.transfer(msg.sender, _numTokens);
+    tokensSold += _numTokens;
+  }
+
+  function endSale() public {
+    require(msg.sender == admin, "Unauthorized access");
+
+    token.transfer(admin, token.balanceOf(address(this)));
+    selfdestruct(msg.sender);
+  }
+} 
+
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The admin variable is publicly accessible, which can lead to unauthorized access and manipulation.
+2) Insufficient gas: The endSale function uses selfdestruct, which can consume all remaining gas and potentially render the contract unusable.

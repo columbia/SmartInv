@@ -1,0 +1,4 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The variable `lockedFunds` is updated in the `endExecute()` function based on the balance of the `votingToken` held by the contract. However, there is no indication of how this `lockedFunds` variable is used or what impact it has on the contract state.
+2) Atomicity violation: The `endExecute()` function performs multiple state-changing operations without any form of atomicity to ensure that all operations succeed or fail together. This could potentially lead to inconsistent or unexpected contract states.
+3) ID uniqueness violation: The contract does not have any mechanism to ensure the uniqueness of the proposals being created. This could result in conflicts or unexpected behavior when interacting with multiple proposals simultaneously.

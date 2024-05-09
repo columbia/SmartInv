@@ -1,0 +1,9 @@
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update: The state variable `lockedFunds` is updated in the `endExecute` function, but it is not clear how this variable is being used or managed in the contract, potentially leading to inconsistencies in the state.
+
+2) ID uniqueness violation: The `startExecute` function assigns a new proposal without checking for duplicate proposals, which could lead to ID uniqueness violations if multiple proposals are created at the same time from different addresses.
+
+3) Business logic flaw: The condition in the `endExecute` function `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` seems to check if the locked funds are more than double the total supply, which may not be a sound business logic and could potentially lead to unexpected outcomes.
+
+Therefore, the identified potential vulnerabilities in the contract are: Inconsistent state update, ID uniqueness violation, and Business logic flaw.

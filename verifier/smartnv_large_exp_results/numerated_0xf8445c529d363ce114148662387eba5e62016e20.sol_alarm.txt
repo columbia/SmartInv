@@ -1,0 +1,26 @@
+<\contract_to_analyze\> 
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public price;
+  
+    constructor(address _token, uint _price) {
+        owner = msg.sender;
+        token = IERC20(_token);
+        price = _price;
+    }
+  
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount * price, "Insufficient token balance");
+        token.transferFrom(msg.sender, owner, _amount * price);
+    }
+  
+    function setPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only the owner can set the price");
+        price = _newPrice;
+    }
+}
+Potential vulnerabilities in the contract:
+1) price manipulation
+2) inconsistent state update
+3) incorrect visibility/ownership

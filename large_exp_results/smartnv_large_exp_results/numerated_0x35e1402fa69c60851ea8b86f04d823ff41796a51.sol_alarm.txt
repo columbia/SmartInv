@@ -1,0 +1,27 @@
+The contract being analyzed:
+
+contract EscrowContract {
+    address public seller;
+    address public buyer;
+    uint public price;
+
+    constructor(address _seller, address _buyer, uint _price) {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == seller, "Only seller can release funds");
+        payable(buyer).transfer(price);
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == seller, "Only seller can refund buyer");
+        payable(seller).transfer(price);
+    }
+}
+
+Potential vulnerabilities in the EscrowContract:
+- privilege escalation
+- inconsistent state update

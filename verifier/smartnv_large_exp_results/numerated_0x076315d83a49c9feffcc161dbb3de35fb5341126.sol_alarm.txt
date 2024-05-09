@@ -1,0 +1,27 @@
+<\contract\>
+contract TokenExchange {
+     address public owner;
+     mapping(address => uint) public balances;
+     IERC20 public token;
+
+     constructor(address _token) {
+         owner = msg.sender;
+         token = IERC20(_token);
+     }
+
+     function exchangeTokens(uint amount) public {
+         require(amount > 0, "Amount must be greater than 0");
+         require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+
+         token.transferFrom(msg.sender, address(this), amount);
+         balances[msg.sender] += amount;
+     }
+
+     function withdrawTokens(uint amount) public {
+         require(balances[msg.sender] >= amount, "Insufficient balance");
+
+         token.transfer(msg.sender, amount);
+         balances[msg.sender] -= amount;
+     }
+}
+<\contract\>

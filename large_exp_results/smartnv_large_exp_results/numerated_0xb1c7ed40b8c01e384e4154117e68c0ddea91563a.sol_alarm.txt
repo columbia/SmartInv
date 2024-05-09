@@ -1,0 +1,21 @@
+<\contract_to_analyze\> 
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "You have already voted");
+        
+        hasVoted[msg.sender] = true;
+    }
+}
+<\contract_to_analyze\> 
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation (hasVoted mapping allows multiple votes from the same address)
+- Incorrect visibility/ownership (owner variable is public and can be accessed/modified by anyone)
+- Insufficient gas (if there are a large number of potential voters, gas costs for updating the hasVoted mapping may become expensive)

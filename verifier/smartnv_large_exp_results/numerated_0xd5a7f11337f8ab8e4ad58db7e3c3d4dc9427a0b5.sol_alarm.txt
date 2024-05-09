@@ -1,0 +1,33 @@
+<\contract\> 
+contract TokenSale {
+    IERC20 public token; 
+    address public owner; 
+    address public buyer; 
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function purchaseTokens(uint amount) public {
+        require(token.balanceOf(address(this)) >= amount, "Not enough tokens in contract");
+        token.transfer(buyer, amount);
+    }
+
+    function setBuyer(address _buyer) public {
+        require(msg.sender == owner, "Only owner can set buyer");
+        buyer = _buyer;
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        token.transfer(owner, token.balanceOf(address(this)));
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities in the TokenSale contract:
+1) Incorrect visibility/ownership: Access control for setting the buyer and withdrawing tokens is based only on the owner's address, which may allow for privilege escalation if the owner address is compromised.
+2) Inconsistent state update: The setBuyer function does not check if the buyer address is already set, potentially leading to inconsistent state.
+3) Insufficient gas: If the contract runs out of gas during the purchaseTokens function due to large token amounts or high gas costs, the transaction may fail midway, leaving the contract in an inconsistent state.
+4) Atomicity violation: The purchaseTokens function does not perform the token transfer atomically, which could result in partial token transfers if the transfer fails midway.

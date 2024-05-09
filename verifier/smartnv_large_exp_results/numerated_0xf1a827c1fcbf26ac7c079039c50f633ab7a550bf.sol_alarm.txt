@@ -1,0 +1,35 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     uint public amount;
+     bool public sellerApproval;
+     bool public buyerApproval;
+     
+     function initiate(address _buyer, address _seller, uint _amount) public {
+         buyer = _buyer;
+         seller = _seller;
+         amount = _amount;
+     }
+     
+     function approve(bool _approval) public {
+         require(msg.sender == buyer || msg.sender == seller, "Unauthorized"); 
+         if (msg.sender == buyer) {
+             buyerApproval = _approval;
+         } else {
+             sellerApproval = _approval;
+         }
+     }
+     
+     function release() public {
+         require(buyerApproval && sellerApproval, "Both parties must approve");
+         // transfer amount to seller
+     }
+     
+     function refund() public {
+         if (!buyerApproval || !sellerApproval) {
+             // refund amount to buyer
+         }
+     }
+}
+<\contract\>

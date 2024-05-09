@@ -1,0 +1,57 @@
+<\Your Contract\>
+contract MultiSigWallet {
+     address[] public owners;
+     uint public numConfirmationsRequired;
+     
+     mapping(address => bool) public isOwner;
+     mapping(address => bool) public isConfirmed;
+     
+     struct Transaction {
+         address to; 
+         uint value;
+         bytes data;
+         bool executed;
+         uint numConfirmations;
+     }
+     
+     Transaction[] public transactions;
+     
+     constructor(address[] memory _owners, uint _numConfirmationsRequired) {
+         owners = _owners;
+         numConfirmationsRequired = _numConfirmationsRequired;
+         
+         for (uint i = 0; i < _owners.length; i++) {
+             isOwner[_owners[i]] = true;
+         }
+     }
+     
+     function submitTransaction(address _to, uint _value, bytes memory _data) public {
+         Transaction memory newTx = Transaction({
+             to: _to,
+             value: _value,
+             data: _data,
+             executed: false,
+             numConfirmations: 0
+         });
+         transactions.push(newTx);
+     }
+     
+     function confirmTransaction(uint _txIndex) public {
+         require(isOwner[msg.sender], "Not an owner");
+         require(transactions[_txIndex].executed == false, "Transaction already executed");
+         require(isConfirmed[msg.sender] == false, "Transaction already confirmed by this owner");
+         
+         isConfirmed[msg.sender] = true;
+         transactions[_txIndex].numConfirmations++;
+     }
+     
+     function executeTransaction(uint _txIndex) public {
+         require(transactions[_txIndex].executed == false, "Transaction already executed");
+         require(transactions[_txIndex].numConfirmations >= numConfirmationsRequired, "Not enough confirmations");
+         
+         Transaction storage tx = transactions[_txIndex];
+         tx.executed = true;
+         (bool success, ) = tx.to.call{value: tx.value}(tx.data);
+         require(success, "Transaction execution failed");
+     }
+}

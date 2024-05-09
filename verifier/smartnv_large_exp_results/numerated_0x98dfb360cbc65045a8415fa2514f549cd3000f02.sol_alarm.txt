@@ -1,0 +1,28 @@
+<\example_3\> 
+contract TokenSale {
+     address public tokenAddress;
+     address public owner;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(address _tokenAddress, uint _tokenPrice) {
+         tokenAddress = _tokenAddress;
+         tokenPrice = _tokenPrice;
+         owner = msg.sender;
+     }
+
+     function buyTokens(uint _amount) public payable {
+         require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+         IERC20(tokenAddress).transfer(msg.sender, _amount);
+         tokensSold += _amount;
+     }
+
+     function endSale() public {
+         require(msg.sender == owner, "Only owner can end the sale");
+         IERC20(tokenAddress).transfer(owner, IERC20(tokenAddress).balanceOf(address(this)));
+         selfdestruct(msg.sender);
+     }
+}
+<\example_3\> 
+Output:
+- incorrect visibility/ownership

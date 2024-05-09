@@ -1,0 +1,35 @@
+<\analyzed_contract\> 
+contract PaymentContract {
+    mapping(address => uint256) balances;
+    address public owner;
+    uint256 public totalBalance;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+    
+    function withdraw(uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalBalance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+    
+    function transfer(address recipient, uint256 amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+}
+<\analyzed_contract\> 
+
+<\output\> 
+The potential vulnerabilities in the PaymentContract are:
+1) Insufficient gas: The transfer function doesn't include a gas stipend for external calls, which could result in out-of-gas errors and failed transfers.
+2) Incorrect visibility/ownership: The owner variable is public, potentially exposing sensitive information. Consider using private visibility for sensitive data.
+3) Integer overflow/underflow: There is no check for integer overflow or underflow in the deposit, withdraw, and transfer functions, which could result in unexpected behavior if balances exceed uint256 limits.

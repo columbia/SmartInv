@@ -1,0 +1,9 @@
+The contract contains potential vulnerabilities including:
+
+1) Inconsistent state update: The function execute() updates the state variables proposal.votedAmount and calls the function votedProposal(proposal) but it does not ensure that the state is updated atomically. 
+
+2) Atomicity violation: The function execute() transfers tokens from proposal.addr to address(this) and updates the state variable proposal.votedAmount without ensuring that these operations are executed atomically.
+
+3) Cross bridge inconsistency: The contract does not handle potential inconsistencies between the data stored in the contract and the external systems it interacts with, such as the WETH and USDC tokens in the ExchangeTokens contract.
+
+4) ID uniqueness violation: The contract does not contain any explicit checks to ensure uniqueness of IDs or addresses that it uses, potentially leading to conflicts or errors in the execution of operations.

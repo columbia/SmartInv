@@ -1,0 +1,35 @@
+<\contract\>
+contract VotingSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     mapping(address => uint256) startingBalanceList;
+     uint256 public lockedFunds;
+     Proposal public proposal;
+     IERC20 public votingToken;
+
+    function startVoting() external {
+              require(proposal.startTime == 0,"voting is already ongoing");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              uint256 startingBalance = getStartingBalance(proposal.proposer);
+              startingBalanceList[proposal.proposer] = startingBalance; 
+        }
+
+    function vote(uint256 amount) external {
+              require(proposal.startTime != 0, "no ongoing voting");
+              require(proposal.startTime + 24 > block.timestamp, "voting has ended");
+              require(proposal.votedAmount == 0, "voting has already gone through"); 
+              votingToken.transferFrom(proposal.proposer, address(this), amount);
+              proposal.votedAmount += amount; 
+        }
+
+    function endVoting() external {
+              require(proposal.startTime != 0, "no ongoing voting");
+              require(proposal.startTime + 24 < block.timestamp, "voting has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "voting failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+<\contract\>

@@ -1,0 +1,13 @@
+Contract TimelockController is potentially vulnerable to the following:
+
+1) Inconsistent state update: The functions startExecute, execute, and endExecute update the state of the proposal struct in different stages, which can lead to inconsistent state if not properly managed.
+
+2) Incorrect visibility/ownership: The visibility of the owner variable is internal, which may not provide the desired access control level. Additionally, the contract implements IERC20 interface but does not provide the required functions like transfer and transferFrom, which might lead to visibility or ownership issues.
+
+Contract ExchangeTokens is potentially vulnerable to the following:
+
+1) Price manipulation: The liquidate function uses the getPrice function to calculate the liquidation condition, but getPrice is not defined in the contract. There might be a vulnerability if the price calculation logic is manipulated externally.
+
+2) Arithmetic flaw: In the liquidate function, the calculation (getPrice() * cAmount * 80 / 100) might result in an arithmetic flaw if inputs are manipulated to cause overflow or underflow.
+
+3) Insufficient gas: The liquidate function executes two external calls to transfer tokens, which might lead to running out of gas if the gas limit is insufficient for both operations to complete successfully.

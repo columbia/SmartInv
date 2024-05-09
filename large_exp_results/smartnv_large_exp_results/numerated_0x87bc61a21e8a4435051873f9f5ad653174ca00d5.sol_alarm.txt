@@ -1,0 +1,45 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address payable public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+
+    constructor(address _arbiter, address _seller) public {
+        arbiter = _arbiter;
+        seller = payable(_seller);
+        buyer = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        amount += msg.value;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == arbiter, "Only arbiter can release funds");
+        require(buyerApproved && sellerApproved, "Both parties must approve before releasing funds");
+        seller.transfer(amount);
+    }
+
+    function refundAmount() public {
+        require(msg.sender == arbiter, "Only arbiter can refund funds");
+        seller.transfer(amount);
+    }
+
+    function approveRelease() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can approve release");
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else {
+            sellerApproved = true;
+        }
+    }
+} 
+
+The potential vulnerabilities in the Escrow contract are:
+1) Incorrect visibility/ownership: The releaseAmount and refundAmount functions do not restrict access to only the arbiter, allowing potential unauthorized access to fund release or refund.
+2) Inconsistent state update: There is a lack of synchronization between buyerApproved and sellerApproved variables, leading to potential inconsistencies in the approval status of parties. This may result in improper fund releases.
+3) Suicidal contracts: There is no functionality to prevent the contract from self-destructing, posing a risk of potential loss of funds if the contract is destructed intentionally or unintentionally.

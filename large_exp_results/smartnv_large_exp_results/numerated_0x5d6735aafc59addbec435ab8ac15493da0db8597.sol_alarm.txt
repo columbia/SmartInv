@@ -1,0 +1,19 @@
+<\contract\>
+contract StakingPool {
+    mapping(address => uint) public stakingBalance;
+    uint public totalStakedBalance;
+
+    function stake(uint amount) external {
+        require(amount > 0, "Cannot stake 0 tokens");
+        stakingBalance[msg.sender] += amount;
+        totalStakedBalance += amount;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount > 0, "Cannot withdraw 0 tokens");
+        require(stakingBalance[msg.sender] >= amount, "Insufficient staked balance");
+        stakingBalance[msg.sender] -= amount;
+        totalStakedBalance -= amount;
+    }
+}
+<\contract\>

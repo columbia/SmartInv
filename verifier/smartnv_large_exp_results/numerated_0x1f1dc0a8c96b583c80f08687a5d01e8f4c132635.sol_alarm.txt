@@ -1,0 +1,35 @@
+<\contract\> 
+contract PaymentProcessor {
+  address public owner;
+  mapping(address => uint) public balances;
+
+  constructor() {
+    owner = msg.sender;
+  }
+
+  function deposit() public payable {
+    balances[msg.sender] += msg.value;
+  }
+
+  function withdraw(uint amount) public {
+    require(amount <= balances[msg.sender], "Insufficient balance");
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success, "Transfer failed");
+    balances[msg.sender] -= amount;
+  }
+
+  function transfer(address to, uint amount) public {
+    require(amount <= balances[msg.sender], "Insufficient balance");
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+  }
+
+  function setOwner(address newOwner) public {
+    require(msg.sender == owner, "Only owner can set new owner");
+    owner = newOwner;
+  }
+}
+<\contract\> 
+
+5) atomicity violation
+8) reentrancy

@@ -1,0 +1,18 @@
+<\contract_to_analyze\>
+contract SwapContract {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     address public owner;
+
+     function swap(uint amountA, uint amountB) public {
+         require(amountA > 0 && amountB > 0, "Invalid swap amounts");
+         tokenA.transferFrom(msg.sender, owner, amountA);
+         tokenB.transferFrom(owner, msg.sender, amountB);
+     }
+
+     function changeOwner(address newOwner) public {
+         require(msg.sender == owner, "Only owner can change owner");
+         owner = newOwner;
+     }
+}
+<\contract_to_analyze\>

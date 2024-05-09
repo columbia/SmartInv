@@ -1,0 +1,16 @@
+<\contract\>
+contract TokenExchange {
+         IERC20 public tokenA;
+         IERC20 public tokenB;
+         
+         function exchange(uint amountA) external {
+             require(amountA > 0, "Invalid amount");
+             tokenA.transferFrom(msg.sender, address(this), amountA);
+             uint amountB = amountA * 2;
+             tokenB.transfer(msg.sender, amountB);
+         }
+     }
+<\contract\>
+
+2) integer overflow/underflow 
+9) arithmethic flaw

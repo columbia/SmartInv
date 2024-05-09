@@ -1,0 +1,25 @@
+Contract to analyze:
+
+contract ProductContract {
+    uint public price;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function setPrice(uint _price) public {
+        require(msg.sender == owner, "Only owner can set the price");
+        price = _price;
+    }
+
+    function buyProduct() public payable {
+       require(msg.value >= price, "Insufficient funds");
+       owner.transfer(msg.value);
+    }
+}
+
+Potential vulnerabilities:
+- integer overflow/underflow: There is potential for overflow/underflow in the calculations involving price and the value sent by the buyer in buyProduct function.
+- incorrect visibility/ownership: The visibility of owner and price variables are public, which may lead to unauthorized access and manipulation.
+- atomicity violation: There is lack of atomicity where the price is set and funds are transferred, opening room for inconsistencies.

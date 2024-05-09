@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The execute function updates the proposal's votedAmount without properly handling re-entrancy issues. Re-entrancy attacks could manipulate the votedAmount variable.
+2) Incorrect visibility: The proposal struct is not marked as private, making its data accessible externally. This could lead to unauthorized access and manipulation of proposal data.
+3) Integer underflow: The expression (getPrice() * cAmount * 80 / 100) in the liquidate function could result in an integer underflow if the values are manipulated to be very small.
+4) Insufficient gas: The endExecute function may fail due to insufficient gas if the execution of the require statement consumes too much gas, preventing the function from completing successfully.

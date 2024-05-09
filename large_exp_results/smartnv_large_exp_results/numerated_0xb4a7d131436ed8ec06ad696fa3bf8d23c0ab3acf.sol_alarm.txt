@@ -1,0 +1,12 @@
+<\contract\>
+contract TokenSale {
+       address public token;
+       address public owner;
+       uint public price;
+
+  function buyTokens(uint amount) public payable {
+          require(msg.value == amount * price, "incorrect payment amount");
+          token.transfer(msg.sender, amount);
+          owner.transfer(msg.value);
+      }
+}

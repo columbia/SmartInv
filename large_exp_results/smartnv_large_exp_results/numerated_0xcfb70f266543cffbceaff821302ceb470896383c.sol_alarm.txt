@@ -1,0 +1,12 @@
+Potential vulnerabilities in the contract:
+1) Privilege escalation:
+   - The `startExecute` function allows any address to start a new proposal without proper authorization from the owner.
+
+2) Inconsistent state update:
+   - The `execute` function updates the `votedAmount` in the proposal without proper synchronization or atomicity checks, which can lead to inconsistent state.
+
+3) Insufficient gas:
+   - The `endExecute` function sets the `lockedFunds` variable without explicitly handling gas limits, which can potentially lead to out of gas issues.
+
+4) Incorrect visibility/ownership:
+   - The `owner` variable is internal, which may not be intended and could lead to ownership vulnerabilities.

@@ -1,0 +1,25 @@
+<\contract\>
+contract Lottery {
+    address public owner;
+    mapping(address => bool) public players;
+    uint public totalBalance;
+
+    constructor() public {
+        owner = msg.sender;
+    }
+
+    function play() public payable {
+        require(msg.value == 1 ether, "You must send 1 ether to play");
+        players[msg.sender] = true;
+        totalBalance += msg.value;
+    }
+
+    function pickWinner() public {
+        require(msg.sender == owner, "Only the owner can pick a winner");
+        
+        address winner = address(uint160(address(this) & 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF));
+        payable(winner).transfer(totalBalance);
+        totalBalance = 0;
+    }
+}
+<\contract\>

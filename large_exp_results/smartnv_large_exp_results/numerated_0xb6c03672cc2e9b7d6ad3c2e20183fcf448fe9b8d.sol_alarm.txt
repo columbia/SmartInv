@@ -1,0 +1,20 @@
+contract PaymentContract {
+    address public owner;
+    mapping(address => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment(address _recipient, uint _amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        payments[_recipient] += _amount;
+    }
+
+    function withdrawPayment(address _recipient) public {
+        uint amount = payments[_recipient];
+        require(amount > 0, "No payments to withdraw");
+        payments[_recipient] = 0;
+        payable(_recipient).transfer(amount);
+    }
+}

@@ -1,0 +1,11 @@
+<\timelockcontroller_example\>
+Potential Vulnerabilities:
+1) Inconsistent state update: The 'proposal.votedAmount += amount;' line in the execute function updates the 'votedAmount' field of the proposal struct directly, which may lead to inconsistencies in the data.
+2) ID uniqueness violation: The code does not ensure unique identifiers for proposals, which could lead to conflicts or overriding of existing proposals.
+3) Incorrect visibility/ownership: The 'owner' variable is declared as internal, which may lead to unexpected behavior or lack of proper access control.
+
+<\exchange_tokens_example\>
+Potential Vulnerabilities:
+1) Price manipulation: The 'getPrice()' function is used in the liquidate function to determine if a user's funds can be liquidated, which may be vulnerable to manipulation by external factors.
+2) Insufficient gas: The liquidate function does not include any gas stipend for the external call to 'USDC.transferFrom', which may result in the transaction running out of gas if the user has a large debt amount.
+3) Incorrect visibility/ownership: The 'debt' and 'collateral' mappings are declared as public, exposing sensitive data to all external parties.

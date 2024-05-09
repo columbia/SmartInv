@@ -1,0 +1,26 @@
+<\analyzed_contract\>
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+     uint public price;
+     bool public itemReceived;
+
+     function initiateEscrow(address _seller, uint _price) public {
+          buyer = msg.sender;
+          seller = _seller;
+          price = _price;
+     }
+
+     function confirmItemReceived() public {
+          require(msg.sender == buyer, "Only the buyer can confirm item received");
+          itemReceived = true;
+     }
+
+     function releasePayment() public {
+          require(itemReceived == true, "Item has not been received yet");
+          require(msg.sender == seller, "Only the seller can release payment");
+          // Here release payment to the seller
+     }
+
+}
+<\analyzed_contract\>

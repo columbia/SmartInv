@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    event Sold(address buyer, uint amount);
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        require(token.allowance(msg.sender, address(this)) >= _amount, "Token not approved for transfer");
+
+        uint cost = _amount * tokenPrice;
+        require(token.balanceOf(address(this)) >= cost, "Contract does not have enough tokens");
+
+        token.transferFrom(msg.sender, address(this), _amount);
+        token.transfer(msg.sender, _amount);
+        tokensSold += _amount;
+
+        emit Sold(msg.sender, _amount);
+    }
+}
+<\contract_to_analyze\>

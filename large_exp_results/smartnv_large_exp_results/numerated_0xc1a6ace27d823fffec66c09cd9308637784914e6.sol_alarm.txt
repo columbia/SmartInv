@@ -1,0 +1,46 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the contract may include:
+
+1) privilege escalation: The contract may be vulnerable to privilege escalation attacks.
+2) inconsistent state update: There may be inconsistent state updates within the contract.
+3) atomicity violation: Certain operations within the contract may not be atomic, leading to potential vulnerabilities.
+4) ID uniqueness violation: Violation of ID uniqueness may lead to vulnerabilities in the contract.
+5) reentrancy: The contract may be susceptible to reentrancy attacks.
+6) incorrect visibility/ownership: Visibility and ownership settings within the contract may be incorrect, leading to vulnerabilities.
+
+Please review and address these potential vulnerabilities in the contract.

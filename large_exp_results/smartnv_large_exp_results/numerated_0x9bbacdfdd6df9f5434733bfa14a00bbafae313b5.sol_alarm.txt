@@ -1,0 +1,25 @@
+<\your_contract\>
+contract VotingSystem {
+    struct Candidate {
+        uint256 id;
+        string name;
+        uint256 voteCount;
+    }
+    
+    mapping(uint256 => Candidate) public candidates;
+    mapping(address => bool) public hasVoted;
+    
+    function addCandidate(uint256 _id, string memory _name) public {
+        Candidate memory newCandidate = Candidate(_id, _name, 0);
+        candidates[_id] = newCandidate;
+    }
+    
+    function vote(uint256 _id) public {
+        require(candidates[_id].id != 0, "Candidate does not exist");
+        require(!hasVoted[msg.sender], "You have already voted");
+        
+        candidates[_id].voteCount++;
+        hasVoted[msg.sender] = true;
+    }
+}
+<\your_contract\>

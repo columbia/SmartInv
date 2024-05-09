@@ -1,0 +1,32 @@
+contract MultiSigWallet {
+    mapping(address => bool) public isOwner;
+    uint public threshold;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+    
+    struct Transaction {
+        address to;
+        uint value;
+        bytes data;
+        bool executed;
+    }
+
+    constructor(address[] memory owners, uint _threshold) {
+        for (uint i = 0; i < owners.length; i++) {
+            isOwner[owners[i]] = true;
+        }
+        threshold = _threshold;
+    }
+
+    function submitTransaction(address to, uint value, bytes memory data) public {
+        //add transaction logic
+    }
+
+    function approveTransaction(uint transactionId) public {
+        //add approval logic
+    }
+
+    function executeTransaction(uint transactionId) public {
+        //add execution logic
+    }
+}

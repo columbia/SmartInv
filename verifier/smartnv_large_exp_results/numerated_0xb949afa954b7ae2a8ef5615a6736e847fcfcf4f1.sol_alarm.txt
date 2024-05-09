@@ -1,0 +1,17 @@
+<\analyzed_contract\>
+contract PaymentGateway {
+    mapping(address => uint) public payments;
+
+    function makePayment(address _recipient, uint _amount) external {
+        require(_amount > 0, "Invalid payment amount");
+        payments[_recipient] += _amount;
+    }
+
+    function withdrawPayment(address _recipient) external {
+        uint amount = payments[_recipient];
+        require(amount > 0, "No funds to withdraw");
+        payments[_recipient] = 0;
+        msg.sender.transfer(amount);
+    }
+}
+<\analyzed_contract\>

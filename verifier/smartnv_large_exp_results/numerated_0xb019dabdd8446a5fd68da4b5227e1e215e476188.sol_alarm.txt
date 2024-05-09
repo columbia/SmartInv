@@ -1,0 +1,22 @@
+<\contract\>
+contract ReservationContract {
+    uint public totalReservations;
+    mapping(address => uint) public reservations;
+
+    function makeReservation(uint quantity) public {
+        require(quantity > 0, "Quantity must be greater than 0");
+        require(reservations[msg.sender] + quantity <= 10, "Cannot reserve more than 10 units");
+        
+        reservations[msg.sender] += quantity;
+        totalReservations += quantity;
+    }
+
+    function cancelReservation(uint quantity) public {
+        require(quantity > 0, "Quantity must be greater than 0");
+        require(reservations[msg.sender] >= quantity, "Cannot cancel more than reserved");
+        
+        reservations[msg.sender] -= quantity;
+        totalReservations -= quantity;
+    }
+}
+<\contract\>

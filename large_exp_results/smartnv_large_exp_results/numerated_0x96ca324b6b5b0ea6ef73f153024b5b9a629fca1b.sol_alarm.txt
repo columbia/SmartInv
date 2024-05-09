@@ -1,0 +1,21 @@
+Given contract:
+
+contract Marketplace {
+         IERC20 public token;
+         mapping(address => uint) public balances;
+         
+         function deposit(uint amount) public {
+             token.transferFrom(msg.sender, address(this), amount);
+             balances[msg.sender] += amount;
+         }
+         
+         function withdraw(uint amount) public {
+             require(balances[msg.sender] >= amount, "Insufficient balance");
+             balances[msg.sender] -= amount;
+             token.transfer(msg.sender, amount);
+         }
+}
+
+Potential vulnerabilities:
+- Incorrect visibility/ownership: The `balances` mapping is public, meaning that anyone can view the balances of any address. This might not be intended and could lead to privacy concerns.
+- Insufficient gas: If the `withdraw` function is called with a very large `amount` that causes the gas cost to exceed the gas limit, the transaction will fail. It might be recommended to use a withdrawal pattern or batch withdrawals to handle large amounts more efficiently and prevent gas issues.

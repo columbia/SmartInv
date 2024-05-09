@@ -1,0 +1,43 @@
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public deposit;
+     bool public isDisputed;
+     bool public isCompleted;
+
+     constructor(address _buyer, address _seller, address _arbiter, uint _deposit) {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         deposit = _deposit;
+         isDisputed = false;
+         isCompleted = false;
+     }
+
+     function releaseFunds() public {
+         require(msg.sender == seller, "Only seller can release funds");
+         require(!isDisputed, "Cannot release funds while dispute is ongoing");
+         
+         isCompleted = true;
+         seller.transfer(deposit);
+     }
+
+     function refundFunds() public {
+         require(msg.sender == buyer, "Only buyer can refund funds");
+         require(!isDisputed, "Cannot refund funds while dispute is ongoing");
+         
+         isCompleted = true;
+         buyer.transfer(deposit);
+     }
+
+     function initiateDispute() public {
+         require(msg.sender == arbiter, "Only arbiter can initiate dispute");
+         require(!isDisputed, "Dispute has already been initiated");
+
+         isDisputed = true;
+     }
+} 
+
+Output:
+- healthy

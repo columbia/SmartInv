@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract LottoGame {
+    mapping(address => uint) public tickets;
+    uint public totalTickets;
+    uint public totalPrize;
+    
+    function buyTicket() public payable {
+        require(msg.value >= 1 ether, "Minimum ticket price is 1 ether");
+        tickets[msg.sender]++;
+        totalTickets++;
+        totalPrize += msg.value;
+    }
+    
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        require(totalTickets > 0, "No tickets sold");
+        
+        address winner;
+        // Picking winner logic
+        
+        winner.transfer(totalPrize);
+        totalPrize = 0;
+        totalTickets = 0;
+    }
+}
+<\contract_to_analyze\>

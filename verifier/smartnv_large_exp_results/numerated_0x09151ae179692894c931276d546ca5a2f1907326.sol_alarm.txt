@@ -1,0 +1,26 @@
+<\contract\> 
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+    mapping(address => uint) public bids;
+
+    function bid(uint amount) public {
+        require(amount > highestBid, "Bid amount must be higher than current highest bid");
+        highestBidder.transfer(highestBid); 
+        highestBidder = msg.sender;
+        highestBid = amount;
+        bids[msg.sender] = amount;
+    }
+
+    function withdraw() public {
+        uint amount = bids[msg.sender];
+        require(amount > 0, "You have no funds to withdraw");
+        msg.sender.transfer(amount);
+        bids[msg.sender] = 0;
+    }
+}
+<\contract\> 
+
+Output:
+1) Reentrancy vulnerability 
+2) Inconsistent state update

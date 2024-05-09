@@ -1,0 +1,29 @@
+<\contract\>
+contract Marketplace {
+     address public owner;
+     mapping(uint => address) public itemIdToOwner;
+     mapping(address => uint) public ownerItemCount;
+     uint public totalItems;
+
+     constructor() {
+         owner = msg.sender;
+         totalItems = 0;
+     }
+
+     function addItem(address _owner) public {
+         require(msg.sender == owner, "only owner can add items");
+
+         itemIdToOwner[totalItems] = _owner;
+         ownerItemCount[_owner]++;
+         totalItems++;
+     }
+
+     function transferItem(uint _itemId, address _newOwner) public {
+         require(itemIdToOwner[_itemId] == msg.sender, "sender is not the owner of the item");
+
+         ownerItemCount[msg.sender]--;
+         ownerItemCount[_newOwner]++;
+         itemIdToOwner[_itemId] = _newOwner;
+     }
+ }
+<\contract\>

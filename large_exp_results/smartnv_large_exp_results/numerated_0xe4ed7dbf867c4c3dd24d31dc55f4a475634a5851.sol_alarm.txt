@@ -1,0 +1,34 @@
+The contract to be analyzed:
+
+contract Marketplace {
+     address public owner;
+     mapping(address => uint) public items;
+     uint public totalItems;
+
+     constructor() {
+         owner = msg.sender;
+     }
+
+     function addItem(uint itemId, uint quantity) public {
+         require(msg.sender == owner, "Only the owner can add items");
+         items[itemId] += quantity;
+         totalItems += quantity;
+     }
+
+     function purchaseItem(uint itemId, uint quantity) public payable {
+         require(items[itemId] >= quantity, "Not enough items available");
+         uint totalPrice = getPrice(itemId) * quantity;
+         require(msg.value >= totalPrice, "Insufficient funds to purchase item");
+         items[itemId] -= quantity;
+         totalItems -= quantity;
+         owner.transfer(totalPrice);
+     }
+
+     function getPrice(uint itemId) public view returns (uint) {
+         return itemId * 10;
+     }
+}
+
+Output:
+1) Inconsistent state update
+2) Integer overflow/underflow

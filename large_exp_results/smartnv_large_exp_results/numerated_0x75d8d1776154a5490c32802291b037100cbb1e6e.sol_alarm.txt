@@ -1,0 +1,28 @@
+Contract:
+
+pragma solidity ^0.8.0;
+
+contract Marketplace {
+    IERC20 public token;
+    address public admin;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        admin = msg.sender;
+    }
+
+    function buy(uint amount) external {
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        
+        token.transferFrom(msg.sender, address(this), amount);
+        token.transfer(admin, amount);
+    }
+
+    function sell(uint amount) external {
+        token.transferFrom(admin, address(this), amount);
+        token.transfer(msg.sender, amount);
+    }
+}
+
+Output:
+- Incorrect visibility/ownership: The `admin` variable should be marked as internal or private to avoid unintentional changes by external entities.

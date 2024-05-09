@@ -1,0 +1,22 @@
+Contract analyzed: 
+
+contract VotingSystem {
+    uint public totalVotes;
+    mapping(address => bool) public hasVoted;
+
+    function vote() public {
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+
+    function revokeVote() public {
+        require(hasVoted[msg.sender], "You have not voted yet");
+        totalVotes--;
+        hasVoted[msg.sender] = false;
+    }
+}
+
+Potential vulnerabilities identified in the contract:
+- ID uniqueness violation (hasVoted mapping needs to check for duplicate addresses)
+- Incorrect visibility/ownership (public visibility of totalVotes may lead to manipulation)
+- Insufficient gas (increasing totalVotes may require a large amount of gas if the function is called frequently)

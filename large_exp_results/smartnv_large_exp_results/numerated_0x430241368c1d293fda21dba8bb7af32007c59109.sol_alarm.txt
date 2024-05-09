@@ -1,0 +1,29 @@
+The contract that needs to be analyzed for potential vulnerabilities is:
+
+contract Lottery {
+     mapping(address => uint) public tickets;
+     address[] public players;
+     address public winner;
+
+     function buyTicket() public payable {
+         require(msg.value > 0, "Invalid ticket amount");
+         tickets[msg.sender] += msg.value;
+         players.push(msg.sender);
+     }
+
+     function pickWinner() public {
+         require(players.length > 0, "No players participated");
+         uint index = random() % players.length;
+         winner = players[index];
+         address(winner).transfer(address(this).balance);
+     }
+
+     function random() private view returns (uint) {
+         return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+     }
+}
+
+Output: 
+1) insufficient gas
+2) integer overflow/underflow
+3) incorrect visibility/ownership

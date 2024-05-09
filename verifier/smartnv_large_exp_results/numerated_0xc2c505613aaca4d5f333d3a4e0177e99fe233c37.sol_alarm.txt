@@ -1,0 +1,26 @@
+The contract under analysis: 
+
+contract Escrow {
+    uint public balance;
+
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        msg.sender.transfer(amount);
+    }
+}
+
+The potential vulnerabilities in the given contract are:
+
+1) Integer Overflow/Underflow: 
+   - In the 'deposit' function, if a large amount of value is sent causing an overflow in the 'balance' variable.
+   - In the 'withdraw' function, if 'amount' is larger than the current 'balance', causing an underflow.
+
+2) Insufficient Gas: 
+   - In the 'withdraw' function, transferring 'amount' to 'msg.sender' might fail if the gas provided is not enough for the transfer operation.
+
+Therefore, the identified potential vulnerabilities in the Escrow contract are Integer Overflow/Underflow and Insufficient Gas.

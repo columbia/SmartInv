@@ -1,0 +1,29 @@
+contract Lottery {
+    mapping(address => uint) public ticketCount;
+    address[] public players;
+
+    function buyTicket() public payable {
+        require(msg.value == 1 ether, "Ticket price must be 1 ether");
+        ticketCount[msg.sender]++;
+        players.push(msg.sender);
+    }
+
+    function selectWinner() public {
+        require(msg.sender == manager, "Only manager can select winner");
+        uint winnerIndex = random() % players.length;
+        address winner = players[winnerIndex];
+        address(manager).transfer(address(this).balance);
+        resetLottery();
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+
+    function resetLottery() private {
+        for (uint i = 0; i < players.length; i++) {
+            ticketCount[players[i]] = 0;
+        }
+        delete players;
+    }
+}

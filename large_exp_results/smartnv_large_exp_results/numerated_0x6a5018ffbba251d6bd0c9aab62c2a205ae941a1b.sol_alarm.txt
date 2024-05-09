@@ -1,0 +1,34 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public amount;
+    enum State { Created, Locked, Released, InDispute }
+    State public state;
+
+    constructor(address _payer, address _payee, address _arbiter, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+        amount = _amount;
+        state = State.Created;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer && state == State.Created, "only payer can deposit in Created state");
+        state = State.Locked;
+    }
+
+    function release() public {
+        require(msg.sender == payee && state == State.Locked, "only payee can release in Locked state");
+        payable(payee).transfer(amount);
+        state = State.Released;
+    }
+
+    function dispute() public {
+        require(msg.sender == arbiter && state == State.Locked, "only arbiter can dispute in Locked state");
+        state = State.InDispute;
+    }
+}
+<\contract\>

@@ -1,0 +1,5 @@
+The potential vulnerabilities in the contract are:
+1) Incorrect visibility/ownership: The contract does not specify visibility for the variables `votingToken` and `proposal`, leaving them accessible to external contracts. 
+2) Inconsistent state update: In the `execute` function, the `proposal.votedAmount` is updated without restricting multiple calls to prevent inconsistent state updates.
+3) Insufficient gas: The `startExecute` function does not verify that the `getStartingBalance` function can execute successfully with the gas limit.
+4) Invalid arithmetic: The condition `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` in the `endExecute` function may result in an incorrect state due to incorrect arithmetic operations.

@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public isFundsReleased;
+     uint public totalFunds;
+     
+     function depositFunds() external payable {
+         require(msg.sender == buyer || msg.sender == seller, "Unauthorized user");
+         totalFunds += msg.value;
+     }
+     
+     function releaseFunds() external {
+         require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Unauthorized user");
+         require(!isFundsReleased, "Funds already released");
+         
+         // Release funds to seller
+         seller.transfer(totalFunds);
+         isFundsReleased = true;
+     }
+}
+<\contract_to_analyze\>

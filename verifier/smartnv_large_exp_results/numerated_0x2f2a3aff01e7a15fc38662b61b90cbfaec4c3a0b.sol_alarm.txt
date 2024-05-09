@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    bool public isPaid;
+    bool public isReleased;
+    uint public amount;
+
+    function setUp(address _seller, address _arbiter) public {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        amount = msg.value;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Not authorized");
+        require(isPaid, "Payment has not been made");
+        isReleased = true;
+        payable(seller).transfer(amount);
+    }
+
+    function deposit() public payable {
+        require(msg.value == amount, "Incorrect deposit amount");
+        isPaid = true;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can request a refund");
+        require(!isReleased, "Payment already released");
+        payable(buyer).transfer(amount);
+    }
+}
+<\contract_to_analyze\>

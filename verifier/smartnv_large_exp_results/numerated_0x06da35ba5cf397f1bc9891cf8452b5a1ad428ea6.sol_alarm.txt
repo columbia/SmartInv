@@ -1,0 +1,26 @@
+The contract below contains potential vulnerabilities:
+1) incorrect visibility/ownership
+2) inconsistent state update
+
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributions;
+    bool public ended;
+
+    constructor() {
+        owner = msg.sender;
+        ended = false;
+    }
+
+    function contribute() public payable {
+        require(!ended, "Crowdsale has ended");
+        contributions[msg.sender] += msg.value;
+    }
+
+    function endCrowdsale() public {
+        require(msg.sender == owner, "You are not the owner");
+        ended = true;
+    }
+}
+<\contract_to_analyze\>

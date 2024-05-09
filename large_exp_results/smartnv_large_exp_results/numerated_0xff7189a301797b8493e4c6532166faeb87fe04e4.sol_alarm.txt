@@ -1,0 +1,37 @@
+<\contract_to_analyze\>
+contract MultiSigWallet {
+    mapping(address => bool) public isOwner;
+    uint public transactionCount;
+    mapping(uint => Transaction) public transactions;
+
+    struct Transaction {
+        address destionation;
+        uint value;
+        bytes data;
+        TransactionStatus status;
+    }
+
+    enum TransactionStatus {
+        Pending,
+        Executed
+    }
+
+    modifier onlyOwner() {
+        require(isOwner[msg.sender], "Not an owner");
+        _;
+    }
+
+    function submitTransaction(address destination, uint value, bytes calldata data) public onlyOwner {
+        uint transactionId = transactionCount++;
+        transactions[transactionId] = Transaction(destination, value, data, TransactionStatus.Pending);
+    }
+
+    function executeTransaction(uint transactionId) public onlyOwner {
+        Transaction storage transaction = transactions[transactionId];
+        require(transaction.status == TransactionStatus.Pending, "Transaction already executed");
+        (bool success, ) = transaction.destionation.call{value: transaction.value}(transaction.data);
+        require(success, "Transaction failed");
+        transaction.status = TransactionStatus.Executed;
+    }
+}
+<\contract_to_analyze\>

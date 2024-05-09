@@ -1,0 +1,33 @@
+The contract:
+
+contract DataMarket {
+    struct Data {
+        uint256 dataID;
+        string dataName;
+        uint256 price;
+        address owner;
+    }
+    
+    mapping(uint256 => Data) public dataRecords;
+    
+    function addData(uint256 _dataID, string memory _dataName, uint256 _price) public {
+        require(dataRecords[_dataID].dataID == 0, "data already exists");
+        
+        Data memory newData = Data(_dataID, _dataName, _price, msg.sender);
+        dataRecords[_dataID] = newData;
+    }
+    
+    function purchaseData(uint256 _dataID) public payable {
+        require(dataRecords[_dataID].dataID != 0, "data does not exist");
+        require(msg.value >= dataRecords[_dataID].price, "insufficient funds");
+        
+        address payable dataOwner = payable(dataRecords[_dataID].owner);
+        dataOwner.transfer(msg.value);
+        
+        delete dataRecords[_dataID];
+    }
+}
+
+Output: 
+1) inconsistent state update
+2) integer overflow/underflow

@@ -1,0 +1,25 @@
+<contract_to_analyze>
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint256) public voteCount;
+    
+    function vote(bool inFavor) public {
+        require(!hasVoted[msg.sender], "Already voted");
+        
+        if (inFavor) {
+            voteCount[msg.sender]++;
+        } else {
+            voteCount[msg.sender]--;
+        }
+        
+        hasVoted[msg.sender] = true;
+    }
+}
+</contract_to_analyze> 
+
+<output>
+Corrected vulnerabilities:
+1) ID uniqueness violation: The contract does not ensure uniqueness of voter addresses, leading to potential issues with multiple votes from the same address.
+2) Business logic flaw: The voting system allows negative votes, which might not align with the intended functionality.
+
+</output>

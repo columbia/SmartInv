@@ -1,0 +1,21 @@
+<\contract\>
+contract EtherBank {
+     uint public totalBalance;
+     mapping(address => uint) public balances;
+
+     function deposit() public payable {
+         balances[msg.sender] += msg.value;
+         totalBalance += msg.value;
+     }
+
+     function withdraw(uint amount) public {
+         require(amount <= balances[msg.sender], "Insufficient balance");
+         msg.sender.call{value: amount}("");
+         totalBalance -= amount;
+         balances[msg.sender] -= amount;
+     }
+}
+<\contract\>
+
+1) reentrancy
+2) ether leakage

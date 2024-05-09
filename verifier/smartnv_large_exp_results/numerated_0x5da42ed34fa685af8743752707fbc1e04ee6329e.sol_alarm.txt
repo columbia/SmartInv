@@ -1,0 +1,29 @@
+<\analyzed_contract\> 
+contract EscrowContract {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     uint public price;
+
+     constructor(address _buyer, address _seller, address _arbiter, uint _price) public {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         price = _price;
+     }
+
+     function releaseAmountToSeller() public {
+         require(msg.sender == arbiter, "Only arbiter can release funds");
+         seller.transfer(price);
+     }
+
+     function refundAmountToBuyer() public {
+         require(msg.sender == arbiter, "Only arbiter can refund funds");
+         buyer.transfer(price);
+     }
+}
+<\analyzed_contract\> 
+
+Output:
+- incorrect visibility/ownership
+- insufficient gas

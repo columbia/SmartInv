@@ -1,0 +1,26 @@
+The contract provided for analysis is:
+
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public escrowAgent;
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit");
+    }
+
+    function release() public {
+        require(msg.sender == escrowAgent, "Only escrow agent can release funds");
+        payable(payee).transfer(address(this).balance);
+    }
+
+    function cancel() public {
+        require(msg.sender == escrowAgent, "Only escrow agent can cancel");
+        payable(payer).transfer(address(this).balance);
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) incorrect visibility/ownership in deposit function
+2) inconsistent state update in release function
+3) inconsistent state update in cancel function.

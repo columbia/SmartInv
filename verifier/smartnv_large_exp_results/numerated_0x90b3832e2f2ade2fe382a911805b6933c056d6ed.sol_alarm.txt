@@ -1,0 +1,20 @@
+<\contract\>
+contract Escrow {
+         address public buyer;
+         address public seller;
+         uint public amount;
+         bool public isPaid;
+
+         function deposit() public payable {
+             require(!isPaid, "Payment already made");
+             require(msg.sender == buyer, "Only buyer can deposit");
+             amount = msg.value;
+         }
+
+         function release() public {
+             require(msg.sender == seller, "Only seller can release funds");
+             require(isPaid, "Payment not made yet");
+             seller.transfer(amount);
+             isPaid = true;
+         }
+}

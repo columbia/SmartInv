@@ -1,0 +1,25 @@
+The contract to analyze:
+contract VotingSystem {
+     address[] public voters;
+
+     function addVoter(address _voter) public {
+          voters.push(_voter);
+     }
+
+     function removeVoter(address _voter) public {
+          for (uint i = 0; i < voters.length; i++) {
+               if (voters[i] == _voter) {
+                    delete voters[i];
+               }
+          }
+     }
+
+     function getVotersCount() public view returns (uint) {
+          return voters.length;
+     }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The removal of a voter by setting the address to zero with `delete voters[i];` may not remove the address correctly, leading to an inconsistent state.
+2) ID uniqueness violation: If the voters array allows duplicate entries, it may lead to ID uniqueness violation.
+3) Incorrect visibility/ownership: Depending on the intended functionality, the visibility of the voters array may not be secure, or the ownership control could be a vulnerability.

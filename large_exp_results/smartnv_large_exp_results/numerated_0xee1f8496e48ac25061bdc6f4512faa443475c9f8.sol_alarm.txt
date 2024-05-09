@@ -1,0 +1,27 @@
+<\your_contract\>
+contract EscrowContract {
+    address public seller;
+    address public buyer;
+    address public arbiter;
+    uint public price;
+
+    constructor(address _seller, address _buyer, uint _price, address _arbiter) public {
+        seller = _seller;
+        buyer = _buyer;
+        price = _price;
+        arbiter = _arbiter;
+    }
+
+    function releaseFunds() public {
+        require(msg.sender == arbiter, "Only the arbiter can release funds");
+        address _this = address(this);
+        payable(seller).transfer(price);
+    }
+
+    function refundBuyer() public {
+        require(msg.sender == arbiter, "Only the arbiter can refund the buyer");
+        address _this = address(this);
+        payable(buyer).transfer(price);
+    }
+}
+<\your_contract\>

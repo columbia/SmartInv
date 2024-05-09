@@ -1,0 +1,36 @@
+<\analyzed_contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerPaid;
+    bool public sellerPaid;
+    bool public refundApproved;
+
+    function setPrice(uint _price) external {
+        price = _price;
+    }
+
+    function deposit() external payable {
+        require(msg.sender == buyer || msg.sender == seller, "Not authorized");
+        require(msg.value == price, "Incorrect amount deposited");
+        if (msg.sender == buyer) {
+            buyerPaid = true;
+        } else if (msg.sender == seller) {
+            sellerPaid = true;
+        }
+    }
+
+    function approveRefund() external {
+        require(msg.sender == arbiter, "Not authorized");
+        require(buyerPaid && sellerPaid, "Both parties have not paid");
+        refundApproved = true;
+    }
+
+    function refund() external {
+        require(refundApproved, "Refund not approved");
+        payable(buyer).transfer(price);
+    }
+}
+<\analyzed_contract\>

@@ -1,0 +1,35 @@
+<\analyzed_contract\>
+contract Escrow {
+    // State variables
+    address public payer;
+    address public recipient;
+    uint public amount;
+    bool public paid;
+
+    // Constructor
+    constructor(address _payer, address _recipient, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        amount = _amount;
+        paid = false;
+    }
+
+    // Function to release funds to recipient
+    function releaseFunds() public {
+        require(msg.sender == payer, "Only payer can release funds");
+        require(!paid, "Funds have already been released");
+        
+        payable(recipient).transfer(amount);
+        paid = true;
+    }
+
+    // Function to refund funds to payer
+    function refundFunds() public {
+        require(msg.sender == recipient, "Only recipient can refund funds");
+        require(!paid, "Funds have already been released");
+
+        payable(payer).transfer(amount);
+        paid = true;
+    }
+}
+<\analyzed_contract\>

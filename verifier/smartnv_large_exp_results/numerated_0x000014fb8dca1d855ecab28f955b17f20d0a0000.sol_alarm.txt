@@ -1,0 +1,55 @@
+Contract to analyze:
+
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+
+    mapping(address => Voter) public voters;
+
+    address public admin;
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+        require(to != msg.sender, "Self-delegation is disallowed");
+
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+            require(to != msg.sender, "Found loop in delegation");
+        }
+
+        sender.voted = true;
+        sender.delegate = to;
+
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            voters[delegateTo.vote].weight += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 _proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+        sender.voted = true;
+        sender.vote = _proposal;
+    }
+
+    function execute() public onlyAdmin {
+        // Some execution logic here
+    }
+}
+
+Potential vulnerabilities in the contract:
+- ID uniqueness violation
+- Incorrect visibility/ownership

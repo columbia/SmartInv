@@ -1,0 +1,31 @@
+The contract provided for analysis:
+
+contract Marketplace {
+    struct Product {
+        uint productId;
+        string name;
+        uint price;
+        address owner;
+    }
+    
+    mapping(uint => Product) public products;
+    uint public productCounter;
+    
+    function addProduct(string memory _name, uint _price) public {
+        productCounter++;
+        products[productCounter] = Product(productCounter, _name, _price, msg.sender);
+    }
+    
+    function buyProduct(uint _productId) public payable {
+        require(products[_productId].productId != 0, "Product not found");
+        require(msg.value == products[_productId].price, "Incorrect amount sent");
+        
+        address payable productOwner = payable(products[_productId].owner);
+        productOwner.transfer(msg.value);
+        
+        // Transfer product ownership to the buyer
+        products[_productId].owner = msg.sender;
+    }
+}
+Potential vulnerabilities in the Marketplace contract: 
+- Incorrect visibility/ownership (Missing access control mechanisms for adding and buying products)

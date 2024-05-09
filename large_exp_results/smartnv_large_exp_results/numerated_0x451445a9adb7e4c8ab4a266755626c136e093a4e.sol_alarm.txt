@@ -1,0 +1,37 @@
+<\contract\> 
+contract Lottery {
+    address public owner;
+    address public winner;
+    bool public isFinished;
+    uint public ticketPrice;
+    mapping(address => bool) public tickets;
+
+    constructor(uint _ticketPrice) {
+        owner = msg.sender;
+        ticketPrice = _ticketPrice;
+        isFinished = false;
+    }
+
+    function buyTicket() public payable {
+        require(msg.value == ticketPrice, "Incorrect ticket price");
+        tickets[msg.sender] = true;
+    }
+
+    function drawWinner() public {
+        require(msg.sender == owner, "Only owner can draw winner");
+        uint randNum = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % 10;
+        address[] memory ticketHolders;
+        for (uint i = 0; i < ticketHolders.length; i++) {
+            if (tickets[ticketHolders[i]]) {
+                winner = ticketHolders[i];
+                break;
+            }
+        }
+        isFinished = true;
+    }
+}
+<\contract\> 
+
+Output:
+- business logic flaw
+- incorrect visibility/ownership

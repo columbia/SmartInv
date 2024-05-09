@@ -1,0 +1,68 @@
+Contract being analyzed:
+
+contract PermissionedToken is IERC20 {
+    mapping (address => uint256) private _balances;
+    mapping (address => mapping (address => uint256)) private _allowances;
+    uint256 private _totalSupply;
+    string private _name;
+    string private _symbol;
+    uint8 private _decimals;
+
+    constructor(string memory name_, string memory symbol_, uint8 decimals_, uint256 initialSupply, address owner) {
+        _name = name_;
+        _symbol = symbol_;
+        _decimals = decimals_;
+        _mint(owner, initialSupply);
+    }
+
+    function _mint(address account, uint256 amount) internal {
+        require(account != address(0), "ERC20: mint to the zero address");
+        _totalSupply += amount;
+        _balances[account] += amount;
+        emit Transfer(address(0), account, amount);
+    }
+
+    function approve(address spender, uint256 amount) external returns (bool) {
+        require(spender != address(0), "ERC20: approve to the zero address");
+        _allowances[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
+    function transfer(address recipient, uint256 amount) external returns (bool) {
+        _transfer(msg.sender, recipient, amount);
+        return true;
+    }
+
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool) {
+        uint256 currentAllowance = _allowances[sender][msg.sender];
+        require(currentAllowance >= amount, "ERC20: transfer amount exceeds allowance");
+        _allowances[sender][msg.sender] -= amount;
+        _transfer(sender, recipient, amount);
+        return true;
+    }
+
+    function _transfer(address sender, address recipient, uint256 amount) internal {
+        require(sender != address(0), "ERC20: transfer from the zero address");
+        require(recipient != address(0), "ERC20: transfer to the zero address");
+
+        _balances[sender] -= amount;
+        _balances[recipient] += amount;
+        emit Transfer(sender, recipient, amount);
+    }
+
+    function balanceOf(address account) external view returns (uint256) {
+        return _balances[account];
+    }
+
+    function totalSupply() external view returns (uint256) {
+        return _totalSupply;
+    }
+
+    function allowance(address owner, address spender) external view returns (uint256) {
+        return _allowances[owner][spender];
+    }
+} 
+
+Output: 
+- Healthly

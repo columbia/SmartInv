@@ -1,0 +1,9 @@
+Potential vulnerabilities in the contract: 
+
+1) Inconsistent state update: The contract may have issues with the update of the proposal state in the `startExecute` function and the `execute` function. The `votedAmount` field is updated in the `execute` function, but this might conflict with the state changes in other functions related to the same proposal.
+
+2) Insufficient gas: The `endExecute` function could potentially run out of gas if the `require` statement that checks the condition `require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");` consumes a large amount of gas due to large balances or supply.
+
+3) Incorrect visibility/ownership: It is not clear from the provided code snippet whether the `proposal`, `votingToken`, and `lockedFunds` variables are properly declared and controlled for visibility and ownership within the contract. 
+
+Overall, the contract may have vulnerabilities related to inconsistent state update, insufficient gas, and incorrect visibility/ownership.

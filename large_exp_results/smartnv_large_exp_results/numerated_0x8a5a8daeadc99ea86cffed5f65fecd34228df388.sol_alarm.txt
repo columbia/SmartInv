@@ -1,0 +1,48 @@
+<\contract\> 
+contract Escrow {
+     address public owner;
+     address public buyer;
+     address public seller;
+     uint public price;
+     enum State { Created, Locked, Released, Inactive }
+     State public state; 
+
+     modifier onlyOwner() {
+         require(msg.sender == owner, "Only owner can call this function");
+         _;
+     }
+
+     constructor(address _buyer, address _seller, uint _price) {
+         owner = msg.sender;
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+         state = State.Created;
+     }
+
+     function lockFunds() onlyOwner public {
+         require(state == State.Created, "Cannot lock funds at this state");
+         state = State.Locked;
+     }
+
+     function releaseFunds() onlyOwner public {
+         require(state == State.Locked, "Funds are not locked");
+         seller.transfer(price);
+         state = State.Released;
+     }
+
+     function refund() onlyOwner public {
+         require(state == State.Locked, "Funds are not locked");
+         buyer.transfer(price);
+         state = State.Inactive;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are:
+1) No check for over-refunding in the refund function.
+2) Lack of validation for the amount transferred in releaseFunds and refund functions.
+3) The `price` of the transaction is publicly accessible, which can potentially lead to price manipulation.
+4) No check for sufficient gas in transfer functions.
+5) Lack of proper access control in state transitions.
+6) Lack of input validation for the constructor parameters.

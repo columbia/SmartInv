@@ -1,0 +1,42 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public isPaid;
+
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        isPaid = false;
+    }
+
+    function pay() public payable {
+        require(msg.sender == buyer && msg.value == price && !isPaid, "Invalid payment");
+        isPaid = true;
+    }
+
+    function releasePayment() public {
+        require(msg.sender == seller && isPaid, "Payment not made");
+        payable(seller).transfer(price);
+    }
+
+    function refundPayment() public {
+        require(msg.sender == buyer && isPaid, "Payment not made");
+        payable(buyer).transfer(price);
+    }
+
+    function arbitrateRelease() public {
+        require(msg.sender == arbiter && isPaid, "Payment not made");
+        payable(seller).transfer(price);
+    }
+
+    function arbitrateRefund() public {
+        require(msg.sender == arbiter && isPaid, "Payment not made");
+        payable(buyer).transfer(price);
+    }
+}
+<\contract_to_analyze\>

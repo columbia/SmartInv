@@ -1,0 +1,33 @@
+The contract provided for analysis is: 
+
+contract MultiSigWallet {
+    uint[] public transactions;
+    address[] public owners;
+    mapping(uint => mapping(address => bool)) public approvals;
+  
+    function submitTransaction(uint txId) public {
+        transactions.push(txId);
+    }
+
+    function approveTransaction(uint txId) public {
+        approvals[txId][msg.sender] = true;
+    }
+
+    function executeTransaction(uint txId) public {
+        require(transactions[txId] != 0, "Transaction does not exist");
+        
+        // Check if all owners approved
+        for (uint i = 0; i < owners.length; i++) {
+            require(approvals[txId][owners[i]], "Not all owners approved");
+        }
+        
+        // Execute transaction
+        transactions[txId] = 1;
+    }
+}
+
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: It allows changing the state of the transaction without checking for the actual approval status of all owners.
+2) ID uniqueness violation: The transactions are indexed by ID, but there is no explicit check for ID uniqueness when submitting a transaction.
+3) Incorrect visibility/ownership: The contract does not explicitly define the ownership and control mechanisms, which may lead to unauthorized operations.
+4) Insufficient gas: The contract executes multiple operations within loops which can lead to running out of gas during transaction execution.

@@ -1,0 +1,37 @@
+The contract to analyze:
+
+contract VoteSystem {
+     struct Proposal {
+          uint256 startTime; 
+          uint256 votedAmount; 
+          address proposer; 
+          }
+     address public owner;
+     IERC20 public votingToken;
+     Proposal public proposal;
+
+    function startVoting() external {
+              require(proposal.startTime == 0, "voting already started");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+        }
+
+    function vote(uint256 amount) external {
+              require(proposal.startTime + 48 hours > block.timestamp, "voting period ended");
+              require(amount > 0, "voting amount must be positive");
+              votingToken.transferFrom(msg.sender, address(this), amount);
+              proposal.votedAmount += amount; 
+        }
+
+    function endVoting() external {
+              require(proposal.startTime != 0, "no active proposal");
+              require(proposal.startTime + 48 hours < block.timestamp, "voting period not ended yet");
+              require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "voting failed");
+        }
+}
+
+Based on the analysis, the potential vulnerabilities in the contract are:
+1) Atomicity violation in the endVoting() function as there is no atomic check for the conditions before updating the state.
+2) Integer overflow/underflow in the vote() function if the addition in proposal.votedAmount exceeds the uint256 limit.
+3) Incorrect visibility/ownership vulnerability as owner should be declared as public in the contract.
+
+Therefore, the identified potential vulnerabilities in the "VoteSystem" contract are atomicity violation, integer overflow/underflow, and incorrect visibility/ownership.

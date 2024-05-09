@@ -1,0 +1,26 @@
+The contract given for analysis is:
+
+```solidity
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public price;
+
+    constructor(IERC20 _token, uint _price) {
+        token = _token;
+        owner = msg.sender;
+        price = _price;
+    }
+
+    function buyTokens(uint amount) external {
+        uint totalCost = amount * price;
+        token.transferFrom(msg.sender, owner, amount);
+        payable(owner).transfer(totalCost);
+    }
+}
+```
+
+The potential vulnerabilities in the given contract include: 
+2) price manipulation
+5) atomicity violation
+13) insufficient gas

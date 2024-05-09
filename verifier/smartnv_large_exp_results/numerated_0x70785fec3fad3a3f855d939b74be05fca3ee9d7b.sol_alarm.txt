@@ -1,0 +1,21 @@
+Contract example:
+```solidity
+contract Escrow {
+    uint public amount;
+
+    function deposit(uint _amount) public {
+        require(_amount > 0, "Invalid deposit amount");
+        amount += _amount;
+    }
+
+    function withdraw(uint _amount) public {
+        require(_amount <= amount, "Insufficient balance");
+        amount -= _amount;
+    }
+}
+```
+
+Potential vulnerabilities in the contract:
+1) Integer overflow/underflow: The contract does not check for potential overflow/underflow when handling the amount variable in the deposit and withdraw functions.
+
+Therefore, the potential vulnerability in the contract is integer overflow/underflow.

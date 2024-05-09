@@ -1,0 +1,23 @@
+<\contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint => uint) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function processPayment(uint _id, uint _amount) public {
+        require(msg.sender == owner, "Only owner can process payments");
+        payments[_id] = _amount;
+    }
+
+    function getPayment(uint _id) public view returns(uint) {
+        return payments[_id];
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the PaymentProcessor contract are:
+1) privilege escalation: as only the owner can process payments, there is a risk of unauthorized access by other users to process payments.
+2) incorrect visibility/ownership: the owner variable is public, which might expose the owner's identity to external parties potentially causing security risks.

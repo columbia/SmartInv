@@ -1,0 +1,19 @@
+Possible vulnerabilities in the contract:
+
+1) Inconsistent state update: the function `execute` updates the `votedAmount` of the proposal but does not update the state of the proposal itself, which can lead to inconsistent data.
+
+2) Incorrect visibility/ownership: the `votingToken` variable is declared as public, which might expose sensitive information publicly. 
+
+3) Insufficient gas: the function `endExecute` might run out of gas if there are too many voters, as it calculates the locked funds based on the balance of the contract.
+
+4) ID uniqueness violation: there is no check for duplicate proposals, which could result in multiple proposals with the same ID.
+
+5) Atomicity violation: the `execute` function does not perform all actions atomically, which could lead to inconsistent or unexpected outcomes if an error occurs during execution. 
+
+6) Suicidal contracts: there is no protection against the contract being destroyed or self-destructed, which could result in loss of funds or disruption of the contract's operation. 
+
+7) Ether leakage: there is no mechanism to handle unexpected ether transfers to the contract, which could lead to loss of funds. 
+
+8) Reentrancy: the contract does not prevent reentrancy attacks in interactions with external contracts, potentially allowing malicious contracts to manipulate the contract's state.
+
+9) Integer overflow/underflow: there are potential vulnerabilities to integer overflow/underflow in calculations involving balances and amounts, which could result in unintended behavior.

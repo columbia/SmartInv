@@ -1,0 +1,31 @@
+<\analyzed_contract\>
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+    uint256 public winningVoteCount;
+    
+    function vote(uint256 proposal) public {
+        require(voters[msg.sender].weight != 0, "You are not eligible to vote.");
+        require(!voters[msg.sender].voted, "You have already voted.");
+        
+        voters[msg.sender].voted = true;
+        voters[msg.sender].vote = proposal;
+        
+        if (voters[msg.sender].weight > winningVoteCount) {
+            winningProposal = proposal;
+            winningVoteCount = voters[msg.sender].weight;
+        }
+    }
+}
+For the analyzed contract:
+Potential vulnerabilities:
+1) An incorrect visibility issue as the voters mapping is public, exposing sensitive voter information.
+2) ID uniqueness violation: There is no check to ensure that a single address can vote only once.
+3) Inconsistent state update: The winningProposal and winningVoteCount may not be updated consistently when multiple voters with different weights vote simultaneously.

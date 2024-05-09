@@ -1,0 +1,31 @@
+<\contract\>
+contract PaymentProcessor {
+    address public owner;
+    mapping(address => uint) public payments;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function makePayment() public payable {
+        require(msg.value > 0, "Payment value must be greater than 0");
+        payments[msg.sender] += msg.value;
+    }
+
+    function withdrawPayment() public {
+        require(msg.sender == owner, "Only the owner can withdraw payments");
+        uint amount = payments[msg.sender];
+        require(amount > 0, "No payments to withdraw");
+        payments[msg.sender] = 0;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function updateOwner(address newOwner) public {
+        owner = newOwner;
+    }
+}
+<\contract\> 
+
+Output:
+- privilege escalation
+- inconsistent state update

@@ -1,0 +1,20 @@
+<\contract_to_analyze\>
+contract VotingSystem {
+     address public admin;
+     mapping(address => bool) public hasVoted;
+
+     modifier onlyAdmin() {
+         require(msg.sender == admin, "Not authorized");
+         _;
+     }
+
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         hasVoted[msg.sender] = true;
+     }
+
+     function changeAdmin(address newAdmin) public onlyAdmin {
+         admin = newAdmin;
+     }
+}
+<\contract_to_analyze\>

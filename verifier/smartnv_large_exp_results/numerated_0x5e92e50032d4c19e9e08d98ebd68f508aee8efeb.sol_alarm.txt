@@ -1,0 +1,54 @@
+<\contract\> 
+contract MultiSigWallet {
+     address[] public owners;
+     mapping(address => bool) public isOwner;
+     uint public transactionCount;
+     mapping(uint => Transaction) public transactions;
+
+     struct Transaction {
+          address destination;
+          uint value;
+          bytes data;
+          bool executed;
+      }
+
+     modifier validOwner() {
+          require(isOwner[msg.sender]); _;
+      }
+
+     function submitTransaction(address _destination, uint _value, bytes memory _data) public validOwner {
+          uint transactionId = transactionCount;
+          transactions[transactionId] = Transaction(_destination, _value, _data, false);
+          transactionCount++;
+      }
+
+     function executeTransaction(uint _transactionId) public {
+          Transaction storage transaction = transactions[_transactionId];
+          require(!transaction.executed, "transaction already executed");
+          transaction.executed = true;
+          (bool success, ) = transaction.destination.call{value: transaction.value}(transaction.data);
+          require(success, "transaction failed");
+      }
+
+     function addOwner(address _newOwner) public validOwner {
+          isOwner[_newOwner] = true;
+          owners.push(_newOwner);
+      }
+
+     function removeOwner(address _owner) public validOwner {
+          isOwner[_owner] = false;
+          for (uint i = 0; i < owners.length; i++) {
+              if (owners[i] == _owner) {
+                  owners[i] = owners[owners.length - 1];
+                  owners.pop();
+                  break;
+              }
+          }
+      }
+}
+<\contract\> 
+
+<\output\> 
+The potential vulnerabilities in the contract are:
+1) Inconsistent state update: The function removeOwner does not update the transaction count or mark any associated transactions if an owner is removed, which can lead to inconsistent state.
+2) Incorrect visibility/ownership: The owners and isOwner mappings are public, allowing anyone to view the list of owners and their ownership status, potentially compromising the security of the wallet.

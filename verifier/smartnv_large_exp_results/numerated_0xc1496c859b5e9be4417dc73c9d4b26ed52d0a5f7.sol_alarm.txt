@@ -1,0 +1,21 @@
+The contract being analyzed:
+
+contract VotingContract {
+    address public owner;
+    mapping(address => uint) public voteCount;
+
+    function vote(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        voteCount[msg.sender] += _amount;
+    }
+
+    function changeOwner(address _newOwner) public {
+        require(msg.sender == owner, "Only owner can change owner");
+        owner = _newOwner;
+    }
+}
+
+The potential vulnerabilities in the VotingContract are:
+2) privilege escalation
+4) inconsistent state update
+14) incorrect visibility/ownership

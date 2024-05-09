@@ -1,0 +1,36 @@
+<\contract_to_analyze\> 
+contract TokenSale {
+    address public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokens;
+    uint public soldTokens;
+
+    constructor(address _token, uint _tokenPrice, uint _totalTokens) {
+        token = _token;
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+        soldTokens = 0;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Insufficient payment");
+
+        require(_numTokens <= totalTokens - soldTokens, "Not enough tokens left");
+
+        ERC20(token).transfer(msg.sender, _numTokens);
+        soldTokens += _numTokens;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract_to_analyze\> 
+
+The potential vulnerabilities in the contract are:
+1) Insufficient gas
+2) Incorrect visibility/ownership

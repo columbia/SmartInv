@@ -1,0 +1,29 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+    IERC20 public token;
+    address public owner;
+    uint public tokenPrice;
+    uint public totalTokensSold;
+
+    constructor(address _token, uint _price) {
+        token = IERC20(_token);
+        owner = msg.sender;
+        tokenPrice = _price;
+        totalTokensSold = 0;
+    }
+
+    function buyTokens(uint _amount) external payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        require(token.balanceOf(address(this)) >= _amount, "Not enough tokens available");
+        
+        token.transfer(msg.sender, _amount);
+        totalTokensSold += _amount;
+    }
+
+    function withdraw() external {
+        require(msg.sender == owner, "Caller is not the owner");
+        uint balance = address(this).balance;
+        payable(owner).transfer(balance);
+    }
+}
+<\contract_to_be_analyzed\>

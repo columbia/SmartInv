@@ -1,0 +1,22 @@
+The contract you provided for analysis:
+
+contract PaymentProcessor {
+    address public owner;
+    mapping(uint => uint) public payments;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function processPayment(uint id, uint amount) public {
+        require(msg.sender == owner, "Only owner can process payments");
+        payments[id] = amount;
+    }
+    
+    function getPayment(uint id) public view returns (uint) {
+        return payments[id];
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+1) privilege escalation

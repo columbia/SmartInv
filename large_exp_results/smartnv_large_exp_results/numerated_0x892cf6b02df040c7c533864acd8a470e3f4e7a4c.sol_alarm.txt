@@ -1,0 +1,26 @@
+Contract to analyze: 
+
+contract Market {
+    IERC20 public token;
+    address public owner;
+
+    constructor(address _token) {
+        token = IERC20(_token);
+        owner = msg.sender;
+    }
+
+    function buy(uint amount) public {
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), amount);
+        token.transfer(owner, amount);
+    }
+
+    function sell(uint amount) public {
+        require(token.balanceOf(address(this)) >= amount, "Insufficient balance");
+        token.transferFrom(msg.sender, address(this), amount);
+        token.transfer(msg.sender, amount);
+    }
+}
+
+Output: 
+insufficient gas

@@ -1,0 +1,46 @@
+Contract Analysis:
+
+The contract provided for analysis is as follows:
+
+contract TimelockController is IERC20 {
+    struct Proposal {
+        uint256 sTime; 
+        uint256 votedAmount; 
+        address addr; 
+    }
+    
+    address internal owner;
+    IERC20 votingToken;
+
+    function startExecute() external {
+        uint256 startingBalance;
+        require(proposal.sTime == 0, "on-going proposal");
+        proposal = Proposal(block.timestamp, 0, msg.sender);
+        startingBalance = getStartingBalance(proposal.addr);
+        startingBalanceList[proposal.addr] = startingBalance; 
+    }
+
+    function execute(uint256 amount) external {
+        require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+        require(proposal.votedAmount == 0, "voting hasn't gone through");
+        votingToken.transferFrom(proposal.addr, address(this), amount);
+        proposal.votedAmount += amount; 
+        votedProposal(proposal); 
+    }
+
+    function endExecute() external {
+        require(proposal.sTime != 0, "no proposal");
+        require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+        require(votingToken.balanceOf(address(this)) * 2 > votingToken.totalSupply(), "execution failed");
+        lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+
+Analysis:
+1) Inconsistent State Update: The contract uses the 'proposal' struct for storing proposal information, but the update of the 'votedAmount' field in the execute function is done directly on the struct, which may lead to inconsistent state updates.
+
+2) Incorrect Visibility/Ownership: The 'owner' variable is defined as internal, which could potentially lead to incorrect visibility or ownership issues if not properly managed.
+
+Therefore, the potential vulnerabilities in the contract are:
+1) Inconsistent State Update
+2) Incorrect Visibility/Ownership

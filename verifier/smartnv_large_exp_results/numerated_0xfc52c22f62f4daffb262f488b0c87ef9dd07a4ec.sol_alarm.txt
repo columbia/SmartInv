@@ -1,0 +1,32 @@
+The contract provided for analysis:
+
+```solidity
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    mapping(address => uint) public balances;
+    
+    constructor(address _token) {
+        admin = msg.sender;
+        token = IERC20(_token);
+    }
+
+    function buyTokens(uint _amount) public {
+        require(_amount > 0, "Amount must be greater than 0");
+        uint cost = _amount * getPrice();
+        token.transfer(msg.sender, _amount);
+        balances[msg.sender] += cost;
+    }
+
+    function getPrice() public returns(uint) {
+        // pricing logic implementation
+    }
+}
+```
+
+The potential vulnerabilities in the provided contract are:
+
+- Business logic flaw: The `getPrice` function is not implemented in the contract, which indicates a potential business logic flaw.
+- Incorrect visibility/ownership: The `admin` variable is public, potentially exposing ownership details.
+
+Therefore, the identified potential vulnerabilities in the contract are business logic flaw and incorrect visibility/ownership.

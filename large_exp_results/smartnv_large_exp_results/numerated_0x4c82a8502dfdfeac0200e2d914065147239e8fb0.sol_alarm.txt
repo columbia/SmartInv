@@ -1,0 +1,37 @@
+This is the contract to analyze for potential vulnerabilities:
+
+contract Escrow {
+    address public payer;
+    address public recipient;
+    address public arbiter;
+    uint public amount;
+    bool public payerApproved;
+    bool public recipientApproved;
+    
+    constructor(address _payer, address _recipient, address _arbiter, uint _amount) {
+        payer = _payer;
+        recipient = _recipient;
+        arbiter = _arbiter;
+        amount = _amount;
+    }
+    
+    function approvePayment() public {
+        require(msg.sender == payer || msg.sender == recipient, "Only payer or recipient can approve payment");
+        if(msg.sender == payer) {
+            payerApproved = true;
+        } else {
+            recipientApproved = true;
+        }
+    }
+    
+    function finalize() public {
+        require(payerApproved && recipientApproved, "Both parties need to approve before finalizing");
+        payable(recipient).transfer(amount);
+    }
+}
+
+Output: 
+- incorrect visibility/ownership (payer, recipient, arbiter, amount should ideally be private)
+- privilege escalation (anyone can call approvePayment without proper restrictions)
+- inconsistent state update (payerApproved and recipientApproved can be manipulated separately)
+- atomicity violation (finalization does not check if both approvals are done simultaneously)

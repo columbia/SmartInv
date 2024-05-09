@@ -1,0 +1,24 @@
+<\contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    uint public tokenPrice;
+    uint public tokenSold;
+
+    constructor(IERC20 _token, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount, "Insufficient balance");
+        
+        uint cost = _amount * tokenPrice;
+        require(token.balanceOf(address(this)) >= cost, "Contract does not have enough tokens to sell");
+
+        token.transferFrom(msg.sender, admin, cost);
+        tokenSold += _amount;
+    }
+}
+<\contract\>

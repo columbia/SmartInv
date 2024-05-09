@@ -1,0 +1,28 @@
+Contract to analyze:
+contract Escrow {
+     address public buyer;
+     address public seller;
+     bool public isFundsReleased;
+     uint public price;
+
+     constructor(address _buyer, address _seller, uint _price) {
+         buyer = _buyer;
+         seller = _seller;
+         price = _price;
+     }
+
+     function releaseFundsToSeller() public {
+         require(msg.sender == buyer, "Only the buyer can release funds");
+         require(!isFundsReleased, "Funds have already been released");
+         seller.transfer(price);
+         isFundsReleased = true;
+     }
+
+     function refundToBuyer() public {
+         require(msg.sender == seller, "Only the seller can issue a refund");
+         require(!isFundsReleased, "Funds have already been released");
+         buyer.transfer(price);
+         isFundsReleased = true;
+     }
+}
+Output: healthy

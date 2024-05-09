@@ -1,0 +1,26 @@
+<\contract\> 
+contract TokenSale {
+         IERC20 public token;
+         address public owner;
+         uint public tokenPrice;
+
+         constructor(address _token, uint _tokenPrice) {
+             token = IERC20(_token);
+             owner = msg.sender;
+             tokenPrice = _tokenPrice;
+         }
+
+         function buyTokens(uint _amount) public payable {
+             require(msg.value == _amount * tokenPrice, "Incorrect token price");
+             token.transfer(msg.sender, _amount);
+         }
+
+         function setTokenPrice(uint _newPrice) public {
+             require(msg.sender == owner, "Unauthorized");
+             tokenPrice = _newPrice;
+         }
+}
+Potential vulnerabilities:
+1) privilege escalation
+2) inconsistent state update
+3) incorrect visibility/ownership

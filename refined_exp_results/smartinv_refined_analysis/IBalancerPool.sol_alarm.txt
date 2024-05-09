@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Business logic flaw: The execute function does not check if the caller of the function is the owner of the proposal, allowing for privilege escalation.
+2) Inconsistent state update: The execute function updates the votedAmount in the proposal struct, but it does not update the startingBalanceList for the proposal.addr, which may lead to inconsistent state.
+3) Atomicity violation: The execute function transfers tokens and updates the votedAmount in the proposal struct separately, potentially leading to an atomicity violation.
+4) Cross bridge inconsistency: The execute function does not have proper checks to ensure that the transfer of tokens from proposal.addr to the contract address is successful, leading to potential inconsistency between the token amounts.

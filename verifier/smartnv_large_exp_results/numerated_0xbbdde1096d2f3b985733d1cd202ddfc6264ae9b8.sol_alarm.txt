@@ -1,0 +1,28 @@
+The contract below contains the following potential vulnerabilities:
+1) business logic flaw
+2) inconsistent state update
+3) ID uniqueness violation
+
+<\contract_to_analyze\>
+contract Membership {
+    struct Member {
+        uint id;
+        string name;
+        bool isActive;
+    }
+
+    mapping(uint => Member) public members;
+    uint public nextId;
+
+    function addMember(string memory _name) public {
+        uint memberId = nextId;
+        members[memberId] = Member(memberId, _name, true);
+        nextId++;
+    }
+
+    function deactivateMember(uint _id) public {
+        require(members[_id].isActive, "Member is already inactive");
+        members[_id].isActive = false;
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,30 @@
+<\contract_3\>
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function placeBid(uint _bidAmount) public {
+        require(_bidAmount > highestBid, "Bid amount must be higher than current highest bid");
+        
+        if (highestBid != 0) {
+            // Refund the previous highest bidder
+            highestBidder.transfer(highestBid);
+        }
+        
+        highestBidder = msg.sender;
+        highestBid = _bidAmount;
+    }
+
+    function finalizeAuction() public {
+        require(msg.sender == highestBidder, "Only the highest bidder can finalize the auction");
+        
+        address _this = address(this);
+        // Send the highest bid amount to the contract
+        msg.sender.transfer(highestBid);
+        
+        // Reset
+        highestBidder = address(0);
+        highestBid = 0;
+    }
+}
+<\contract_3\>

@@ -1,0 +1,11 @@
+<\example_1\> 
+1) Inconsistent state update: In the `execute` function, the `proposal.votedAmount` is incremented each time `execute` is called. This could potentially lead to inconsistencies in the state of the contract if multiple calls are made.
+
+<\example_2\> 
+2) Price manipulation: In the `liquidate` function, the condition `getPrice() * cAmount * 80 / 100 < dAmount` is used to determine if a user's funds can be liquidated. However, the `getPrice()` function is not defined within the contract and external factors could manipulate the price calculation, potentially allowing for price manipulation.
+
+5) Atomicity violation: In the `liquidate` function, the transfer of USDC and WETH tokens is not done atomically in a single transaction, which could potentially lead to inconsistent state updates if one transfer fails and the other succeeds.
+
+6) Cross-bridge inconsistency: The `calculatePrice` function relies on the balances of USDC and WETH within the Uniswap pair contract. If there are inconsistencies or discrepancies in the balances or prices within the Uniswap pair, it could lead to inaccurate price calculations within the `calculatePrice` function.
+
+7) ID uniqueness violation: The mappings `debt` and `collateral` use `address` as the key to map to a `uint`, potentially leading to ID uniqueness violations if multiple users share the same address in the context of this contract.

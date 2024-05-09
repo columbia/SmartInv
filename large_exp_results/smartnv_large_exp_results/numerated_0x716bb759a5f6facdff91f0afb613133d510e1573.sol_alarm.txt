@@ -1,0 +1,25 @@
+<\contract\>
+contract TokenSale {
+    address public owner;
+    IERC20 public token;
+    uint public tokenPrice;
+    
+    constructor(address _tokenAddress, uint _price) {
+        owner = msg.sender;
+        token = IERC20(_tokenAddress);
+        tokenPrice = _price;
+    }
+    
+    function buyTokens(uint _amount) public {
+        uint totalCost = _amount * tokenPrice;
+        token.transferFrom(msg.sender, address(this), _amount);
+        token.transfer(msg.sender, _amount);
+        payable(owner).transfer(totalCost);
+    }
+}
+<\contract\> 
+
+<\output\>
+potential vulnerabilities: 
+1) price manipulation
+2) inconsistent state update 

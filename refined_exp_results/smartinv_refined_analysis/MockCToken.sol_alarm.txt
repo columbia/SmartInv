@@ -1,0 +1,31 @@
+Contract to be analyzed:
+
+contract CrossBridge {
+    mapping(address => uint) public bridgeBalance;
+    mapping(address => bool) public isCrossed;
+
+    function cross(address token, uint amount) external {
+        require(!isCrossed[msg.sender], "Already crossed the bridge");
+        
+        // Simulate crossing the bridge by transferring tokens
+        // Assume transfer successful
+        bridgeBalance[token] += amount;
+        isCrossed[msg.sender] = true;
+    }
+
+    function uncross(address token, uint amount) external {
+        require(isCrossed[msg.sender], "Must cross before uncrossing");
+        require(bridgeBalance[token] >= amount, "Insufficient balance in bridge");
+        
+        // Simulate uncrossing the bridge by transferring tokens back
+        // Assume transfer successful
+        bridgeBalance[token] -= amount;
+        if (bridgeBalance[token] == 0) {
+            isCrossed[msg.sender] = false;
+        }
+    }
+}
+
+Output:
+1) cross bridge inconsistency
+3) business logic flaw

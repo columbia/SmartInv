@@ -1,0 +1,26 @@
+<\contract_to_analyze\>
+contract InsuranceClaim {
+    struct Claim {
+         address claimant;
+         uint amount;
+         bool paidOut;
+    }
+
+    mapping(uint => Claim) public claims;
+    uint lastClaimId;
+
+    function fileClaim() public payable {
+         uint claimId = lastClaimId++;
+         claims[claimId] = Claim(msg.sender, msg.value, false);
+    }
+
+    function processClaim(uint claimId) public {
+         require(msg.sender == claims[claimId].claimant, "Only claimant can process the claim");
+         require(claims[claimId].amount > 0, "Claim amount must be greater than 0");
+         require(!claims[claimId].paidOut, "Claim has already been processed");
+
+         payable(msg.sender).transfer(claims[claimId].amount);
+         claims[claimId].paidOut = true;
+    }
+}
+<\contract_to_analyze\>

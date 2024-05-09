@@ -1,0 +1,34 @@
+<\contract_to_analyze\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, AWAITING_CONFIRMATION, COMPLETE, REFUNDED }
+    State public currentState;
+
+    mapping(address => uint) public deposits;
+
+    constructor(address _buyer, address _seller, address _arbiter) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+    }
+
+    function deposit() public payable {
+        require(currentState == State.AWAITING_PAYMENT, "Invalid state for deposit");
+        
+        if(msg.sender == buyer || msg.sender == seller) {
+            deposits[msg.sender] += msg.value;
+        }
+    }
+
+    function releasePayment() public {
+        require(currentState == State.AWAITING_CONFIRMATION, "Invalid state for payment release");
+        require(msg.sender == arbiter, "Only arbiter can release payment");
+        
+        seller.transfer(deposits[buyer]);
+        currentState = State.COMPLETE;
+    }
+}
+<\contract_to_analyze\>

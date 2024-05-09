@@ -1,0 +1,37 @@
+The contract for analysis is:
+
+contract Lottery {
+    address public owner;
+    uint public numParticipants;
+    mapping(address => bool) participants;
+    
+    constructor() {
+        owner = msg.sender;
+        numParticipants = 0;
+    }
+    
+    function participate() public {
+        require(msg.sender != owner, "Owner cannot participate");
+        require(participants[msg.sender] == false, "Cannot participate twice");
+        
+        participants[msg.sender] = true;
+        numParticipants++;
+    }
+    
+    function selectWinner() public {
+        require(msg.sender == owner, "Only owner can select winner");
+        require(numParticipants > 0, "No participants to select winner from");
+        
+        address winner = getRandomParticipant();
+        // Send prize to winner
+    }
+    
+    function getRandomParticipant() private view returns (address) {
+        // Logic to randomly select participant
+    }
+}
+
+Based on the contract provided, the potential vulnerabilities identified are:
+1) privilege escalation
+2) business logic flaw
+3) incorrect visibility/ownership

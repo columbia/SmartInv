@@ -1,0 +1,44 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public amount;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit funds");
+        amount += msg.value;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == seller && buyerApproved, "Only seller can release funds");
+        payable(seller).transfer(amount);
+        amount = 0;
+        buyerApproved = false;
+        sellerApproved = false;
+        arbiterApproved = false;
+    }
+
+    function refundAmount() public {
+        require(msg.sender == buyer && sellerApproved, "Only buyer can refund funds");
+        payable(buyer).transfer(amount);
+        amount = 0;
+        buyerApproved = false;
+        sellerApproved = false;
+        arbiterApproved = false;
+    }
+
+    function approveRelease() public {
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else if (msg.sender == seller) {
+            sellerApproved = true;
+        } else if (msg.sender == arbiter) {
+            arbiterApproved = true;
+        }
+    }
+}
+<\contract\>

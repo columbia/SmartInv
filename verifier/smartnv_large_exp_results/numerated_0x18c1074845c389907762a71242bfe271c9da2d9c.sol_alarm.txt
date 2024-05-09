@@ -1,0 +1,28 @@
+Contract: 
+```solidity
+contract TokenSale {
+    mapping(address => uint) public balances;
+    address public owner;
+    uint public tokenPrice;
+
+    constructor(uint _tokenPrice) {
+        owner = msg.sender;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint amount) public payable {
+        uint totalPrice = amount * tokenPrice;
+        require(msg.value >= totalPrice, "Not enough Ether sent");
+
+        balances[msg.sender] += amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+```
+
+Output: 
+- incorrect visibility/ownership

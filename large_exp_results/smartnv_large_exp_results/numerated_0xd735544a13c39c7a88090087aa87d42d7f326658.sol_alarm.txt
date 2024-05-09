@@ -1,0 +1,37 @@
+Contract to be analyzed: 
+
+contract TokenSale {
+    address public owner;
+    uint public price;
+    IERC20 public token;
+    mapping(address => uint) public balances;
+
+    constructor(IERC20 _token, uint _price) {
+        owner = msg.sender;
+        token = _token;
+        price = _price;
+    }
+
+    function buy(uint _amount) public {
+        uint totalPrice = _amount * price;
+        require(token.balanceOf(msg.sender) >= totalPrice, "Insufficient balance");
+        require(token.allowance(msg.sender, address(this)) >= totalPrice, "Allowance insufficient");
+        
+        token.transferFrom(msg.sender, owner, totalPrice);
+        balances[msg.sender] += _amount;
+        
+    }
+    
+    function withdrawTokens(address _to, uint _amount) public {
+        require(msg.sender == owner, "Only owner can withdraw tokens");
+        require(balances[_to] >= _amount, "Insufficient balance");
+        
+        token.transfer(_to, _amount);
+        balances[_to] -= _amount;
+    }
+}
+
+Output:
+1) incorrect visibility/ownership
+
+These potential vulnerabilities pertain to the ownership control and visibility of certain functions within the contract.

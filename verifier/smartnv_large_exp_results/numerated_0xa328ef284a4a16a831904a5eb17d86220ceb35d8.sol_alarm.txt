@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    uint public totalTokens;
+    uint public tokenPrice;
+
+    constructor(uint _totalTokens, uint _tokenPrice) {
+       owner = msg.sender;
+       totalTokens = _totalTokens;
+       tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _numTokens) public payable {
+        require(msg.value == _numTokens * tokenPrice, "Incorrect payment amount");
+        totalTokens -= _numTokens;
+        // transfer tokens to buyer
+    }
+
+    function endSale() public {
+        require(msg.sender == owner, "Only owner can end the sale");
+        // transfer remaining tokens back to owner
+        // transfer remaining ether to owner
+    }
+}
+<\contract_to_analyze\>

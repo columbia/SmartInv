@@ -1,0 +1,38 @@
+<\contract\>
+contract Escrow {
+    address public payer;
+    address public payee;
+    address public arbiter;
+    uint public amount;
+    bool public paid;
+    bool public refunded;
+
+    constructor(address _payer, address _payee, address _arbiter, uint _amount) {
+        payer = _payer;
+        payee = _payee;
+        arbiter = _arbiter;
+        amount = _amount;
+        paid = false;
+        refunded = false;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == payer, "Only payer can deposit");
+        require(msg.value == amount, "Deposit amount incorrect");
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == arbiter, "Only arbiter can release amount");
+        require(paid == false, "Amount already paid");
+        payee.transfer(amount);
+        paid = true;
+    }
+
+    function refundAmount() public {
+        require(msg.sender == arbiter, "Only arbiter can refund amount");
+        require(refunded == false, "Amount already refunded");
+        payer.transfer(amount);
+        refunded = true;
+    }
+}
+<\contract\>

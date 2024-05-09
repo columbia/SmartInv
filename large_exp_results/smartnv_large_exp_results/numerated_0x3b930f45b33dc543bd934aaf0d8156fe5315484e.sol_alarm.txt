@@ -1,0 +1,25 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, uint _amount) public {
+        buyer = _buyer;
+        seller = _seller;
+        amount = _amount;
+    }
+
+    function releaseAmount() public {
+        require(msg.sender == seller, "Only seller can release amount");
+        require(address(this).balance >= amount, "Insufficient balance");
+        payable(buyer).transfer(amount);
+    }
+
+    function refundAmount() public {
+        require(msg.sender == seller, "Only seller can refund amount");
+        require(address(this).balance >= amount, "Insufficient balance");
+        payable(seller).transfer(amount);
+    }
+}
+<\contract\>

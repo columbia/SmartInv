@@ -1,0 +1,48 @@
+The contract below may have the following potential vulnerabilities:
+
+- Privilege escalation
+- Inconsistent state update
+
+<\contract\>
+contract VotingSystem {
+     struct Voter {
+         uint256 weight;
+         bool voted;
+         uint256 vote;
+     }
+  
+     address public admin;
+     mapping(address => Voter) public voters;
+     uint256 public totalVotes;
+  
+     constructor() {
+         admin = msg.sender;
+     }
+  
+     function giveRightToVote(address _voter) public {
+         require(msg.sender == admin, "Only admin can give voting rights");
+         voters[_voter].weight = 1;
+     }
+  
+     function vote(uint256 _choice) public {
+         require(voters[msg.sender].weight > 0, "No voting rights");
+         require(!voters[msg.sender].voted, "Already voted");
+  
+         voters[msg.sender].voted = true;
+         voters[msg.sender].vote = _choice;
+         totalVotes += voters[msg.sender].weight;
+     }
+  
+     function tallyVotes() public view returns (uint256[] memory) {
+         uint256[] memory counts = new uint256[](2);
+  
+         for (uint256 i = 0; i < totalVotes; i++) {
+             if (voters[i].voted) {
+                 counts[voters[i].vote]++;
+             }
+         }
+  
+         return counts;
+     }
+}
+<\contract\>

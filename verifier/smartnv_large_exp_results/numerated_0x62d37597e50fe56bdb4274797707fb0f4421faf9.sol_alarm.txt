@@ -1,0 +1,32 @@
+<\contract\>
+contract VotingContract {
+     struct Voter {
+          uint256 weight; 
+          bool voted; 
+          address delegate; 
+          uint vote; 
+          }
+
+    address public chairperson; 
+    mapping(address => Voter) public voters;
+    uint256 public winningProposal;
+    uint256 public winningVoteCount;
+
+    function delegate(address to) public {
+          Voter storage sender = voters[msg.sender];
+          require(!sender.voted, "You already voted.");
+          require(to != msg.sender, "Self-delegation is disallowed.");
+          while (voters[to].delegate != address(0)) {
+               to = voters[to].delegate;
+            }
+          sender.voted = true; 
+          sender.delegate = to;
+          Voter storage delegate_ = voters[to];
+          if (delegate_.voted) {
+               winningProposal += sender.weight;
+            }
+          else {
+               delegate_.weight += sender.weight;
+            }
+      }
+}

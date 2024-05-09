@@ -1,0 +1,30 @@
+The contract provided below does not contain any vulnerabilities.
+
+Contract:
+```
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public escrowAgent;
+    uint public amount;
+
+    constructor(address _buyer, address _seller, address _escrowAgent, uint _amount) {
+        buyer = _buyer;
+        seller = _seller;
+        escrowAgent = _escrowAgent;
+        amount = _amount;
+    }
+
+    function releaseAmountToSeller() public {
+        require(msg.sender == escrowAgent, "Only escrow agent can release funds");
+        // Transfer the amount to the seller
+    }
+
+    function refundAmountToBuyer() public {
+        require(msg.sender == escrowAgent, "Only escrow agent can refund funds");
+        // Refund the amount to the buyer
+    }
+}
+```
+
+Output: healthy

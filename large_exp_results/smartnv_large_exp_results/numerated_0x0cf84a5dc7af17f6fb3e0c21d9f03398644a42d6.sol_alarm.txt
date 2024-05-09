@@ -1,0 +1,46 @@
+Contract Analysis:
+
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+    }
+    address internal owner;
+    IERC20 votingToken;
+
+    function startExecute() external {
+          uint256 startingBlance;
+          require(proposal.sTime == 0,"on-going proposal");
+          proposal = Proposal(block.timestamp, 0, msg.sender);
+          startingBalance = getStartingBalance(proposal.addr);
+          startingBalanceList[proposal.addr] = startingBalance; 
+    }
+
+    function execute(uint256 amount) external {
+          require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+          require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+          votingToken.transferFrom(proposal.addr, address(this), amount);
+          proposal.votedAmount += amount; 
+          votedProposal(proposal); 
+    }
+
+    function endExecute() external {
+          require(proposal.sTime != 0, "no proposal");
+          require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+          require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+          lockedFunds = votingToken.balanceOf(address(this));
+    }
+}
+
+The potential vulnerabilities in the provided contract are:
+
+1) Inconsistent state update: There is a potential issue with updating the proposal state multiple times within the same function without clear separation or validation checks for state changes.
+
+2) Incorrect visibility/ownership: The visibility and ownership of certain variables and functions are not explicitly defined, which could lead to unexpected access or modification by external entities.
+
+3) Business logic flaw: The logic for handling proposals, execution, and ending the execution may contain errors or oversights that could allow for unintended behavior or misuse.
+
+Therefore, the potential vulnerabilities in the contract are inconsistent state update, incorrect visibility/ownership, and business logic flaw.

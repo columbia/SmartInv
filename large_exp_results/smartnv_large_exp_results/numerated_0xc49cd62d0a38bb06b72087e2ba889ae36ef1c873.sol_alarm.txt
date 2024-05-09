@@ -1,0 +1,28 @@
+The potential vulnerabilities in the following contract are:
+
+1) Incorrect visibility/ownership:
+- The ownership of the contract is not explicitly defined, which can lead to ownership disputes or unauthorized access to critical functions.
+
+2) Inconsistent state update:
+- The `execute` function updates the `votedAmount` of the proposal without proper synchronization, which can lead to inconsistent state updates.
+
+3) Insufficient gas:
+- The `endExecute` function may fail due to insufficient gas if the contract balance exceeds the gas limit during execution.
+
+4) Business logic flaw:
+- The condition `votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()` in the `endExecute` function may have unintended consequences and needs to be reviewed for potential logic flaws.
+
+5) Integer overflow/underflow:
+- There is a lack of overflow/underflow protection in various arithmetic operations, such as `startingBalance = getStartingBalance(proposal.addr);` in the `startExecute` function.
+
+6) Ether leakage:
+- There are no checks or mechanisms in place to prevent unintended ether leakage in the contract.
+
+7) Privilege escalation:
+- The contract lacks proper access control mechanisms or modifiers to prevent unauthorized escalation of privileges.
+
+8) Reentrancy:
+- There is a potential risk of reentrancy exploits in the contract functions, especially when interacting with external contracts that may call back into the contract.
+
+9) Cross bridge inconsistency:
+- The contract interacts with external tokens and contracts without ensuring consistency or reliability of data exchanged between them.

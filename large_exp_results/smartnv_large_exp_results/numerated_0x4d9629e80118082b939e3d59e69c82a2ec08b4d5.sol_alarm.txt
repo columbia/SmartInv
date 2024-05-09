@@ -1,0 +1,21 @@
+<\contract_to_be_analyzed\>
+contract VotingSystem {
+     address admin;
+     mapping(address => bool) hasVoted;
+     uint256 totalVotes;
+
+     function vote() public {
+         require(!hasVoted[msg.sender], "Already voted");
+         totalVotes++;
+         hasVoted[msg.sender] = true;
+     }
+
+     function resetVotes() public {
+         require(msg.sender == admin, "Only admin can reset votes");
+         totalVotes = 0;
+         for (uint i = 0; i < totalVotes; i++) {
+             hasVoted[msg.sender] = false;
+         }
+     }
+}
+<\contract_to_be_analyzed\>

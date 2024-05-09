@@ -1,0 +1,28 @@
+contract VotingSystem {
+     struct Vote {
+          uint256 timestamp; 
+          uint256 amount; 
+          address voter; 
+          }
+     address public admin;
+     mapping(address => bool) public hasVoted;
+     mapping(uint256 => Vote) public votes;
+     uint256 public totalVotes;
+     
+     constructor() {
+          admin = msg.sender;
+     }
+
+     function vote(uint256 amount) external {
+          require(!hasVoted[msg.sender], "Already voted");
+          votes[totalVotes] = Vote(block.timestamp, amount, msg.sender);
+          hasVoted[msg.sender] = true;
+          totalVotes++;
+     }
+
+     function revokeVote() external {
+          require(hasVoted[msg.sender], "Hasn't voted yet");
+          hasVoted[msg.sender] = false;
+          totalVotes--;
+     }
+}

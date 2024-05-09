@@ -1,0 +1,29 @@
+<\contract_to_be_analyzed\>
+contract TokenSale {
+        address public admin;
+        IERC20 public token;
+        uint public tokenPrice;
+        
+        constructor(IERC20 _token, uint _tokenPrice) {
+            admin = msg.sender;
+            token = _token;
+            tokenPrice = _tokenPrice;
+        }
+
+        function buyTokens(uint _amount) public {
+            uint totalCost = tokenPrice * _amount;
+            token.transferFrom(msg.sender, address(this), _amount);
+            token.transfer(msg.sender, _amount);
+            admin.transfer(totalCost);
+        }
+
+        function setTokenPrice(uint _newPrice) public {
+            require(msg.sender == admin, "only admin can set token price");
+            tokenPrice = _newPrice;
+        }
+} 
+
+Output:
+1) price manipulation
+2) privilege escalation
+3) inconsistent state update

@@ -1,0 +1,37 @@
+<\contract\>
+contract Escrow {
+     address public buyer;
+     address public seller;
+     address public arbiter;
+     bool public buyerApproved;
+     bool public sellerApproved;
+     uint public amount;
+
+     constructor(address _buyer, address _seller, address _arbiter, uint _amount) {
+         buyer = _buyer;
+         seller = _seller;
+         arbiter = _arbiter;
+         amount = _amount;
+     }
+
+     function approveRelease(uint _amount) public {
+         require(msg.sender == buyer || msg.sender == seller || msg.sender == arbiter, "Not authorized");
+         require(_amount <= amount, "Amount exceeds escrowed amount");
+         if (msg.sender == buyer) {
+             buyerApproved = true;
+         } else if (msg.sender == seller) {
+             sellerApproved = true;
+         }
+         if (buyerApproved && sellerApproved) {
+             (bool success, ) = seller.call{value: amount}("");
+             require(success, "Transfer failed");
+         }
+     }
+
+     function refund() public {
+         require(msg.sender == arbiter, "Not authorized");
+         (bool success, ) = buyer.call{value: amount}("");
+         require(success, "Transfer failed");
+     }
+}
+<\contract\>

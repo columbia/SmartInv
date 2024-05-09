@@ -1,0 +1,48 @@
+Contract:
+
+```
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public tickets;
+    uint public totalTickets;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function buyTicket(uint qty) external payable {
+        require(msg.value == qty * 1 ether, "Incorrect amount sent");
+        
+        for (uint i = 0; i < qty; i++) {
+            tickets[msg.sender]++;
+            totalTickets++;
+        }
+    }
+
+    function drawWinner() external {
+        require(msg.sender == owner, "Only owner can draw winner");
+        
+        uint winnerTicket = uint(keccak256(abi.encodePacked(block.timestamp))) % totalTickets;
+        address winner;
+        uint count = 0;
+        
+        for (uint i = 0; i < totalTickets; i++) {
+            count += tickets[address(i)];
+            if (count >= winnerTicket) {
+                winner = address(i);
+                break;
+            }
+        }
+        
+        payable(winner).transfer(address(this).balance);
+        totalTickets = 0;
+        for (uint i = 0; i < totalTickets; i++) {
+            tickets[address(i)] = 0;
+        }
+    }
+}
+```
+
+Output:
+- integer overflow/underflow
+- inconsistent state update

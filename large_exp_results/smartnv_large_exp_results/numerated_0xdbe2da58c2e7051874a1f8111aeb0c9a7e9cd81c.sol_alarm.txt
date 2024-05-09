@@ -1,0 +1,46 @@
+<\contract\> 
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerApproved;
+    bool public sellerApproved;
+    bool public arbiterApproved;
+
+    constructor(address _seller, address _arbiter, uint _price) {
+        buyer = msg.sender;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        buyerApproved = false;
+        sellerApproved = false;
+        arbiterApproved = false;
+    }
+
+    function approve() public {
+        if (msg.sender == buyer) {
+            buyerApproved = true;
+        } else if (msg.sender == seller) {
+            sellerApproved = true;
+        } else if (msg.sender == arbiter) {
+            arbiterApproved = true;
+        }
+    }
+
+    function releaseFunds() public {
+        if (buyerApproved && sellerApproved) {
+            seller.transfer(price);
+        }
+    }
+
+    function refundBuyer() public {
+        if (sellerApproved && arbiterApproved) {
+            buyer.transfer(price);
+        }
+    }
+}
+<\contract\> 
+Output:
+- business logic flaw 
+- inconsistent state update

@@ -1,0 +1,23 @@
+<\the_contract_you_are_analyzing\> 
+contract TokenSwap {
+     address public tokenA;
+     address public tokenB;
+     mapping(address => uint) public tokenBalances;
+
+     function swapTokens(address _from, address _to, uint _amount) public {
+         require(tokenBalances[_from] >= _amount, "insufficient balance");
+         tokenBalances[_from] -= _amount;
+         tokenBalances[_to] += _amount; 
+     }
+
+     function depositToken(address _token, uint _amount) public {
+         tokenBalances[_token] += _amount;
+     }
+
+     function withdrawToken(address _token, uint _amount) public {
+         require(tokenBalances[_token] >= _amount, "insufficient balance");
+         tokenBalances[_token] -= _amount;
+     }
+}
+Output:
+healthy

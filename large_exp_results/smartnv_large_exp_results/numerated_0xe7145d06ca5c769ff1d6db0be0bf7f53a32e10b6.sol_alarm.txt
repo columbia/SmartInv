@@ -1,0 +1,26 @@
+The contract being analyzed:
+
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    uint public tokenPrice;
+
+    function buyTokens(uint amount) public payable {
+        require(msg.value == amount * tokenPrice, "Incorrect amount sent");
+        balances[msg.sender] += amount;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
+    function setTokenPrice(uint price) public {
+        tokenPrice = price;
+    }
+}
+
+Output:  
+1) privilege escalation
+2) atomicity violation 
+3) incorrect visibility/ownership

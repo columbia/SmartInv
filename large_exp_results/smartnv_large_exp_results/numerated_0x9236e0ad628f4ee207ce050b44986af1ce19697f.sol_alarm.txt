@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract Escrow {
+     address public buyer;
+     address payable public seller;
+     address public arbiter;
+
+     constructor(address _buyer, address payable _seller, address _arbiter) public {
+          buyer = _buyer;
+          seller = _seller;
+          arbiter = _arbiter;
+     }
+    
+     function releaseFunds() public {
+          require(msg.sender == arbiter, "Only arbiter can release funds");
+          seller.transfer(address(this).balance);
+     }
+
+     function refundFunds() public {
+          require(msg.sender == arbiter, "Only arbiter can refund funds");
+          buyer.transfer(address(this).balance);
+     }
+}
+<\contract_to_analyze\>

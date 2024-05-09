@@ -1,0 +1,56 @@
+contract VotingSystem {
+    struct Voter {
+        uint256 weight;
+        bool voted;
+        address delegate;
+        uint256 vote;
+    }
+    
+    mapping(address => Voter) public voters;
+    uint256[] public proposals;
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        
+        while (voters[to].delegate != address(0)) {
+            to = voters[to].delegate;
+        }
+        
+        sender.voted = true;
+        sender.delegate = to;
+        
+        Voter storage delegateTo = voters[to];
+        if (delegateTo.voted) {
+            proposals[delegateTo.vote] += sender.weight;
+        } else {
+            delegateTo.weight += sender.weight;
+        }
+    }
+
+    function vote(uint256 proposal) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You already voted.");
+        
+        sender.voted = true;
+        sender.vote = proposal;
+        
+        proposals[proposal] += sender.weight;
+    }
+
+    function winningProposal() public view returns (uint256 winningProposal_) {
+        uint256 winningWeight = 0;
+        for (uint256 i = 0; i < proposals.length; i++) {
+            if (proposals[i] > winningWeight) {
+                winningWeight = proposals[i];
+                winningProposal_ = i;
+            }
+        }
+    }
+} 
+
+The potential vulnerabilities in the contract VotingSystem are:
+1) Inconsistent State Update: The update to the proposals array in the vote and delegate functions can lead to inconsistent state if not carefully managed.
+2) Integer Overflow/Underflow: There is a risk of integer overflow in the calculations involving weights and vote counts, which can lead to unexpected behavior.
+3) Incorrect Visibility/Ownership: The visibility of the voters mapping and proposals array can expose sensitive information and potentially lead to unauthorized access or manipulation.
+4) Privilege Escalation: There is a potential for privilege escalation if the delegate function is not properly secured, allowing unauthorized parties to delegate votes on behalf of others.

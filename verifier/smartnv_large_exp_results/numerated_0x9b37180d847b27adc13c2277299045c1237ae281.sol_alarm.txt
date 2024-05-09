@@ -1,0 +1,36 @@
+The contract provided for analysis: 
+
+contract Marketplace {
+    address public owner;
+    mapping(uint256 => Product) public products;
+    uint256 public productCount;
+    
+    struct Product {
+        address seller;
+        string name;
+        uint256 price;
+        bool isAvailable;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        productCount = 0;
+    }
+
+    function addProduct(string memory _name, uint256 _price) public {
+        productCount++;
+        products[productCount] = Product(msg.sender, _name, _price, true);
+    }
+
+    function buyProduct(uint256 _productId) public payable {
+        require(products[_productId].isAvailable, "Product is not available");
+        require(msg.value >= products[_productId].price, "Insufficient funds");
+        
+        payable(products[_productId].seller).transfer(msg.value);
+        products[_productId].isAvailable = false;
+    }
+}
+
+Output: 
+1) inconsistent state update
+2) atomicity violation

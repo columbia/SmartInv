@@ -1,0 +1,18 @@
+The contract to analyze:
+contract Auction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() external payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if (highestBid != 0) {
+            address previousHighestBidder = highestBidder;
+            highestBidder = msg.sender;
+            highestBid = msg.value;
+            payable(previousHighestBidder).transfer(msg.value);
+        } else {
+            highestBidder = msg.sender;
+            highestBid = msg.value;
+        }
+    }
+}

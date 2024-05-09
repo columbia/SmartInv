@@ -1,0 +1,30 @@
+<\contract_to_analyze\>
+contract TokenSale {
+     address public tokenAddress;
+     address public admin;
+     uint public tokenPrice;
+     uint public minPurchase;
+
+     constructor(address _tokenAddress, uint _tokenPrice, uint _minPurchase) {
+         tokenAddress = _tokenAddress;
+         admin = msg.sender;
+         tokenPrice = _tokenPrice;
+         minPurchase = _minPurchase;
+     }
+
+     function buyTokens(uint _amount) external payable {
+         require(msg.value >= _amount * tokenPrice && _amount >= minPurchase, "Insufficient funds or below minimum purchase amount");
+         // Process token purchase
+     }
+
+     function withdrawFunds() external {
+         require(msg.sender == admin, "Only admin can withdraw funds");
+         // Withdraw funds
+     }
+
+     function updateTokenPrice(uint _newPrice) external {
+         require(msg.sender == admin, "Only admin can update token price");
+         tokenPrice = _newPrice;
+     }
+}
+<\contract_to_analyze\>

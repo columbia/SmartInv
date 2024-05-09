@@ -1,0 +1,25 @@
+The contract provided for analysis:
+
+contract MultiSigWallet {
+    address public owner;
+    mapping(address => uint) public balance;
+
+    function deposit() public payable {
+        balance[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balance[msg.sender], "Insufficient balance");
+        balance[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transferOwnership(address newOwner) public {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+}
+
+Output: 
+1) Incorrect visibility/ownership - The 'owner' variable is public and can be directly accessed, which may lead to unauthorized access and ownership changes.
+2) Insufficient gas - The function 'withdraw' does not include a proper gas stipend for potential external calls, which may result in failed withdrawals due to insufficient gas.

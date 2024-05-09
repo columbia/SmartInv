@@ -1,0 +1,17 @@
+The contract mentioned for analysis: 
+
+contract TokenExchange {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    
+    function swap(uint amount) public {
+        require(tokenA.balanceOf(msg.sender) >= amount, "Insufficient balance");
+        
+        tokenA.transferFrom(msg.sender, address(this), amount);
+        tokenB.transfer(msg.sender, amount);
+    }
+}
+
+Output: 
+- Insufficient gas
+- Incorrect visibility/ownership

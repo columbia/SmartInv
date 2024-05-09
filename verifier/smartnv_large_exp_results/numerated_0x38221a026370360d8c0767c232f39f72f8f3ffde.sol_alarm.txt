@@ -1,0 +1,26 @@
+contract TokenSale {
+    uint public tokenPrice;
+    uint public tokenSupply;
+    mapping(address => uint) public balances;
+
+    constructor(uint _tokenPrice, uint _tokenSupply) {
+        tokenPrice = _tokenPrice;
+        tokenSupply = _tokenSupply;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        require(tokenSupply >= _amount, "Not enough tokens available");
+        
+        balances[msg.sender] += _amount;
+        tokenSupply -= _amount;
+    }
+
+    function sellTokens(uint _amount) public {
+        require(balances[msg.sender] >= _amount, "Not enough tokens to sell");
+        
+        balances[msg.sender] -= _amount;
+        tokenSupply += _amount;
+        msg.sender.transfer(_amount * tokenPrice);
+    }
+}

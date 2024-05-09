@@ -1,0 +1,23 @@
+The contract provided for analysis:
+
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    mapping(address => uint) public voteCount;
+    uint public totalVotes;
+
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        hasVoted[msg.sender] = true;
+        voteCount[msg.sender]++;
+        totalVotes++;
+    }
+
+    function getTotalVotes() public view returns (uint) {
+        return totalVotes;
+    }
+}
+
+Potential vulnerabilities identified in the contract:
+- ID uniqueness violation: The contract uses the sender's address as a unique identifier for tracking whether they have voted or not. However, this approach may not guarantee uniqueness, leading to potential issues if multiple users share the same address.
+
+Therefore, the potential vulnerability in the contract is an ID uniqueness violation.

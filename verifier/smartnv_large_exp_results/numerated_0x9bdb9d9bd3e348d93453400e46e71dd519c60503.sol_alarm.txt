@@ -1,0 +1,27 @@
+<\contract\>
+contract Vesting {
+    address public beneficiary;
+    uint public vestingAmount;
+    uint public vestingStart;
+    uint public vestingDuration;
+    
+    constructor(address _beneficiary, uint _vestingAmount, uint _vestingStart, uint _vestingDuration) {
+        beneficiary = _beneficiary;
+        vestingAmount = _vestingAmount;
+        vestingStart = _vestingStart;
+        vestingDuration = _vestingDuration;
+    }
+    
+    function release() public {
+        require(block.timestamp >= vestingStart, "Vesting period has not started yet");
+        
+        uint elapsedTime = block.timestamp - vestingStart;
+        uint vestedAmount = (elapsedTime * vestingAmount) / vestingDuration;
+        
+        require(vestedAmount > 0, "No vested amount available");
+        
+        vestingAmount -= vestedAmount;
+        // Transfer vestedAmount to beneficiary
+    }
+}
+<\contract\>

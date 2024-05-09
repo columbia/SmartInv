@@ -1,0 +1,37 @@
+The contract to analyze:
+
+contract MultiSigWallet {
+    address[] public owners;
+    mapping(address => bool) public isOwner;
+    mapping(uint => bool) public pendingTransactions;
+    uint public transactionCount;
+
+    function addOwner(address newOwner) public {
+        require(!isOwner[newOwner], "Owner already exists");
+        owners.push(newOwner);
+        isOwner[newOwner] = true;
+    }
+
+    function submitTransaction(uint transactionId) public {
+        require(isOwner[msg.sender], "Not an owner");
+        require(!pendingTransactions[transactionId], "Transaction already pending");
+        pendingTransactions[transactionId] = true;
+        transactionCount++;
+    }
+
+    function executeTransaction(uint transactionId) public {
+        require(isOwner[msg.sender], "Not an owner");
+        require(pendingTransactions[transactionId], "Transaction not pending");
+        // Execute transaction logic here
+        pendingTransactions[transactionId] = false;
+    }
+
+    function removeOwner(address ownerToRemove) public {
+        require(isOwner[ownerToRemove], "Owner does not exist");
+        // Remove owner logic here
+    }
+}
+
+Output:
+- privilege escalation 
+- inconsistent state update

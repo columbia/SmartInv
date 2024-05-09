@@ -1,0 +1,21 @@
+<\The_contract_to_analyze\> 
+contract VotingSystem {
+     uint256 public totalVotes;
+     mapping(address => bool) public hasVoted;
+
+     function vote() public {
+         require(!hasVoted[msg.sender], "you have already voted");
+         totalVotes++;
+         hasVoted[msg.sender] = true;
+     }
+
+     function revokeVote() public {
+         require(hasVoted[msg.sender], "you have not voted yet");
+         totalVotes--;
+         hasVoted[msg.sender] = false;
+     }
+}
+
+Potential vulnerabilities: 
+7) ID uniqueness violation - There is no verification in place to ensure that the same address cannot vote multiple times or revoke a vote that hasn't been cast.
+11) Suicidal contracts - The contract does not prevent someone from revoking their vote, which may lead to inconsistent or unintended outcomes in the voting system.

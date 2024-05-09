@@ -1,0 +1,22 @@
+The contract provided for analysis:
+
+contract TokenExchange {
+    IERC20 public tokenA;
+    IERC20 public tokenB;
+    address public owner;
+
+    function swap(uint amountA, uint amountB) public {
+        require(tokenA.balanceOf(msg.sender) >= amountA, "Insufficient balance for tokenA");
+        require(tokenB.balanceOf(msg.sender) >= amountB, "Insufficient balance for tokenB");
+
+        tokenA.transferFrom(msg.sender, address(this), amountA);
+        tokenB.transferFrom(msg.sender, address(this), amountB);
+
+        tokenA.transfer(msg.sender, amountB);
+        tokenB.transfer(msg.sender, amountA);
+    }
+}
+
+Output: 
+1) Inconsistent state update
+2) Incorrect visibility/ownership

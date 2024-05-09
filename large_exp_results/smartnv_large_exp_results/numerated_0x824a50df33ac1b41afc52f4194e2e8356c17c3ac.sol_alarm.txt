@@ -1,0 +1,22 @@
+<\contract\>
+contract Auction {
+    mapping(address => uint) public bids;
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() public payable {
+        require(msg.value > highestBid, "Bid must be higher than current highest bid");
+        if(highestBidder != address(0)){
+            address previousBidder = highestBidder;
+            bids[previousBidder] += highestBid;
+        }
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+1) Integer overflow/underflow: There is a risk of integer overflow if the value of highestBid gets too high.
+2) Inconsistent state update: The function bid can potentially lead to inconsistent state if multiple bids come in simultaneously.
+3) Incorrect visibility/ownership: The visibility of the bids mapping being public may expose sensitive data to unauthorized users.

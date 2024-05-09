@@ -1,0 +1,23 @@
+<\contract_to_analyze\>
+contract PaymentProcessor {
+     address public owner;
+     mapping(uint256 => uint256) public payments;
+
+     constructor() {
+          owner = msg.sender;
+     }
+
+     function processPayment(uint256 _id, uint256 _amount) public {
+          require(msg.sender == owner, "only owner can process payments");
+          payments[_id] = _amount;
+     }
+
+     function getPaymentAmount(uint256 _id) public view returns (uint256) {
+          return payments[_id];
+     }
+
+     function updateOwner(address _newOwner) public {
+          owner = _newOwner;
+     }
+}
+<\contract_to_analyze\>

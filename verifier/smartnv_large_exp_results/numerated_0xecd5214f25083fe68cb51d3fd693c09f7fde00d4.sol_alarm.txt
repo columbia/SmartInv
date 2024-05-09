@@ -1,0 +1,17 @@
+The contract provided for analysis:
+
+contract DecentralizedExchange {
+         address public owner;
+         IERC20 public token;
+
+         function buy(uint amount) public {
+             uint price = token.balanceOf(address(this)) / amount;
+             token.transferFrom(msg.sender, address(this), amount);
+             payable(owner).transfer(amount * price);
+         }
+}
+
+The potential vulnerabilities in the contract are:
+1) Price manipulation
+2) Integer overflow/underflow
+3) Ether leakage

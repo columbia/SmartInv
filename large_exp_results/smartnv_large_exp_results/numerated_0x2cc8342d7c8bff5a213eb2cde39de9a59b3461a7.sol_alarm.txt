@@ -1,0 +1,5 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function startExecute() updates the proposal state without checking whether there is an ongoing proposal, potentially causing inconsistent state.
+2) Inconsistent state update: The function execute() updates the votedAmount state without proper synchronization, potentially leading to inconsistent state.
+3) Arithmetic flaw: In the function endExecute(), the comparison (votingToken.balanceOf(address(this))*2 > votingToken.totalSupply()) may lead to an arithmetic flaw if the operands result in an overflow.
+4) Insufficient gas: The function endExecute() involves a potentially costly operation (votingToken.balanceOf(address(this))*2), which may exceed available gas limit and result in an out of gas error.

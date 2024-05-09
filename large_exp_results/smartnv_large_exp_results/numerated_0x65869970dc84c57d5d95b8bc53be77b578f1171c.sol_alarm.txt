@@ -1,0 +1,26 @@
+<\contract\>
+contract Lottery {
+    address public owner;
+    mapping(address => uint) public playerBalances;
+    uint public totalBalance;
+
+    constructor() {
+        owner = msg.sender;
+        totalBalance = 0;
+    }
+
+    function deposit() external payable {
+        require(msg.value > 0, "Must deposit more than 0");
+        playerBalances[msg.sender] += msg.value;
+        totalBalance += msg.value;
+    }
+
+    function withdraw(uint amount) external {
+        require(amount > 0, "Must withdraw more than 0");
+        require(amount <= playerBalances[msg.sender], "Insufficient balance");
+        playerBalances[msg.sender] -= amount;
+        totalBalance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+}
+<\contract\>

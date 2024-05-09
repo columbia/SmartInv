@@ -1,0 +1,20 @@
+<\contract\> 
+contract TokenSale {
+     address public tokenAddress;
+     uint public tokenPrice;
+
+     constructor(address _tokenAddress, uint _tokenPrice) {
+          tokenAddress = _tokenAddress;
+          tokenPrice = _tokenPrice;
+     }
+
+     function buyToken(uint _amount) public payable {
+          require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+          ERC20(tokenAddress).transfer(msg.sender, _amount);
+     }
+}
+<\contract\> 
+
+1) potential vulnerabilities: 
+- integer overflow/underflow: There might be an integer overflow or underflow in the calculation of `msg.value == _amount * tokenPrice` if _amount or tokenPrice is very large.
+- incorrect visibility/ownership: The `constructor` should be marked as `public` to allow the contract deployment.

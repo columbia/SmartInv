@@ -1,0 +1,7 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `proposal.votedAmount` is updated in the `execute` function, but there is no proper synchronization mechanism to ensure that this update is atomic. This can lead to inconsistent state if multiple transactions try to update the `votedAmount` at the same time.
+
+2) Cross bridge inconsistency: There is a lack of explicit checks or validations to ensure that the `votingToken.transferFrom` function call in the `execute` function is being called correctly. This can potentially lead to an inconsistency in the token balances or unintended transfers.
+
+3) ID uniqueness violation: The `proposal` struct is not assigned a unique identifier or key, leaving room for duplication or overwriting of proposals. This can lead to confusion or conflicts in tracking different proposals.

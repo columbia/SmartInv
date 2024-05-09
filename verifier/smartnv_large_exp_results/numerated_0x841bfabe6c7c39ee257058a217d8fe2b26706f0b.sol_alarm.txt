@@ -1,0 +1,45 @@
+The contract you are going to analyze and output potential vulnerabilities for is:
+
+contract EscrowContract {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+
+    uint public price;
+
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE }
+
+    State public currentState;
+
+    constructor(address _seller, address _arbiter, uint _price) {
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+        currentState = State.AWAITING_PAYMENT;
+    }
+
+    function deposit() public payable {
+        require(msg.sender == buyer, "Only buyer can deposit");
+        require(msg.value == price, "Incorrect deposit amount");
+        // Logic for deposit 
+        currentState = State.AWAITING_DELIVERY;
+    }
+
+    function confirmDelivery() public {
+        require(msg.sender == buyer || msg.sender == seller, "Only buyer or seller can confirm delivery");
+        require(currentState == State.AWAITING_DELIVERY, "Incorrect state for delivery confirmation");
+        // Logic for confirming delivery 
+        currentState = State.COMPLETE;
+    }
+
+    function refund() public {
+        require(msg.sender == buyer, "Only buyer can request refund");
+        require(currentState == State.AWAITING_DELIVERY, "Incorrect state for refund request");
+        // Logic for refund request 
+        currentState = State.COMPLETE;
+    }
+} 
+
+The potential vulnerabilities in the EscrowContract are:
+1) Incorrect state update
+2) Inconsistent state update

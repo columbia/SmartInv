@@ -1,0 +1,22 @@
+Contract to analyze:
+contract PaymentGateway {
+         mapping(uint256 => bool) public usedNonces;
+ 
+         function processPayment(uint256 amount, uint256 nonce, address recipient, bytes memory signature) public {
+             require(!usedNonces[nonce], "nonce already used");
+             bytes32 message = keccak256(abi.encodePacked(amount, nonce, recipient));
+             address signer = recoverSigner(message, signature);
+             require(signer == owner, "invalid signature");
+             recipient.transfer(amount);
+             usedNonces[nonce] = true;
+         }
+ 
+         function recoverSigner(bytes32 message, bytes memory signature) public pure returns (address) {
+             address signer = ECDSA.recover(message, signature);
+             require(signer != address(0), "invalid signature");
+             return signer;
+         }
+}
+Potential vulnerabilities: 
+1) ID uniqueness violation. 
+2) incorrect visibility/ownership.

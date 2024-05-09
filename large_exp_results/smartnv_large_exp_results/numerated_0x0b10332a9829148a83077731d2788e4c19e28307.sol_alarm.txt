@@ -1,0 +1,25 @@
+<\contract_to_analyze\>
+contract Marketplace {
+         struct Product {
+             address seller;
+             string name;
+             uint price;
+             uint quantity;
+         }
+         mapping(uint => Product) public products;
+         uint public productCount;
+
+         function addProduct(string memory _name, uint _price, uint _quantity) public {
+             products[productCount] = Product(msg.sender, _name, _price, _quantity);
+             productCount++;
+         }
+         function buyProduct(uint _productId, uint _quantity) public payable {
+             Product storage product = products[_productId];
+             require(product.quantity >= _quantity, "Not enough quantity available");
+             require(msg.value >= (product.price * _quantity), "Insufficient payment");
+             product.quantity -= _quantity;
+             address _seller = product.seller;
+             payable(_seller).transfer(product.price * _quantity);
+         }
+}
+<\contract_to_analyze\>

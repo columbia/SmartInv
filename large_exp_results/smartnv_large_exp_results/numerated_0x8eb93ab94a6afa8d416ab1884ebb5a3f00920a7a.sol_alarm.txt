@@ -1,0 +1,39 @@
+Contract to analyze:
+
+contract PaymentSplitter {
+    address[] public payees;
+    uint256[] public shares;
+    uint256 public totalShares;
+    
+    constructor(address[] memory _payees, uint256[] memory _shares) {
+        require(_payees.length == _shares.length, "Payees and shares length mismatch");
+        
+        for (uint256 i =0; i<_payees.length; i++){
+            payees.push(_payees[i]);
+            shares.push(_shares[i]);
+            totalShares += _shares[i];
+        }
+    }
+    
+    function release() public payable {
+        for (uint256 i = 0; i < payees.length; i++) {
+            uint256 amount = shares[i] * msg.value / totalShares;
+            payable(payees[i]).transfer(amount);
+        }
+    }
+} 
+
+Potential vulnerabilities in the contract:
+
+- Integer overflow/underflow: The calculation of `amount` in the `release` function could potentially result in integer overflow if the values for `shares[i]`, `msg.value`, or `totalShares` are large enough.
+- Insufficient gas: The `release` function does not have a gas stipend or limit set, which could potentially lead to out-of-gas errors if the loop runs for a large number of payees.
+- Incorrect visibility/ownership: The `payees` and `shares` arrays are public, potentially exposing sensitive data about the contract's state.
+- Inconsistent state update: There may be a risk of inconsistent state updates if the array lengths are modified after the contract deployment.
+- Cross bridge inconsistency: Transfer of funds using `transfer` may result in inconsistent state if the receiving contract has fallback functions that perform unexpected operations.
+
+Therefore, the identified potential vulnerabilities in the "PaymentSplitter" contract are:
+9) Integer overflow/underflow
+13) Insufficient gas
+14) Incorrect visibility/ownership
+4) Inconsistent state update
+6) Cross bridge inconsistency

@@ -1,0 +1,33 @@
+<\contract_to_analyze\>
+contract TokenSale {
+    address public owner;
+    address public tokenAddress;
+    uint public tokenPrice;
+    uint public totalTokens;
+    mapping(address => uint) public balances;
+
+    constructor(address _tokenAddress, uint _tokenPrice, uint _totalTokens) {
+        owner = msg.sender;
+        tokenAddress = _tokenAddress;
+        tokenPrice = _tokenPrice;
+        totalTokens = _totalTokens;
+    }
+
+    function buyTokens(uint _tokensToBuy) public payable {
+        require(msg.value == _tokensToBuy * tokenPrice, "Incorrect payment");
+        require(balances[msg.sender] + _tokensToBuy <= totalTokens, "Exceed total tokens");
+        
+        balances[msg.sender] += _tokensToBuy;
+        
+        (bool success, ) = tokenAddress.call(abi.encodeWithSignature("transfer(address,uint256)", msg.sender, _tokensToBuy));
+        require(success, "Token transfer failed");
+    }
+
+    function withdrawTokens() public {
+        require(msg.sender == owner, "Permission denied");
+        
+        (bool success, ) = tokenAddress.call(abi.encodeWithSignature("transfer(address,uint256)", owner, totalTokens));
+        require(success, "Token transfer failed");
+    }
+}
+<\contract_to_analyze\>

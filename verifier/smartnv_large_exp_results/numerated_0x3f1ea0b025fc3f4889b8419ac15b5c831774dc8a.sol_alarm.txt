@@ -1,0 +1,65 @@
+Contract you are analyzing:
+contract VotingSystem {
+         struct Voter {
+              uint256 weight;
+              bool voted;
+              address delegate;
+              uint256 vote;
+         }
+         address public owner;
+         mapping(address => Voter) public voters;
+         uint256 public winningProposal;
+         uint256 public winningVoteCount;
+         bool public votingEnded;
+         
+         modifier onlyOwner() {
+             require(msg.sender == owner, "Only owner can call this function");
+             _;
+         }
+         
+         function delegate(address to) public {
+             require(!voters[msg.sender].voted, "You have already voted");
+             require(to != msg.sender, "Self-delegation is not allowed");
+             require(voters[to].delegate != msg.sender, "No circular delegation allowed");
+             
+             voters[msg.sender].voted = true;
+             voters[msg.sender].delegate = to;
+             
+             if (voters[to].voted) {
+                 voters[to].weight += voters[msg.sender].weight;
+             }
+         }
+         
+         function vote(uint256 proposal) public {
+             Voter storage sender = voters[msg.sender];
+             require(!sender.voted, "You have already voted");
+             require(proposal < 5, "Invalid proposal choice");
+             
+             sender.voted = true;
+             sender.vote = proposal;
+             
+             if (voters[msg.sender].delegate != address(0)) {
+                 address delegateAddr = voters[msg.sender].delegate;
+                 Voter storage delegateVoter = voters[delegateAddr];
+                 delegateVoter.weight += sender.weight;
+                 
+                 if (delegateVoter.voted) {
+                     winningVoteCount += delegateVoter.weight;
+                     winningProposal = delegateVoter.vote;
+                 }
+             } else {
+                 winningVoteCount += sender.weight;
+                 winningProposal = proposal;
+             }
+         }
+         
+         function endVoting() public onlyOwner {
+             require(!votingEnded, "Voting has already ended");
+             votingEnded = true;
+         }
+} 
+
+Output:
+- Incorrect visibility/ownership
+- Business logic flaw
+- Potential atomicity violation

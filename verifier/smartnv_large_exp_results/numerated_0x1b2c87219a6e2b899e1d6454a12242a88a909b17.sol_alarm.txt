@@ -1,0 +1,40 @@
+<\contract\>
+contract Escrow {
+    address public buyer;
+    address public seller;
+    address public arbiter;
+    uint public price;
+    bool public buyerAgrees;
+    bool public sellerAgrees;
+    bool public arbiterAgrees;
+    bool public buyerPaid;
+    bool public sellerReceived;
+    
+    constructor(address _buyer, address _seller, address _arbiter, uint _price) {
+        buyer = _buyer;
+        seller = _seller;
+        arbiter = _arbiter;
+        price = _price;
+    }
+    
+    function agreeToTerms() public {
+        if(msg.sender == buyer) {
+            buyerAgrees = true;
+        } else if(msg.sender == seller) {
+            sellerAgrees = true;
+        } else if(msg.sender == arbiter) {
+            arbiterAgrees = true;
+        }
+    }
+    
+    function confirmPayment() public payable {
+        require(msg.sender == buyer && msg.value == price, "Invalid payment");
+        buyerPaid = true;
+    }
+    
+    function confirmReceived() public {
+        require(msg.sender == seller, "Only seller can confirm receipt of item");
+        sellerReceived = true;
+    }
+}
+<\contract\>

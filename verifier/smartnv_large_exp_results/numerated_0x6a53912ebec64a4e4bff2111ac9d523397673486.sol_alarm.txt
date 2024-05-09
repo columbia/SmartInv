@@ -1,0 +1,29 @@
+contract VotingSystem {
+    address public owner;
+    mapping(address => bool) public hasVoted;
+    uint public totalVotes;
+    
+    constructor() {
+        owner = msg.sender;
+        totalVotes = 0;
+    }
+    
+    function vote() public {
+        require(!hasVoted[msg.sender], "Already voted");
+        totalVotes++;
+        hasVoted[msg.sender] = true;
+    }
+    
+    function resetVotes() public {
+        require(msg.sender == owner, "Only owner can reset votes");
+        totalVotes = 0;
+        for (uint i = 0; i < totalVotes; i++) {
+            hasVoted[msg.sender] = false;
+        }
+    }
+} 
+
+The potential vulnerabilities in the "VotingSystem" contract are:
+3) business logic flaw - In the "resetVotes" function, the loop condition should be i < totalVotes instead of i < totalVotes, leading to a logical error.
+7) ID uniqueness violation - There is a potential issue of ID uniqueness violation as it's possible for multiple addresses to vote from the same address due to the lack of verification of voter identity.
+14) incorrect visibility/ownership - The variables "owner" and "totalVotes" are declared as public, which may expose sensitive information to external parties. A more secure practice would be to use internal or private visibility for these variables.

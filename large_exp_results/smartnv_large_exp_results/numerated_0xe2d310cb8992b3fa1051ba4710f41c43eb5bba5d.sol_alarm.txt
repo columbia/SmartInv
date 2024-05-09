@@ -1,0 +1,27 @@
+<\analyzed_contract\>
+contract SmartContract {
+    uint256 public totalSupply;
+    mapping(address => uint256) public balances;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit(uint256 amount) public {
+        balances[msg.sender] += amount;
+        totalSupply += amount;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        totalSupply -= amount;
+    }
+}
+<\analyzed_contract\> 
+
+The potential vulnerabilities in the SmartContract are:
+1) integer overflow/underflow: There is a risk of integer overflow or underflow in the totalSupply variable as deposits and withdrawals are directly modifying it. 
+2) incorrect visibility/ownership: The owner variable is public, which might expose sensitive information about the contract's owner. It should be made private or internal.
+3) inconsistent state update: There is a possibility of inconsistent state update if the balances are not properly updated during deposit and withdrawal operations.

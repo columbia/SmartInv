@@ -1,0 +1,35 @@
+<\contract_to_analyze\>
+contract PaymentChannel {
+    mapping(address => uint) public balances;
+    address public owner;
+
+    modifier onlyOwner {
+        require(msg.sender == owner, "Only the owner can call this function");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        msg.sender.transfer(amount);
+    }
+
+    function transfer(address recipient, uint amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[recipient] += amount;
+    }
+
+    function changeOwner(address newOwner) public onlyOwner {
+        owner = newOwner;
+    }
+}
+<\contract_to_analyze\>

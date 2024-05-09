@@ -1,0 +1,43 @@
+The contract provided for analysis:
+
+contract TimelockController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBlance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBlance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the provided contract:
+1) Business logic flaw: The implementation of the startExecute(), execute(), and endExecute() functions may have business logic flaws that could lead to unexpected behavior.
+2) Inconsistent state update: There could be inconsistencies in the state updates of the Proposal struct and other variables, leading to potential issues.
+3) Insufficient gas: If the contract carries out complex operations or loops, there might be a risk of running out of gas during contract execution.
+4) Incorrect visibility/ownership: The visibility of variables and functions within the contract may not be properly set, leading to potential security risks.
+
+Overall, it is important to conduct a detailed review and testing of the contract to identify and address any potential vulnerabilities.

@@ -1,0 +1,14 @@
+<\contract\> 
+contract Bridge {
+     IERC20 public tokenA;
+     IERC20 public tokenB;
+     
+     function crossBridge(uint amount) external {
+          tokenA.transferFrom(msg.sender, address(this), amount);
+          tokenB.transfer(msg.sender, amount);
+     }
+}
+<\contract\> 
+
+Potential vulnerabilities:
+6) Cross bridge inconsistency

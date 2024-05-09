@@ -1,0 +1,50 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: LoveToken
+Function name: constructor
+PC address: 172
+Estimated Gas Usage: 29381 - 135875
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0xe6efd46eb6cdd73a7fe1e760fa0c25a299755a4b.sol:338
+
+_initialSupply * (10 ** uint256(decimals))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 80, decoded_data: , value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: LoveToken
+Function name: mint(address,uint256)
+PC address: 4999
+Estimated Gas Usage: 2965 - 3720
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xe6efd46eb6cdd73a7fe1e760fa0c25a299755a4b.sol:313
+
+totalSupply_.add(_amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 007f, decoded_data: , value: 0x0
+Caller: [CREATOR], function: mint(address,uint256), txdata: 0x40c10f19000000000000000000000000000000000000000000000000000000000000000082, decoded_data: ('0x0000000000000000000000000000000000000000', 58800670315824630488532140824724328206738664088020598926287054379018386145280), value: 0x0
+
+

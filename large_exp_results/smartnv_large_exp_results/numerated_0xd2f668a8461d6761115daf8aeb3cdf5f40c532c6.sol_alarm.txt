@@ -1,0 +1,25 @@
+<\contract\> 
+contract TokenSale {
+     address public admin;
+     IERC20 public token;
+     uint public tokenPrice;
+     uint public tokensSold;
+
+     constructor(IERC20 _token, uint _tokenPrice) {
+          admin = msg.sender;
+          token = _token;
+          tokenPrice = _tokenPrice;
+     }
+
+     function buyTokens(uint _amount) public {
+          uint totalAmount = _amount * tokenPrice;
+          require(token.balanceOf(msg.sender) >= totalAmount, "Insufficient balance");
+          token.transferFrom(admin, msg.sender, _amount);
+          tokensSold += _amount;
+     }
+}
+<\contract\> 
+
+The potential vulnerabilities in the given contract are:
+1) inconsistent state update
+2) incorrect visibility/ownership.

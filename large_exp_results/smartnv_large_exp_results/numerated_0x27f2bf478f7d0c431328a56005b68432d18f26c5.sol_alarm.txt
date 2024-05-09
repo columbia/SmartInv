@@ -1,0 +1,29 @@
+The contract provided for analysis:
+
+
+
+<\contract\>
+contract Auction {
+    uint public highestBid;
+    address public highestBidder;
+    address public owner;
+    
+    function bid() external payable {
+        require(msg.value > highestBid, "Bid not high enough");
+        highestBidder.transfer(highestBid);
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+    
+    function endAuction() external {
+        require(msg.sender == owner, "Only owner can end auction");
+        selfdestruct(owner);
+    }
+}
+<\contract\>
+
+
+
+Potential vulnerabilities in the contract:
+1) Inconsistent state update
+2) Incorrect visibility/ownership

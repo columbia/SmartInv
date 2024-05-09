@@ -1,0 +1,8 @@
+Contract TimelockController:
+1) Inconsistent state update: The 'proposal.votedAmount' is being directly incremented without any check or validation, which could lead to inconsistencies in the data.
+2) Incorrect visibility/ownership: The 'owner' variable is marked as internal, which could potentially lead to incorrect ownership management.
+3) Insufficient gas: The 'endExecute' function performs multiple operations that involve external contracts (e.g., 'votingToken.balanceOf') which could result in running out of gas during execution.
+
+Contract ExchangeTokens:
+1) Price manipulation: The 'liquidate' function relies on the 'getPrice' function to calculate if a user's fund can be liquidated, which opens up the possibility of manipulating the price to exploit the liquidation process.
+2) Insufficient gas: Similar to the previous contract, the 'liquidate' function also involves interactions with external contracts (e.g., 'USDC.transferFrom') which could result in running out of gas during execution.

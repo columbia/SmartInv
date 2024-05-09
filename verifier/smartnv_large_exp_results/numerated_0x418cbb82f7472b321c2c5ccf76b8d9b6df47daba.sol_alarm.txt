@@ -1,0 +1,36 @@
+The contract provided for analysis:
+
+contract Marketplace {
+    address public owner;
+    mapping(uint => Item) public items;
+    uint public itemCount;
+
+    struct Item {
+        address seller;
+        string name;
+        uint price;
+        bool sold;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function addItem(string memory _name, uint _price) public {
+        require(msg.sender == owner, "Only owner can add items");
+        items[itemCount] = Item(msg.sender, _name, _price, false);
+        itemCount++;
+    }
+
+    function buyItem(uint _itemId) public payable {
+        require(!items[_itemId].sold, "Item is already sold");
+        require(msg.value >= items[_itemId].price, "Not enough Ether sent");
+
+        items[_itemId].seller.transfer(items[_itemId].price);
+        items[_itemId].sold = true;
+    }
+}
+
+Output:
+1) privilege escalation
+2) inconsistent state update

@@ -1,0 +1,21 @@
+<\contract\>
+contract Marketplace {
+    mapping(uint256 => address) public itemIdToOwner;
+    mapping(address => uint256) public ownerItemCount;
+    uint256 public totalItems;
+
+    function createItem() external {
+        uint256 id = totalItems;
+        itemIdToOwner[id] = msg.sender;
+        ownerItemCount[msg.sender]++;
+        totalItems++;
+    }
+
+    function transferItem(address newOwner, uint256 id) external {
+        require(itemIdToOwner[id] == msg.sender, "You do not own this item");
+        itemIdToOwner[id] = newOwner;
+        ownerItemCount[msg.sender]--;
+        ownerItemCount[newOwner]++;
+    }
+}
+<\contract\>

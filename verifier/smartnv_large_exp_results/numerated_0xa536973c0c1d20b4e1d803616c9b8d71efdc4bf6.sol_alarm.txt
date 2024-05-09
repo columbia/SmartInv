@@ -1,0 +1,23 @@
+contract PaymentGateway {
+    mapping(address => uint) public balances;
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint amount) public {
+        require(amount <= balances[msg.sender], "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function getBalance(address account) public view returns (uint) {
+        return balances[account];
+    }
+} 
+
+The potential vulnerabilities in the PaymentGateway contract are:
+1) Integer overflow/underflow: There is a potential vulnerability of integer underflow in the withdraw function when subtracting the amount from the user's balance without checking if it would result in a negative balance.
+2) Ether leakage: The transfer function in the withdraw method can potentially lead to ether leakage if the transfer fails, leaving the user's balance inconsistent with the actual ether amount.
+3) Insufficient gas: If the contract holds a large number of users with significant balances, the withdrawal function may run out of gas due to looping through all the balances, resulting in an incomplete withdrawal process.

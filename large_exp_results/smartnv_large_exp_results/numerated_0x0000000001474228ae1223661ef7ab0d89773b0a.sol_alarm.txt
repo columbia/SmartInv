@@ -1,0 +1,22 @@
+<\contract\>
+contract TokenSale {
+    address public owner;
+    mapping(address => uint) public balances;
+    mapping(address => bool) public whitelist;
+
+    function addToWhitelist(address _address) public {
+        require(msg.sender == owner, "Only owner can add to whitelist");
+        whitelist[_address] = true;
+    }
+
+    function buyTokens(uint _amount) public {
+        require(whitelist[msg.sender], "Address is not whitelisted");
+        balances[msg.sender] += _amount;
+    }
+
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        msg.sender.transfer(address(this).balance);
+    }
+}
+<\contract\>

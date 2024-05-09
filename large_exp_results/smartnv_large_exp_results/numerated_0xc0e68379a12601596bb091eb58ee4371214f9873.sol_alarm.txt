@@ -1,0 +1,20 @@
+<\contract_to_analyze\>
+contract Crowdsale {
+    address public owner;
+    mapping(address => uint) public contributions;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function contribute() public payable {
+        contributions[msg.sender] += msg.value;
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "only owner can withdraw");
+        address payable recipient = msg.sender;
+        recipient.transfer(address(this).balance);
+    }
+}
+<\contract_to_analyze\>

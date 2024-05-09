@@ -1,0 +1,11 @@
+Potential vulnerabilities in the contract:
+
+1) Inconsistent state update: The `votedAmount` in the `execute` function is updated directly without proper validation or synchronization mechanisms, which can lead to inconsistent state if multiple calls are made simultaneously.
+
+2) Cross bridge inconsistency: The `votingToken.transferFrom` function in the `execute` function can lead to inconsistencies or unexpected behavior if the underlying token transfer fails or behaves unexpectedly.
+
+3) Atomicity violation: The operations in the `execute` function are not atomic, meaning that if an error occurs during the function execution, the contract may end up in an inconsistent state with partial updates made.
+
+4) ID uniqueness violation: There is no mechanism in place to ensure the uniqueness of proposal IDs, which may lead to conflicts or unexpected behavior if duplicate IDs are used.
+
+5) Business logic flaw: The logic for determining the `lockedFunds` in the `endExecute` function seems flawed as it checks if the balance of the contract is greater than twice the total supply of the voting token, which may not accurately reflect the intended business logic.

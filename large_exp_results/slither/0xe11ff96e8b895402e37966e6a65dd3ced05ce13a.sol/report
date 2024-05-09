@@ -1,0 +1,80 @@
+'solc --version' running
+'solc /home/sallyjunsongwang/SmartInv/tests/contracts/0xe11ff96e8b895402e37966e6a65dd3ced05ce13a.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc' running
+Compilation warnings/errors on /home/sallyjunsongwang/SmartInv/tests/contracts/0xe11ff96e8b895402e37966e6a65dd3ced05ce13a.sol:
+/home/sallyjunsongwang/SmartInv/tests/contracts/0xe11ff96e8b895402e37966e6a65dd3ced05ce13a.sol:1:1: Warning: Source file does not specify required compiler version! Consider adding "pragma solidity ^0.4.0;".
+contract Token {
+^
+Spanning multiple lines.
+
+INFO:Detectors:
+Deprecated standard detected THROW ():
+	- Usage of "throw" should be replaced with "revert()"
+Deprecated standard detected ! _spender.call(bytes4(bytes32(sha3()(receiveApproval(address,uint256,address,bytes)))),msg.sender,_value,this,_extraData) ():
+	- Usage of "sha3()" should be replaced with "keccak256()"
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#deprecated-standards
+INFO:Detectors:
+solc-0.4.0 is an outdated solc version. Use a more recent version (at least 0.8.0), if possible.
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+INFO:Detectors:
+Low level call in HumanStandardToken.approveAndCall(address,uint256,bytes) ():
+	- ! _spender.call(bytes4(bytes32(sha3()(receiveApproval(address,uint256,address,bytes)))),msg.sender,_value,this,_extraData) ()
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Detectors:
+Parameter StandardToken.transfer(address,uint256)._to () is not in mixedCase
+Parameter StandardToken.transfer(address,uint256)._value () is not in mixedCase
+Parameter StandardToken.transferFrom(address,address,uint256)._from () is not in mixedCase
+Parameter StandardToken.transferFrom(address,address,uint256)._to () is not in mixedCase
+Parameter StandardToken.transferFrom(address,address,uint256)._value () is not in mixedCase
+Parameter StandardToken.balanceOf(address)._owner () is not in mixedCase
+Parameter StandardToken.approve(address,uint256)._spender () is not in mixedCase
+Parameter StandardToken.approve(address,uint256)._value () is not in mixedCase
+Parameter StandardToken.allowance(address,address)._owner () is not in mixedCase
+Parameter StandardToken.allowance(address,address)._spender () is not in mixedCase
+Parameter HumanStandardToken.approveAndCall(address,uint256,bytes)._spender () is not in mixedCase
+Parameter HumanStandardToken.approveAndCall(address,uint256,bytes)._value () is not in mixedCase
+Parameter HumanStandardToken.approveAndCall(address,uint256,bytes)._extraData () is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+INFO:Detectors:
+ERC20 event Token.Transfer(address,address,uint256) ()does not index parameter _from
+ERC20 event Token.Transfer(address,address,uint256) ()does not index parameter _to
+ERC20 event Token.Approval(address,address,uint256) ()does not index parameter _owner
+ERC20 event Token.Approval(address,address,uint256) ()does not index parameter _spender
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unindexed-erc20-event-parameters
+Traceback (most recent call last):
+  File "/home/sallyjunsongwang/SmartInv/.venv/bin/slither", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 753, in main
+    main_impl(all_detector_classes=detectors, all_printer_classes=printers)
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 859, in main_impl
+    ) = process_all(filename, args, detector_classes, printer_classes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 107, in process_all
+    ) = process_single(compilation, args, detector_classes, printer_classes)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 87, in process_single
+    return _process(slither, detector_classes, printer_classes)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/__main__.py", line 137, in _process
+    detector_resultss = slither.run_detectors()
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/slither.py", line 290, in run_detectors
+    results = [d.detect() for d in self._detectors]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/slither.py", line 290, in <listcomp>
+    results = [d.detect() for d in self._detectors]
+               ^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/detectors/abstract_detector.py", line 203, in detect
+    for r in [output.data for output in self._detect()]:
+                                        ^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/detectors/statements/unused_import.py", line 36, in _detect
+    self.slither._compute_offsets_to_ref_impl_decl()
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/core/slither_core.py", line 264, in _compute_offsets_to_ref_impl_decl
+    self._compute_offsets_from_thing(contract)
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/core/slither_core.py", line 205, in _compute_offsets_from_thing
+    definition = get_definition(thing, self.crytic_compile)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/sallyjunsongwang/SmartInv/.venv/lib/python3.11/site-packages/slither/utils/source_mapping.py", line 38, in get_definition
+    txt = file_content[
+          ^^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable

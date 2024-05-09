@@ -1,0 +1,47 @@
+The contract provided for analysis:
+
+contract TimeLockedController is IERC20 {  
+    struct Proposal {
+          uint256 sTime; 
+          uint256 votedAmount; 
+          address addr; 
+          }
+     address  internal owner;
+     IERC20 votingToken;
+
+    function startExecute() external {
+              uint256 startingBlance;
+              require(proposal.sTime == 0,"on-going proposal");
+              proposal = Proposal(block.timestamp, 0, msg.sender);
+              startingBalance = getStartingBalance(proposal.addr);
+              startingBalanceList[proposal.addr] = startingBalance; 
+
+        }
+
+    function execute(uint256 amount) external {
+              require(proposal.sTime + 24 > block.timestamp, "execution has ended");
+              require(proposal.votedAmount == 0, "voting hasn't gone through"); 
+              votingToken.transferFrom(proposal.addr, address(this), amount);
+              proposal.votedAmount += amount; 
+              votedProposal(proposal); 
+
+        }
+
+    function endExecute() external {
+              require(proposal.sTime != 0, "no proposal");
+              require(proposal.sTime + 24 < block.timestamp, "execution has not ended");
+              require(votingToken.balanceOf(address(this))*2 > votingToken.totalSupply(), "execution failed");
+              lockedFunds = votingToken.balanceOf(address(this));
+        }
+}
+
+Potential vulnerabilities in the provided contract:
+1) ID uniqueness violation: The struct Proposal does not have a unique identifier for each proposal, which could lead to issues in managing multiple proposals.
+
+2) Inconsistent state update: The execution of the startExecute function updates the proposal state without proper checks, which could lead to inconsistent or unexpected behavior.
+
+3) Incorrect visibility/ownership: The internal owner variable is declared but not used or initialized, which could lead to ownership-related vulnerabilities.
+
+4) Incomplete logic: It seems like there may be missing parts of the contract (e.g., getStartingBalance function) that could impact the overall functionality and security.
+
+Therefore, potential vulnerabilities in the contract include ID uniqueness violation, inconsistent state update, incorrect visibility/ownership, and incomplete logic.

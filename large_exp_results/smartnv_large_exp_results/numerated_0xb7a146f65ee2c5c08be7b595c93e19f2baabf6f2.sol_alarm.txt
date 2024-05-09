@@ -1,0 +1,36 @@
+Contract to analyze:
+contract Escrow {
+     address public payer;
+     address public recipient;
+     address public arbiter;
+     uint public amount;
+     bool public payerOk;
+     bool public recipientOk;
+
+     function Escrow(address _recipient, address _arbiter) payable {
+         payer = msg.sender;
+         recipient = _recipient;
+         arbiter = _arbiter;
+         amount = msg.value;
+     }
+
+     function releaseToRecipient() public {
+         require(msg.sender == payer || msg.sender == arbiter);
+         require(payerOk && recipientOk);
+         recipient.transfer(amount);
+     }
+
+     function releaseToPayer() public {
+         require(msg.sender == recipient && arbiter);
+         require(payerOk && !recipientOk);
+         payer.transfer(amount);
+     }
+
+     function confirmPayment() public {
+         if (msg.sender == payer) {
+             payerOk = true;
+         } else if (msg.sender == recipient) {
+             recipientOk = true;
+         }
+     }
+}

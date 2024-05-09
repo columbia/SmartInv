@@ -1,0 +1,24 @@
+The contract below contains potential vulnerabilities: 
+
+<\contract\>
+contract Auction {
+         mapping(address => uint) public bids;
+         uint public highestBid;
+         address public highestBidder; 
+
+         function placeBid(uint _amount) public {
+             require(_amount > highestBid, "Bid amount is not higher than the current highest bid");
+             bids[msg.sender] = _amount;
+         }
+
+         function finalizeAuction() public {
+             require(msg.sender == highestBidder, "Only the highest bidder can finalize the auction");
+             // code to transfer assets to the highest bidder
+         }
+}
+<\contract\>
+
+The potential vulnerabilities in the contract are:
+
+1) Inconsistent state update
+2) Incorrect visibility/ownership

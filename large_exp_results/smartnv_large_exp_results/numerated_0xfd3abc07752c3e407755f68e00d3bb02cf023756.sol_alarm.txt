@@ -1,0 +1,28 @@
+<\contract_to_analyze\>
+contract Marketplace {
+    address public owner;
+    string public itemName;
+    uint public price;
+
+    constructor(string memory _itemName, uint _price) public {
+        owner = msg.sender;
+        itemName = _itemName;
+        price = _price;
+    }
+
+    function buyItem() public payable {
+        require(msg.value >= price, "Insufficient funds");
+        payable(owner).transfer(msg.value);
+    }
+
+    function setPrice(uint _newPrice) public {
+        require(msg.sender == owner, "Only owner can set price");
+        price = _newPrice;
+    }
+
+    function withdrawFunds() public {
+        require(msg.sender == owner, "Only owner can withdraw funds");
+        payable(owner).transfer(address(this).balance);
+    }
+}
+<\contract_to_analyze\>

@@ -1,0 +1,27 @@
+<\contract_to_analyze\>
+contract EscrowContract {
+    address public payer;
+    address public recipient;
+    uint public amount;
+    bool public paid;
+
+    function deposit(address _recipient) public payable {
+        require(!paid, "Payment already made");
+        require(msg.sender == payer, "Only payer can deposit funds");
+        recipient = _recipient;
+        amount = msg.value;
+    }
+
+    function withdraw() public {
+        require(msg.sender == recipient, "Only recipient can withdraw funds");
+        payable(recipient).transfer(amount);
+        paid = true;
+    }
+
+    function cancel() public {
+        require(msg.sender == payer, "Only payer cancel the transaction");
+        payable(payer).transfer(amount);
+        paid = true;
+    }
+}
+<\contract_to_analyze\>

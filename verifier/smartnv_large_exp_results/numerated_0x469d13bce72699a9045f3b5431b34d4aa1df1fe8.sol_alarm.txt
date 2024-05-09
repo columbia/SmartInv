@@ -1,0 +1,28 @@
+<\contract\> 
+contract PaymentContract {
+    uint public totalPayments;
+    address public owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function makePayment(uint amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        
+        totalPayments += amount;
+        msg.sender.transfer(amount);
+    }
+    
+    function withdraw() public {
+        require(msg.sender == owner, "Only owner can withdraw");
+        
+        msg.sender.transfer(address(this).balance);
+        totalPayments = 0;
+    }
+}
+<\contract\> 
+
+The potential vulnerabilities in the contract are: 
+1) privilege escalation
+2) inconsistent state update

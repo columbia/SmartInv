@@ -1,0 +1,8 @@
+Potential vulnerabilities in the contract:
+1) Inconsistent state update: The function `endExecution` updates the `lockedFunds` variable based on the balance of the contract but does not have proper checks to prevent reentrancy or ensure atomicity.
+2) Incorrect visibility/ownership: The `votingToken` variable is declared as internal, which may expose it to potential unauthorized access or manipulation by external contracts.
+3) Insufficient gas: Updating the `proposal` struct and `startingBalanceList` mapping in the `startExecute` function might consume too much gas, potentially leading to out-of-gas errors.
+4) ID uniqueness violation: There is potential for ID collisions in the `startingBalanceList` mapping if the same address initiates multiple proposals in quick succession without proper handling of unique IDs.
+5) Arithmetic flaw: The calculation `getPrice() * cAmount * 80 / 100 < dAmount` in the `liquidate` function could lead to incorrect results due to integer overflow/underflow issues if values are too large.
+
+Output: Inconsistent state update, Incorrect visibility/ownership, Insufficient gas, ID uniqueness violation, Arithmetic flaw.

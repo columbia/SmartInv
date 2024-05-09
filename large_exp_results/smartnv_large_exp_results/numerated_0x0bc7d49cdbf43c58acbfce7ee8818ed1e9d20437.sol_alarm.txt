@@ -1,0 +1,30 @@
+<\analyzed_contract\> 
+contract VotingSystem {
+    mapping(address => bool) public hasVoted;
+    uint totalVotes;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function vote() public {
+        require(hasVoted[msg.sender] == false, "Already voted");
+        hasVoted[msg.sender] = true;
+        totalVotes++;
+    }
+
+    function getTotalVotes() public view returns(uint) {
+        return totalVotes;
+    }
+
+    function changeOwner(address newOwner) public {
+        require(msg.sender == owner, "Not the owner");
+        owner = newOwner;
+    }
+}
+<\analyzed_contract\> 
+
+Output:
+- Privilege Escalation
+- Inconsistent State Update

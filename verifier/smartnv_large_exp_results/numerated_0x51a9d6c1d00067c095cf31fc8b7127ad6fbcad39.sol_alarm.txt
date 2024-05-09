@@ -1,0 +1,25 @@
+The contract you are going to analyze:
+
+contract Lottery {
+     mapping(address => uint) public tickets;
+     address[] public participants;
+
+     function buyTicket(uint amount) public {
+         tickets[msg.sender] += amount;
+         for(uint i=0; i<amount; i++){
+             participants.push(msg.sender);
+         }
+     }
+
+     function drawWinner() public {
+         require(participants.length > 0, "No participants");
+         uint index = uint(keccak256(abi.encodePacked(block.timestamp, block.difficulty))) % participants.length;
+         address winner = participants[index];
+         // Transfer the prize to the winner
+     }
+}
+
+Output: 
+potential vulnerabilities:
+- inconsistent state update
+- insufficient gas

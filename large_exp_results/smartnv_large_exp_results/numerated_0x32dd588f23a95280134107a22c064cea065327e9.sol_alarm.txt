@@ -1,0 +1,32 @@
+<\analyzed_contract\>
+contract TokenSale {
+    address public admin;
+    IERC20 public token;
+    address public beneficiary;
+    uint public tokenPrice;
+    uint public tokensSold;
+
+    event TokenPurchased(address buyer, uint amount);
+
+    constructor(IERC20 _token, address _beneficiary, uint _tokenPrice) {
+        admin = msg.sender;
+        token = _token;
+        beneficiary = _beneficiary;
+        tokenPrice = _tokenPrice;
+    }
+
+    function buyTokens(uint _amount) public payable {
+        require(msg.value == _amount * tokenPrice, "Incorrect payment amount");
+        require(token.balanceOf(address(this)) >= _amount, "Insufficient tokens in contract");
+
+        token.transfer(msg.sender, _amount);
+        tokensSold += _amount;
+        emit TokenPurchased(msg.sender, _amount);
+    }
+
+    function changeBeneficiary(address _newBeneficiary) public {
+        require(msg.sender == admin, "Only admin can change beneficiary");
+        beneficiary = _newBeneficiary;
+    }
+}
+<\analyzed_contract\>

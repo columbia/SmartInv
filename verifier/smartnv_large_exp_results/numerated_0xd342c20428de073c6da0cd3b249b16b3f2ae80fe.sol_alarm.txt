@@ -1,0 +1,31 @@
+<\contract\> 
+contract PaymentProcessor {
+    address admin;
+    mapping(address => uint256) public balances;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function deposit() public payable {
+        require(msg.value > 0, "Deposit amount must be greater than 0");
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    function transfer(address to, uint256 amount) public {
+        require(balances[msg.sender] >= amount, "Insufficient balance");
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+<\contract\> 
+
+Output:
+- atomicity violation: The transfer and balance update operations in the withdraw and transfer functions are not done atomically, which can lead to inconsistencies if one of the operations fails.
+- incorrect visibility/ownership: The admin variable is initialized in the constructor using msg.sender, but it is not explicitly defined with any visibility specifier, potentially opening it up to unintentional changes.

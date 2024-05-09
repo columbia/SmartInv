@@ -1,0 +1,24 @@
+<\contract\> 
+contract PaymentContract {
+    address public owner;
+    mapping(uint256 => uint256) public paymentHistory;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function makePayment(uint256 paymentID, uint256 amount) public {
+        require(msg.sender == owner, "Only owner can make payments");
+        paymentHistory[paymentID] += amount;
+    }
+    
+    function viewPayment(uint256 paymentID) public view returns(uint256) {
+        return paymentHistory[paymentID];
+    }
+}
+<\contract\>
+
+Potential vulnerabilities:
+1) privilege escalation
+3) business logic flaw 
+14) incorrect visibility/ownership

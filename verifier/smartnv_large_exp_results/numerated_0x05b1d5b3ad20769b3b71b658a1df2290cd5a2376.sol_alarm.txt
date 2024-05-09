@@ -1,0 +1,90 @@
+<\contract\> 
+contract VotingSystem {
+    struct Voter {
+        uint weight;
+        bool voted;
+        address delegate;
+        uint vote;
+    }
+    
+    struct Proposal {
+        address creator;
+        string description;
+        uint forVotes;
+        uint againstVotes;
+        bool executed;
+    }
+    
+    mapping(address => Voter) public voters;
+    Proposal[] public proposals;
+    
+    address public admin;
+    uint public totalVotes;
+    
+    modifier onlyAdmin {
+        require(msg.sender == admin, "Only admin can call this function");
+        _;
+    }
+    
+    event Voted(address voter, uint proposalIndex, bool inFavor);
+    
+    constructor() public {
+        admin = msg.sender;
+    }
+    
+    function createProposal(string memory _description) public {
+        proposals.push(Proposal({
+            creator: msg.sender,
+            description: _description,
+            forVotes: 0,
+            againstVotes: 0,
+            executed: false
+        }));
+    }
+    
+    function vote(uint proposalIndex, bool inFavor) public {
+        Voter storage sender = voters[msg.sender];
+        require(sender.weight > 0, "You have no voting weight");
+        require(!sender.voted, "You already voted");
+        
+        Proposal storage proposal = proposals[proposalIndex];
+        require(!proposal.executed, "Proposal has already been executed");
+        
+        if (inFavor) {
+            proposal.forVotes += sender.weight;
+        } else {
+            proposal.againstVotes += sender.weight;
+        }
+        
+        sender.voted = true;
+        totalVotes += sender.weight;
+        
+        emit Voted(msg.sender, proposalIndex, inFavor);
+    }
+    
+    function delegate(address to) public {
+        Voter storage sender = voters[msg.sender];
+        require(!sender.voted, "You have already voted");
+        
+        sender.voted = true;
+        sender.delegate = to;
+        Voter storage delegatee = voters[to];
+        
+        if (delegatee.voted) {
+            if (delegatee.vote == 1) {
+                proposals[delegatee.vote].forVotes += sender.weight;
+            } else {
+                proposals[delegatee.vote].againstVotes += sender.weight;
+            }
+        }
+    }
+    
+    function executeProposal(uint proposalIndex) public onlyAdmin {
+        Proposal storage proposal = proposals[proposalIndex];
+        require(proposal.forVotes > proposal.againstVotes, "Proposal was not approved by majority");
+        
+        // execute proposal logic
+        proposal.executed = true;
+    }
+}
+<\contract\>

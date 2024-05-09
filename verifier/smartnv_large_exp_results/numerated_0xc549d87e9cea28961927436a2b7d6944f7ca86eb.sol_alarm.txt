@@ -1,0 +1,30 @@
+The contract to analyze for potential vulnerabilities is as follows:
+
+```solidity
+contract Store {
+    uint public productId;
+    uint public productPrice;
+    address public owner;
+
+    constructor(uint _productId, uint _productPrice) {
+        productId = _productId;
+        productPrice = _productPrice;
+        owner = msg.sender;
+    }
+
+    function buyProduct(uint _productId, uint _amount) public payable {
+        require(productId == _productId, "Product ID does not match");
+        require(msg.value >= productPrice * _amount, "Insufficient payment");
+
+        // Process the purchase
+    }
+
+    function updatePrice(uint _productPrice) public {
+        require(msg.sender == owner, "Only owner can update price");
+        productPrice = _productPrice;
+    }
+}
+```
+
+Output:
+- incorrect visibility/ownership
