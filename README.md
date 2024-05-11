@@ -36,7 +36,7 @@ We include datasets in many formats, including fine-tuning GPT-style model and P
 For future users, we must caution that the ground truths and fine-tuning datasets are obtained from manual review. Despite the author's best efforts, the bug classifications can be inherently subjective and may contain errors. So please use with caution. 
 
 ## Reproducing Motivating Examples and Experiments in Evaluation (or See Documented Results)
-We conducted experiments on A100 GPU (sometimes a coLab account with plus access), 5.10.0-28-cloud-amd64 gcloud engine (the kernel version is important, because the verifier installation is very tricky and requires a particular linux version), and an old MacAir (some tools, e.g. VeriSmart and SmarTest can be reproduced on Mac, but not on our gcloud engine). 
+We conducted experiments on A100 GPU (sometimes a coLab account with plus access), 5.10.0-28-cloud-amd64 gcloud engine (the kernel version is important, because the verifier installation is very tricky and requires a particular linux version), and an old MacAir (we reproduced some tools, e.g. VeriSmart and SmarTest, on Mac, but not on our gcloud engine). 
 
 First, let's install the requirements of SmartInv: 
 1. git clone this repo
