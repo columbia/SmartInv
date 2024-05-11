@@ -1,0 +1,51 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: DeusETH
+Function name: userFinalize()
+PC address: 2565
+Estimated Gas Usage: 8557 - 29312
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0xe46b5f1f3551bd3c6b29c38babc662b03d985c48.sol:174
+
+timestamp + timeWithoutUpdate
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 00000000000000000000000001, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: userFinalize(), txdata: 0x0d6798e2, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: DeusETH
+Function name: userFinalize()
+PC address: 2573
+Estimated Gas Usage: 1808 - 1903
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xe46b5f1f3551bd3c6b29c38babc662b03d985c48.sol:174
+
+require(now > (timestamp + timeWithoutUpdate))
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 01010101010101010101010101, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: userFinalize(), txdata: 0x0d6798e2, value: 0x0
+
+

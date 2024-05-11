@@ -1,0 +1,120 @@
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: FairDinkums
+Function name: fallback
+PC address: 311
+Estimated Gas Usage: 918 - 1013
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x3d2380b2036e3ed8229fc8e3b9a62e7a10c073fd.sol:83
+
+if (icoOpen()){
+            // If the ICO is still open, then we add the token balance to the contributor
+            require(msg.value > 0 && msg.value <= 20 ether);
+            totalEthInWei = totalEthInWei + msg.value;
+            uint256 amount = msg.value * tokensPerEth;
+            if ((balances[fundsWallet]) < amount) {
+                revert();
+            }
+            TokensSold(msg.sender,amount);
+            balances[fundsWallet] = balances[fundsWallet] - amount;
+            balances[msg.sender] = balances[msg.sender] + amount;
+    
+            Transfer(fundsWallet, msg.sender, amount);
+    
+            fundsWallet.transfer(msg.value);
+        } else {
+            // If the ico is over, then the value must be zero and the updateDivs function will be called.
+            require(msg.value==0);
+            updateDivs(msg.sender,dividendsOwing(msg.sender));
+        }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x40000, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: FairDinkums
+Function name: icoOpen()
+PC address: 2640
+Estimated Gas Usage: 2145 - 2851
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x3d2380b2036e3ed8229fc8e3b9a62e7a10c073fd.sol:120
+
+startTime + 4 weeks
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: icoOpen(), txdata: 0x927a90da, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: FairDinkums
+Function name: fallback
+PC address: 2640
+Estimated Gas Usage: 28787 - 127167
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x3d2380b2036e3ed8229fc8e3b9a62e7a10c073fd.sol:120
+
+startTime + 4 weeks
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x11001000087150000, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, decoded_data: , value: 0x1
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: FairDinkums
+Function name: fallback
+PC address: 2648
+Estimated Gas Usage: 884 - 979
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0x3d2380b2036e3ed8229fc8e3b9a62e7a10c073fd.sol:120
+
+(now < (startTime + 4 weeks)) && !tokenReleased
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+

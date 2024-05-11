@@ -1,0 +1,273 @@
+==== Transaction Order Dependence ====
+SWC ID: 114
+Severity: Medium
+Contract: ExoTokensMarketSimple
+Function name: withdrawEther()
+PC address: 1066
+Estimated Gas Usage: 2564 - 37175
+The value of the call is dependent on balance or storage write
+This can lead to race conditions. An attacker may be able to run a transaction after our transaction which can change the value of the call
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:64
+
+msg.sender.transfer(address(this).balance)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setOwner(address), txdata: 0x13af4035dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [ATTACKER], function: withdrawEther(), txdata: 0x7362377b, value: 0x0
+
+==== Unprotected Ether Withdrawal ====
+SWC ID: 105
+Severity: High
+Contract: ExoTokensMarketSimple
+Function name: withdrawEther()
+PC address: 1066
+Estimated Gas Usage: 2564 - 37175
+Any sender can withdraw Ether from the contract account.
+Arbitrary senders other than the contract creator can profitably extract Ether from the contract account. Verify the business logic carefully and make sure that appropriate security controls are in place to prevent unexpected loss of funds.
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:64
+
+msg.sender.transfer(address(this).balance)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setOwner(address), txdata: 0x13af4035dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [ATTACKER], function: withdrawEther(), txdata: 0x7362377b, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: ExoTokensMarketSimple
+Function name: depositERC20Token(uint256)
+PC address: 1335
+Estimated Gas Usage: 5381 - 75545
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:37
+
+ExoToken.allowance(msg.sender, this)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [ATTACKER], function: depositERC20Token(uint256), txdata: 0x90f10acf, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: ExoTokensMarketSimple
+Function name: depositERC20Token(uint256)
+PC address: 1409
+Estimated Gas Usage: 5381 - 75545
+Read of persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:38
+
+ExoToken
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [ATTACKER], function: depositERC20Token(uint256), txdata: 0x90f10acf, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: ExoTokensMarketSimple
+Function name: depositERC20Token(uint256)
+PC address: 1655
+Estimated Gas Usage: 5381 - 75545
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:38
+
+ExoToken.transferFrom(msg.sender, this, _exo_amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [ATTACKER], function: depositERC20Token(uint256), txdata: 0x90f10acf, value: 0x0
+
+==== Multiple Calls in a Single Transaction ====
+SWC ID: 113
+Severity: Low
+Contract: ExoTokensMarketSimple
+Function name: depositERC20Token(uint256)
+PC address: 1655
+Estimated Gas Usage: 5381 - 75545
+Multiple calls are executed in the same transaction.
+This call is executed following another call within the same transaction. It is possible that the call never gets executed if a prior call fails permanently. This might be caused intentionally by a malicious callee. If possible, refactor the code such that each transaction only executes one external call or make sure that all callees can be trusted (i.e. they’re part of your own codebase).
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:38
+
+ExoToken.transferFrom(msg.sender, this, _exo_amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487, value: 0x0
+Caller: [SOMEGUY], function: depositERC20Token(uint256), txdata: 0x90f10acf, value: 0x0
+
+==== State access after external call ====
+SWC ID: 107
+Severity: Medium
+Contract: ExoTokensMarketSimple
+Function name: depositERC20Token(uint256)
+PC address: 1655
+Estimated Gas Usage: 5381 - 75545
+Write to persistent state following external call
+The contract account state is accessed after an external call to a user defined address. To prevent reentrancy issues, consider accessing the state only before the call, especially if the callee is untrusted. Alternatively, a reentrancy lock can be used to prevent untrusted callees from re-entering the contract in an intermediate state.
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:38
+
+ExoToken.transferFrom(msg.sender, this, _exo_amount)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [ATTACKER], function: depositERC20Token(uint256), txdata: 0x90f10acf, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: ExoTokensMarketSimple
+Function name: withdrawERC20Tokens(uint256)
+PC address: 2057
+Estimated Gas Usage: 3718 - 39130
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:59
+
+ExoToken.transfer(msg.sender, _val)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [CREATOR], function: withdrawERC20Tokens(uint256), txdata: 0x9a19276e, value: 0x0
+
+==== External Call To User-Supplied Address ====
+SWC ID: 107
+Severity: Low
+Contract: ExoTokensMarketSimple
+Function name: getERC20Balance()
+PC address: 2425
+Estimated Gas Usage: 2823 - 38091
+A call to a user-supplied address is executed.
+An external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:34
+
+ExoToken.balanceOf(this)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487dededededededededededededeadbeefdeadbeefdeadbeefdeadbeefdeadbeef, value: 0x0
+Caller: [SOMEGUY], function: getERC20Balance(), txdata: 0xc3736fe6, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: ExoTokensMarketSimple
+Function name: BuyTokens()
+PC address: 2762
+Estimated Gas Usage: 3615 - 38602
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xc5060f4b6237d8cf48013639eaf055f43af2eaa0.sol:43
+
+function BuyTokens() public payable{
+        uint256 exo_balance = ExoToken.balanceOf(this);
+        uint256 tokensToXfer = msg.value / pricePerToken;
+        require(exo_balance >= tokensToXfer, "Not enough tokens in contract");
+        uint256 return_ETH_amount = msg.value - (tokensToXfer *pricePerToken);
+        require(return_ETH_amount < msg.value); // just in case
+
+        if(return_ETH_amount > 0){
+            msg.sender.transfer(return_ETH_amount); // return extra ETH
+        }
+
+        require(ExoToken.transfer(msg.sender, tokensToXfer), "Couldn't send funds"); // send EXO tokens
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x10040004000000002, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setERC20Token(address), txdata: 0xde562487, value: 0x0
+Caller: [ATTACKER], function: BuyTokens(), txdata: 0xd81111ab, value: 0x0
+
+

@@ -1,0 +1,58 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: BBT
+Function name: addAddressesToWhitelist(address[])
+PC address: 3551
+Estimated Gas Usage: 76147 - 289750
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0xd311ac05ede4e4955ebb08116300ee2834d03362.sol:533
+
+function addAddressesToWhitelist(address[] _operators)
+        public
+        onlyOwner
+    {
+        for (uint256 i = 0; i < _operators.length; i++) {
+            addAddressToWhitelist(_operators[i]);
+        }
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: addAddressesToWhitelist(address[]), txdata: 0xe2ec6ec3ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc0000000000000000ffffffffffffffffffffffffffffffffffffffff808040200000000000000000ffffffffffffffffffffffffffffffffffffffff, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: BBT
+Function name: whitelistAddresses(uint256)
+PC address: 6069
+Estimated Gas Usage: 1388 - 1483
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xd311ac05ede4e4955ebb08116300ee2834d03362.sol:489
+
+address[] public whitelistAddresses
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: whitelistAddresses(uint256), txdata: 0x5d1235d4, value: 0x0
+
+

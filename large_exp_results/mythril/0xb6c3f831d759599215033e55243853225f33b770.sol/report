@@ -1,0 +1,126 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: GameItemNew
+Function name: createContractGameItem(string,uint256)
+PC address: 1175
+Estimated Gas Usage: 50028 - 218358
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0xb6c3f831d759599215033e55243853225f33b770.sol:155
+
+function createContractGameItem(string _name, uint _gameId) public onlyCOO {
+    _createGameItem(_name, address(this), startingPrice, _gameId);
+  }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: createContractGameItem(string,uint256), txdata: 0x5db42841ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: GameItemNew
+Function name: createPromoGameItem(address,string,uint256,uint256)
+PC address: 2423
+Estimated Gas Usage: 57120 - 245780
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0xb6c3f831d759599215033e55243853225f33b770.sol:139
+
+function createPromoGameItem(address _owner, string _name, uint256 _price, uint _gameId) public onlyCOO {
+
+    address gameItemOwner = _owner;
+    if (gameItemOwner == address(0)) {
+      gameItemOwner = cooAddress;
+    }
+
+    if (_price <= 0) {
+      _price = startingPrice;
+    }
+
+    promoCreatedCount++;
+    _createGameItem(_name, gameItemOwner, _price, _gameId);
+  }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: createPromoGameItem(address,string,uint256,uint256), txdata: 0xdb57c4290000000000000000000000000000000000000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Low
+Contract: GameItemNew
+Function name: getGameItem(uint256)
+PC address: 4666
+Estimated Gas Usage: 1422 - 1800
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values). This issue is reported for internal compiler generated code.
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: getGameItem(uint256), txdata: 0x94f13f4a, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: GameItemNew
+Function name: purchase(uint256)
+PC address: 5917
+Estimated Gas Usage: 22987 - 85609
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xb6c3f831d759599215033e55243853225f33b770.sol:406
+
+function _transfer(address _from, address _to, uint256 _tokenId) private {
+    // Since the number of gameItem is capped to 2^32 we can't overflow this
+    ownershipTokenCount[_to]++;
+    //transfer ownership
+    gameItemIndexToOwner[_tokenId] = _to;
+
+    // When creating new gameItems _from is 0x0, but we can't account that address.
+    if (_from != address(0)) {
+      ownershipTokenCount[_from]--;
+      // clear any previously approved ownership exchange
+      delete gameItemIndexToApproved[_tokenId];
+    }
+
+    // Emit the transfer event.
+    Transfer(_from, _to, _tokenId);
+  }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x4, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x4, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: purchase(uint256), txdata: 0xefef39a1, value: 0x0
+
+

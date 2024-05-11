@@ -1,0 +1,156 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: TrustWallet
+Function name: initiateTransaction(address,uint256,bytes)
+PC address: 237
+Estimated Gas Usage: 65223 - 291861
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0xdd91fa3b84b1080f3b618cbc47e06c57def689b9.sol:79
+
+function initiateTransaction(address _destination, uint _value, bytes _data)
+        public
+        onlyActiveUsersAllowed()
+        transactionMustNotBePending()
+    {
+        transactions.push(Transaction({
+            destination: _destination,
+            value: _value,
+            data: _data,
+            initiated_by: msg.sender,
+            time_initiated: now,
+            finalized_by: 0x0,
+            time_finalized: 0,
+            is_executed: false
+        }));
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000deadbeefdeadbeefdeadbeefdeadbeefdeadbeef, decoded_data: , value: 0x0
+Caller: [ATTACKER], function: initiateTransaction(address,uint256,bytes), txdata: 0x263a6d79bebebebebebebebebebebebe8040100801040180801004800020400008010080bebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebebeffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: TrustWallet
+Function name: userAddresses(uint256)
+PC address: 2449
+Estimated Gas Usage: 1031 - 1126
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xdd91fa3b84b1080f3b618cbc47e06c57def689b9.sol:38
+
+address[] public userAddresses
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: userAddresses(uint256), txdata: 0x502c9bd580, decoded_data: (57896044618658097711785492504343953926634992332820282019728792003956564819968,), value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: TrustWallet
+Function name: transactions(uint256)
+PC address: 3762
+Estimated Gas Usage: 1097 - 1192
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0xdd91fa3b84b1080f3b618cbc47e06c57def689b9.sol:36
+
+Transaction[] public transactions
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: transactions(uint256), txdata: 0x9ace38c2, value: 0x0
+
+==== Dependence on predictable environment variable ====
+SWC ID: 116
+Severity: Low
+Contract: TrustWallet
+Function name: addUser(address,uint256)
+PC address: 4477
+Estimated Gas Usage: 5773 - 6818
+A control flow decision is made based on The block.timestamp environment variable.
+The block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.
+--------------------
+In file: /tmp/0xdd91fa3b84b1080f3b618cbc47e06c57def689b9.sol:142
+
+require(now > sender.delay + sender.time_added_another_user)
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: addUser(address,uint256), txdata: 0xd3017193, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: Low
+Contract: TrustWallet
+Function name: initiateTransaction(address,uint256,bytes)
+PC address: 5196
+Estimated Gas Usage: 55083 - 241535
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation.  This issue is reported for internal compiler generated code.
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: initiateTransaction(address,uint256,bytes), txdata: 0x263a6d79ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff80, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: Low
+Contract: TrustWallet
+Function name: initiateTransaction(address,uint256,bytes)
+PC address: 5210
+Estimated Gas Usage: 55083 - 241535
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation.  This issue is reported for internal compiler generated code.
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: 000000000000000000000000affeaffeaffeaffeaffeaffeaffeaffeaffeaffe, decoded_data: , value: 0x0
+Caller: [CREATOR], function: initiateTransaction(address,uint256,bytes), txdata: 0x263a6d79ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff85, value: 0x0
+
+

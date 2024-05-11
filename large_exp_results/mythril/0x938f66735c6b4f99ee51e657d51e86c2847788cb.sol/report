@@ -1,0 +1,26 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Veron
+Function name: timelockList(address,uint256)
+PC address: 8065
+Estimated Gas Usage: 1686 - 1971
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x938f66735c6b4f99ee51e657d51e86c2847788cb.sol:495
+
+mapping (address => LockInfo[]) public timelockList
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: timelockList(address,uint256), txdata: 0xd26c4a76000000000000000000000000deadbe00000000000000000000000000000000000804200240008080102004200002080008201040000080800180801010102010, decoded_data: ('0xdeadbe0000000000000000000000000000000000', 3625791093468428435369136594852426392504930225433007078063724161817075785744), value: 0x0
+
+

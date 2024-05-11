@@ -1,0 +1,821 @@
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Medikia
+Function name: fallback
+PC address: 163
+Estimated Gas Usage: 37 - 132
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:5
+
+contract Medikia  {
+
+ 
+
+    string public name = "Medikia";      //  (token name)
+
+    string public symbol = "MDK";           //  (token symbol)
+
+    uint256 public decimals = 8;            //   (token digit)
+
+ 
+
+    mapping (address => uint256) public balanceOf;
+
+    mapping (address => mapping (address => uint256)) public allowance;
+
+ 
+
+    uint256 public totalSupply = 20000000 * (10**decimals);   // (total supply)
+
+    address owner;
+
+ 
+
+    modifier isOwner {
+
+        assert(owner == msg.sender);
+
+        _;
+
+    }
+
+    function Medikia () {
+
+        owner = msg.sender;
+
+        balanceOf[owner] = totalSupply;
+
+    }
+
+ 
+
+    function transfer(address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[msg.sender] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        balanceOf[msg.sender] -= _value;
+
+        balanceOf[_to] += _value;
+
+        Transfer(msg.sender, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[_from] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        require(allowance[_from][msg.sender] >= _value);
+
+        balanceOf[_to] += _value;
+
+        balanceOf[_from] -= _value;
+
+        allowance[_from][msg.sender] -= _value;
+
+        Transfer(_from, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function approve(address _spender, uint256 _value) returns (bool success)
+
+    {
+
+        require(_value == 0 || allowance[msg.sender][_spender] == 0);
+
+        allowance[msg.sender][_spender] = _value;
+
+        Approval(msg.sender, _spender, _value);
+
+        return true;
+
+    }
+
+   
+
+    function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [SOMEGUY], function: unknown, txdata: 0x, decoded_data: , value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Medikia
+Function name: constructor
+PC address: 185
+Estimated Gas Usage: 23275 - 105018
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:5
+
+contract Medikia  {
+
+ 
+
+    string public name = "Medikia";      //  (token name)
+
+    string public symbol = "MDK";           //  (token symbol)
+
+    uint256 public decimals = 8;            //   (token digit)
+
+ 
+
+    mapping (address => uint256) public balanceOf;
+
+    mapping (address => mapping (address => uint256)) public allowance;
+
+ 
+
+    uint256 public totalSupply = 20000000 * (10**decimals);   // (total supply)
+
+    address owner;
+
+ 
+
+    modifier isOwner {
+
+        assert(owner == msg.sender);
+
+        _;
+
+    }
+
+    function Medikia () {
+
+        owner = msg.sender;
+
+        balanceOf[owner] = totalSupply;
+
+    }
+
+ 
+
+    function transfer(address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[msg.sender] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        balanceOf[msg.sender] -= _value;
+
+        balanceOf[_to] += _value;
+
+        Transfer(msg.sender, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[_from] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        require(allowance[_from][msg.sender] >= _value);
+
+        balanceOf[_to] += _value;
+
+        balanceOf[_from] -= _value;
+
+        allowance[_from][msg.sender] -= _value;
+
+        Transfer(_from, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function approve(address _spender, uint256 _value) returns (bool success)
+
+    {
+
+        require(_value == 0 || allowance[msg.sender][_spender] == 0);
+
+        allowance[msg.sender][_spender] = _value;
+
+        Approval(msg.sender, _spender, _value);
+
+        return true;
+
+    }
+
+   
+
+    function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x2, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x1
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Medikia
+Function name: setName(string)
+PC address: 941
+Estimated Gas Usage: 17718 - 81104
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:103
+
+function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f0027ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdc, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Medikia
+Function name: setName(string)
+PC address: 962
+Estimated Gas Usage: 12635 - 55835
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:103
+
+function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f002790, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Medikia
+Function name: name()
+PC address: 1123
+Estimated Gas Usage: 4136 - 6255
+The arithmetic operator can underflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:9
+
+string public name = "Medikia"
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f002797, value: 0x0
+Caller: [SOMEGUY], function: name(), txdata: 0x06fdde03, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Medikia
+Function name: name()
+PC address: 1175
+Estimated Gas Usage: 4136 - 6255
+The arithmetic operator can underflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:9
+
+string public name = "Medikia"
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f002797, value: 0x0
+Caller: [SOMEGUY], function: name(), txdata: 0x06fdde03, value: 0x0
+
+==== Exception State ====
+SWC ID: 110
+Severity: Medium
+Contract: Medikia
+Function name: setName(string)
+PC address: 3202
+Estimated Gas Usage: 1384 - 4396
+An assertion violation was triggered.
+It is possible to trigger an assertion violation. Note that Solidity assert() statements should only be used to check invariants. Review the transaction trace generated for this issue and either make sure your program logic is correct, or use require() instead of assert() if your goal is to constrain user inputs or enforce preconditions. Remember to validate inputs from both callers (for instance, via passed arguments) and callees (for instance, via return values).
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:103
+
+function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: setName(string), txdata: 0xc47f0027, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Medikia
+Function name: setName(string)
+PC address: 3283
+Estimated Gas Usage: 17659 - 80952
+The arithmetic operator can underflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:5
+
+contract Medikia  {
+
+ 
+
+    string public name = "Medikia";      //  (token name)
+
+    string public symbol = "MDK";           //  (token symbol)
+
+    uint256 public decimals = 8;            //   (token digit)
+
+ 
+
+    mapping (address => uint256) public balanceOf;
+
+    mapping (address => mapping (address => uint256)) public allowance;
+
+ 
+
+    uint256 public totalSupply = 20000000 * (10**decimals);   // (total supply)
+
+    address owner;
+
+ 
+
+    modifier isOwner {
+
+        assert(owner == msg.sender);
+
+        _;
+
+    }
+
+    function Medikia () {
+
+        owner = msg.sender;
+
+        balanceOf[owner] = totalSupply;
+
+    }
+
+ 
+
+    function transfer(address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[msg.sender] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        balanceOf[msg.sender] -= _value;
+
+        balanceOf[_to] += _value;
+
+        Transfer(msg.sender, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[_from] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        require(allowance[_from][msg.sender] >= _value);
+
+        balanceOf[_to] += _value;
+
+        balanceOf[_from] -= _value;
+
+        allowance[_from][msg.sender] -= _value;
+
+        Transfer(_from, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function approve(address _spender, uint256 _value) returns (bool success)
+
+    {
+
+        require(_value == 0 || allowance[msg.sender][_spender] == 0);
+
+        allowance[msg.sender][_spender] = _value;
+
+        Approval(msg.sender, _spender, _value);
+
+        return true;
+
+    }
+
+   
+
+    function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f002791, value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f0027, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Medikia
+Function name: setName(string)
+PC address: 3336
+Estimated Gas Usage: 12635 - 55835
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:5
+
+contract Medikia  {
+
+ 
+
+    string public name = "Medikia";      //  (token name)
+
+    string public symbol = "MDK";           //  (token symbol)
+
+    uint256 public decimals = 8;            //   (token digit)
+
+ 
+
+    mapping (address => uint256) public balanceOf;
+
+    mapping (address => mapping (address => uint256)) public allowance;
+
+ 
+
+    uint256 public totalSupply = 20000000 * (10**decimals);   // (total supply)
+
+    address owner;
+
+ 
+
+    modifier isOwner {
+
+        assert(owner == msg.sender);
+
+        _;
+
+    }
+
+    function Medikia () {
+
+        owner = msg.sender;
+
+        balanceOf[owner] = totalSupply;
+
+    }
+
+ 
+
+    function transfer(address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[msg.sender] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        balanceOf[msg.sender] -= _value;
+
+        balanceOf[_to] += _value;
+
+        Transfer(msg.sender, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[_from] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        require(allowance[_from][msg.sender] >= _value);
+
+        balanceOf[_to] += _value;
+
+        balanceOf[_from] -= _value;
+
+        allowance[_from][msg.sender] -= _value;
+
+        Transfer(_from, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function approve(address _spender, uint256 _value) returns (bool success)
+
+    {
+
+        require(_value == 0 || allowance[msg.sender][_spender] == 0);
+
+        allowance[msg.sender][_spender] = _value;
+
+        Approval(msg.sender, _spender, _value);
+
+        return true;
+
+    }
+
+   
+
+    function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f002789, value: 0x0
+
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: Medikia
+Function name: setName(string)
+PC address: 3350
+Estimated Gas Usage: 12635 - 55835
+The arithmetic operator can overflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: /tmp/0x52ccd0c8e783743bfcb4f7b6794e817bee3d0473.sol:5
+
+contract Medikia  {
+
+ 
+
+    string public name = "Medikia";      //  (token name)
+
+    string public symbol = "MDK";           //  (token symbol)
+
+    uint256 public decimals = 8;            //   (token digit)
+
+ 
+
+    mapping (address => uint256) public balanceOf;
+
+    mapping (address => mapping (address => uint256)) public allowance;
+
+ 
+
+    uint256 public totalSupply = 20000000 * (10**decimals);   // (total supply)
+
+    address owner;
+
+ 
+
+    modifier isOwner {
+
+        assert(owner == msg.sender);
+
+        _;
+
+    }
+
+    function Medikia () {
+
+        owner = msg.sender;
+
+        balanceOf[owner] = totalSupply;
+
+    }
+
+ 
+
+    function transfer(address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[msg.sender] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        balanceOf[msg.sender] -= _value;
+
+        balanceOf[_to] += _value;
+
+        Transfer(msg.sender, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
+
+        require(balanceOf[_from] >= _value);
+
+        require(balanceOf[_to] + _value >= balanceOf[_to]);
+
+        require(allowance[_from][msg.sender] >= _value);
+
+        balanceOf[_to] += _value;
+
+        balanceOf[_from] -= _value;
+
+        allowance[_from][msg.sender] -= _value;
+
+        Transfer(_from, _to, _value);
+
+        return true;
+
+    }
+
+ 
+
+    function approve(address _spender, uint256 _value) returns (bool success)
+
+    {
+
+        require(_value == 0 || allowance[msg.sender][_spender] == 0);
+
+        allowance[msg.sender][_spender] = _value;
+
+        Approval(msg.sender, _spender, _value);
+
+        return true;
+
+    }
+
+   
+
+    function setName(string _name) isOwner
+
+    {
+
+        name = _name;
+
+    }
+
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+
+}
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x0, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [CREATOR], function: setName(string), txdata: 0xc47f0027b5, value: 0x0
+
+
