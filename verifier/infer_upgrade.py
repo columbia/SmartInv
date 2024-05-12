@@ -16,6 +16,7 @@ from openai import OpenAI
 #from .prompts.GPTScan.query_template import prompt_single_yes_no_question, prompt_multiple_choice_scenarios 
 from prompts.GPTScan.query_template import prompt_single_yes_no_question, prompt_multiple_choice_scenarios 
 
+
 refined_exp_results = "./refined_exp_results"
 large_exp_results_dir = "./large_exp_results"
 prompt_exp_results = '/home/sallyjunsongwang/SmartInv/all_results/prompting_results'
@@ -24,7 +25,7 @@ vul_list = ["price manipulation", "privilege escalation", "business logic flaw",
 
 scenarios = ["add or check approval via require/if statements before the token transfer",
 "deposit/mint/add the liquidity pool/amount/share",
-"have code statements that get or calculate LP token’s value/price",
+"have code statements that get or calculate LP token's value/price",
 "buy some tokens",
 "calculate vote amount/number",
 "mint or vest or collect token/liquidity/earning and assign them to the address recipient or to variable",
@@ -46,12 +47,65 @@ def gpt_infer(prompt):
 	)
 	return chat_completion.choices[0].message.content
 
-def find_program_points(folder, file_results_dir, prompt, limit): 
-	pass
- 
+def find_program_points(folder, file_results_dir, limit):
+	path =f"/home/sallyjunsongwang/SmartInv/verifier/prompts/program_point.txt"
+	preparation_1 = open(path, "r")
+	if (os.path.isdir(file_results_dir)) is False:
+		os.mkdir(file_results_dir)
+	'''
+	for root, dirs, files in os.walk(folder):
+		for filename in files:
+			contract_file = os.path.join(root, filename)
+			print(contract_file)
+	'''
+	contract_file = f"./numbered_timecontroller.sol"
+	filename = "numbered_timecontroller.sol"
+	preparation_2 = open(contract_file, "r")
+	x = len(preparation_2.readlines())
+	result_file_path = os.path.join(file_results_dir, f"{filename}_light_pp.txt")
+	if os.path.isfile(contract_file) and x != 1 and x <=limit:
+		preparation_2 = open(contract_file, "r")
+		result_file = open(f'{result_file_path}', "w+")
+		prompt = preparation_1.read() + preparation_2.read()
+		print(prompt)
+		raw_output = gpt_infer(prompt)
+		print(f"=========program points inferred for {filename}=======")
+		print(raw_output)
+		result_file.write(raw_output)
+		result_file.close()
 
-def find_invariants(folder, file_results_dir, prompt, limit):
-	pass    
+
+def find_invariants(folder, file_results_dir, limit):
+	path =f"/home/sallyjunsongwang/SmartInv/verifier/prompts/invariant.txt"
+	preparation_1 = open(path, "r")
+	if (os.path.isdir(file_results_dir)) is False:
+		os.mkdir(file_results_dir)
+	'''
+	for root, dirs, files in os.walk(folder):
+		for filename in files:
+			contract_file = os.path.join(root, filename)
+			print(contract_file)
+	'''
+	contract_file = "./numbered_timecontroller.sol"
+	filename = "numbered_timecontroller.sol"
+	prior_answer = os.path.join(file_results_dir, f"{filename}_light_pp.txt")
+	if os.path.isfile(prior_answer): 
+		preparation_2 = open(prior_answer, "r")
+	preparation_3 = open(contract_file, "r")
+	x = len(preparation_2.readlines() + preparation_3.readlines())
+	result_file_path = os.path.join(file_results_dir, f"{filename}_inv.txt")
+	if os.path.isfile(contract_file) and x != 1 and x <=limit:			
+		result_file = open(f'{result_file_path}', "w+")
+		if os.path.isfile(prior_answer): 
+			preparation_2 = open(prior_answer, "r")
+		preparation_3 = open(contract_file, "r")
+		prompt = preparation_1.read() + preparation_2.read() + preparation_3.read()
+		print(prompt)
+		raw_output = gpt_infer(prompt)
+		print(f"=========invariants inferred for {filename}=======")
+		print(raw_output)
+		result_file.write(raw_output)
+		result_file.close()   
 	    
 
 def infer_bugs(folder, file_results_dir, exp_name, prompt, limit):
@@ -60,10 +114,10 @@ def infer_bugs(folder, file_results_dir, exp_name, prompt, limit):
 	print(path)
 	if exp_name == "gptscan":
 		preparation_1 = f"You are a smart contract auditor. You will be asked \
-          questions related to code properties. You can mimic answering them in the background five times and provide me\
-                  with the most frequently appearing answer. Furthermore,\
-                          please strictly adhere to the output format specified in the\
-                                  question; there is no need to explain your answer."
+	  questions related to code properties. You can mimic answering them in the background five times and provide me\
+		  with the most frequently appearing answer. Furthermore,\
+			  please strictly adhere to the output format specified in the\
+				  question; there is no need to explain your answer."
 	else:
 	
 		preparation_1 = open(path, "r")
@@ -79,8 +133,11 @@ def infer_bugs(folder, file_results_dir, exp_name, prompt, limit):
 			preparation_2 = open(contract_file, "r")
 			x = len(preparation_2.readlines())
 			if exp_name == "gptscan":
-				prompt = prompt_multiple_choice_scenarios(scenarios, preparation_2)
+				preparation_2 = open(contract_file, "r")
+				prompt = prompt_multiple_choice_scenarios(scenarios, preparation_2.read())
 			else: 
+				preparation_1 = open(path, "r")
+				preparation_2 = open(contract_file, "r")
 				prompt = preparation_1.read() + " Source code is: " + preparation_2.read()
 			result_file_path = os.path.join(file_results_dir, exp_name, f"{filename}_alarm.txt")
 			#and os.path.exists(result_file_path)==False
@@ -120,15 +177,19 @@ if __name__ == "__main__":
 	manual_prompt = "manual_audit.txt"
 	limit = 300
 	audited_bug_folder_path = f"../tests/refined_analysis/natural_bugs/additional_audited_bugs"
+	find_program_points(audited_bug_folder_path, "./test", limit)
+	find_invariants(audited_bug_folder_path, "./test", limit)
+	'''
 	infer_bugs(audited_bug_folder_path, file_results_dir, exp_name_manual, manual_prompt, limit)
 	for i in sets:
 		test_folder_path = f"../tests/refined_analysis/natural_bugs/{i}"
 		infer_bugs(test_folder_path, file_results_dir,  exp_name_manual, manual_prompt, limit)
-		'''
+	
+	
 		folder = test_folder_path
 		dir = refined_exp_results
 		limit = 300
 		infer_bugs(folder, dir, limit)
-		'''
+	'''
  
 
