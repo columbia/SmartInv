@@ -1,0 +1,36 @@
+1 // SPDX-License-Identifier: MIT
+2 pragma solidity 0.8.17;
+3 
+4 error AlreadyInitialized();
+5 error CannotAuthoriseSelf();
+6 error CannotBridgeToSameNetwork();
+7 error ContractCallNotAllowed();
+8 error CumulativeSlippageTooHigh(uint256 minAmount, uint256 receivedAmount);
+9 error ExternalCallFailed();
+10 error InformationMismatch();
+11 error InsufficientBalance(uint256 required, uint256 balance);
+12 error InvalidAmount();
+13 error InvalidCallData();
+14 error InvalidConfig();
+15 error InvalidContract();
+16 error InvalidDestinationChain();
+17 error InvalidFallbackAddress();
+18 error InvalidReceiver();
+19 error InvalidSendingToken();
+20 error NativeAssetNotSupported();
+21 error NativeAssetTransferFailed();
+22 error NoSwapDataProvided();
+23 error NoSwapFromZeroBalance();
+24 error NotAContract();
+25 error NotInitialized();
+26 error NoTransferToNullAddress();
+27 error NullAddrIsNotAnERC20Token();
+28 error NullAddrIsNotAValidSpender();
+29 error OnlyContractOwner();
+30 error RecoveryAddressCannotBeZero();
+31 error ReentrancyError();
+32 error TokenNotSupported();
+33 error UnAuthorized();
+34 error UnsupportedChainId(uint256 chainId);
+35 error WithdrawFailed();
+36 error ZeroAmount();

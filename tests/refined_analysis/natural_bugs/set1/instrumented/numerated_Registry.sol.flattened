@@ -1,0 +1,864 @@
+1 // File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
+2 
+3 // SPDX-License-Identifier: MIT
+4 
+5 pragma solidity ^0.8.0;
+6 
+7 /**
+8  * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
+9  *
+10  * These functions can be used to verify that a message was signed by the holder
+11  * of the private keys of a given address.
+12  */
+13 library ECDSA {
+14     enum RecoverError {
+15         NoError,
+16         InvalidSignature,
+17         InvalidSignatureLength,
+18         InvalidSignatureS,
+19         InvalidSignatureV
+20     }
+21 
+22     function _throwError(RecoverError error) private pure {
+23         if (error == RecoverError.NoError) {
+24             return; // no error: do nothing
+25         } else if (error == RecoverError.InvalidSignature) {
+26             revert("ECDSA: invalid signature");
+27         } else if (error == RecoverError.InvalidSignatureLength) {
+28             revert("ECDSA: invalid signature length");
+29         } else if (error == RecoverError.InvalidSignatureS) {
+30             revert("ECDSA: invalid signature 's' value");
+31         } else if (error == RecoverError.InvalidSignatureV) {
+32             revert("ECDSA: invalid signature 'v' value");
+33         }
+34     }
+35 
+36     /**
+37      * @dev Returns the address that signed a hashed message (`hash`) with
+38      * `signature` or error string. This address can then be used for verification purposes.
+39      *
+40      * The `ecrecover` EVM opcode allows for malleable (non-unique) signatures:
+41      * this function rejects them by requiring the `s` value to be in the lower
+42      * half order, and the `v` value to be either 27 or 28.
+43      *
+44      * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+45      * verification to be secure: it is possible to craft signatures that
+46      * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+47      * this is by receiving a hash of the original message (which may otherwise
+48      * be too long), and then calling {toEthSignedMessageHash} on it.
+49      *
+50      * Documentation for signature generation:
+51      * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
+52      * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
+53      *
+54      * _Available since v4.3._
+55      */
+56     function tryRecover(bytes32 hash, bytes memory signature) internal pure returns (address, RecoverError) {
+57         // Check the signature length
+58         // - case 65: r,s,v signature (standard)
+59         // - case 64: r,vs signature (cf https://eips.ethereum.org/EIPS/eip-2098) _Available since v4.1._
+60         if (signature.length == 65) {
+61             bytes32 r;
+62             bytes32 s;
+63             uint8 v;
+64             // ecrecover takes the signature parameters, and the only way to get them
+65             // currently is to use assembly.
+66             assembly {
+67                 r := mload(add(signature, 0x20))
+68                 s := mload(add(signature, 0x40))
+69                 v := byte(0, mload(add(signature, 0x60)))
+70             }
+71             return tryRecover(hash, v, r, s);
+72         } else if (signature.length == 64) {
+73             bytes32 r;
+74             bytes32 vs;
+75             // ecrecover takes the signature parameters, and the only way to get them
+76             // currently is to use assembly.
+77             assembly {
+78                 r := mload(add(signature, 0x20))
+79                 vs := mload(add(signature, 0x40))
+80             }
+81             return tryRecover(hash, r, vs);
+82         } else {
+83             return (address(0), RecoverError.InvalidSignatureLength);
+84         }
+85     }
+86 
+87     /**
+88      * @dev Returns the address that signed a hashed message (`hash`) with
+89      * `signature`. This address can then be used for verification purposes.
+90      *
+91      * The `ecrecover` EVM opcode allows for malleable (non-unique) signatures:
+92      * this function rejects them by requiring the `s` value to be in the lower
+93      * half order, and the `v` value to be either 27 or 28.
+94      *
+95      * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+96      * verification to be secure: it is possible to craft signatures that
+97      * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+98      * this is by receiving a hash of the original message (which may otherwise
+99      * be too long), and then calling {toEthSignedMessageHash} on it.
+100      */
+101     function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
+102         (address recovered, RecoverError error) = tryRecover(hash, signature);
+103         _throwError(error);
+104         return recovered;
+105     }
+106 
+107     /**
+108      * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
+109      *
+110      * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
+111      *
+112      * _Available since v4.3._
+113      */
+114     function tryRecover(
+115         bytes32 hash,
+116         bytes32 r,
+117         bytes32 vs
+118     ) internal pure returns (address, RecoverError) {
+119         bytes32 s;
+120         uint8 v;
+121         assembly {
+122             s := and(vs, 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+123             v := add(shr(255, vs), 27)
+124         }
+125         return tryRecover(hash, v, r, s);
+126     }
+127 
+128     /**
+129      * @dev Overload of {ECDSA-recover} that receives the `r and `vs` short-signature fields separately.
+130      *
+131      * _Available since v4.2._
+132      */
+133     function recover(
+134         bytes32 hash,
+135         bytes32 r,
+136         bytes32 vs
+137     ) internal pure returns (address) {
+138         (address recovered, RecoverError error) = tryRecover(hash, r, vs);
+139         _throwError(error);
+140         return recovered;
+141     }
+142 
+143     /**
+144      * @dev Overload of {ECDSA-tryRecover} that receives the `v`,
+145      * `r` and `s` signature fields separately.
+146      *
+147      * _Available since v4.3._
+148      */
+149     function tryRecover(
+150         bytes32 hash,
+151         uint8 v,
+152         bytes32 r,
+153         bytes32 s
+154     ) internal pure returns (address, RecoverError) {
+155         // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
+156         // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
+157         // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}. Most
+158         // signatures from current libraries generate a unique signature with an s-value in the lower half order.
+159         //
+160         // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
+161         // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
+162         // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
+163         // these malleable signatures as well.
+164         if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
+165             return (address(0), RecoverError.InvalidSignatureS);
+166         }
+167         if (v != 27 && v != 28) {
+168             return (address(0), RecoverError.InvalidSignatureV);
+169         }
+170 
+171         // If the signature is valid (and not malleable), return the signer address
+172         address signer = ecrecover(hash, v, r, s);
+173         if (signer == address(0)) {
+174             return (address(0), RecoverError.InvalidSignature);
+175         }
+176 
+177         return (signer, RecoverError.NoError);
+178     }
+179 
+180     /**
+181      * @dev Overload of {ECDSA-recover} that receives the `v`,
+182      * `r` and `s` signature fields separately.
+183      */
+184     function recover(
+185         bytes32 hash,
+186         uint8 v,
+187         bytes32 r,
+188         bytes32 s
+189     ) internal pure returns (address) {
+190         (address recovered, RecoverError error) = tryRecover(hash, v, r, s);
+191         _throwError(error);
+192         return recovered;
+193     }
+194 
+195     /**
+196      * @dev Returns an Ethereum Signed Message, created from a `hash`. This
+197      * produces hash corresponding to the one signed with the
+198      * https://eth.wiki/json-rpc/API#eth_sign[`eth_sign`]
+199      * JSON-RPC method as part of EIP-191.
+200      *
+201      * See {recover}.
+202      */
+203     function toEthSignedMessageHash(bytes32 hash) internal pure returns (bytes32) {
+204         // 32 is the length in bytes of hash,
+205         // enforced by the type signature above
+206         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+207     }
+208 
+209     /**
+210      * @dev Returns an Ethereum Signed Typed Data, created from a
+211      * `domainSeparator` and a `structHash`. This produces hash corresponding
+212      * to the one signed with the
+213      * https://eips.ethereum.org/EIPS/eip-712[`eth_signTypedData`]
+214      * JSON-RPC method as part of EIP-712.
+215      *
+216      * See {recover}.
+217      */
+218     function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) internal pure returns (bytes32) {
+219         return keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+220     }
+221 }
+222 
+223 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
+224 
+225 // SPDX-License-Identifier: MIT
+226 
+227 pragma solidity ^0.8.0;
+228 
+229 /**
+230  * @dev Interface of the ERC20 standard as defined in the EIP.
+231  */
+232 interface IERC20 {
+233     /**
+234      * @dev Returns the amount of tokens in existence.
+235      */
+236     function totalSupply() external view returns (uint256);
+237 
+238     /**
+239      * @dev Returns the amount of tokens owned by `account`.
+240      */
+241     function balanceOf(address account) external view returns (uint256);
+242 
+243     /**
+244      * @dev Moves `amount` tokens from the caller's account to `recipient`.
+245      *
+246      * Returns a boolean value indicating whether the operation succeeded.
+247      *
+248      * Emits a {Transfer} event.
+249      */
+250     function transfer(address recipient, uint256 amount) external returns (bool);
+251 
+252     /**
+253      * @dev Returns the remaining number of tokens that `spender` will be
+254      * allowed to spend on behalf of `owner` through {transferFrom}. This is
+255      * zero by default.
+256      *
+257      * This value changes when {approve} or {transferFrom} are called.
+258      */
+259     function allowance(address owner, address spender) external view returns (uint256);
+260 
+261     /**
+262      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+263      *
+264      * Returns a boolean value indicating whether the operation succeeded.
+265      *
+266      * IMPORTANT: Beware that changing an allowance with this method brings the risk
+267      * that someone may use both the old and the new allowance by unfortunate
+268      * transaction ordering. One possible solution to mitigate this race
+269      * condition is to first reduce the spender's allowance to 0 and set the
+270      * desired value afterwards:
+271      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+272      *
+273      * Emits an {Approval} event.
+274      */
+275     function approve(address spender, uint256 amount) external returns (bool);
+276 
+277     /**
+278      * @dev Moves `amount` tokens from `sender` to `recipient` using the
+279      * allowance mechanism. `amount` is then deducted from the caller's
+280      * allowance.
+281      *
+282      * Returns a boolean value indicating whether the operation succeeded.
+283      *
+284      * Emits a {Transfer} event.
+285      */
+286     function transferFrom(
+287         address sender,
+288         address recipient,
+289         uint256 amount
+290     ) external returns (bool);
+291 
+292     /**
+293      * @dev Emitted when `value` tokens are moved from one account (`from`) to
+294      * another (`to`).
+295      *
+296      * Note that `value` may be zero.
+297      */
+298     event Transfer(address indexed from, address indexed to, uint256 value);
+299 
+300     /**
+301      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+302      * a call to {approve}. `value` is the new allowance.
+303      */
+304     event Approval(address indexed owner, address indexed spender, uint256 value);
+305 }
+306 
+307 // File: contracts/interfaces/IERC20Token.sol
+308 
+309 // SPDX-License-Identifier: GPL-3.0
+310 pragma solidity 0.8.9;
+311 
+312 
+313 abstract contract IERC20Token is IERC20 {
+314     function upgrade(uint256 value) public virtual;
+315 }
+316 
+317 // File: contracts/interfaces/IHermesContract.sol
+318 
+319 // SPDX-License-Identifier: GPL-3.0
+320 pragma solidity 0.8.9;
+321 
+322 interface IHermesContract {
+323     enum Status { Active, Paused, Punishment, Closed }
+324     function initialize(address _token, address _operator, uint16 _hermesFee, uint256 _minStake, uint256 _maxStake, address payable _routerAddress) external;
+325     function openChannel(address _party, uint256 _amountToLend) external;
+326     function getOperator() external view returns (address);
+327     function getStake() external view returns (uint256);
+328     function getStatus() external view returns (Status);
+329 }
+330 
+331 // File: contracts/Ownable.sol
+332 
+333 // SPDX-License-Identifier: GPL-3.0
+334 pragma solidity 0.8.9;
+335 
+336 contract Ownable {
+337     address private _owner;
+338 
+339     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+340 
+341     function owner() public view returns (address) {
+342         return _owner;
+343     }
+344 
+345     modifier onlyOwner() {
+346         require(_owner == msg.sender || _owner == address(0x0), "Ownable: caller is not the owner");
+347         _;
+348     }
+349 
+350     function transferOwnership(address newOwner) public virtual onlyOwner {
+351         require(newOwner != address(0), "Ownable: new owner is the zero address");
+352         emit OwnershipTransferred(_owner, newOwner);
+353         _owner = newOwner;
+354     }
+355 }
+356 
+357 // File: @openzeppelin/contracts/security/ReentrancyGuard.sol
+358 
+359 // SPDX-License-Identifier: MIT
+360 
+361 pragma solidity ^0.8.0;
+362 
+363 /**
+364  * @dev Contract module that helps prevent reentrant calls to a function.
+365  *
+366  * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+367  * available, which can be applied to functions to make sure there are no nested
+368  * (reentrant) calls to them.
+369  *
+370  * Note that because there is a single `nonReentrant` guard, functions marked as
+371  * `nonReentrant` may not call one another. This can be worked around by making
+372  * those functions `private`, and then adding `external` `nonReentrant` entry
+373  * points to them.
+374  *
+375  * TIP: If you would like to learn more about reentrancy and alternative ways
+376  * to protect against it, check out our blog post
+377  * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+378  */
+379 abstract contract ReentrancyGuard {
+380     // Booleans are more expensive than uint256 or any type that takes up a full
+381     // word because each write operation emits an extra SLOAD to first read the
+382     // slot's contents, replace the bits taken up by the boolean, and then write
+383     // back. This is the compiler's defense against contract upgrades and
+384     // pointer aliasing, and it cannot be disabled.
+385 
+386     // The values being non-zero value makes deployment a bit more expensive,
+387     // but in exchange the refund on every call to nonReentrant will be lower in
+388     // amount. Since refunds are capped to a percentage of the total
+389     // transaction's gas, it is best to keep them low in cases like this one, to
+390     // increase the likelihood of the full refund coming into effect.
+391     uint256 private constant _NOT_ENTERED = 1;
+392     uint256 private constant _ENTERED = 2;
+393 
+394     uint256 private _status;
+395 
+396     constructor() {
+397         _status = _NOT_ENTERED;
+398     }
+399 
+400     /**
+401      * @dev Prevents a contract from calling itself, directly or indirectly.
+402      * Calling a `nonReentrant` function from another `nonReentrant`
+403      * function is not supported. It is possible to prevent this from happening
+404      * by making the `nonReentrant` function external, and make it call a
+405      * `private` function that does the actual work.
+406      */
+407     modifier nonReentrant() {
+408         // On the first call to nonReentrant, _notEntered will be true
+409         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+410 
+411         // Any calls to nonReentrant after this point will fail
+412         _status = _ENTERED;
+413 
+414         _;
+415 
+416         // By storing the original value once again, a refund is triggered (see
+417         // https://eips.ethereum.org/EIPS/eip-2200)
+418         _status = _NOT_ENTERED;
+419     }
+420 }
+421 
+422 // File: contracts/FundsRecovery.sol
+423 
+424 // SPDX-License-Identifier: GPL-3.0
+425 pragma solidity 0.8.9;
+426 
+427 
+428 
+429 
+430 contract FundsRecovery is Ownable, ReentrancyGuard {
+431     address payable internal fundsDestination;
+432     IERC20Token public token;
+433 
+434     event DestinationChanged(address indexed previousDestination, address indexed newDestination);
+435 
+436     /**
+437      * Setting new destination of funds recovery.
+438      */
+439     function setFundsDestination(address payable _newDestination) public virtual onlyOwner {
+440         require(_newDestination != address(0));
+441         emit DestinationChanged(fundsDestination, _newDestination);
+442         fundsDestination = _newDestination;
+443     }
+444 
+445     /**
+446      * Getting funds destination address.
+447      */
+448     function getFundsDestination() public view returns (address) {
+449         return fundsDestination;
+450     }
+451 
+452     /**
+453      * Possibility to recover funds in case they were sent to this address before smart contract deployment
+454      */
+455     function claimNativeCoin() public nonReentrant {
+456         require(fundsDestination != address(0));
+457         fundsDestination.transfer(address(this).balance);
+458     }
+459 
+460     /**
+461        Transfers selected tokens into owner address.
+462     */
+463     function claimTokens(address _token) public nonReentrant {
+464         require(fundsDestination != address(0));
+465         require(_token != address(token), "native token funds can't be recovered");
+466         uint256 _amount = IERC20Token(_token).balanceOf(address(this));
+467         IERC20Token(_token).transfer(fundsDestination, _amount);
+468     }
+469 }
+470 
+471 // File: contracts/Utils.sol
+472 
+473 // SPDX-License-Identifier: GPL-3.0
+474 pragma solidity 0.8.9;
+475 
+476 contract Utils {
+477     function getChainID() internal view returns (uint256) {
+478         uint256 chainID;
+479         assembly {
+480             chainID := chainid()
+481         }
+482         return chainID;
+483     }
+484 
+485     function max(uint a, uint b) internal pure returns (uint) {
+486         return a > b ? a : b;
+487     }
+488 
+489     function min(uint a, uint b) internal pure returns (uint) {
+490         return a < b ? a : b;
+491     }
+492 
+493     function round(uint a, uint m) internal pure returns (uint ) {
+494         return ((a + m - 1) / m) * m;
+495     }
+496 }
+497 
+498 // File: contracts/Registry.sol
+499 
+500 // SPDX-License-Identifier: GPL-3.0
+501 pragma solidity 0.8.9;
+502 
+503 
+504 
+505 
+506 
+507 
+508 interface Channel {
+509     function initialize(address _token, address _dex, address _identityHash, address _hermesId, uint256 _fee) external;
+510 }
+511 
+512 contract Registry is FundsRecovery, Utils {
+513     using ECDSA for bytes32;
+514 
+515     uint256 public lastNonce;
+516     address payable public dex;     // Any uniswap v2 compatible DEX router address
+517     uint256 public minimalHermesStake;
+518     Registry public parentRegistry; // Contract could have parent registry if Registry SC was already upgraded
+519 
+520     struct Implementation {
+521         address channelImplAddress;
+522         address hermesImplAddress;
+523     }
+524     Implementation[] internal implementations;
+525 
+526     struct Hermes {
+527         address operator;   // hermes operator who will sign promises
+528         uint256 implVer;    // version of hermes implementation smart contract
+529         function() external view returns(uint256) stake;
+530         bytes url;          // hermes service URL
+531     }
+532     mapping(address => Hermes) private hermeses;
+533 
+534     mapping(address => address) private identities;   // key: identity, value: beneficiary wallet address
+535 
+536     event RegisteredIdentity(address indexed identity, address beneficiary);
+537     event RegisteredHermes(address indexed hermesId, address hermesOperator, bytes ur);
+538     event HermesURLUpdated(address indexed hermesId, bytes newURL);
+539     event ConsumerChannelCreated(address indexed identity, address indexed hermesId, address channelAddress);
+540     event BeneficiaryChanged(address indexed identity, address newBeneficiary);
+541     event MinimalHermesStakeChanged(uint256 newMinimalStake);
+542 
+543     // Reject any ethers sent to this smart-contract
+544     receive() external payable {
+545         revert("Registry: Rejecting tx with ethers sent");
+546     }
+547 
+548     // We're using `initialize` instead of `constructor` to ensure easy way to deploy Registry into
+549     // deterministic address on any EVM compatible chain. Registry should be first be deployed using
+550     // `deployRegistry` scripts and then initialized with wanted token and implementations.
+551     function initialize(address _tokenAddress, address payable _dexAddress, uint256 _minimalHermesStake, address _channelImplementation, address _hermesImplementation, address payable _parentRegistry) public onlyOwner {
+552         require(!isInitialized(), "Registry: is already initialized");
+553 
+554         minimalHermesStake = _minimalHermesStake;
+555 
+556         require(_tokenAddress != address(0));
+557         token = IERC20Token(_tokenAddress);
+558 
+559         require(_dexAddress != address(0));
+560         dex = _dexAddress;
+561 
+562         // Set initial channel implementations
+563         setImplementations(_channelImplementation, _hermesImplementation);
+564 
+565         // We set initial owner to be sure
+566         transferOwnership(msg.sender);
+567 
+568         // Set parent registry, if `0x0` then this is root registry
+569         parentRegistry = Registry(_parentRegistry);
+570     }
+571 
+572     function isInitialized() public view returns (bool) {
+573         return address(token) != address(0);
+574     }
+575 
+576     // Register provider and open his channel with given hermes
+577     // _stakeAmount - it's amount of tokens staked into hermes to guarantee incomming channel's balance.
+578     // _beneficiary - payout address during settlements in hermes channel, if provided 0x0 then will be set to consumer channel address.
+579     function registerIdentity(address _hermesId, uint256 _stakeAmount, uint256 _transactorFee, address _beneficiary, bytes memory _signature) public {
+580         require(isActiveHermes(_hermesId), "Registry: provided hermes have to be active");
+581 
+582         // Check if given signature is valid
+583         address _identity = keccak256(abi.encodePacked(getChainID(), address(this), _hermesId, _stakeAmount, _transactorFee, _beneficiary)).recover(_signature);
+584         require(_identity != address(0), "Registry: wrong identity signature");
+585 
+586         // Tokens amount to get from channel to cover tx fee and provider's stake
+587         uint256 _totalFee = _stakeAmount + _transactorFee;
+588         require(_totalFee <= token.balanceOf(getChannelAddress(_identity, _hermesId)), "Registry: not enough funds in channel to cover fees");
+589 
+590         // Open consumer channel
+591         _openChannel(_identity, _hermesId, _beneficiary, _totalFee);
+592 
+593         // If stake is provided we additionally are opening channel with hermes (a.k.a provider channel)
+594         if (_stakeAmount > 0) {
+595             IHermesContract(_hermesId).openChannel(_identity, _stakeAmount);
+596         }
+597 
+598         // Pay fee for transaction maker
+599         if (_transactorFee > 0) {
+600             token.transfer(msg.sender, _transactorFee);
+601         }
+602     }
+603 
+604     // Deploys consumer channel and sets beneficiary as newly created channel address
+605     function openConsumerChannel(address _hermesId, uint256 _transactorFee, bytes memory _signature) public {
+606         require(isActiveHermes(_hermesId), "Registry: provided hermes have to be active");
+607 
+608         // Check if given signature is valid
+609         address _identity = keccak256(abi.encodePacked(getChainID(), address(this), _hermesId, _transactorFee)).recover(_signature);
+610         require(_identity != address(0), "Registry: wrong channel openinig signature");
+611 
+612         require(_transactorFee <= token.balanceOf(getChannelAddress(_identity, _hermesId)), "Registry: not enough funds in channel to cover fees");
+613 
+614         _openChannel(_identity, _hermesId, address(0), _transactorFee);
+615     }
+616 
+617     // Allows to securely deploy channel's smart contract without consumer signature
+618     function openConsumerChannel(address _identity, address _hermesId) public {
+619         require(isActiveHermes(_hermesId), "Registry: provided hermes have to be active");
+620         require(!isChannelOpened(_identity, _hermesId), "Registry: such consumer channel is already opened");
+621 
+622         _openChannel(_identity, _hermesId, address(0), 0);
+623     }
+624 
+625     // Deploy payment channel for given consumer identity
+626     // We're using minimal proxy (EIP1167) to save on gas cost and blockchain space.
+627     function _openChannel(address _identity, address _hermesId, address _beneficiary, uint256 _fee) internal returns (address) {
+628         bytes32 _salt = keccak256(abi.encodePacked(_identity, _hermesId));
+629         bytes memory _code = getProxyCode(getChannelImplementation(hermeses[_hermesId].implVer));
+630         Channel _channel = Channel(deployMiniProxy(uint256(_salt), _code));
+631         _channel.initialize(address(token), dex, _identity, _hermesId, _fee);
+632 
+633         emit ConsumerChannelCreated(_identity, _hermesId, address(_channel));
+634 
+635         // If beneficiary was not provided, then we're going to use consumer channel for that
+636         if (_beneficiary == address(0)) {
+637             _beneficiary = address(_channel);
+638         }
+639 
+640         // Mark identity as registered (only during first channel opening)
+641         if (!isRegistered(_identity)) {
+642             identities[_identity] = _beneficiary;
+643             emit RegisteredIdentity(_identity, _beneficiary);
+644         }
+645 
+646         return address(_channel);
+647     }
+648 
+649     function registerHermes(address _hermesOperator, uint256 _hermesStake, uint16 _hermesFee, uint256 _minChannelStake, uint256 _maxChannelStake, bytes memory _url) public {
+650         require(isInitialized(), "Registry: only initialized registry can register hermeses");
+651         require(_hermesOperator != address(0), "Registry: hermes operator can't be zero address");
+652         require(_hermesStake >= minimalHermesStake, "Registry: hermes have to stake at least minimal stake amount");
+653 
+654         address _hermesId = getHermesAddress(_hermesOperator);
+655         require(!isHermes(_hermesId), "Registry: hermes already registered");
+656 
+657         // Deploy hermes contract (mini proxy which is pointing to implementation)
+658         IHermesContract _hermes = IHermesContract(deployMiniProxy(uint256(uint160(_hermesOperator)), getProxyCode(getHermesImplementation())));
+659 
+660         // Transfer stake into hermes smart contract
+661         token.transferFrom(msg.sender, address(_hermes), _hermesStake);
+662 
+663         // Initialise hermes
+664         _hermes.initialize(address(token), _hermesOperator, _hermesFee, _minChannelStake, _maxChannelStake, dex);
+665 
+666         // Save info about newly created hermes
+667         hermeses[_hermesId] = Hermes(_hermesOperator, getLastImplVer(), _hermes.getStake, _url);
+668 
+669         // Approve hermes contract to `transferFrom` registry (used during hermes channel openings)
+670         token.approve(_hermesId, type(uint256).max);
+671 
+672         emit RegisteredHermes(_hermesId, _hermesOperator, _url);
+673     }
+674 
+675     function getChannelAddress(address _identity, address _hermesId) public view returns (address) {
+676         bytes32 _code = keccak256(getProxyCode(getChannelImplementation(hermeses[_hermesId].implVer)));
+677         bytes32 _salt = keccak256(abi.encodePacked(_identity, _hermesId));
+678         return getCreate2Address(_salt, _code);
+679     }
+680 
+681     function getHermes(address _hermesId) public view returns (Hermes memory) {
+682         return isHermes(_hermesId) || !hasParentRegistry() ? hermeses[_hermesId] : parentRegistry.getHermes(_hermesId);
+683     }
+684 
+685     function getHermesAddress(address _hermesOperator) public view returns (address) {
+686         bytes32 _code = keccak256(getProxyCode(getHermesImplementation()));
+687         return getCreate2Address(bytes32(uint256(uint160(_hermesOperator))), _code);
+688     }
+689 
+690     function getHermesAddress(address _hermesOperator, uint256 _implVer) public view returns (address) {
+691         bytes32 _code = keccak256(getProxyCode(getHermesImplementation(_implVer)));
+692         return getCreate2Address(bytes32(uint256(uint160(_hermesOperator))), _code);
+693     }
+694 
+695     function getHermesURL(address _hermesId) public view returns (bytes memory) {
+696         return hermeses[_hermesId].url;
+697     }
+698 
+699     function updateHermesURL(address _hermesId, bytes memory _url, bytes memory _signature) public {
+700         require(isActiveHermes(_hermesId), "Registry: provided hermes has to be active");
+701 
+702         // Check if given signature is valid
+703         address _operator = keccak256(abi.encodePacked(address(this), _hermesId, _url, lastNonce++)).recover(_signature);
+704         require(_operator == hermeses[_hermesId].operator, "wrong signature");
+705 
+706         // Update URL
+707         hermeses[_hermesId].url = _url;
+708 
+709         emit HermesURLUpdated(_hermesId, _url);
+710     }
+711 
+712     // ------------ UTILS ------------
+713     function getCreate2Address(bytes32 _salt, bytes32 _code) internal view returns (address) {
+714         return address(uint160(uint256(keccak256(abi.encodePacked(
+715             bytes1(0xff),
+716             address(this),
+717             bytes32(_salt),
+718             bytes32(_code)
+719         )))));
+720     }
+721 
+722     function getProxyCode(address _implementation) public pure returns (bytes memory) {
+723         // `_code` is EIP 1167 - Minimal Proxy Contract
+724         // more information: https://eips.ethereum.org/EIPS/eip-1167
+725         bytes memory _code = hex"3d602d80600a3d3981f3363d3d373d3d3d363d73bebebebebebebebebebebebebebebebebebebebe5af43d82803e903d91602b57fd5bf3";
+726 
+727         bytes20 _targetBytes = bytes20(_implementation);
+728         for (uint8 i = 0; i < 20; i++) {
+729             _code[20 + i] = _targetBytes[i];
+730         }
+731 
+732         return _code;
+733     }
+734 
+735     function deployMiniProxy(uint256 _salt, bytes memory _code) internal returns (address payable) {
+736         address payable _addr;
+737 
+738         assembly {
+739             _addr := create2(0, add(_code, 0x20), mload(_code), _salt)
+740             if iszero(extcodesize(_addr)) {
+741                 revert(0, 0)
+742             }
+743         }
+744 
+745         return _addr;
+746     }
+747 
+748     function getBeneficiary(address _identity) public view returns (address) {
+749         if (hasParentRegistry())
+750             return parentRegistry.getBeneficiary(_identity);
+751 
+752         return identities[_identity];
+753     }
+754 
+755     function setBeneficiary(address _identity, address _newBeneficiary, bytes memory _signature) public {
+756         require(_newBeneficiary != address(0), "Registry: beneficiary can't be zero address");
+757 
+758         // Always set beneficiary into root registry
+759         if (hasParentRegistry()) {
+760             parentRegistry.setBeneficiary(_identity, _newBeneficiary, _signature);
+761         } else {
+762             lastNonce = lastNonce + 1;
+763 
+764             // In signatures we should always use root registry (for backward compatibility)
+765             address _rootRegistry = hasParentRegistry() ? address(parentRegistry) : address(this);
+766             address _signer = keccak256(abi.encodePacked(getChainID(), _rootRegistry, _identity, _newBeneficiary, lastNonce)).recover(_signature);
+767             require(_signer == _identity, "Registry: have to be signed by identity owner");
+768 
+769             identities[_identity] = _newBeneficiary;
+770 
+771             emit BeneficiaryChanged(_identity, _newBeneficiary);
+772         }
+773     }
+774 
+775     function setMinimalHermesStake(uint256 _newMinimalStake) public onlyOwner {
+776         require(isInitialized(), "Registry: only initialized registry can set new minimal hermes stake");
+777         minimalHermesStake = _newMinimalStake;
+778         emit MinimalHermesStakeChanged(_newMinimalStake);
+779     }
+780 
+781     // -------- UTILS TO WORK WITH CHANNEL AND HERMES IMPLEMENTATIONS ---------
+782 
+783     function getChannelImplementation() public view returns (address) {
+784         return implementations[getLastImplVer()].channelImplAddress;
+785     }
+786 
+787     function getChannelImplementation(uint256 _implVer) public view returns (address) {
+788         return implementations[_implVer].channelImplAddress;
+789     }
+790 
+791     function getHermesImplementation() public view returns (address) {
+792         return implementations[getLastImplVer()].hermesImplAddress;
+793     }
+794 
+795     function getHermesImplementation(uint256 _implVer) public view returns (address) {
+796         return implementations[_implVer].hermesImplAddress;
+797     }
+798 
+799     function setImplementations(address _newChannelImplAddress, address _newHermesImplAddress) public onlyOwner {
+800         require(isInitialized(), "Registry: only initialized registry can set new implementations");
+801         require(isSmartContract(_newChannelImplAddress) && isSmartContract(_newHermesImplAddress), "Registry: implementations have to be smart contracts");
+802         implementations.push(Implementation(_newChannelImplAddress, _newHermesImplAddress));
+803     }
+804 
+805     // Version of latest hermes and channel implementations
+806     function getLastImplVer() public view returns (uint256) {
+807         return implementations.length-1;
+808     }
+809 
+810     // ------------------------------------------------------------------------
+811 
+812     function isSmartContract(address _addr) internal view returns (bool) {
+813         uint _codeLength;
+814 
+815         assembly {
+816             _codeLength := extcodesize(_addr)
+817         }
+818 
+819         return _codeLength != 0;
+820     }
+821 
+822     // If `parentRegistry` is not set, this is root registry and should return false
+823     function hasParentRegistry() public view returns (bool) {
+824         return address(parentRegistry) != address(0);
+825     }
+826 
+827     function isRegistered(address _identity) public view returns (bool) {
+828         if (hasParentRegistry())
+829             return parentRegistry.isRegistered(_identity);
+830 
+831         // If we know its beneficiary address it is registered identity
+832         return identities[_identity] != address(0);
+833     }
+834 
+835     function isHermes(address _hermesId) public view returns (bool) {
+836         // To check if it actually properly created hermes address, we need to check if he has operator
+837         // and if with that operator we'll get proper hermes address which has code deployed there.
+838         address _hermesOperator = hermeses[_hermesId].operator;
+839         uint256 _implVer = hermeses[_hermesId].implVer;
+840         address _addr = getHermesAddress(_hermesOperator, _implVer);
+841         if (_addr != _hermesId)
+842             return false; // hermesId should be same as generated address
+843 
+844         return isSmartContract(_addr) || parentRegistry.isHermes(_hermesId);
+845     }
+846 
+847     function isActiveHermes(address _hermesId) internal view returns (bool) {
+848         // First we have to ensure that given address is registered hermes and only then check its status
+849         require(isHermes(_hermesId), "Registry: hermes have to be registered");
+850 
+851         IHermesContract.Status status = IHermesContract(_hermesId).getStatus();
+852         return status == IHermesContract.Status.Active;
+853     }
+854 
+855     function isChannelOpened(address _identity, address _hermesId) public view returns (bool) {
+856         return isSmartContract(getChannelAddress(_identity, _hermesId)) || isSmartContract(parentRegistry.getChannelAddress(_identity, _hermesId));
+857     }
+858 
+859     function transferCollectedFeeTo(address _beneficiary) public onlyOwner{
+860         uint256 _collectedFee = token.balanceOf(address(this));
+861         require(_collectedFee > 0, "collected fee cannot be less than zero");
+862         token.transfer(_beneficiary, _collectedFee);
+863     }
+864 }

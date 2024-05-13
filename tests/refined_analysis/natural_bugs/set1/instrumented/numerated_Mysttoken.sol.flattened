@@ -1,0 +1,642 @@
+1 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
+2 
+3 // SPDX-License-Identifier: MIT
+4 
+5 pragma solidity ^0.8.0;
+6 
+7 /**
+8  * @dev Interface of the ERC20 standard as defined in the EIP.
+9  */
+10 interface IERC20 {
+11     /**
+12      * @dev Returns the amount of tokens in existence.
+13      */
+14     function totalSupply() external view returns (uint256);
+15 
+16     /**
+17      * @dev Returns the amount of tokens owned by `account`.
+18      */
+19     function balanceOf(address account) external view returns (uint256);
+20 
+21     /**
+22      * @dev Moves `amount` tokens from the caller's account to `recipient`.
+23      *
+24      * Returns a boolean value indicating whether the operation succeeded.
+25      *
+26      * Emits a {Transfer} event.
+27      */
+28     function transfer(address recipient, uint256 amount) external returns (bool);
+29 
+30     /**
+31      * @dev Returns the remaining number of tokens that `spender` will be
+32      * allowed to spend on behalf of `owner` through {transferFrom}. This is
+33      * zero by default.
+34      *
+35      * This value changes when {approve} or {transferFrom} are called.
+36      */
+37     function allowance(address owner, address spender) external view returns (uint256);
+38 
+39     /**
+40      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+41      *
+42      * Returns a boolean value indicating whether the operation succeeded.
+43      *
+44      * IMPORTANT: Beware that changing an allowance with this method brings the risk
+45      * that someone may use both the old and the new allowance by unfortunate
+46      * transaction ordering. One possible solution to mitigate this race
+47      * condition is to first reduce the spender's allowance to 0 and set the
+48      * desired value afterwards:
+49      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+50      *
+51      * Emits an {Approval} event.
+52      */
+53     function approve(address spender, uint256 amount) external returns (bool);
+54 
+55     /**
+56      * @dev Moves `amount` tokens from `sender` to `recipient` using the
+57      * allowance mechanism. `amount` is then deducted from the caller's
+58      * allowance.
+59      *
+60      * Returns a boolean value indicating whether the operation succeeded.
+61      *
+62      * Emits a {Transfer} event.
+63      */
+64     function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+65 
+66     /**
+67      * @dev Emitted when `value` tokens are moved from one account (`from`) to
+68      * another (`to`).
+69      *
+70      * Note that `value` may be zero.
+71      */
+72     event Transfer(address indexed from, address indexed to, uint256 value);
+73 
+74     /**
+75      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+76      * a call to {approve}. `value` is the new allowance.
+77      */
+78     event Approval(address indexed owner, address indexed spender, uint256 value);
+79 }
+80 
+81 // File: @openzeppelin/contracts/utils/Context.sol
+82 
+83 // SPDX-License-Identifier: MIT
+84 
+85 pragma solidity ^0.8.0;
+86 
+87 /*
+88  * @dev Provides information about the current execution context, including the
+89  * sender of the transaction and its data. While these are generally available
+90  * via msg.sender and msg.data, they should not be accessed in such a direct
+91  * manner, since when dealing with meta-transactions the account sending and
+92  * paying for execution may not be the actual sender (as far as an application
+93  * is concerned).
+94  *
+95  * This contract is only required for intermediate, library-like contracts.
+96  */
+97 abstract contract Context {
+98     function _msgSender() internal view virtual returns (address) {
+99         return msg.sender;
+100     }
+101 
+102     function _msgData() internal view virtual returns (bytes calldata) {
+103         this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
+104         return msg.data;
+105     }
+106 }
+107 
+108 // File: @openzeppelin/contracts/utils/Address.sol
+109 
+110 // SPDX-License-Identifier: MIT
+111 
+112 pragma solidity ^0.8.0;
+113 
+114 /**
+115  * @dev Collection of functions related to the address type
+116  */
+117 library Address {
+118     /**
+119      * @dev Returns true if `account` is a contract.
+120      *
+121      * [IMPORTANT]
+122      * ====
+123      * It is unsafe to assume that an address for which this function returns
+124      * false is an externally-owned account (EOA) and not a contract.
+125      *
+126      * Among others, `isContract` will return false for the following
+127      * types of addresses:
+128      *
+129      *  - an externally-owned account
+130      *  - a contract in construction
+131      *  - an address where a contract will be created
+132      *  - an address where a contract lived, but was destroyed
+133      * ====
+134      */
+135     function isContract(address account) internal view returns (bool) {
+136         // This method relies on extcodesize, which returns 0 for contracts in
+137         // construction, since the code is only stored at the end of the
+138         // constructor execution.
+139 
+140         uint256 size;
+141         // solhint-disable-next-line no-inline-assembly
+142         assembly { size := extcodesize(account) }
+143         return size > 0;
+144     }
+145 
+146     /**
+147      * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+148      * `recipient`, forwarding all available gas and reverting on errors.
+149      *
+150      * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
+151      * of certain opcodes, possibly making contracts go over the 2300 gas limit
+152      * imposed by `transfer`, making them unable to receive funds via
+153      * `transfer`. {sendValue} removes this limitation.
+154      *
+155      * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].
+156      *
+157      * IMPORTANT: because control is transferred to `recipient`, care must be
+158      * taken to not create reentrancy vulnerabilities. Consider using
+159      * {ReentrancyGuard} or the
+160      * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+161      */
+162     function sendValue(address payable recipient, uint256 amount) internal {
+163         require(address(this).balance >= amount, "Address: insufficient balance");
+164 
+165         // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
+166         (bool success, ) = recipient.call{ value: amount }("");
+167         require(success, "Address: unable to send value, recipient may have reverted");
+168     }
+169 
+170     /**
+171      * @dev Performs a Solidity function call using a low level `call`. A
+172      * plain`call` is an unsafe replacement for a function call: use this
+173      * function instead.
+174      *
+175      * If `target` reverts with a revert reason, it is bubbled up by this
+176      * function (like regular Solidity function calls).
+177      *
+178      * Returns the raw returned data. To convert to the expected return value,
+179      * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
+180      *
+181      * Requirements:
+182      *
+183      * - `target` must be a contract.
+184      * - calling `target` with `data` must not revert.
+185      *
+186      * _Available since v3.1._
+187      */
+188     function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+189       return functionCall(target, data, "Address: low-level call failed");
+190     }
+191 
+192     /**
+193      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
+194      * `errorMessage` as a fallback revert reason when `target` reverts.
+195      *
+196      * _Available since v3.1._
+197      */
+198     function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
+199         return functionCallWithValue(target, data, 0, errorMessage);
+200     }
+201 
+202     /**
+203      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+204      * but also transferring `value` wei to `target`.
+205      *
+206      * Requirements:
+207      *
+208      * - the calling contract must have an ETH balance of at least `value`.
+209      * - the called Solidity function must be `payable`.
+210      *
+211      * _Available since v3.1._
+212      */
+213     function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
+214         return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+215     }
+216 
+217     /**
+218      * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
+219      * with `errorMessage` as a fallback revert reason when `target` reverts.
+220      *
+221      * _Available since v3.1._
+222      */
+223     function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {
+224         require(address(this).balance >= value, "Address: insufficient balance for call");
+225         require(isContract(target), "Address: call to non-contract");
+226 
+227         // solhint-disable-next-line avoid-low-level-calls
+228         (bool success, bytes memory returndata) = target.call{ value: value }(data);
+229         return _verifyCallResult(success, returndata, errorMessage);
+230     }
+231 
+232     /**
+233      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+234      * but performing a static call.
+235      *
+236      * _Available since v3.3._
+237      */
+238     function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+239         return functionStaticCall(target, data, "Address: low-level static call failed");
+240     }
+241 
+242     /**
+243      * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+244      * but performing a static call.
+245      *
+246      * _Available since v3.3._
+247      */
+248     function functionStaticCall(address target, bytes memory data, string memory errorMessage) internal view returns (bytes memory) {
+249         require(isContract(target), "Address: static call to non-contract");
+250 
+251         // solhint-disable-next-line avoid-low-level-calls
+252         (bool success, bytes memory returndata) = target.staticcall(data);
+253         return _verifyCallResult(success, returndata, errorMessage);
+254     }
+255 
+256     /**
+257      * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+258      * but performing a delegate call.
+259      *
+260      * _Available since v3.4._
+261      */
+262     function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+263         return functionDelegateCall(target, data, "Address: low-level delegate call failed");
+264     }
+265 
+266     /**
+267      * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+268      * but performing a delegate call.
+269      *
+270      * _Available since v3.4._
+271      */
+272     function functionDelegateCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
+273         require(isContract(target), "Address: delegate call to non-contract");
+274 
+275         // solhint-disable-next-line avoid-low-level-calls
+276         (bool success, bytes memory returndata) = target.delegatecall(data);
+277         return _verifyCallResult(success, returndata, errorMessage);
+278     }
+279 
+280     function _verifyCallResult(bool success, bytes memory returndata, string memory errorMessage) private pure returns(bytes memory) {
+281         if (success) {
+282             return returndata;
+283         } else {
+284             // Look for revert reason and bubble it up if present
+285             if (returndata.length > 0) {
+286                 // The easiest way to bubble the revert reason is using memory via assembly
+287 
+288                 // solhint-disable-next-line no-inline-assembly
+289                 assembly {
+290                     let returndata_size := mload(returndata)
+291                     revert(add(32, returndata), returndata_size)
+292                 }
+293             } else {
+294                 revert(errorMessage);
+295             }
+296         }
+297     }
+298 }
+299 
+300 // File: contracts/interfaces/IUpgradeAgent.sol
+301 
+302 // SPDX-License-Identifier: GPL-3.0
+303 pragma solidity =0.8.4;
+304 
+305 /**
+306  * Upgrade agent interface inspired by Lunyr.
+307  *
+308  * Upgrade agent transfers tokens to a new contract.
+309  * Upgrade agent itself can be the token contract, or just a middle man contract doing the heavy lifting.
+310  */
+311 abstract contract IUpgradeAgent {
+312     function isUpgradeAgent() external virtual pure returns (bool);
+313     function upgradeFrom(address _from, uint256 _value) public virtual;
+314     function originalSupply() public virtual view returns (uint256);
+315     function originalToken() public virtual view returns (address);
+316 }
+317 
+318 // File: contracts/MystToken.sol
+319 
+320 // SPDX-License-Identifier: GPL-3.0
+321 pragma solidity 0.8.4;
+322 
+323 
+324 
+325 
+326 
+327 contract MystToken is Context, IERC20, IUpgradeAgent {
+328     using Address for address;
+329 
+330     address immutable _originalToken;                        // Address of MYSTv1 token
+331     uint256 immutable _originalSupply;                       // Token supply of MYSTv1 token
+332 
+333     // The original MYST token and the new MYST token have a decimal difference of 10.
+334     // As such, minted values as well as the total supply comparisons need to offset all values
+335     // by 10 zeros to properly compare them.
+336     uint256 constant private DECIMAL_OFFSET = 1e10;
+337 
+338     bool constant public override isUpgradeAgent = true;     // Upgradeability interface marker
+339     address private _upgradeMaster;                          // He can enable future token migration
+340     IUpgradeAgent private _upgradeAgent;                     // The next contract where the tokens will be migrated
+341     uint256 private _totalUpgraded;                          // How many tokens we have upgraded by now
+342 
+343     mapping(address => uint256) private _balances;
+344     uint256 private _totalSupply;
+345 
+346     string constant public name = "Mysterium";
+347     string constant public symbol = "MYST";
+348     uint8 constant public decimals = 18;
+349 
+350     // EIP712
+351     bytes32 public DOMAIN_SEPARATOR;
+352 
+353     // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
+354     bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+355 
+356     // The nonces mapping is given for replay protection in permit function.
+357     mapping(address => uint) public nonces;
+358 
+359     // ERC20-allowances
+360     mapping (address => mapping (address => uint256)) private _allowances;
+361 
+362     event Minted(address indexed to, uint256 amount);
+363     event Burned(address indexed from, uint256 amount);
+364 
+365     // State of token upgrade
+366     enum UpgradeState {Unknown, NotAllowed, WaitingForAgent, ReadyToUpgrade, Upgrading, Completed}
+367 
+368     // Token upgrade events
+369     event Upgrade(address indexed from, address agent, uint256 _value);
+370     event UpgradeAgentSet(address agent);
+371     event UpgradeMasterSet(address master);
+372 
+373     constructor(address tokenAddress) {
+374         // upgradability settings
+375         _originalToken  = tokenAddress;
+376         _originalSupply = IERC20(tokenAddress).totalSupply();
+377 
+378         // set upgrade master
+379         _upgradeMaster = _msgSender();
+380 
+381         // construct EIP712 domain separator
+382         DOMAIN_SEPARATOR = keccak256(
+383             abi.encode(
+384                 keccak256('EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)'),
+385                 keccak256(bytes(name)),
+386                 keccak256(bytes('1')),
+387                 _chainID(),
+388                 address(this)
+389             )
+390         );
+391     }
+392 
+393     function totalSupply() public view override(IERC20) returns (uint256) {
+394         return _totalSupply;
+395     }
+396 
+397     function balanceOf(address tokenHolder) public view override(IERC20) returns (uint256) {
+398         return _balances[tokenHolder];
+399     }
+400 
+401     function transfer(address recipient, uint256 amount) public override returns (bool) {
+402         _move(_msgSender(), recipient, amount);
+403         return true;
+404     }
+405 
+406     function burn(uint256 amount) public {
+407         _burn(_msgSender(), amount);
+408     }
+409 
+410     function allowance(address holder, address spender) public view override returns (uint256) {
+411         return _allowances[holder][spender];
+412     }
+413 
+414     function approve(address spender, uint256 value) public override returns (bool) {
+415         _approve(_msgSender(), spender, value);
+416         return true;
+417     }
+418 
+419     function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+420         _approve(_msgSender(), spender, _allowances[_msgSender()][spender] + addedValue);
+421         return true;
+422     }
+423 
+424     function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+425         _approve(_msgSender(), spender, _allowances[_msgSender()][spender] - subtractedValue);
+426         return true;
+427     }
+428 
+429     /**
+430      * ERC2612 `permit`: 712-signed token approvals
+431      */
+432     function permit(address holder, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
+433         require(deadline >= block.timestamp, 'MYST: Permit expired');
+434         bytes32 digest = keccak256(
+435             abi.encodePacked(
+436                 '\x19\x01',
+437                 DOMAIN_SEPARATOR,
+438                 keccak256(abi.encode(PERMIT_TYPEHASH, holder, spender, value, nonces[holder]++, deadline))
+439             )
+440         );
+441         address recoveredAddress = ecrecover(digest, v, r, s);
+442         require(recoveredAddress != address(0) && recoveredAddress == holder, 'MYST: invalid signature');
+443         _approve(holder, spender, value);
+444     }
+445 
+446     /**
+447     * Note that we're not decreasing allowance of uint(-1). This makes it simple to ERC777 operator.
+448     */
+449     function transferFrom(address holder, address recipient, uint256 amount) public override returns (bool) {
+450         // require(recipient != address(0), "MYST: transfer to the zero address");
+451         require(holder != address(0), "MYST: transfer from the zero address");
+452         address spender = _msgSender();
+453 
+454         // Allowance for uint256(-1) means "always allowed" and is analog for erc777 operators but in erc20 semantics.
+455         if (holder != spender && _allowances[holder][spender] != type(uint256).max) {
+456             _approve(holder, spender, _allowances[holder][spender] - amount);
+457         }
+458 
+459         _move(holder, recipient, amount);
+460         return true;
+461     }
+462 
+463     /**
+464      * Creates `amount` tokens and assigns them to `holder`, increasing
+465      * the total supply.
+466      */
+467     function _mint(address holder, uint256 amount) internal {
+468         require(holder != address(0), "MYST: mint to the zero address");
+469 
+470         // Update state variables
+471         _totalSupply = _totalSupply + amount;
+472         _balances[holder] = _balances[holder] + amount;
+473 
+474         emit Minted(holder, amount);
+475         emit Transfer(address(0), holder, amount);
+476     }
+477 
+478     function _burn(address from, uint256 amount) internal {
+479         require(from != address(0), "MYST: burn from the zero address");
+480 
+481         // Update state variables
+482         _balances[from] = _balances[from] - amount;
+483         _totalSupply = _totalSupply - amount;
+484 
+485         emit Transfer(from, address(0), amount);
+486         emit Burned(from, amount);
+487     }
+488 
+489     function _move(address from, address to, uint256 amount) private {
+490         // Sending to zero address is equal burning
+491         if (to == address(0)) {
+492             _burn(from, amount);
+493             return;
+494         }
+495 
+496         _balances[from] = _balances[from] - amount;
+497         _balances[to] = _balances[to] + amount;
+498 
+499         emit Transfer(from, to, amount);
+500     }
+501 
+502     function _approve(address holder, address spender, uint256 value) internal {
+503         require(holder != address(0), "MYST: approve from the zero address");
+504         require(spender != address(0), "MYST: approve to the zero address");
+505 
+506         _allowances[holder][spender] = value;
+507         emit Approval(holder, spender, value);
+508     }
+509 
+510     // -------------- UPGRADE FROM v1 TOKEN --------------
+511 
+512     function originalToken() public view override returns (address) {
+513         return _originalToken;
+514     }
+515 
+516     function originalSupply() public view override returns (uint256) {
+517         return _originalSupply;
+518     }
+519 
+520     function upgradeFrom(address _account, uint256 _value) public override {
+521         require(msg.sender == originalToken(), "only original token can call upgradeFrom");
+522 
+523         // Value is multiplied by 0e10 as old token had decimals = 8?
+524         _mint(_account, _value * DECIMAL_OFFSET);
+525 
+526         require(totalSupply() <= originalSupply() * DECIMAL_OFFSET, "can not mint more tokens than in original contract");
+527     }
+528 
+529 
+530     // -------------- PREPARE FOR FUTURE UPGRADABILITY --------------
+531 
+532     function upgradeMaster() public view returns (address) {
+533         return _upgradeMaster;
+534     }
+535 
+536     function upgradeAgent() public view returns (address) {
+537         return address(_upgradeAgent);
+538     }
+539 
+540     function totalUpgraded() public view returns (uint256) {
+541         return _totalUpgraded;
+542     }
+543 
+544     /**
+545      * Tokens can be upgraded by calling this function.
+546      */
+547     function upgrade(uint256 amount) public {
+548         UpgradeState state = getUpgradeState();
+549         require(state == UpgradeState.ReadyToUpgrade || state == UpgradeState.Upgrading, "MYST: token is not in upgrading state");
+550 
+551         require(amount != 0, "MYST: upgradable amount should be more than 0");
+552 
+553         address holder = _msgSender();
+554 
+555         // Burn tokens to be upgraded
+556         _burn(holder, amount);
+557 
+558         // Remember how many tokens we have upgraded
+559         _totalUpgraded = _totalUpgraded + amount;
+560 
+561         // Upgrade agent upgrades/reissues tokens
+562         _upgradeAgent.upgradeFrom(holder, amount);
+563         emit Upgrade(holder, upgradeAgent(), amount);
+564     }
+565 
+566     function setUpgradeMaster(address newUpgradeMaster) external {
+567         require(newUpgradeMaster != address(0x0), "MYST: upgrade master can't be zero address");
+568         require(_msgSender() == _upgradeMaster, "MYST: only upgrade master can set new one");
+569         _upgradeMaster = newUpgradeMaster;
+570 
+571         emit UpgradeMasterSet(upgradeMaster());
+572     }
+573 
+574     function setUpgradeAgent(address agent) external {
+575         require(_msgSender()== _upgradeMaster, "MYST: only a master can designate the next agent");
+576         require(agent != address(0x0), "MYST: upgrade agent can't be zero address");
+577         require(getUpgradeState() != UpgradeState.Upgrading, "MYST: upgrade has already begun");
+578 
+579         _upgradeAgent = IUpgradeAgent(agent);
+580         require(_upgradeAgent.isUpgradeAgent(), "MYST: agent should implement IUpgradeAgent interface");
+581 
+582         // Make sure that token supplies match in source and target
+583         require(_upgradeAgent.originalSupply() == totalSupply(), "MYST: upgrade agent should know token's total supply");
+584 
+585         emit UpgradeAgentSet(upgradeAgent());
+586     }
+587 
+588     function getUpgradeState() public view returns(UpgradeState) {
+589         if(address(_upgradeAgent) == address(0x00)) return UpgradeState.WaitingForAgent;
+590         else if(_totalUpgraded == 0) return UpgradeState.ReadyToUpgrade;
+591         else if(totalSupply() == 0) return UpgradeState.Completed;
+592         else return UpgradeState.Upgrading;
+593     }
+594 
+595     // -------------- FUNDS RECOVERY --------------
+596 
+597     address internal _fundsDestination;
+598     event FundsRecoveryDestinationChanged(address indexed previousDestination, address indexed newDestination);
+599 
+600     /**
+601      * Setting new destination of funds recovery.
+602      */
+603     function setFundsDestination(address newDestination) public {
+604         require(_msgSender()== _upgradeMaster, "MYST: only a master can set funds destination");
+605         require(newDestination != address(0), "MYST: funds destination can't be zero addreess");
+606 
+607         _fundsDestination = newDestination;
+608         emit FundsRecoveryDestinationChanged(_fundsDestination, newDestination);
+609     }
+610     /**
+611      * Getting funds destination address.
+612      */
+613     function getFundsDestination() public view returns (address) {
+614         return _fundsDestination;
+615     }
+616 
+617     /**
+618        Transfers selected tokens into `_fundsDestination` address.
+619     */
+620     function claimTokens(address token) public {
+621         require(_fundsDestination != address(0));
+622         uint256 amount = IERC20(token).balanceOf(address(this));
+623         IERC20(token).transfer(_fundsDestination, amount);
+624     }
+625 
+626     // -------------- HELPERS --------------
+627 
+628     function _chainID() private view returns (uint256) {
+629         uint256 chainID;
+630         assembly {
+631             chainID := chainid()
+632         }
+633         return chainID;
+634     }
+635 
+636     // -------------- TESTNET ONLY FUNCTIONS --------------
+637 
+638     function mint(address _account, uint _amount) public {
+639         require(_msgSender()== _upgradeMaster, "MYST: only a master can mint");
+640         _mint(_account, _amount);
+641     }
+642 }

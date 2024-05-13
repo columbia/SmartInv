@@ -1,0 +1,756 @@
+1 // File: @openzeppelin/contracts/utils/cryptography/ECDSA.sol
+2 
+3 // SPDX-License-Identifier: MIT
+4 
+5 pragma solidity ^0.8.0;
+6 
+7 /**
+8  * @dev Elliptic Curve Digital Signature Algorithm (ECDSA) operations.
+9  *
+10  * These functions can be used to verify that a message was signed by the holder
+11  * of the private keys of a given address.
+12  */
+13 library ECDSA {
+14     enum RecoverError {
+15         NoError,
+16         InvalidSignature,
+17         InvalidSignatureLength,
+18         InvalidSignatureS,
+19         InvalidSignatureV
+20     }
+21 
+22     function _throwError(RecoverError error) private pure {
+23         if (error == RecoverError.NoError) {
+24             return; // no error: do nothing
+25         } else if (error == RecoverError.InvalidSignature) {
+26             revert("ECDSA: invalid signature");
+27         } else if (error == RecoverError.InvalidSignatureLength) {
+28             revert("ECDSA: invalid signature length");
+29         } else if (error == RecoverError.InvalidSignatureS) {
+30             revert("ECDSA: invalid signature 's' value");
+31         } else if (error == RecoverError.InvalidSignatureV) {
+32             revert("ECDSA: invalid signature 'v' value");
+33         }
+34     }
+35 
+36     /**
+37      * @dev Returns the address that signed a hashed message (`hash`) with
+38      * `signature` or error string. This address can then be used for verification purposes.
+39      *
+40      * The `ecrecover` EVM opcode allows for malleable (non-unique) signatures:
+41      * this function rejects them by requiring the `s` value to be in the lower
+42      * half order, and the `v` value to be either 27 or 28.
+43      *
+44      * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+45      * verification to be secure: it is possible to craft signatures that
+46      * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+47      * this is by receiving a hash of the original message (which may otherwise
+48      * be too long), and then calling {toEthSignedMessageHash} on it.
+49      *
+50      * Documentation for signature generation:
+51      * - with https://web3js.readthedocs.io/en/v1.3.4/web3-eth-accounts.html#sign[Web3.js]
+52      * - with https://docs.ethers.io/v5/api/signer/#Signer-signMessage[ethers]
+53      *
+54      * _Available since v4.3._
+55      */
+56     function tryRecover(bytes32 hash, bytes memory signature) internal pure returns (address, RecoverError) {
+57         // Check the signature length
+58         // - case 65: r,s,v signature (standard)
+59         // - case 64: r,vs signature (cf https://eips.ethereum.org/EIPS/eip-2098) _Available since v4.1._
+60         if (signature.length == 65) {
+61             bytes32 r;
+62             bytes32 s;
+63             uint8 v;
+64             // ecrecover takes the signature parameters, and the only way to get them
+65             // currently is to use assembly.
+66             assembly {
+67                 r := mload(add(signature, 0x20))
+68                 s := mload(add(signature, 0x40))
+69                 v := byte(0, mload(add(signature, 0x60)))
+70             }
+71             return tryRecover(hash, v, r, s);
+72         } else if (signature.length == 64) {
+73             bytes32 r;
+74             bytes32 vs;
+75             // ecrecover takes the signature parameters, and the only way to get them
+76             // currently is to use assembly.
+77             assembly {
+78                 r := mload(add(signature, 0x20))
+79                 vs := mload(add(signature, 0x40))
+80             }
+81             return tryRecover(hash, r, vs);
+82         } else {
+83             return (address(0), RecoverError.InvalidSignatureLength);
+84         }
+85     }
+86 
+87     /**
+88      * @dev Returns the address that signed a hashed message (`hash`) with
+89      * `signature`. This address can then be used for verification purposes.
+90      *
+91      * The `ecrecover` EVM opcode allows for malleable (non-unique) signatures:
+92      * this function rejects them by requiring the `s` value to be in the lower
+93      * half order, and the `v` value to be either 27 or 28.
+94      *
+95      * IMPORTANT: `hash` _must_ be the result of a hash operation for the
+96      * verification to be secure: it is possible to craft signatures that
+97      * recover to arbitrary addresses for non-hashed data. A safe way to ensure
+98      * this is by receiving a hash of the original message (which may otherwise
+99      * be too long), and then calling {toEthSignedMessageHash} on it.
+100      */
+101     function recover(bytes32 hash, bytes memory signature) internal pure returns (address) {
+102         (address recovered, RecoverError error) = tryRecover(hash, signature);
+103         _throwError(error);
+104         return recovered;
+105     }
+106 
+107     /**
+108      * @dev Overload of {ECDSA-tryRecover} that receives the `r` and `vs` short-signature fields separately.
+109      *
+110      * See https://eips.ethereum.org/EIPS/eip-2098[EIP-2098 short signatures]
+111      *
+112      * _Available since v4.3._
+113      */
+114     function tryRecover(
+115         bytes32 hash,
+116         bytes32 r,
+117         bytes32 vs
+118     ) internal pure returns (address, RecoverError) {
+119         bytes32 s;
+120         uint8 v;
+121         assembly {
+122             s := and(vs, 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff)
+123             v := add(shr(255, vs), 27)
+124         }
+125         return tryRecover(hash, v, r, s);
+126     }
+127 
+128     /**
+129      * @dev Overload of {ECDSA-recover} that receives the `r and `vs` short-signature fields separately.
+130      *
+131      * _Available since v4.2._
+132      */
+133     function recover(
+134         bytes32 hash,
+135         bytes32 r,
+136         bytes32 vs
+137     ) internal pure returns (address) {
+138         (address recovered, RecoverError error) = tryRecover(hash, r, vs);
+139         _throwError(error);
+140         return recovered;
+141     }
+142 
+143     /**
+144      * @dev Overload of {ECDSA-tryRecover} that receives the `v`,
+145      * `r` and `s` signature fields separately.
+146      *
+147      * _Available since v4.3._
+148      */
+149     function tryRecover(
+150         bytes32 hash,
+151         uint8 v,
+152         bytes32 r,
+153         bytes32 s
+154     ) internal pure returns (address, RecoverError) {
+155         // EIP-2 still allows signature malleability for ecrecover(). Remove this possibility and make the signature
+156         // unique. Appendix F in the Ethereum Yellow paper (https://ethereum.github.io/yellowpaper/paper.pdf), defines
+157         // the valid range for s in (301): 0 < s < secp256k1n ÷ 2 + 1, and for v in (302): v ∈ {27, 28}. Most
+158         // signatures from current libraries generate a unique signature with an s-value in the lower half order.
+159         //
+160         // If your library generates malleable signatures, such as s-values in the upper range, calculate a new s-value
+161         // with 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141 - s1 and flip v from 27 to 28 or
+162         // vice versa. If your library also generates signatures with 0/1 for v instead 27/28, add 27 to v to accept
+163         // these malleable signatures as well.
+164         if (uint256(s) > 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5D576E7357A4501DDFE92F46681B20A0) {
+165             return (address(0), RecoverError.InvalidSignatureS);
+166         }
+167         if (v != 27 && v != 28) {
+168             return (address(0), RecoverError.InvalidSignatureV);
+169         }
+170 
+171         // If the signature is valid (and not malleable), return the signer address
+172         address signer = ecrecover(hash, v, r, s);
+173         if (signer == address(0)) {
+174             return (address(0), RecoverError.InvalidSignature);
+175         }
+176 
+177         return (signer, RecoverError.NoError);
+178     }
+179 
+180     /**
+181      * @dev Overload of {ECDSA-recover} that receives the `v`,
+182      * `r` and `s` signature fields separately.
+183      */
+184     function recover(
+185         bytes32 hash,
+186         uint8 v,
+187         bytes32 r,
+188         bytes32 s
+189     ) internal pure returns (address) {
+190         (address recovered, RecoverError error) = tryRecover(hash, v, r, s);
+191         _throwError(error);
+192         return recovered;
+193     }
+194 
+195     /**
+196      * @dev Returns an Ethereum Signed Message, created from a `hash`. This
+197      * produces hash corresponding to the one signed with the
+198      * https://eth.wiki/json-rpc/API#eth_sign[`eth_sign`]
+199      * JSON-RPC method as part of EIP-191.
+200      *
+201      * See {recover}.
+202      */
+203     function toEthSignedMessageHash(bytes32 hash) internal pure returns (bytes32) {
+204         // 32 is the length in bytes of hash,
+205         // enforced by the type signature above
+206         return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+207     }
+208 
+209     /**
+210      * @dev Returns an Ethereum Signed Typed Data, created from a
+211      * `domainSeparator` and a `structHash`. This produces hash corresponding
+212      * to the one signed with the
+213      * https://eips.ethereum.org/EIPS/eip-712[`eth_signTypedData`]
+214      * JSON-RPC method as part of EIP-712.
+215      *
+216      * See {recover}.
+217      */
+218     function toTypedDataHash(bytes32 domainSeparator, bytes32 structHash) internal pure returns (bytes32) {
+219         return keccak256(abi.encodePacked("\x19\x01", domainSeparator, structHash));
+220     }
+221 }
+222 
+223 // File: @openzeppelin/contracts/token/ERC20/IERC20.sol
+224 
+225 // SPDX-License-Identifier: MIT
+226 
+227 pragma solidity ^0.8.0;
+228 
+229 /**
+230  * @dev Interface of the ERC20 standard as defined in the EIP.
+231  */
+232 interface IERC20 {
+233     /**
+234      * @dev Returns the amount of tokens in existence.
+235      */
+236     function totalSupply() external view returns (uint256);
+237 
+238     /**
+239      * @dev Returns the amount of tokens owned by `account`.
+240      */
+241     function balanceOf(address account) external view returns (uint256);
+242 
+243     /**
+244      * @dev Moves `amount` tokens from the caller's account to `recipient`.
+245      *
+246      * Returns a boolean value indicating whether the operation succeeded.
+247      *
+248      * Emits a {Transfer} event.
+249      */
+250     function transfer(address recipient, uint256 amount) external returns (bool);
+251 
+252     /**
+253      * @dev Returns the remaining number of tokens that `spender` will be
+254      * allowed to spend on behalf of `owner` through {transferFrom}. This is
+255      * zero by default.
+256      *
+257      * This value changes when {approve} or {transferFrom} are called.
+258      */
+259     function allowance(address owner, address spender) external view returns (uint256);
+260 
+261     /**
+262      * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+263      *
+264      * Returns a boolean value indicating whether the operation succeeded.
+265      *
+266      * IMPORTANT: Beware that changing an allowance with this method brings the risk
+267      * that someone may use both the old and the new allowance by unfortunate
+268      * transaction ordering. One possible solution to mitigate this race
+269      * condition is to first reduce the spender's allowance to 0 and set the
+270      * desired value afterwards:
+271      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+272      *
+273      * Emits an {Approval} event.
+274      */
+275     function approve(address spender, uint256 amount) external returns (bool);
+276 
+277     /**
+278      * @dev Moves `amount` tokens from `sender` to `recipient` using the
+279      * allowance mechanism. `amount` is then deducted from the caller's
+280      * allowance.
+281      *
+282      * Returns a boolean value indicating whether the operation succeeded.
+283      *
+284      * Emits a {Transfer} event.
+285      */
+286     function transferFrom(
+287         address sender,
+288         address recipient,
+289         uint256 amount
+290     ) external returns (bool);
+291 
+292     /**
+293      * @dev Emitted when `value` tokens are moved from one account (`from`) to
+294      * another (`to`).
+295      *
+296      * Note that `value` may be zero.
+297      */
+298     event Transfer(address indexed from, address indexed to, uint256 value);
+299 
+300     /**
+301      * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+302      * a call to {approve}. `value` is the new allowance.
+303      */
+304     event Approval(address indexed owner, address indexed spender, uint256 value);
+305 }
+306 
+307 // File: contracts/interfaces/IERC20Token.sol
+308 
+309 // SPDX-License-Identifier: GPL-3.0
+310 pragma solidity 0.8.9;
+311 
+312 
+313 abstract contract IERC20Token is IERC20 {
+314     function upgrade(uint256 value) public virtual;
+315 }
+316 
+317 // File: contracts/interfaces/IHermesContract.sol
+318 
+319 // SPDX-License-Identifier: GPL-3.0
+320 pragma solidity 0.8.9;
+321 
+322 interface IHermesContract {
+323     enum Status { Active, Paused, Punishment, Closed }
+324     function initialize(address _token, address _operator, uint16 _hermesFee, uint256 _minStake, uint256 _maxStake, address payable _routerAddress) external;
+325     function openChannel(address _party, uint256 _amountToLend) external;
+326     function getOperator() external view returns (address);
+327     function getStake() external view returns (uint256);
+328     function getStatus() external view returns (Status);
+329 }
+330 
+331 // File: contracts/interfaces/IUniswapV2Router.sol
+332 
+333 // SPDX-License-Identifier: GPL-3.0
+334 pragma solidity 0.8.9;
+335 
+336 interface IUniswapV2Router {
+337     function factory() external pure returns (address);
+338     function WETH() external pure returns (address);
+339 
+340     function addLiquidity(
+341         address tokenA,
+342         address tokenB,
+343         uint amountADesired,
+344         uint amountBDesired,
+345         uint amountAMin,
+346         uint amountBMin,
+347         address to,
+348         uint deadline
+349     ) external returns (uint amountA, uint amountB, uint liquidity);
+350     function addLiquidityETH(
+351         address token,
+352         uint amountTokenDesired,
+353         uint amountTokenMin,
+354         uint amountETHMin,
+355         address to,
+356         uint deadline
+357     ) external payable returns (uint amountToken, uint amountETH, uint liquidity);
+358     function removeLiquidity(
+359         address tokenA,
+360         address tokenB,
+361         uint liquidity,
+362         uint amountAMin,
+363         uint amountBMin,
+364         address to,
+365         uint deadline
+366     ) external returns (uint amountA, uint amountB);
+367     function removeLiquidityETH(
+368         address token,
+369         uint liquidity,
+370         uint amountTokenMin,
+371         uint amountETHMin,
+372         address to,
+373         uint deadline
+374     ) external returns (uint amountToken, uint amountETH);
+375     function removeLiquidityWithPermit(
+376         address tokenA,
+377         address tokenB,
+378         uint liquidity,
+379         uint amountAMin,
+380         uint amountBMin,
+381         address to,
+382         uint deadline,
+383         bool approveMax, uint8 v, bytes32 r, bytes32 s
+384     ) external returns (uint amountA, uint amountB);
+385     function removeLiquidityETHWithPermit(
+386         address token,
+387         uint liquidity,
+388         uint amountTokenMin,
+389         uint amountETHMin,
+390         address to,
+391         uint deadline,
+392         bool approveMax, uint8 v, bytes32 r, bytes32 s
+393     ) external returns (uint amountToken, uint amountETH);
+394     function swapExactTokensForTokens(
+395         uint amountIn,
+396         uint amountOutMin,
+397         address[] calldata path,
+398         address to,
+399         uint deadline
+400     ) external returns (uint[] memory amounts);
+401     function swapTokensForExactTokens(
+402         uint amountOut,
+403         uint amountInMax,
+404         address[] calldata path,
+405         address to,
+406         uint deadline
+407     ) external returns (uint[] memory amounts);
+408     function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)
+409         external
+410         payable
+411         returns (uint[] memory amounts);
+412     function swapTokensForExactETH(uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
+413         external
+414         returns (uint[] memory amounts);
+415     function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)
+416         external
+417         returns (uint[] memory amounts);
+418     function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)
+419         external
+420         payable
+421         returns (uint[] memory amounts);
+422 
+423     function quote(uint amountA, uint reserveA, uint reserveB) external pure returns (uint amountB);
+424     function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) external pure returns (uint amountOut);
+425     function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut) external pure returns (uint amountIn);
+426     function getAmountsOut(uint amountIn, address[] calldata path) external view returns (uint[] memory amounts);
+427     function getAmountsIn(uint amountOut, address[] calldata path) external view returns (uint[] memory amounts);
+428 }
+429 
+430 // File: contracts/Ownable.sol
+431 
+432 // SPDX-License-Identifier: GPL-3.0
+433 pragma solidity 0.8.9;
+434 
+435 contract Ownable {
+436     address private _owner;
+437 
+438     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+439 
+440     function owner() public view returns (address) {
+441         return _owner;
+442     }
+443 
+444     modifier onlyOwner() {
+445         require(_owner == msg.sender || _owner == address(0x0), "Ownable: caller is not the owner");
+446         _;
+447     }
+448 
+449     function transferOwnership(address newOwner) public virtual onlyOwner {
+450         require(newOwner != address(0), "Ownable: new owner is the zero address");
+451         emit OwnershipTransferred(_owner, newOwner);
+452         _owner = newOwner;
+453     }
+454 }
+455 
+456 // File: @openzeppelin/contracts/security/ReentrancyGuard.sol
+457 
+458 // SPDX-License-Identifier: MIT
+459 
+460 pragma solidity ^0.8.0;
+461 
+462 /**
+463  * @dev Contract module that helps prevent reentrant calls to a function.
+464  *
+465  * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+466  * available, which can be applied to functions to make sure there are no nested
+467  * (reentrant) calls to them.
+468  *
+469  * Note that because there is a single `nonReentrant` guard, functions marked as
+470  * `nonReentrant` may not call one another. This can be worked around by making
+471  * those functions `private`, and then adding `external` `nonReentrant` entry
+472  * points to them.
+473  *
+474  * TIP: If you would like to learn more about reentrancy and alternative ways
+475  * to protect against it, check out our blog post
+476  * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+477  */
+478 abstract contract ReentrancyGuard {
+479     // Booleans are more expensive than uint256 or any type that takes up a full
+480     // word because each write operation emits an extra SLOAD to first read the
+481     // slot's contents, replace the bits taken up by the boolean, and then write
+482     // back. This is the compiler's defense against contract upgrades and
+483     // pointer aliasing, and it cannot be disabled.
+484 
+485     // The values being non-zero value makes deployment a bit more expensive,
+486     // but in exchange the refund on every call to nonReentrant will be lower in
+487     // amount. Since refunds are capped to a percentage of the total
+488     // transaction's gas, it is best to keep them low in cases like this one, to
+489     // increase the likelihood of the full refund coming into effect.
+490     uint256 private constant _NOT_ENTERED = 1;
+491     uint256 private constant _ENTERED = 2;
+492 
+493     uint256 private _status;
+494 
+495     constructor() {
+496         _status = _NOT_ENTERED;
+497     }
+498 
+499     /**
+500      * @dev Prevents a contract from calling itself, directly or indirectly.
+501      * Calling a `nonReentrant` function from another `nonReentrant`
+502      * function is not supported. It is possible to prevent this from happening
+503      * by making the `nonReentrant` function external, and make it call a
+504      * `private` function that does the actual work.
+505      */
+506     modifier nonReentrant() {
+507         // On the first call to nonReentrant, _notEntered will be true
+508         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+509 
+510         // Any calls to nonReentrant after this point will fail
+511         _status = _ENTERED;
+512 
+513         _;
+514 
+515         // By storing the original value once again, a refund is triggered (see
+516         // https://eips.ethereum.org/EIPS/eip-2200)
+517         _status = _NOT_ENTERED;
+518     }
+519 }
+520 
+521 // File: contracts/FundsRecovery.sol
+522 
+523 // SPDX-License-Identifier: GPL-3.0
+524 pragma solidity 0.8.9;
+525 
+526 
+527 
+528 
+529 contract FundsRecovery is Ownable, ReentrancyGuard {
+530     address payable internal fundsDestination;
+531     IERC20Token public token;
+532 
+533     event DestinationChanged(address indexed previousDestination, address indexed newDestination);
+534 
+535     /**
+536      * Setting new destination of funds recovery.
+537      */
+538     function setFundsDestination(address payable _newDestination) public virtual onlyOwner {
+539         require(_newDestination != address(0));
+540         emit DestinationChanged(fundsDestination, _newDestination);
+541         fundsDestination = _newDestination;
+542     }
+543 
+544     /**
+545      * Getting funds destination address.
+546      */
+547     function getFundsDestination() public view returns (address) {
+548         return fundsDestination;
+549     }
+550 
+551     /**
+552      * Possibility to recover funds in case they were sent to this address before smart contract deployment
+553      */
+554     function claimNativeCoin() public nonReentrant {
+555         require(fundsDestination != address(0));
+556         fundsDestination.transfer(address(this).balance);
+557     }
+558 
+559     /**
+560        Transfers selected tokens into owner address.
+561     */
+562     function claimTokens(address _token) public nonReentrant {
+563         require(fundsDestination != address(0));
+564         require(_token != address(token), "native token funds can't be recovered");
+565         uint256 _amount = IERC20Token(_token).balanceOf(address(this));
+566         IERC20Token(_token).transfer(fundsDestination, _amount);
+567     }
+568 }
+569 
+570 // File: contracts/Utils.sol
+571 
+572 // SPDX-License-Identifier: GPL-3.0
+573 pragma solidity 0.8.9;
+574 
+575 contract Utils {
+576     function getChainID() internal view returns (uint256) {
+577         uint256 chainID;
+578         assembly {
+579             chainID := chainid()
+580         }
+581         return chainID;
+582     }
+583 
+584     function max(uint a, uint b) internal pure returns (uint) {
+585         return a > b ? a : b;
+586     }
+587 
+588     function min(uint a, uint b) internal pure returns (uint) {
+589         return a < b ? a : b;
+590     }
+591 
+592     function round(uint a, uint m) internal pure returns (uint ) {
+593         return ((a + m - 1) / m) * m;
+594     }
+595 }
+596 
+597 // File: contracts/ChannelImplementation.sol
+598 
+599 // SPDX-License-Identifier: GPL-3.0
+600 pragma solidity 0.8.9;
+601 
+602 
+603 
+604 
+605 
+606 
+607 
+608 
+609 contract ChannelImplementation is FundsRecovery, Utils {
+610     using ECDSA for bytes32;
+611 
+612     string constant EXIT_PREFIX = "Exit request:";
+613 
+614     uint256 internal lastNonce;
+615 
+616     struct ExitRequest {
+617         uint256 timelock;          // block number after which exit can be finalized
+618         address beneficiary;       // address where funds will be send after finalizing exit request
+619     }
+620 
+621     struct Hermes {
+622         address operator;          // signing address
+623         address contractAddress;   // hermes smart contract address, funds will be send there
+624         uint256 settled;           // total amount already settled by hermes
+625     }
+626 
+627     ExitRequest public exitRequest;
+628     Hermes public hermes;
+629     address public operator;          // channel operator = sha3(IdentityPublicKey)[:20]
+630     IUniswapV2Router internal dex;    // any uniswap v2 compatible dex router address
+631 
+632     event PromiseSettled(address beneficiary, uint256 amount, uint256 totalSettled, bytes32 lock);
+633     event ExitRequested(uint256 timelock);
+634     event Withdraw(address beneficiary, uint256 amount);
+635 
+636     /*
+637       ------------------------------------------- SETUP -------------------------------------------
+638     */
+639 
+640     // Fallback function - exchange received ETH into MYST
+641     receive() external payable {
+642         address[] memory path = new address[](2);
+643         path[0] = dex.WETH();
+644         path[1] = address(token);
+645 
+646         dex.swapExactETHForTokens{value: msg.value}(0, path, address(this), block.timestamp);
+647     }
+648 
+649     // Because of proxy pattern this function is used insted of constructor.
+650     // Have to be called right after proxy deployment.
+651     function initialize(address _token, address _dexAddress, address _identity, address _hermesId, uint256 _fee) public {
+652         require(!isInitialized(), "Is already initialized");
+653         require(_identity != address(0), "Identity can't be zero");
+654         require(_hermesId != address(0), "HermesID can't be zero");
+655         require(_token != address(0), "Token can't be deployd into zero address");
+656 
+657         token = IERC20Token(_token);
+658         dex = IUniswapV2Router(_dexAddress);
+659 
+660         // Transfer required fee to msg.sender (most probably Registry)
+661         if (_fee > 0) {
+662             token.transfer(msg.sender, _fee);
+663         }
+664 
+665         operator = _identity;
+666         transferOwnership(operator);
+667         hermes = Hermes(IHermesContract(_hermesId).getOperator(), _hermesId, 0);
+668     }
+669 
+670     function isInitialized() public view returns (bool) {
+671         return operator != address(0);
+672     }
+673 
+674     /*
+675       -------------------------------------- MAIN FUNCTIONALITY -----------------------------------
+676     */
+677 
+678     // Settle promise
+679     // signedMessage: channelId, totalSettleAmount, fee, hashlock
+680     // _lock is random number generated by receiver used in HTLC
+681     function settlePromise(uint256 _amount, uint256 _transactorFee, bytes32 _lock, bytes memory _signature) public {
+682         bytes32 _hashlock = keccak256(abi.encode(_lock));
+683         address _channelId = address(this);
+684 
+685         address _signer = keccak256(abi.encodePacked(getChainID(), uint256(uint160(_channelId)), _amount, _transactorFee, _hashlock)).recover(_signature);
+686         require(_signer == operator, "have to be signed by channel operator");
+687 
+688         // Calculate amount of tokens to be claimed.
+689         uint256 _unpaidAmount = _amount - hermes.settled;
+690         require(_unpaidAmount > 0, "amount to settle should be greater that already settled");
+691 
+692         // If signer has less tokens than asked to transfer, we can transfer as much as he has already
+693         // and rest tokens can be transferred via same promise but in another tx
+694         // when signer will top up channel balance.
+695         uint256 _currentBalance = token.balanceOf(_channelId);
+696         if (_unpaidAmount > _currentBalance) {
+697             _unpaidAmount = _currentBalance;
+698         }
+699 
+700         // Increase already paid amount
+701         hermes.settled = hermes.settled + _unpaidAmount;
+702 
+703         // Send tokens
+704         token.transfer(hermes.contractAddress, _unpaidAmount - _transactorFee);
+705 
+706         // Pay fee to transaction maker
+707         if (_transactorFee > 0) {
+708             token.transfer(msg.sender, _transactorFee);
+709         }
+710 
+711         emit PromiseSettled(hermes.contractAddress, _unpaidAmount, hermes.settled, _lock);
+712     }
+713 
+714     // Fast funds withdrawal is possible when hermes agrees that given amount of funds can be withdrawn
+715     function fastExit(uint256 _amount, uint256 _transactorFee, address _beneficiary, uint256 _validUntil, bytes memory _operatorSignature, bytes memory _hermesSignature) public {
+716         require(_validUntil >= block.timestamp, "Channel: _validUntil have to be greater than or equal to current block timestamp");
+717 
+718         address _channelId = address(this);
+719         bytes32 _msgHash = keccak256(abi.encodePacked(EXIT_PREFIX, getChainID(), uint256(uint160(_channelId)), _amount, _transactorFee, uint256(uint160(_beneficiary)), _validUntil, lastNonce++));
+720 
+721         address _firstSigner = _msgHash.recover(_operatorSignature);
+722         require(_firstSigner == operator, "Channel: have to be signed by operator");
+723 
+724         address _secondSigner = _msgHash.recover(_hermesSignature);
+725         require(_secondSigner == hermes.operator, "Channel: have to be signed by hermes");
+726 
+727         // Pay fee to transaction maker
+728         if (_transactorFee > 0) {
+729             require(_amount >= _transactorFee, "Channel: transactor fee can't be bigger that withdrawal amount");
+730             token.transfer(msg.sender, _transactorFee);
+731         }
+732 
+733         // Withdraw agreed amount
+734         uint256 _amountToSend = _amount - _transactorFee;
+735         token.transfer(_beneficiary, _amountToSend);
+736         emit Withdraw(_beneficiary, _amountToSend);
+737     }
+738     /*
+739       ------------------------------------------ HELPERS ------------------------------------------
+740     */
+741 
+742     // Setting new destination of funds recovery.
+743     string constant FUNDS_DESTINATION_PREFIX = "Set funds destination:";
+744     function setFundsDestinationByCheque(address payable _newDestination, bytes memory _signature) public {
+745         require(_newDestination != address(0));
+746 
+747         address _channelId = address(this);
+748         address _signer = keccak256(abi.encodePacked(FUNDS_DESTINATION_PREFIX, _channelId, _newDestination, lastNonce++)).recover(_signature);
+749         require(_signer == operator, "Channel: have to be signed by proper identity");
+750 
+751         emit DestinationChanged(fundsDestination, _newDestination);
+752 
+753         fundsDestination = _newDestination;
+754     }
+755 
+756 }
