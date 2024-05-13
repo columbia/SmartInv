@@ -37,9 +37,11 @@ from verifier.infer import (
 	cleaned_contract,
 )
 from verifier.infer_upgrade import (
+  light_results,
 	prompt_exp_results,
 	find_program_points,
 	find_invariants,
+	find_bugs_light_mode, 
 	infer_bugs  	
 )
 from verifier.verify import (
@@ -57,6 +59,7 @@ verified_dir = "./verified_results"
 large_exp_results_dir = "./large_exp_results"
 refined_exp_results = "./refined_exp_results"
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+manual_time_budget = 150
 
 
 
@@ -267,10 +270,10 @@ def run_large_scale_exp():
 		#comment out the run_mythril, run_manticore, run_veriSmart and run_smartest for linux machine, unless you get 
 		#verismart working on linux; only use the following two commands on MacOS 
 		#the following command has to be in the test_dir, not outside it
-		#run_mythril(large_exp_results_dir, contract_file, filename)
-		#run_veriSmart(large_exp_results_dir, contract_file, filename)
-		#run_smartest(large_exp_results_dir, contract_file, filename)
-		#run_manticore(large_exp_results_dir, contract_file, filename)
+		run_mythril(large_exp_results_dir, contract_file, filename)
+		run_veriSmart(large_exp_results_dir, contract_file, filename)
+		run_smartest(large_exp_results_dir, contract_file, filename)
+		run_manticore(large_exp_results_dir, contract_file, filename)
 
 def run_refined_exp():
 	smartinv_exp_name = "smartinv"
@@ -291,10 +294,10 @@ def run_refined_exp():
 				#comment out the run_mythril, run_manticore, run_veriSmart and run_smartest for linux machine, unless you get 
 				#verismart working on linux; only use the following two commands on MacOS 
 				#the following command has to be in the test_dir, not outside it
-				#run_mythril(file_results_dir, contract_file, filename)
-				#run_veriSmart(file_results_dir, contract_file, filename)
-				#run_smartest(file_results_dir, contract_file, filename)
-				#run_manticore(file_results_dir, contract_file, filename)			
+				run_mythril(file_results_dir, contract_file, filename)
+				run_veriSmart(file_results_dir, contract_file, filename)
+				run_smartest(file_results_dir, contract_file, filename)
+				run_manticore(file_results_dir, contract_file, filename)			
 	sets = ["set1", "set2", "set3"]
 	for i in sets:
 		test_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/natural_bugs/{i}"
@@ -309,10 +312,10 @@ def run_refined_exp():
 				#comment out the run_mythril, run_manticore, run_veriSmart and run_smartest for linux machine, unless you get 
 				#verismart working on linux; only use the following two commands on MacOS 
 				#the following command has to be in the test_dir, not outside it
-				#run_mythril(file_results_dir, contract_file, filename)
-				#run_veriSmart(file_results_dir, contract_file, filename)
-				#run_smartest(file_results_dir, contract_file, filename)
-				#run_manticore(file_results_dir, contract_file, filename)
+				run_mythril(file_results_dir, contract_file, filename)
+				run_veriSmart(file_results_dir, contract_file, filename)
+				run_smartest(file_results_dir, contract_file, filename)
+				run_manticore(file_results_dir, contract_file, filename)
 
 def run_prompt_exp():
 	sets = ["set1", "set2", "set3"]
@@ -375,7 +378,26 @@ def run_heavy_SmartInv(contract_file, filename, verify=False):
 	 
 
 def run_light_SmartInv(contract_file, filename, verify=False):
-	pass	
+  		find_program_points(contract_file, filename)
+			find_invariants(contract_file, filename)
+			find_bugs_light_mode(contract_file, filename)
+			inv_path = os.path.join(light_results, f"{filename}_inv.txt")  
+			bug_path = os.path.join(light_results, f"{filename}_bug.txt")
+	if verify == True:
+   	if os.path.exists(inv_path) == True:
+			insert_and_annotate(contract_file, filename, inv)
+			cleaned_contract(filename)
+    else:
+      print("not possible to verify, due to lack of inferred invariants file.")
+	run_verisol(f"../verifier/cleaned_{filename}", filename)
+	print("===============final report========================\n")
+	print(f"inferred invariants are: {inv}\n")
+	contract_name = filename.replace(".sol", "")
+	if os.path.exists({verified_dir}/{contract_name}) == False and os.path.exists(bug_path) == True:
+		vul = open(bug_path, "r")
+		print(f"inferred vulnerabilities are: {vul}\n")
+	print(f"If verifier is enabled, verification proof is saved at {verified_dir}/{contract_name}\n")
+			
 
 
 def main():
