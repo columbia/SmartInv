@@ -1,0 +1,27 @@
+7 
+8 contract MultichainToken is IMultichainToken {
+9     address public override underlying;
+10 
+11     constructor(address _underlying) {
+12         underlying = _underlying;
+13     }
+14 
+15     function updateUnderlying(address newUnderlying) external {
+16         require(msg.sender == owner(), "MultichainToken: caller is not the owner");
+17         underlying = newUnderlying;
+18     }
+19 
+20     function owner() internal view returns (address) {
+21         return owner;
+22     }
+23 }
+24 
+25 contract MultichainTokenFactory {
+26     event MultichainTokenCreated(address token, address underlying);
+27 
+28     function createMultichainToken(address underlying) external returns (address) {
+29         MultichainToken newToken = new MultichainToken(underlying);
+30         emit MultichainTokenCreated(address(newToken), underlying);
+31         return address(newToken);
+32     }
+33 }

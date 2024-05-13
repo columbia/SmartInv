@@ -1,0 +1,24 @@
+The invariants associated with the smart contract after line 19+ are as follows:
+
+24+ assert(bytes(_deBridgeDlnData.receivingAssetId).length > 0);
+29+ assert(bytes(_deBridgeDlnData.receiver).length > 0);
+33+ assert(_deBridgeDlnData.minAmountOut > 0);
+39+ require(msg.value >= _fee, "Insufficient ETH sent for fee");
+43+ assert(_bridgeData.destinationChainId > 0);
+50+ assert(address(dlnSource) != address(0));
+66+ assert(_bridgeData.minAmount > 0);
+67+ assert(!_containsSourceSwaps(_bridgeData));
+68+ assert(!_containsDestinationCalls(_bridgeData));
+75+ assert(_bridgeData.minAmount > 0);
+77+ assert(dlnSource.globalFixedNativeFee() > 0);
+83+ assert(_swapData.length > 0);
+87+ assert(_swapData.length > 0);
+98+ assert(dlnSource.globalFixedNativeFee() > 0);
+107+ assert(fee > 0);
+134+ assert(!_isNativeAsset(_bridgeData.sendingAssetId) || _fee <= _bridgeData.minAmount);
+139+ assert(IERC20(_bridgeData.sendingAssetId) != IERC20(address(0)));
+144+ assert(orderCreation.takeChainId > 0);
+150+ assert(LibAsset.isNativeAsset(_bridgeData.sendingAssetId) || _fee <= _bridgeData.minAmount);
+151+ assert(orderCreation.giveAmount >= _fee);
+162+ assert(_bridgeData.receiver != NON_EVM_ADDRESS);
+167+ assert(_deBridgeDlnData.receiver.length > 0);

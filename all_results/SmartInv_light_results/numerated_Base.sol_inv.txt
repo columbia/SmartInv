@@ -1,0 +1,16 @@
+The invariants associated with the smart contract after line 10+ are:
+
+10+ assert(proxyModuleId != 0);
+11+ require(proxyModuleId <= MAX_EXTERNAL_MODULEID);
+19+ assert(proxyLookup[proxyModuleId] != address(0));
+25+ require(proxyModuleId <= MAX_EXTERNAL_SINGLE_PROXY_MODULEID);
+27+ assert(trustedSenders[proxyAddr].moduleImpl == address(0));
+37+ assert(success == true);
+45+ require(reentrancyLock == REENTRANCYLOCK__UNLOCKED);
+49+ assert(reentrancyLock == REENTRANCYLOCK__UNLOCKED);
+57+ modifier(staticDelegate);
+63+ modifier(FREEMEM);
+95+ assert(errMsg.length > 0);
+101+ require(errMsg.length > 0);
+
+These invariants ensure the validity of conditions and state changes within the smart contract.

@@ -1,0 +1,64 @@
+
+7 uint32 constant MAX_VALUE = 1000;
+
+8 contract InvariantExample {
+
+9     uint32 public totalValue;
+
+10     mapping(address => uint32) public userValue;
+
+11     
+12     function setValue(uint32 _value) external {
+13         require(_value <= MAX_VALUE, "Value exceeds maximum allowed value");
+14         
+15         totalValue += _value;
+16         userValue[msg.sender] += _value;
+17     }
+
+18     
+19     function withdrawValue() external {
+20         uint32 valueToWithdraw = userValue[msg.sender];
+21         require(valueToWithdraw > 0, "No value to withdraw");
+22         
+23         totalValue -= valueToWithdraw;
+24         userValue[msg.sender] = 0;
+25     }
+
+26 }
+27 
+28 
+29 
+30 
+31 
+32 
+33 
+34 
+35 
+36 
+37 
+38 
+39 
+40 
+41 
+42 
+43
+44 
+45 
+46 
+47 
+48 
+49 
+50 
+51 
+52 
+53 
+54 
+55 
+56
+57 
+58 
+59 
+60 
+61 
+
+       

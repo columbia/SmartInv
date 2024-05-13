@@ -37,7 +37,7 @@ from verifier.infer import (
 	cleaned_contract,
 )
 from verifier.infer_upgrade import (
-  light_results,
+	light_results,
 	prompt_exp_results,
 	find_program_points,
 	find_invariants,
@@ -294,10 +294,10 @@ def run_refined_exp():
 				#comment out the run_mythril, run_manticore, run_veriSmart and run_smartest for linux machine, unless you get 
 				#verismart working on linux; only use the following two commands on MacOS 
 				#the following command has to be in the test_dir, not outside it
-				run_mythril(file_results_dir, contract_file, filename)
-				run_veriSmart(file_results_dir, contract_file, filename)
-				run_smartest(file_results_dir, contract_file, filename)
-				run_manticore(file_results_dir, contract_file, filename)			
+			run_mythril(file_results_dir, contract_file, filename)
+			run_veriSmart(file_results_dir, contract_file, filename)
+			run_smartest(file_results_dir, contract_file, filename)
+			run_manticore(file_results_dir, contract_file, filename)			
 	sets = ["set1", "set2", "set3"]
 	for i in sets:
 		test_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/natural_bugs/{i}"
@@ -348,6 +348,8 @@ def run_prompt_exp():
 def run_ablation_exp():
 	pass
 
+def run_runtime_exp():
+	pass
 
 def run_heavy_SmartInv(contract_file, filename, verify=False): 
 	assert(os.path.exists(contract_file))
@@ -378,25 +380,27 @@ def run_heavy_SmartInv(contract_file, filename, verify=False):
 	 
 
 def run_light_SmartInv(contract_file, filename, verify=False):
-  		find_program_points(contract_file, filename)
-			find_invariants(contract_file, filename)
-			find_bugs_light_mode(contract_file, filename)
-			inv_path = os.path.join(light_results, f"{filename}_inv.txt")  
-			bug_path = os.path.join(light_results, f"{filename}_bug.txt")
+	find_program_points(contract_file, filename)
+	find_invariants(contract_file, filename)
+	find_bugs_light_mode(contract_file, filename)
+	inv_path = os.path.join(light_results, f"{filename}_inv.txt")  
+	bug_path = os.path.join(light_results, f"{filename}_bug.txt")
 	if verify == True:
-   	if os.path.exists(inv_path) == True:
+		invFile = open(inv_path, "r")
+		inv = invFile.read()
+		if os.path.exists(inv_path) == True:
 			insert_and_annotate(contract_file, filename, inv)
 			cleaned_contract(filename)
-    else:
-      print("not possible to verify, due to lack of inferred invariants file.")
-	run_verisol(f"../verifier/cleaned_{filename}", filename)
-	print("===============final report========================\n")
-	print(f"inferred invariants are: {inv}\n")
-	contract_name = filename.replace(".sol", "")
-	if os.path.exists({verified_dir}/{contract_name}) == False and os.path.exists(bug_path) == True:
-		vul = open(bug_path, "r")
-		print(f"inferred vulnerabilities are: {vul}\n")
-	print(f"If verifier is enabled, verification proof is saved at {verified_dir}/{contract_name}\n")
+		else:
+			print("not possible to verify, due to lack of inferred invariants file.")
+		run_verisol(light_results, f"../verifier/cleaned_{filename}", filename)
+		print("===============final report========================\n")
+		print(f"inferred invariants are: {inv}\n")
+		contract_name = filename.replace(".sol", "")
+		if os.path.exists({verified_dir}/{contract_name}) == False and os.path.exists(bug_path) == True:
+			vul = open(bug_path, "r")
+			print(f"inferred vulnerabilities are: {vul}\n")
+		print(f"If verifier is enabled, verification proof is saved at {verified_dir}/{contract_name}\n")
 			
 
 
@@ -416,11 +420,31 @@ def main():
 		run_prompt_exp()
 	if args.ablation_exp == True:
 		run_ablation_exp()
+	if args.runtime_exp == True:
+		run_runtime_exp()
 	if args.heavy == True:
 		run_heavy_SmartInv(args.file, args.contract, args.verify)
 	if args.light == True:
-		run_light_SmartInv(args.file, args.contract, args.verify)
-	
+		sets = ["set1", "set2", "set3"]
+		'''
+		audited_bug_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/additional_audited_bugs"
+		for rootpath, dirs, filepaths in os.walk(audited_bug_folder_path):
+			for dir in dirs:
+				sub_dir = os.path.join(rootpath, dir, "/instrumented") 
+				print
+				for subroot, _, subfiles in os.walk(sub_dir):
+					for name in subfiles:
+						sub_contract_path = os.path.join(subroot, subfiles)
+						print(sub_contract_path)
+						run_light_SmartInv(sub_contract_path, name)
+			'''
+		for i in sets:
+			test_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/natural_bugs/{i}/instrumented"
+			for root, _, files in os.walk(test_folder_path):
+				for filename in files:
+					print(filename)
+					contract_file = os.path.join(root, filename)
+					run_light_SmartInv(contract_file, filename, False)
 	
 if __name__ == "__main__":
 	main()
