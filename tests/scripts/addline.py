@@ -46,5 +46,10 @@ if __name__ == "__main__":
 		for filename in files:
 			file = os.path.join(root,filename)
 			text_lines(file, new_folder_path)
-	
+	sample_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/sample_test"
+	new_folder_path = f"{sample_folder_path}/instrumented"
+	for root, dirs, files in os.walk(sample_folder_path):
+		for filename in files:
+			file = os.path.join(root,filename)
+			text_lines(file, new_folder_path)
 	
