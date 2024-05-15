@@ -58,6 +58,7 @@ updated_tot_param = 'sallywww/tot_llama_update'
 verified_dir = "./verified_results"
 large_exp_results_dir = "./large_exp_results"
 refined_exp_results = "./refined_exp_results"
+light_sampled_results = "/home/sallyjunsongwang/SmartInv/all_results/sampled_results"
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 manual_time_budget = 150
 
@@ -151,6 +152,7 @@ def run_experiment2():
 	clean_paths(verified_dir, contract_name)
 
 def run_verisol(large_exp_results_dir, contract_file, filename):
+	auto_compiler_detect(contract_file)
 	install_script = "./dotnet-install.ps1"
 	if os.path.exists(install_script) is False:
 		print("installing SmartInv verifier...")
@@ -168,6 +170,7 @@ def run_verisol(large_exp_results_dir, contract_file, filename):
 	clean_paths(results_dir, contract_file)
 
 def run_slither(large_exp_results_dir, contract_file, filename):
+	auto_compiler_detect(contract_file)
 	if (os.path.isdir(large_exp_results_dir)) is False:
 		os.mkdir(large_exp_results_dir)
 	if (os.path.isdir(f"{large_exp_results_dir}/slither")) is False:
@@ -290,14 +293,14 @@ def run_refined_exp():
 			contract_file = os.path.join(root, filename)			
 			run_verisol(file_results_dir, contract_file, filename)
 			run_slither(file_results_dir, contract_file, filename)
-			infer_bugs(audited_bug_folder_path, file_results_dir, smartinv_exp_name, smartinv_prompt, line_limit) 
+			#infer_bugs(audited_bug_folder_path, file_results_dir, smartinv_exp_name, smartinv_prompt, line_limit) 
 				#comment out the run_mythril, run_manticore, run_veriSmart and run_smartest for linux machine, unless you get 
 				#verismart working on linux; only use the following two commands on MacOS 
 				#the following command has to be in the test_dir, not outside it
 			run_mythril(file_results_dir, contract_file, filename)
-			run_veriSmart(file_results_dir, contract_file, filename)
-			run_smartest(file_results_dir, contract_file, filename)
-			run_manticore(file_results_dir, contract_file, filename)			
+			#run_veriSmart(file_results_dir, contract_file, filename)
+			#run_smartest(file_results_dir, contract_file, filename)
+			#run_manticore(file_results_dir, contract_file, filename)			
 	sets = ["set1", "set2", "set3"]
 	for i in sets:
 		test_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/natural_bugs/{i}"
@@ -308,14 +311,14 @@ def run_refined_exp():
 				contract_file = os.path.join(root, filename)
 				run_verisol(file_results_dir, contract_file, filename)
 				run_slither(file_results_dir, contract_file, filename)
-				infer_bugs(test_folder_path, file_results_dir, smartinv_exp_name, smartinv_prompt, line_limit) 					
+				#infer_bugs(test_folder_path, file_results_dir, smartinv_exp_name, smartinv_prompt, line_limit) 					
 				#comment out the run_mythril, run_manticore, run_veriSmart and run_smartest for linux machine, unless you get 
 				#verismart working on linux; only use the following two commands on MacOS 
 				#the following command has to be in the test_dir, not outside it
 				run_mythril(file_results_dir, contract_file, filename)
-				run_veriSmart(file_results_dir, contract_file, filename)
-				run_smartest(file_results_dir, contract_file, filename)
-				run_manticore(file_results_dir, contract_file, filename)
+				#run_veriSmart(file_results_dir, contract_file, filename)
+				#run_smartest(file_results_dir, contract_file, filename)
+				#run_manticore(file_results_dir, contract_file, filename)
 
 def run_prompt_exp():
 	sets = ["set1", "set2", "set3"]
@@ -332,7 +335,7 @@ def run_prompt_exp():
 	exp_name = "gpt"
 	prompt = "gpt.txt"
 	line_limit = 300
-	audited_bug_folder_path = f"../tests/refined_analysis/natural_bugs/additional_audited_bugs"
+	audited_bug_folder_path = f"../tests/refined_analysis/additional_audited_bugs"
 	infer_bugs(audited_bug_folder_path, file_results_dir, gpt_exp_name, gpt_prompt, line_limit)
 	infer_bugs(audited_bug_folder_path, file_results_dir, gptscan_exp_name, gpt_prompt, line_limit)
 	infer_bugs(audited_bug_folder_path, file_results_dir, audit_exp_name, audit_prompt, line_limit) 
@@ -425,27 +428,26 @@ def main():
 	if args.heavy == True:
 		run_heavy_SmartInv(args.file, args.contract, args.verify)
 	if args.light == True:
-		sets = ["set1", "set2", "set3"]
-		'''
-		audited_bug_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/additional_audited_bugs"
-		for rootpath, dirs, filepaths in os.walk(audited_bug_folder_path):
-			for dir in dirs:
-				sub_dir = os.path.join(rootpath, dir, "/instrumented") 
-				print
-				for subroot, _, subfiles in os.walk(sub_dir):
-					for name in subfiles:
-						sub_contract_path = os.path.join(subroot, subfiles)
-						print(sub_contract_path)
-						run_light_SmartInv(sub_contract_path, name)
-			'''
-		for i in sets:
-			test_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/natural_bugs/{i}/instrumented"
-			for root, _, files in os.walk(test_folder_path):
-				for filename in files:
-					print(filename)
-					contract_file = os.path.join(root, filename)
-					run_light_SmartInv(contract_file, filename, False)
+		run_light_SmartInv(contract_file, filename, args.verify)
+
 	
 if __name__ == "__main__":
 	main()
+	#uncomment the code below to run smartInv light mode on some sample outputs
+	'''
+	sets = ["set1", "set2", "set3"]
+	for i in sets:
+		test_folder_path = f"/home/sallyjunsongwang/SmartInv/tests/refined_analysis/natural_bugs/{i}/instrumented"
+		for root, _, files in os.walk(test_folder_path):
+			for filename in files:
+				print(filename)
+				contract_file = os.path.join(root, filename)
+				run_light_SmartInv(contract_file, filename, False)
+	sample_folder = f"/home/sallyjunsongwang/SmartInv/tests/sample_test/instrumented"
+	for root, _, files in os.walk(sample_folder):
+		for filename in files:
+			print(filename)
+			contract_file = os.path.join(root, filename)
+			run_light_SmartInv(contract_file, filename, False)
+	'''
 	
